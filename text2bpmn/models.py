@@ -1,8 +1,6 @@
-from abc import ABC
-from abc import abstractmethod
 from langchain_mistralai import ChatMistralAI
 from langchain_openai import ChatOpenAI
-from langchain_core.language_models.chat_models import BaseChatModel
+
 import os
 from dotenv import load_dotenv
 
@@ -27,8 +25,3 @@ class OpenAILLM(ChatOpenAI):
             raise ValueError("Missing OPENAI_API_KEY in environment variables")
 
         super().__init__(api_key=api_key, *args, **kwargs)
-
-if __name__ == "__main__":
-    model_mistral = MistralLLM()
-    model_openai = OpenAILLM()
-    

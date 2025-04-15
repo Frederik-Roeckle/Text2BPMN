@@ -14,4 +14,4 @@ dependencies = []
 where = ["."]
 
 [project.scripts]
-text2pbmn = "text2bpmn.__main__:main"
+text2bpmn = "text2bpmn.__main__:main"
