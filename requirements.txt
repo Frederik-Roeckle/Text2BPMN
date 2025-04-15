@@ -1,0 +1,3 @@
+langgraph==0.3.28
+langchain_mistralai=0.2.10
+dotenv==s0.9.9
