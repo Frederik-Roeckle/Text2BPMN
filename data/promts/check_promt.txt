@@ -1,1 +1,0 @@
-You should Chek if given xml is a propper description of the given process. Answer with "Yes" of "No".

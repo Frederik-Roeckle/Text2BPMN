@@ -1,11 +1,21 @@
 
 from langchain_core.tools import tool
+from text2bpmn.agents import NormalAgent
+from langgraph.prebuilt import InjectedState
+from typing import Annotated
+from text2bpmn.config import get_model
 
-FILE_NAME = "output.txt"
+# ----------------------------------------------------
+# Create a feedback agent as a tool
 
 @tool
-def save_to_file(content: str) -> str:
-    """Save the content to a file."""
-    with open(FILE_NAME, "w") as f:
-        f.write(content)
-    return f"Content saved to {FILE_NAME}"
+def fedback_agent(state: Annotated[dict, InjectedState]):
+        """
+        Provide feedback on the given process description.
+        """
+        feedback_agent_object = NormalAgent(model=get_model(),system_message="data/promts/feedback_promt.txt")
+        response = feedback_agent_object.invoke(state["messages"][-1])
+        return response.content
+
+# ----------------------------------------------------
+

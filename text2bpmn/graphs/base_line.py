@@ -1,15 +1,18 @@
 from langgraph.graph import StateGraph, MessagesState, START, END
-from langgraph.prebuilt import ToolNode
-from text2bpmn.nodes import NormalNode, BPMNSavingNode
-from text2bpmn.models import MistralLLM
+from text2bpmn.agents import NormalAgent
+from text2bpmn.config import get_model
 
 
 def build_graph():
+    """
+    Build as graph that uses only one agent to create the output.
+    """
+
     builder = StateGraph(MessagesState)
 
     # Define nodes
-    text2bpmn = NormalNode(
-        model=MistralLLM(),
+    text2bpmn = NormalAgent(
+        model=get_model(),
         system_message="data/promts/base_promt.txt",
         few_shot_examples="data/examples/few_shot_examples.json",
     )
