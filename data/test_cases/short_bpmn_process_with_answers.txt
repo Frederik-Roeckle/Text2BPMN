@@ -1,0 +1,41 @@
+```xml
+<definitions xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL"
+             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+             xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL"
+             targetNamespace="http://www.example.org/BPMN20"
+             xsi:schemaLocation="http://www.omg.org/spec/BPMN/20100524/MODEL BPMN20.xsd">
+
+    <process id="request_approval_process" name="Request Approval Process">
+        <laneSet>
+            <lane id="default_lane">
+                <flowNodeRef>start_event</flowNodeRef>
+                <flowNodeRef>submit_request_task</flowNodeRef>
+                <flowNodeRef>review_request_task</flowNodeRef>
+                <flowNodeRef>approve_task</flowNodeRef>
+                <flowNodeRef>reject_task</flowNodeRef>
+                <flowNodeRef>manager_approval_task</flowNodeRef>
+                <flowNodeRef>end_event</flowNodeRef>
+            </lane>
+        </laneSet>
+
+        <startEvent id="start_event" name="User Submits Request"/>
+        <task id="submit_request_task" name="Employee Reviews Request"/>
+        <task id="review_request_task" name="Review Request"/>
+        <task id="approve_task" name="Approve Request"/>
+        <task id="reject_task" name="Reject Request"/>
+        <task id="manager_approval_task" name="Manager Approval"/>
+        <endEvent id="end_event" name="Process Ends"/>
+
+        <sequenceFlow id="flow1" sourceRef="start_event" targetRef="submit_request_task"/>
+        <sequenceFlow id="flow2" sourceRef="submit_request_task" targetRef="review_request_task"/>
+        <sequenceFlow id="flow3" sourceRef="review_request_task" targetRef="approve_task">
+            <conditionExpression xsi:type="tFormalExpression">Request Approved</conditionExpression>
+        </sequenceFlow>
+        <sequenceFlow id="flow4" sourceRef="review_request_task" targetRef="reject_task">
+            <conditionExpression xsi:type="tFormalExpression">Request Rejected</conditionExpression>
+        </sequenceFlow>
+        <sequenceFlow id="flow5" sourceRef="approve_task" targetRef="manager_approval_task"/>
+        <sequenceFlow id="flow6" sourceRef="manager_approval_task" targetRef="end_event"/>
+    </process>
+</definitions>
+```

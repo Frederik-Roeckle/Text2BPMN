@@ -1,0 +1,74 @@
+{
+    "process_name": "Request Approval Process",
+    "pools": [
+        {
+            "name": "Default Pool",
+            "lanes": [
+                {
+                    "name": "Default Lane",
+                    "elements": ["start_event", "submit_request", "review_request", "manager_approval", "request_rejected", "end_event"]
+                }
+            ]
+        }
+    ],
+    "elements": [
+        {
+            "id": "start_event",
+            "type": "StartEvent",
+            "name": "Request Submitted"
+        },
+        {
+            "id": "submit_request",
+            "type": "Task",
+            "name": "Employee Review"
+        },
+        {
+            "id": "review_request",
+            "type": "ExclusiveGateway",
+            "name": "Request Approved?"
+        },
+        {
+            "id": "manager_approval",
+            "type": "Task",
+            "name": "Manager Approval"
+        },
+        {
+            "id": "request_rejected",
+            "type": "Task",
+            "name": "Request Rejected"
+        },
+        {
+            "id": "end_event",
+            "type": "EndEvent",
+            "name": "Process Completed"
+        }
+    ],
+    "sequence_flows": [
+        {
+            "source": "start_event",
+            "target": "submit_request"
+        },
+        {
+            "source": "submit_request",
+            "target": "review_request"
+        },
+        {
+            "source": "review_request",
+            "target": "manager_approval",
+            "condition": "Approved"
+        },
+        {
+            "source": "review_request",
+            "target": "request_rejected",
+            "condition": "Not Approved"
+        },
+        {
+            "source": "manager_approval",
+            "target": "end_event"
+        },
+        {
+            "source": "request_rejected",
+            "target": "end_event"
+        }
+    ]
+}

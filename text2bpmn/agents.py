@@ -1,5 +1,5 @@
 from langchain_core.messages import HumanMessage, AIMessage, SystemMessage
-from text2bpmn.utils import load_data
+from utils import load_data
 from langchain_core.language_models.chat_models import BaseChatModel
 from abc import ABC, abstractmethod
 
@@ -46,6 +46,8 @@ class NormalAgent(BaseAgent):
 
         response = self.model.invoke(self.start_messages)
         return {"messages": [response]}
+    
+
     
 class FeedbackAgent(BaseAgent):
     def __init__(self, model: BaseChatModel, system_message=None, few_shot_examples=None, invoke_message=None, tools=None):

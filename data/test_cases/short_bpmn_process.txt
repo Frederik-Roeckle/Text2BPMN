@@ -1,0 +1,1 @@
+A user submits a request. The request is reviewed by an employee. If approved, it's forwarded to the manager for final approval. Otherwise, it's rejected.
