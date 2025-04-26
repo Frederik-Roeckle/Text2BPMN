@@ -2,6 +2,9 @@ from langchain_core.messages import HumanMessage, AIMessage, SystemMessage
 from utils import load_data
 from langchain_core.language_models.chat_models import BaseChatModel
 from abc import ABC, abstractmethod
+import logging
+
+logging.basicConfig(level=logging.INFO)
 
 class BaseAgent(ABC):
     def __init__(self, model: BaseChatModel, system_message=None, few_shot_examples=None, invoke_message=None, tools=None):
@@ -45,6 +48,7 @@ class NormalAgent(BaseAgent):
         self.add_invoke_message()
 
         response = self.model.invoke(self.start_messages)
+        logging.info(f"Response: {response}")
         return {"messages": [response]}
     
 
