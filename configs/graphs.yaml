@@ -1,0 +1,23 @@
+graphs:
+  explicit_flow:
+    type: explicit
+    nodes:
+      - name: text2bpmn
+        kind: normal
+        model_name: mistral
+        system_message: "data/promts/base_promt.txt"
+        few_shot_examples: "data/examples/few_shot_examples.json"
+        # invoke_message: No invoke message for the first node. First Node in the graph gets the invoke message while invoking the graph
+      - name: checker
+        kind: normal
+        model_name: mistral
+        system_message: "/home/paul/Documents/uni_mannheim/llms_and_agents/Text2BPMN/data/promts/check_promt.txt"
+        invoke_message: "Check if the last AI message is correcct"
+        
+    edges:
+      - from: "__START__"
+        to: text2bpmn
+      - from: text2bpmn
+        to: checker 
+      - from: text2bpmn
+        to: "__END__"
