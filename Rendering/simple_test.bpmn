@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL"
+             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+             xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI"
+             xmlns:omgdc="http://www.omg.org/spec/DD/20100524/DC"
+             xmlns:omgdi="http://www.omg.org/spec/DD/20100524/DI"
+             xmlns:tns="http://example.bpmn"
+             targetNamespace="http://example.bpmn">
+  <process id="RequestApprovalProcess" name="Request Approval Process" isExecutable="true">
+    <startEvent id="start_event_user_request" name="User Submits Request"/>
+    <task id="task_review_request" name="Review Request"/>
+    <exclusiveGateway id="exclusive_gateway_approval" name="Request Approved?"/>
+    <task id="task_final_approval" name="Final Approval by Manager"/>
+    <endEvent id="end_event_rejected" name="Request Rejected"/>
+    <sequenceFlow id="flow1" sourceRef="start_event_user_request" targetRef="task_review_request"/>
+    <sequenceFlow id="flow2" sourceRef="task_review_request" targetRef="exclusive_gateway_approval"/>
+    <sequenceFlow id="flow3" sourceRef="exclusive_gateway_approval" targetRef="task_final_approval">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[Approved]]></conditionExpression>
+    </sequenceFlow>
+    <sequenceFlow id="flow4" sourceRef="exclusive_gateway_approval" targetRef="end_event_rejected">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[Not Approved]]></conditionExpression>
+    </sequenceFlow>
+  </process>
+  <collaboration id="collab_RequestApprovalProcess">
+    <participant id="participant_organization" name="Organization" processRef="RequestApprovalProcess"/>
+  </collaboration>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_RequestApprovalProcess">
+    <bpmndi:BPMNPlane id="BPMNPlane_RequestApprovalProcess" bpmnElement="collab_RequestApprovalProcess">
+      <bpmndi:BPMNShape id="Participant_Organization_di" bpmnElement="participant_organization" isHorizontal="true">
+        <omgdc:Bounds x="100" y="100" width="900" height="250"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Lane_User_di" bpmnElement="User_Lane">
+        <omgdc:Bounds x="120" y="120" width="860" height="60"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Lane_Employee_di" bpmnElement="Employee_Lane">
+        <omgdc:Bounds x="120" y="180" width="860" height="60"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Lane_Manager_di" bpmnElement="Manager_Lane">
+        <omgdc:Bounds x="120" y="240" width="860" height="60"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="StartEvent_UserRequest_di" bpmnElement="start_event_user_request">
+        <omgdc:Bounds x="160" y="135" width="36" height="36"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_ReviewRequest_di" bpmnElement="task_review_request">
+        <omgdc:Bounds x="260" y="195" width="100" height="40"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gateway_Approval_di" bpmnElement="exclusive_gateway_approval">
+        <omgdc:Bounds x="400" y="200" width="50" height="50"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_FinalApproval_di" bpmnElement="task_final_approval">
+        <omgdc:Bounds x="520" y="255" width="100" height="40"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="EndEvent_Rejected_di" bpmnElement="end_event_rejected">
+        <omgdc:Bounds x="520" y="215" width="36" height="36"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="Flow1_di" bpmnElement="flow1">
+        <omgdi:waypoint x="196" y="153"/>
+        <omgdi:waypoint x="260" y="215"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow2_di" bpmnElement="flow2">
+        <omgdi:waypoint x="360" y="215"/>
+        <omgdi:waypoint x="400" y="225"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow3_di" bpmnElement="flow3">
+        <omgdi:waypoint x="450" y="225"/>
+        <omgdi:waypoint x="520" y="275"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow4_di" bpmnElement="flow4">
+        <omgdi:waypoint x="450" y="225"/>
+        <omgdi:waypoint x="520" y="233"/>
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</definitions>
