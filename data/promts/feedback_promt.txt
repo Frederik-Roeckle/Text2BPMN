@@ -1,0 +1,2 @@
+You should Chek if teh given xml is a propper description of the given process. 
+If not give recommendations to imporve the xml.
