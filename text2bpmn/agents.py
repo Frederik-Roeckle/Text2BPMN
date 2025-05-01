@@ -7,14 +7,14 @@ import logging
 logging.basicConfig(level=logging.INFO)
 
 class BaseAgent(ABC):
-    def __init__(self, model: BaseChatModel, system_message=None, few_shot_examples=None, invoke_message=None, tools=None):
+    def __init__(self, model: BaseChatModel, system_message=None, few_shot_examples=None, invoke_message=None, tools=None,step=None):
         self.model = model
         self.system_message = system_message
         self.few_shot_examples = few_shot_examples
         self.invoke_message = invoke_message
         self.tools = tools
         self.start_messages = []
-    
+        self.step = step
     def add_tools(self):
         if self.tools:
             self.model.bind_tools(self.tools)
@@ -37,8 +37,8 @@ class BaseAgent(ABC):
         pass
 
 class NormalAgent(BaseAgent):
-    def __init__(self, model: BaseChatModel, system_message=None, few_shot_examples=None, invoke_message=None, tools=None):
-        super().__init__(model, system_message, few_shot_examples, invoke_message, tools)
+    def __init__(self, model: BaseChatModel, system_message=None, few_shot_examples=None, invoke_message=None, tools=None,step=None):
+        super().__init__(model, system_message, few_shot_examples, invoke_message, tools, step)
 
     def invoke(self, state):
         self.add_tools()
@@ -46,9 +46,10 @@ class NormalAgent(BaseAgent):
         self.add_few_shot_examples()
         self.start_messages += state["messages"]
         self.add_invoke_message()
-
         response = self.model.invoke(self.start_messages)
         logging.info(f"Response: {response}")
+        with open(f"{self.step}.txt", "w") as file:
+            file.write(response.content)
         return {"messages": [response]}
     
 

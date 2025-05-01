@@ -1,0 +1,24 @@
+Original Input: A user submits a request. The request is reviewed by an employee. If approved, it's forwarded to the manager for final approval. Otherwise, it's rejected.
+
+1. Participants:
+   - Pool: User
+   - Pool: Employee
+   - Pool: Manager
+
+2. Gateways:
+   - Exclusive Gateway (for approval decision)
+
+3. Activities:
+   - Task: Submit Request (performed by User)
+   - Task: Review Request (performed by Employee)
+   - Task: Forward Request for Approval (performed by Employee to Manager)
+   - Task: Reject Request (performed by Employee)
+
+4. Events:
+   - None explicitly mentioned (but implied start event when the user submits a request and end events for both approval and rejection outcomes)
+
+5. Connections:
+   - User submits a request -> Employee reviews request
+   - Employee reviews request -> Exclusive Gateway (Approval Decision)
+   - Exclusive Gateway -> Forward Request for Approval (if approved, connecting Employee to Manager)
+   - Exclusive Gateway -> Reject Request (if not approved, connecting Employee to the rejection process)

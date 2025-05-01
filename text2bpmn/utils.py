@@ -2,6 +2,7 @@ import json
 import yaml
 import importlib
 from langgraph.prebuilt import create_react_agent
+import subprocess
 
 
 def load_data(path: str):
@@ -16,3 +17,9 @@ def load_data(path: str):
             return f.read()
     else:
         raise ValueError("Unsupported file format. Use .json, .yaml or .txt")
+
+
+
+def render_BPMN(bpmn_name,img_name):
+    subprocess.run(["node", "text2bpmn/convert.js", bpmn_name, img_name],
+                check=True)

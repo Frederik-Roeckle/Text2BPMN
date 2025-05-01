@@ -13,20 +13,23 @@ def build_graph():
     builder = StateGraph(MessagesState)
 
     # Define nodes
-    text2bpmn = NormalAgent(
-        model=get_model(),
-        system_message="data/promts/base_promt.txt",
-        few_shot_examples="data/examples/few_shot_examples.json",
-    )
+    
+    # text2bpmn = NormalAgent(
+    #     model=get_model(),
+    #     system_message="data/promts/base_promt.txt",
+    #     few_shot_examples="data/examples/few_shot_examples.json",
+    # )
 
     extract = NormalAgent(
         model=get_model(),
-        system_message="Text2BPMN/data/promts/extraction_prompt.txt",
+        system_message="data/promts/extraction_prompt.txt",
+        step="extract"
     )
 
     create_xml = NormalAgent(
         model=get_model(),
-        system_message="Text2BPMN/data/promts/create_xml_prompt.txt",
+        system_message="data/promts/create_xml_prompt.txt",
+        step="xml"
     )
 
     #builder.add_node("text2bpmn", text2bpmn.invoke)

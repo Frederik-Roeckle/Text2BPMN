@@ -1,0 +1,59 @@
+<definitions xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL" 
+             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+             xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" 
+             xmlns:di="http://www.omg.org/spec/DD/20100524/DI" 
+             xmlns:iri="http://www.omg.org/spec/BPMN/20100524/IRI" 
+             xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/BPMNDI" 
+             id="sample-diagram" 
+             targetNamespace="http://www.bpmn.org/schema/bpmn" 
+             exporter="Camunda Modeler" 
+             exporterVersion="4.11.3">
+  
+  <process id="requestProcess" isExecutable="true">
+    <startEvent id="startEvent" name="User Submits Request"/>
+    <task id="submitRequest" name="Submit Request" />
+    <task id="reviewRequest" name="Review Request" />
+    <exclusiveGateway id="approvalGateway" name="Approval Decision"/>
+    <task id="forwardApproval" name="Forward for Approval" />
+    <task id="rejectRequest" name="Reject Request" />
+    <endEvent id="approvedEndEvent" name="Request Approved"/>
+    <endEvent id="rejectedEndEvent" name="Request Rejected"/>
+
+    <sequenceFlow id="flow1" sourceRef="startEvent" targetRef="submitRequest"/>
+    <sequenceFlow id="flow2" sourceRef="submitRequest" targetRef="reviewRequest"/>
+    <sequenceFlow id="flow3" sourceRef="reviewRequest" targetRef="approvalGateway"/>
+    <sequenceFlow id="flow4" sourceRef="approvalGateway" targetRef="forwardApproval" name="Approved"/>
+    <sequenceFlow id="flow5" sourceRef="approvalGateway" targetRef="rejectRequest" name="Not Approved"/>
+    <sequenceFlow id="flow6" sourceRef="forwardApproval" targetRef="approvedEndEvent"/>
+    <sequenceFlow id="flow7" sourceRef="rejectRequest" targetRef="rejectedEndEvent"/>
+  </process>
+
+  <bpmndi:BPMNDiagram id="diagram1">
+    <bpmndi:BPMNPlane bpmnElement="requestProcess">
+      <bpmndi:BPMNShape id="shape_startEvent" bpmnElement="startEvent">
+        <dc:Bounds x="173" y="110" width="36" height="36"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_submitRequest" bpmnElement="submitRequest">
+        <dc:Bounds x="227" y="110" width="100" height="40"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_reviewRequest" bpmnElement="reviewRequest">
+        <dc:Bounds x="337" y="110" width="100" height="40"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_approvalGateway" bpmnElement="approvalGateway">
+        <dc:Bounds x="447" y="110" width="50" height="50"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_forwardApproval" bpmnElement="forwardApproval">
+        <dc:Bounds x="507" y="70" width="150" height="40"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_rejectRequest" bpmnElement="rejectRequest">
+        <dc:Bounds x="507" y="150" width="150" height="40"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_approvedEndEvent" bpmnElement="approvedEndEvent">
+        <dc:Bounds x="677" y="70" width="36" height="36"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_rejectedEndEvent" bpmnElement="rejectedEndEvent">
+        <dc:Bounds x="677" y="150" width="36" height="36"/>
+      </bpmndi:BPMNShape>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</definitions>
