@@ -1,7 +1,7 @@
 from langgraph.prebuilt import create_react_agent
-from text2bpmn.tools import fedback_agent
-from text2bpmn.config import get_model
-from text2bpmn.utils import load_data
+from tools import fedback_agent
+from config import get_model
+from utils import load_data
 
 
 # ---------------------------------------

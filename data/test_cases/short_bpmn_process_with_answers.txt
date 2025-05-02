@@ -1,0 +1,49 @@
+<?xml version="1.0" standalone="yes"?>
+<semantic:definitions id="_1275940932088" targetNamespace="http://www.trisotech.com/definitions/_1275940932088" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:semantic="http://www.omg.org/spec/BPMN/20100524/MODEL">
+    <semantic:process isExecutable="false" id="_6-1">
+        <semantic:laneSet id="ls_6-1">
+            <semantic:lane name="default" id="_6-2">
+                <semantic:flowNodeRef>start_event</semantic:flowNodeRef>
+                <semantic:flowNodeRef>submit_request</semantic:flowNodeRef>
+                <semantic:flowNodeRef>review_request</semantic:flowNodeRef>
+                <semantic:flowNodeRef>manager_approval</semantic:flowNodeRef>
+                <semantic:flowNodeRef>final_approval</semantic:flowNodeRef>
+                <semantic:flowNodeRef>reject_request</semantic:flowNodeRef>
+                <semantic:flowNodeRef>end_event</semantic:flowNodeRef>
+            </semantic:lane>
+        </semantic:laneSet>
+        <semantic:startEvent name="User Submits Request" id="start_event">
+            <semantic:outgoing>_flow_1</semantic:outgoing>
+        </semantic:startEvent>
+        <semantic:task name="Submit Request" id="submit_request">
+            <semantic:incoming>_flow_1</semantic:incoming>
+            <semantic:outgoing>_flow_2</semantic:outgoing>
+        </semantic:task>
+        <semantic:task name="Review Request" id="review_request">
+            <semantic:incoming>_flow_2</semantic:incoming>
+            <semantic:outgoing>_flow_3</semantic:outgoing>
+        </semantic:task>
+        <semantic:exclusiveGateway name="Manager Approval?" id="manager_approval">
+            <semantic:incoming>_flow_3</semantic:incoming>
+            <semantic:outgoing>_approved</semantic:outgoing>
+            <semantic:outgoing>_not_approved</semantic:outgoing>
+        </semantic:exclusiveGateway>
+        <semantic:task name="Final Approval" id="final_approval">
+            <semantic:incoming>_approved</semantic:incoming>
+            <semantic:outgoing>_flow_4</semantic:outgoing>
+        </semantic:task>
+        <semantic:task name="Reject Request" id="reject_request">
+            <semantic:incoming>_not_approved</semantic:incoming>
+            <semantic:outgoing>_flow_5</semantic:outgoing>
+        </semantic:task>
+        <semantic:endEvent name="Process Ends" id="end_event">
+            <semantic:incoming>_flow_4</semantic:incoming>
+            <semantic:incoming>_flow_5</semantic:incoming>
+        </semantic:endEvent>
+        <semantic:sequenceFlow sourceRef="start_event" targetRef="submit_request" id="_flow_1"/>
+        <semantic:sequenceFlow sourceRef="submit_request" targetRef="review_request" id="_flow_2"/>
+        <semantic:sequenceFlow sourceRef="review_request" targetRef="manager_approval" id="_flow_3"/>
+        <semantic:sequenceFlow sourceRef="manager_approval" targetRef="final_approval" id="_flow_4"/>
+        <semantic:sequenceFlow sourceRef="manager_approval" targetRef="reject_request" id="_flow_5"/>
+    </semantic:process>
+</semantic:definitions>
