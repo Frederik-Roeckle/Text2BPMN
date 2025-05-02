@@ -1,4 +1,4 @@
-from graphs import base_line
+from graphs import baseline
 from graphs import react
 from utils import render_BPMN
 import json
@@ -7,19 +7,19 @@ from models import OpenAILLM
 import config
 
 GRAPH_MAP = {
-    "base_line": base_line.build_graph,
+    "base_line": baseline.build_graph,
     "react": react.build_graph
 }
 
 
 def main():
-    config.set_model(OpenAILLM(model="gpt-4o-mini"))
+    config.set_model(OpenAILLM(model="gpt-4o-mini",temperature=0))
 
     #input_path = "data/test_cases/example_test_case.jsonl"
     input_path = "data/test_cases/short_bpmn_process.txt"
 
     #output_path = "data/test_cases/example_test_case_with_answers.jsonl"
-    output_path = "data/test_cases/short_bpmn_process_with_answers.bpmn"
+    output_path = "data/test_cases/baseline.bpmn"
     
     # TODO: Define logic that the output is appended to the original file
 
@@ -64,7 +64,7 @@ def main():
             f.write(item + "\n")
     
     print(f"Results written to {output_path}")
-    render_BPMN("data/test_cases/short_bpmn_process_with_answers.bpmn","data/img/changed_prompt.png")
+    render_BPMN("data/test_cases/baseline.bpmn","data/img/baseline.png")
 
 
 if __name__ == "__main__":
