@@ -47,7 +47,6 @@ class NormalAgent(BaseAgent):
         self.start_messages += state["messages"]
         self.add_invoke_message()
         response = self.model.invoke(self.start_messages)
-        logging.info(f"Response: {response}")
         with open(f"{self.step}.txt", "w") as file:
             file.write(response.content)
         return {"messages": [response]}
