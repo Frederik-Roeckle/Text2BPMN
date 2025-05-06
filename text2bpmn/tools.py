@@ -1,9 +1,9 @@
 
 from langchain_core.tools import tool
-from agents import NormalAgent
+from text2bpmn.agents import NormalAgent
 from langgraph.prebuilt import InjectedState
 from typing import Annotated
-from config import get_model
+from text2bpmn.config import get_model
 
 # ----------------------------------------------------
 # Create a feedback agent as a tool

@@ -1,7 +1,7 @@
 from langgraph.graph import StateGraph, MessagesState, START, END
-from agents import NormalAgent
-from config import get_model
-from agents import NormalAgent
+from text2bpmn.agents import NormalAgent
+from text2bpmn.config import get_model
+from text2bpmn.agents import NormalAgent
 
 
 
@@ -23,6 +23,7 @@ def build_graph():
     baseline = NormalAgent(
         model=get_model(),
         system_message="data/promts/baseline_prompt.txt",
+        few_shot_examples="data/examples/few_shot_examples.txt",
         step="baseline"
     )
 

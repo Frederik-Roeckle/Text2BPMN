@@ -1,5 +1,5 @@
 from langchain_core.messages import HumanMessage, AIMessage, SystemMessage
-from utils import load_data
+from text2bpmn.utils import load_data
 from langchain_core.language_models.chat_models import BaseChatModel
 from abc import ABC, abstractmethod
 import logging
@@ -25,9 +25,9 @@ class BaseAgent(ABC):
 
     def add_few_shot_examples(self):
         if self.few_shot_examples:
-            for ex in load_data(self.few_shot_examples):
-                self.start_messages.append(HumanMessage(content=ex["human"]))
-                self.start_messages.append(AIMessage(content=ex["ai"]))
+            examples = load_data(self.few_shot_examples)
+            self.start_messages.append(SystemMessage(content=examples))  # TODO: Check if this is correct
+               
     def add_invoke_message(self):
         if self.invoke_message:
             self.start_messages.append(HumanMessage(content=self.invoke_message))
@@ -46,6 +46,8 @@ class NormalAgent(BaseAgent):
         self.add_few_shot_examples()
         self.start_messages += state["messages"]
         self.add_invoke_message()
+        logging.info(f"Sending the following messages to the model: {self.start_messages}")
+
         response = self.model.invoke(self.start_messages)
         logging.info(f"Response: {response}")
         with open(f"{self.step}.txt", "w") as file:

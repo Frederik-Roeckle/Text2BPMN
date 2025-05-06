@@ -143,4 +143,3 @@ You strictly adhere to BPMN 2.0 modeling standards to ensure the output is both 
     </bpmndi:BPMNPlane>
   </bpmndi:BPMNDiagram>
 </semantic:definitions>
-
