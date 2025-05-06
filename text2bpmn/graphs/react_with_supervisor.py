@@ -37,6 +37,10 @@ def create_handoff_tool(
 
     return handoff_tool
 
+def read_txt_file(file_path):
+    with open(file_path, "r") as file:
+        content = file.read()
+    return content
 
 # -----------------------------
 # Main graph builder
@@ -44,20 +48,13 @@ def create_handoff_tool(
 def build_graph():
     # Agents
     
+    
 
     extractAgent = create_react_agent(
         name="extractAgent",
         model=get_model(),
         tools=[],
-        prompt=(
-            "Extract all relevant BPMN elements, including:\n"
-            "- Participants as Pools and Lanes (departments, roles, teams, etc.)\n"
-            "- Activities, such as Task, Subprocess, Call Activity, Event Subprocess, or Transaction\n"
-            "- Events, including Start Events, Intermediate Events, and End Events\n"
-            "- Gateways, such as Exclusive, Inclusive, Parallel, or Event-based\n"
-            "- Determine sequence flows between the elements, including any conditional logic (e.g., 'if approved').\n"
-            "- Assign elements to lanes if multiple participants are involved. If not specified, assume a single pool with one default lane."
-        )
+        prompt=read_txt_file("data/promts/extraction_prompt.txt")
     )
 
     xmlAgent = create_handoff_tool(
@@ -74,14 +71,14 @@ def build_graph():
     name="xml_Agent",
     model=get_model(),
     tools=[],
-    prompt="You are an agent that creates a BPMN XML from extracted BPMN elements."
+    prompt=read_txt_file("data/promts/create_xml_prompt.txt")
     )   
 
     validate_Agent = create_react_agent(
     name="validate_Agent",
     model=get_model(),
     tools=[],
-    prompt="You are an agent that validates a BPMN XML for correctness and completeness. When an xml is valid return ***IS_VALID*** as the last word in your message after the xml."
+    prompt=read_txt_file("data/promts/validate_prompt.txt")
     )
 
     # Supervisor creation

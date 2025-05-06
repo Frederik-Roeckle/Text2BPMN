@@ -1,31 +1,5 @@
-a) The Accounts Receivable (AR) department has received a request to perform the revenue forecast & revenue process in SAP ECC System.
+a) An offer is required to be done by the sales department of a specific company. At this point, the commercial manger has to perform a feasibility check based on the business requirements & needs to ensure that the offer is feasible.
 
-b) The AR Processor needs first to post the forecast revenue. In the Initial screen, following parameters have be defined at the same time: defining document type “11”, document date, posting date and company code.
+b) If the offer is not feasible, the customer has to be informed and at this point the process ends after informing him.
 
-c)Upon entering the parameters, the posting details of the forecast has to be further defined. The AR Processer has then to note the fund & the functional area.
-
-d) Then the document has to be saved. Like in the Commitment & Invoice process, one may refer to the posting report, resulting in displaying the forecast posting.
-
-e) In the next step, the individual customer has to be created (depending on the Customer & Sales Accounting data) using SAP ECC and CRM (Customer Relationship Management System). The AR Processor has to create completer customer (complete in this context means sales & accounting data of a customer).
-
-f) Then, the newly created customer has to be assigned to a sales organization and to a company code.
-
-g) First step in this is to define the Account group which is customer general.
-
-h) In the Initial screen in defining the customer, following entries need to be defined at the same time: which are first to define the payment transaction tab, in which the customer’s bank account has to be defined. In the next tab, the company code data has to be defined, in which the reconciliation account 140000 has to be defined and the G/L account 140000 has to be also checked.
-
-i) After entering the required parameters, the AR Processor may now save the customer and as a result a confirmation message containing “Customer .. created”.
-
-j) In the next step, the revenues has to be posted against the cost centre. A common risk in this step is that the cost centre may be blocked against revenue posting.  To prevent this, the cost centre created for Commitment & Invoice process has to be checked in that it is not blocked against revenue posting. The AR Processor has then to display the control tab in cost centre. If the cost centre is blocked against revenue posting, then a new cost centre without revenue posting blocking has to be created. If on the other hand the cost centre is not blocked, then the acceptance request can be created.
-
-k) In the next step, the AR Processor has to create the payment request. In the Initial screen, following parameters are to be defined at the same time: defining document type “DR”, indicate the customer, defining the period, the commitment item, the fund, the funds center, the G/L account, the amount and the cost centre has to be also assigned to the acceptance request.
-
-l) After entering the required parameters, the document has to be saved.
-
-m) The AR processor may now display the document and as a result, the document status is “parked”.
-
-n) Following the same procedure like in the Commitment & Invoice process, the parked posting has to be released, in which the document has to be further customized.
-
-o) In the customization process, the request category has to be assigned to FI document type and the request category “acceptance request” has to be further linked to the document type. Then the processing of request categories has to be controlled and the workflow has to be assigned to the specific request type.          
-
-p) The acceptance request can now be posted and finally the Revenue forecast process is successfully completed by the posting.
+c) If the offer is feasible, the personnel needs & availability has to be checked. After clarifying the availability based on the business resources, the offer has to be created by the commercial employee and the process ends at creating the offer.

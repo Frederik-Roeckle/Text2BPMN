@@ -57,13 +57,11 @@ GRAPH_MAP = {
 
 def main():
     config.set_model(OpenAILLM(model="gpt-4.1-mini",temperature=0))
-    config.set_model(OpenAILLM(model="gpt-4.1-mini",temperature=0))
 
     #input_path = "data/test_cases/example_test_case.jsonl"
     input_path = "data/test_cases/wu_wien.json"
 
     #output_path = "data/test_cases/example_test_case_with_answers.jsonl"
-    #output_path = "data/bpmn/baseline.bpmn"
     
     # TODO: Define logic that the output is appended to the original file
 
@@ -90,26 +88,35 @@ def main():
     print("Processing graph: react")    
 
     
+    with open(input_path, 'r') as file:
+         data = json.load(file)
     modified_lines = []
-    # Read the input lines
+            # Read the input lines
+            #with open(input_path, "r") as f:
+            #    file_content = f.read().strip()
+    for i, item in enumerate(data):
+        print(f"Processing process description {i+1} of {len(data)}")
+
+        input_message = {"role": "user", "content": item["text"]}
+        graph = GRAPH_MAP["react"]()
+
+        final_chunk = None
+        for chunk in graph.stream({"messages": [input_message]}, config={"recursion_limit": 15}):
+            pretty_print_messages(chunk, last_message=True)
+            final_chunk = chunk
+
+        final_messages = final_chunk["supervisor"]["messages"]
+        modified_lines.append(final_messages[-1].content)
     
-    with open(input_path, "r") as f:
-        for line in f:
-            line = line.strip()
-            if not line:
-                continue
+        final_message = final_messages[-1].content
+        # Write the modified lines back as plain text
+        output_path = f"data/bpmn/baseline_{i}.bpmn"
+        with open(output_path, "w") as f:
+            f.write(final_message + "\n")
+    
+        print(f"Results written to {output_path}")
+        render_BPMN(f"data/bpmn/baseline_{i}.bpmn",f"data/img/wu_wien7{i}.png")
 
-            # Build the graph once (outside loop is also fine if it never changes)
-            graph = GRAPH_MAP["react"]()
-
-            final_chunk = None
-            for chunk in graph.stream({"messages": [{"role": "user", "content": line}]}, config={"recursion_limit": 12}):
-                pretty_print_messages(chunk, last_message=True)
-                final_chunk = chunk
-
-            # Extract final message
-            final_messages = final_chunk["supervisor"]["messages"]
-            modified_lines.append(final_messages[-1].content)
 
     
 
@@ -129,12 +136,14 @@ def main():
     #         modified_lines.append(result["messages"][-1].content)
     
     # Write the modified lines back as plain text
-        output_path = f"data/bpmn/baseline_{i}.bpmn"
-        with open(output_path, "w") as f:
-            f.write(final_message + "\n")
+    with open(output_path, "w") as f:
+        for item in modified_lines:
+            f.write(item + "\n")
     
     print(f"Results written to {output_path}")
-    render_BPMN("data/test_cases/baseline.bpmn","data/img/baseline_fs2.png")
+    render_BPMN("data/test_cases/baseline.bpmn","data/img/baseline_sv_1.png")
+
+
 
 
 if __name__ == "__main__":

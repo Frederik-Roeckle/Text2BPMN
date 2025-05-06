@@ -1,3 +1,7 @@
-version https://git-lfs.github.com/spec/v1
-oid sha256:e4c75888fddc2ab387de28376d1d1a8b0ac060be0d816cfba1b51b2fb5e4e112
-size 2070
+[
+    {
+      "id": 0,
+      "text": "Maintenance is required on receipt of an equipment failure by the Maintenance department. Upon receiving this message by the maintenance employee a notification has to be created. After that a maintenance order has to be created based on the notifications. In the next step, the maintenance employee has to plan/process the notification & the order. Then the maintenance work has to be executed in the field. In case the Quality Assessment has not been passed, the maintenance work has to be executed again in the field. Once the Quality Assessment has been passed, the maintenance planner has to complete the maintenance order and to close the notification and finally the maintenance process is successfully completed."
+    }
+  ]
+  
