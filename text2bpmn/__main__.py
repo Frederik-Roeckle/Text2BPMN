@@ -57,12 +57,13 @@ GRAPH_MAP = {
 
 def main():
     config.set_model(OpenAILLM(model="gpt-4.1-mini",temperature=0))
+    config.set_model(OpenAILLM(model="gpt-4.1-mini",temperature=0))
 
     #input_path = "data/test_cases/example_test_case.jsonl"
-    input_path = "data/test_cases/short_bpmn_process.txt"
+    input_path = "data/test_cases/wu_wien.json"
 
     #output_path = "data/test_cases/example_test_case_with_answers.jsonl"
-    output_path = "data/test_cases/baseline.bpmn"
+    #output_path = "data/bpmn/baseline.bpmn"
     
     # TODO: Define logic that the output is appended to the original file
 
@@ -128,9 +129,9 @@ def main():
     #         modified_lines.append(result["messages"][-1].content)
     
     # Write the modified lines back as plain text
-    with open(output_path, "w") as f:
-        for item in modified_lines:
-            f.write(item + "\n")
+        output_path = f"data/bpmn/baseline_{i}.bpmn"
+        with open(output_path, "w") as f:
+            f.write(final_message + "\n")
     
     print(f"Results written to {output_path}")
     render_BPMN("data/test_cases/baseline.bpmn","data/img/baseline_fs2.png")

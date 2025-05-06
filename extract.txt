@@ -1,20 +1,16 @@
 {
-  "process_name": "Employee Hiring Process",
+  "process_name": "Overtime Registration Approval Process",
   "pools": [
     {
-      "name": "Hiring Process",
+      "name": "Company",
       "lanes": [
         {
-          "name": "Hiring Manager",
-          "elements": ["start_1", "task_1"]
+          "name": "Sales Employee",
+          "elements": ["start_1", "task_1", "task_2", "end_declined_1", "end_approved_1"]
         },
         {
-          "name": "Human Resources",
-          "elements": ["task_2", "task_3", "task_4", "task_7", "end_1"]
-        },
-        {
-          "name": "HR Manager",
-          "elements": ["task_5", "gateway_1", "task_6"]
+          "name": "Manager",
+          "elements": ["task_3", "gateway_1"]
         }
       ]
     }
@@ -23,37 +19,12 @@
     {
       "id": "start_1",
       "type": "StartEvent",
-      "name": "Need for Hiring Identified"
+      "name": "Start Overtime Registration"
     },
     {
       "id": "task_1",
       "type": "Task",
-      "name": "Create Job Advertisement/Requisition"
-    },
-    {
-      "id": "task_2",
-      "type": "Task",
-      "name": "Find Best Candidates (CVs & Motivation Letters)"
-    },
-    {
-      "id": "task_3",
-      "type": "Task",
-      "name": "Select Interviewers"
-    },
-    {
-      "id": "task_4",
-      "type": "Task",
-      "name": "Invite Interviewers to Interview"
-    },
-    {
-      "id": "task_5",
-      "type": "Task",
-      "name": "Conduct Interviews"
-    },
-    {
-      "id": "gateway_1",
-      "type": "ExclusiveGateway",
-      "name": "Suitable Candidate Found?"
+      "name": "Create Overtime Registration"
     },
     {
       "id": "task_6",
@@ -63,12 +34,27 @@
     {
       "id": "task_7",
       "type": "Task",
-      "name": "Receive Signed Contract"
+      "name": "Send Overtime Registration to Manager"
     },
     {
-      "id": "end_1",
+      "id": "task_3",
+      "type": "Task",
+      "name": "Evaluate Overtime Registration Request"
+    },
+    {
+      "id": "gateway_1",
+      "type": "ExclusiveGateway",
+      "name": "Manager Decision"
+    },
+    {
+      "id": "end_declined_1",
       "type": "EndEvent",
-      "name": "Person Hired"
+      "name": "Overtime Request Declined"
+    },
+    {
+      "id": "end_approved_1",
+      "type": "EndEvent",
+      "name": "Overtime Request Approved"
     }
   ],
   "sequence_flows": [
@@ -86,36 +72,20 @@
     },
     {
       "source": "task_3",
-      "target": "task_4"
-    },
-    {
-      "source": "task_4",
-      "target": "task_5"
-    },
-    {
-      "source": "task_5",
       "target": "gateway_1"
     },
     {
       "source": "gateway_1",
-      "target": "task_6",
-      "condition": "Yes"
+      "target": "end_declined_1",
+      "condition": "If Manager declines request"
     },
     {
       "source": "gateway_1",
-      "target": "task_2",
-      "condition": "No"
-    },
-    {
-      "source": "task_6",
-      "target": "task_7"
-    },
-    {
-      "source": "task_7",
-      "target": "end_1"
+      "target": "end_approved_1",
+      "condition": "If Manager approves request"
     }
   ]
 }
 
 Textual Description:
-Upon realizing that hiring a person in a specific position is realized by the Hiring Manger, a job advertisement/Requisition has to be created. Then, Human Resources have to find the best candidates for this position using their CVs & motivation letters. After deciding on a group of interviewers, HR has to invite the interviewers on an interview. HR Manager has then to conduct the interviews for the selected candidates. After conducting the interview, if the Manager decided on the suitable one he contacts the HR to set up Payroll and to contact the Interviewer and send him an offer/ contract to be signed by the potential employee. After signing the contract, HR team receives the signed contract and the process end by hiring the person at this level. If on the other hand, the Manager didn’t find a suitable candidate between the interviewers, the process repeats itself at the stage to find candidates.
+a) Overtime Registration needs to be requested from an employee in the sales department to the responsible Manager. b) First, the employee needs to create an overtime registration and also needs to send this registration to his Manager. c) Upon receipt of this request, the Manager evaluates/estimates this overtime registration request. d) On this level, the Manager may either decline the registration request and then the employee will receive the declined request, or he may approve the request and at this stage the process ends for both choices.

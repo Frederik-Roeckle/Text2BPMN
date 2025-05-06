@@ -1,187 +1,211 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<semantic:definitions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:semantic="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" id="Definitions_HiringProcess" targetNamespace="http://example.com/bpmn/hiring-process">
-  <semantic:collaboration id="Collaboration_Hiring">
-    <semantic:participant id="Participant_HiringManager" name="Hiring Manager" processRef="Process_Hiring"/>
-    <semantic:participant id="Participant_HR" name="Human Resources" processRef="Process_HR"/>
+<?xml version="1.0" standalone="yes"?>
+<semantic:definitions id="OvertimeRegistrationProcess"
+    targetNamespace="http://example.com/bpmn/overtime-registration"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:semantic="http://www.omg.org/spec/BPMN/20100524/MODEL"
+    xmlns:di="http://www.omg.org/spec/DD/20100524/DI"
+    xmlns:dc="http://www.omg.org/spec/DD/20100524/DC"
+    xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI">
+
+  <semantic:collaboration id="collab_overtimeRegistration">
+    <semantic:participant id="participant_employee" name="Employee (Sales Department)" processRef="process_employee"/>
+    <semantic:participant id="participant_manager" name="Manager" processRef="process_manager"/>
   </semantic:collaboration>
-  <semantic:process id="Process_Hiring" isExecutable="true">
-    <semantic:laneSet id="LaneSet_HiringManager">
-      <semantic:lane id="Lane_HiringManager" name="Hiring Manager">
-        <semantic:flowNodeRef>Start_RealizeHiringNeed</semantic:flowNodeRef>
-        <semantic:flowNodeRef>Task_CreateJobRequisition</semantic:flowNodeRef>
-        <semantic:flowNodeRef>Task_ConductInterviews</semantic:flowNodeRef>
-        <semantic:flowNodeRef>Gateway_SuitableCandidate</semantic:flowNodeRef>
-        <semantic:flowNodeRef>Task_ContactHRForOffer</semantic:flowNodeRef>
-        <semantic:flowNodeRef>End_HiringComplete</semantic:flowNodeRef>
+
+  <semantic:process id="process_employee" isExecutable="true">
+    <semantic:laneSet id="laneSet_employee">
+      <semantic:lane id="lane_employee" name="Employee (Sales Department)">
+        <semantic:flowNodeRef>start_employee</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_createOvertimeRegistration</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_sendOvertimeRegistration</semantic:flowNodeRef>
+        <semantic:flowNodeRef>receive_declinedRequest</semantic:flowNodeRef>
+        <semantic:flowNodeRef>end_employee</semantic:flowNodeRef>
       </semantic:lane>
     </semantic:laneSet>
-    <semantic:startEvent id="Start_RealizeHiringNeed" name="Realize Hiring Need">
-      <semantic:outgoing>Flow_RealizeToCreateReq</semantic:outgoing>
+
+    <semantic:startEvent id="start_employee" name="Start Overtime Registration Request">
+      <semantic:outgoing>flow_start_create</semantic:outgoing>
     </semantic:startEvent>
-    <semantic:task id="Task_CreateJobRequisition" name="Create Job Requisition">
-      <semantic:incoming>Flow_RealizeToCreateReq</semantic:incoming>
-      <semantic:outgoing>Flow_CreateReqToHR</semantic:outgoing>
+
+    <semantic:task id="task_createOvertimeRegistration" name="Create Overtime Registration">
+      <semantic:incoming>flow_start_create</semantic:incoming>
+      <semantic:outgoing>flow_create_send</semantic:outgoing>
     </semantic:task>
-    <semantic:task id="Task_ConductInterviews" name="Conduct Interviews">
-      <semantic:incoming>Flow_InviteToConduct</semantic:incoming>
-      <semantic:outgoing>Flow_ConductToDecision</semantic:outgoing>
+
+    <semantic:task id="task_sendOvertimeRegistration" name="Send Overtime Registration to Manager">
+      <semantic:incoming>flow_create_send</semantic:incoming>
+      <semantic:outgoing>flow_send_end</semantic:outgoing>
     </semantic:task>
-    <semantic:exclusiveGateway id="Gateway_SuitableCandidate" name="Suitable Candidate?">
-      <semantic:incoming>Flow_ConductToDecision</semantic:incoming>
-      <semantic:outgoing>Flow_DecisionToContactHR</semantic:outgoing>
-      <semantic:outgoing>Flow_DecisionToFindCandidates</semantic:outgoing>
-    </semantic:exclusiveGateway>
-    <semantic:task id="Task_ContactHRForOffer" name="Contact HR for Offer">
-      <semantic:incoming>Flow_DecisionToContactHR</semantic:incoming>
-      <semantic:outgoing>Flow_ContactHRToSetPayroll</semantic:outgoing>
-    </semantic:task>
-    <semantic:endEvent id="End_HiringComplete" name="Hiring Complete">
-      <semantic:incoming>Flow_ReceiveSignedToEnd</semantic:incoming>
+
+    <semantic:intermediateCatchEvent id="receive_declinedRequest" name="Receive Declined Overtime Registration">
+      <semantic:incoming>flow_declined_employee</semantic:incoming>
+      <semantic:outgoing>flow_declined_end</semantic:outgoing>
+    </semantic:intermediateCatchEvent>
+
+    <semantic:endEvent id="end_employee" name="End Overtime Registration Process">
+      <semantic:incoming>flow_send_end</semantic:incoming>
+      <semantic:incoming>flow_declined_end</semantic:incoming>
     </semantic:endEvent>
-    <semantic:sequenceFlow id="Flow_RealizeToCreateReq" sourceRef="Start_RealizeHiringNeed" targetRef="Task_CreateJobRequisition"/>
-    <semantic:sequenceFlow id="Flow_CreateReqToHR" sourceRef="Task_CreateJobRequisition" targetRef="Task_FindBestCandidates" />
-    <semantic:sequenceFlow id="Flow_InviteToConduct" sourceRef="Task_InviteInterviewers" targetRef="Task_ConductInterviews"/>
-    <semantic:sequenceFlow id="Flow_ConductToDecision" sourceRef="Task_ConductInterviews" targetRef="Gateway_SuitableCandidate"/>
-    <semantic:sequenceFlow id="Flow_DecisionToContactHR" sourceRef="Gateway_SuitableCandidate" targetRef="Task_ContactHRForOffer"/>
-    <semantic:sequenceFlow id="Flow_DecisionToFindCandidates" sourceRef="Gateway_SuitableCandidate" targetRef="Task_FindBestCandidates"/>
-    <semantic:sequenceFlow id="Flow_ContactHRToSetPayroll" sourceRef="Task_ContactHRForOffer" targetRef="Task_SetupPayrollAndSendOffer"/>
-    <semantic:sequenceFlow id="Flow_ReceiveSignedToEnd" sourceRef="Task_ReceiveSignedContract" targetRef="End_HiringComplete"/>
+
+    <semantic:sequenceFlow id="flow_start_create" sourceRef="start_employee" targetRef="task_createOvertimeRegistration"/>
+    <semantic:sequenceFlow id="flow_create_send" sourceRef="task_createOvertimeRegistration" targetRef="task_sendOvertimeRegistration"/>
+    <semantic:sequenceFlow id="flow_send_end" sourceRef="task_sendOvertimeRegistration" targetRef="end_employee"/>
+    <semantic:sequenceFlow id="flow_declined_employee" sourceRef="receive_declinedRequest" targetRef="receive_declinedRequest"/>
+    <semantic:sequenceFlow id="flow_declined_end" sourceRef="receive_declinedRequest" targetRef="end_employee"/>
   </semantic:process>
-  <semantic:process id="Process_HR" isExecutable="true">
-    <semantic:laneSet id="LaneSet_HR">
-      <semantic:lane id="Lane_HR" name="HR Team">
-        <semantic:flowNodeRef>Task_FindBestCandidates</semantic:flowNodeRef>
-        <semantic:flowNodeRef>Task_DecideInterviewers</semantic:flowNodeRef>
-        <semantic:flowNodeRef>Task_InviteInterviewers</semantic:flowNodeRef>
-        <semantic:flowNodeRef>Task_SetupPayrollAndSendOffer</semantic:flowNodeRef>
-        <semantic:flowNodeRef>Task_ReceiveSignedContract</semantic:flowNodeRef>
+
+  <semantic:process id="process_manager" isExecutable="true">
+    <semantic:laneSet id="laneSet_manager">
+      <semantic:lane id="lane_manager" name="Manager">
+        <semantic:flowNodeRef>receive_overtimeRequest</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_evaluateOvertimeRequest</semantic:flowNodeRef>
+        <semantic:flowNodeRef>gateway_decisionApproval</semantic:flowNodeRef>
+        <semantic:flowNodeRef>end_approved</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_sendDeclineNotification</semantic:flowNodeRef>
+        <semantic:flowNodeRef>end_declined</semantic:flowNodeRef>
       </semantic:lane>
     </semantic:laneSet>
-    <semantic:task id="Task_FindBestCandidates" name="Find Best Candidates">
-      <semantic:incoming>Flow_CreateReqToHR</semantic:incoming>
-      <semantic:incoming>Flow_DecisionToFindCandidates</semantic:incoming>
-      <semantic:outgoing>Flow_FindToDecideInterviewers</semantic:outgoing>
+
+    <semantic:intermediateCatchEvent id="receive_overtimeRequest" name="Receive Overtime Registration Request">
+      <semantic:outgoing>flow_receive_evaluate</semantic:outgoing>
+    </semantic:intermediateCatchEvent>
+
+    <semantic:task id="task_evaluateOvertimeRequest" name="Evaluate Overtime Registration Request">
+      <semantic:incoming>flow_receive_evaluate</semantic:incoming>
+      <semantic:outgoing>flow_evaluate_decision</semantic:outgoing>
     </semantic:task>
-    <semantic:task id="Task_DecideInterviewers" name="Decide Interviewers">
-      <semantic:incoming>Flow_FindToDecideInterviewers</semantic:incoming>
-      <semantic:outgoing>Flow_DecideToInvite</semantic:outgoing>
+
+    <semantic:exclusiveGateway id="gateway_decisionApproval" name="Approve or Decline Overtime Request?">
+      <semantic:incoming>flow_evaluate_decision</semantic:incoming>
+      <semantic:outgoing>flow_approved_end</semantic:outgoing>
+      <semantic:outgoing>flow_declined_notify</semantic:outgoing>
+    </semantic:exclusiveGateway>
+
+    <semantic:endEvent id="end_approved" name="End Process - Request Approved">
+      <semantic:incoming>flow_approved_end</semantic:incoming>
+    </semantic:endEvent>
+
+    <semantic:task id="task_sendDeclineNotification" name="Send Decline Notification to Employee">
+      <semantic:incoming>flow_declined_notify</semantic:incoming>
+      <semantic:outgoing>flow_notify_end</semantic:outgoing>
     </semantic:task>
-    <semantic:task id="Task_InviteInterviewers" name="Invite Interviewers">
-      <semantic:incoming>Flow_DecideToInvite</semantic:incoming>
-      <semantic:outgoing>Flow_InviteToConduct</semantic:outgoing>
-    </semantic:task>
-    <semantic:task id="Task_SetupPayrollAndSendOffer" name="Setup Payroll and Send Offer">
-      <semantic:incoming>Flow_ContactHRToSetPayroll</semantic:incoming>
-      <semantic:outgoing>Flow_SendOfferToReceiveSigned</semantic:outgoing>
-    </semantic:task>
-    <semantic:task id="Task_ReceiveSignedContract" name="Receive Signed Contract">
-      <semantic:incoming>Flow_SendOfferToReceiveSigned</semantic:incoming>
-      <semantic:outgoing>Flow_ReceiveSignedToEnd</semantic:outgoing>
-    </semantic:task>
-    <semantic:sequenceFlow id="Flow_FindToDecideInterviewers" sourceRef="Task_FindBestCandidates" targetRef="Task_DecideInterviewers"/>
-    <semantic:sequenceFlow id="Flow_DecideToInvite" sourceRef="Task_DecideInterviewers" targetRef="Task_InviteInterviewers"/>
-    <semantic:sequenceFlow id="Flow_SendOfferToReceiveSigned" sourceRef="Task_SetupPayrollAndSendOffer" targetRef="Task_ReceiveSignedContract"/>
+
+    <semantic:endEvent id="end_declined" name="End Process - Request Declined">
+      <semantic:incoming>flow_notify_end</semantic:incoming>
+    </semantic:endEvent>
+
+    <semantic:sequenceFlow id="flow_receive_evaluate" sourceRef="receive_overtimeRequest" targetRef="task_evaluateOvertimeRequest"/>
+    <semantic:sequenceFlow id="flow_evaluate_decision" sourceRef="task_evaluateOvertimeRequest" targetRef="gateway_decisionApproval"/>
+    <semantic:sequenceFlow id="flow_approved_end" sourceRef="gateway_decisionApproval" targetRef="end_approved"/>
+    <semantic:sequenceFlow id="flow_declined_notify" sourceRef="gateway_decisionApproval" targetRef="task_sendDeclineNotification"/>
+    <semantic:sequenceFlow id="flow_notify_end" sourceRef="task_sendDeclineNotification" targetRef="end_declined"/>
   </semantic:process>
-  <bpmndi:BPMNDiagram id="BPMNDiagram_HiringProcess" name="Hiring Process Diagram" resolution="96.0">
-    <bpmndi:BPMNPlane bpmnElement="Collaboration_Hiring">
-      <bpmndi:BPMNShape id="Participant_HiringManager_shape" bpmnElement="Participant_HiringManager" isHorizontal="true">
-        <dc:Bounds x="40" y="40" width="1200" height="220"/>
+
+  <bpmndi:BPMNDiagram id="BPMNDiagram_overtimeRegistration" name="Overtime Registration Diagram" resolution="96.0">
+    <bpmndi:BPMNPlane bpmnElement="collab_overtimeRegistration">
+
+      <bpmndi:BPMNShape id="participant_employee_shape" bpmnElement="participant_employee" isHorizontal="true">
+        <dc:Bounds x="20" y="20" width="450" height="300"/>
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Participant_HR_shape" bpmnElement="Participant_HR" isHorizontal="true">
-        <dc:Bounds x="40" y="260" width="1200" height="220"/>
+
+      <bpmndi:BPMNShape id="start_employee_shape" bpmnElement="start_employee">
+        <dc:Bounds x="60" y="100" width="36" height="36"/>
       </bpmndi:BPMNShape>
-      <!-- Hiring Manager Lane -->
-      <bpmndi:BPMNShape id="Lane_HiringManager_shape" bpmnElement="Lane_HiringManager" isHorizontal="true">
-        <dc:Bounds x="70" y="40" width="1170" height="110"/>
+
+      <bpmndi:BPMNShape id="task_createOvertimeRegistration_shape" bpmnElement="task_createOvertimeRegistration">
+        <dc:Bounds x="130" y="90" width="140" height="56"/>
       </bpmndi:BPMNShape>
-      <!-- HR Lane -->
-      <bpmndi:BPMNShape id="Lane_HR_shape" bpmnElement="Lane_HR" isHorizontal="true">
-        <dc:Bounds x="70" y="260" width="1170" height="110"/>
+
+      <bpmndi:BPMNShape id="task_sendOvertimeRegistration_shape" bpmnElement="task_sendOvertimeRegistration">
+        <dc:Bounds x="290" y="90" width="160" height="56"/>
       </bpmndi:BPMNShape>
-      <!-- Hiring Manager Nodes -->
-      <bpmndi:BPMNShape id="Start_RealizeHiringNeed_shape" bpmnElement="Start_RealizeHiringNeed">
-        <dc:Bounds x="120" y="80" width="36" height="36"/>
+
+      <bpmndi:BPMNShape id="receive_declinedRequest_shape" bpmnElement="receive_declinedRequest">
+        <dc:Bounds x="180" y="190" width="36" height="36"/>
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Task_CreateJobRequisition_shape" bpmnElement="Task_CreateJobRequisition">
-        <dc:Bounds x="200" y="70" width="120" height="56"/>
+
+      <bpmndi:BPMNShape id="end_employee_shape" bpmnElement="end_employee">
+        <dc:Bounds x="370" y="190" width="36" height="36"/>
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Task_ConductInterviews_shape" bpmnElement="Task_ConductInterviews">
-        <dc:Bounds x="520" y="70" width="120" height="56"/>
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Gateway_SuitableCandidate_shape" bpmnElement="Gateway_SuitableCandidate" isMarkerVisible="true">
-        <dc:Bounds x="700" y="80" width="50" height="50"/>
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Task_ContactHRForOffer_shape" bpmnElement="Task_ContactHRForOffer">
-        <dc:Bounds x="800" y="70" width="120" height="56"/>
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="End_HiringComplete_shape" bpmnElement="End_HiringComplete">
-        <dc:Bounds x="1100" y="90" width="36" height="36"/>
-      </bpmndi:BPMNShape>
-      <!-- HR Nodes -->
-      <bpmndi:BPMNShape id="Task_FindBestCandidates_shape" bpmnElement="Task_FindBestCandidates">
-        <dc:Bounds x="360" y="290" width="120" height="56"/>
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Task_DecideInterviewers_shape" bpmnElement="Task_DecideInterviewers">
-        <dc:Bounds x="500" y="290" width="120" height="56"/>
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Task_InviteInterviewers_shape" bpmnElement="Task_InviteInterviewers">
-        <dc:Bounds x="640" y="290" width="120" height="56"/>
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Task_SetupPayrollAndSendOffer_shape" bpmnElement="Task_SetupPayrollAndSendOffer">
-        <dc:Bounds x="950" y="290" width="120" height="56"/>
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Task_ReceiveSignedContract_shape" bpmnElement="Task_ReceiveSignedContract">
-        <dc:Bounds x="1080" y="290" width="120" height="56"/>
-      </bpmndi:BPMNShape>
-      <!-- Sequence Flows -->
-      <bpmndi:BPMNEdge id="Flow_RealizeToCreateReq_edge" bpmnElement="Flow_RealizeToCreateReq">
-        <di:waypoint x="156" y="98"/>
-        <di:waypoint x="200" y="98"/>
+
+      <bpmndi:BPMNEdge id="flow_start_create_edge" bpmnElement="flow_start_create">
+        <di:waypoint x="96" y="118"/>
+        <di:waypoint x="130" y="118"/>
       </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Flow_CreateReqToHR_edge" bpmnElement="Flow_CreateReqToHR">
-        <di:waypoint x="320" y="98"/>
-        <di:waypoint x="360" y="318"/>
+
+      <bpmndi:BPMNEdge id="flow_create_send_edge" bpmnElement="flow_create_send">
+        <di:waypoint x="270" y="118"/>
+        <di:waypoint x="290" y="118"/>
       </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Flow_FindToDecideInterviewers_edge" bpmnElement="Flow_FindToDecideInterviewers">
-        <di:waypoint x="480" y="318"/>
-        <di:waypoint x="500" y="318"/>
+
+      <bpmndi:BPMNEdge id="flow_send_end_edge" bpmnElement="flow_send_end">
+        <di:waypoint x="450" y="118"/>
+        <di:waypoint x="370" y="208"/>
       </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Flow_DecideToInvite_edge" bpmnElement="Flow_DecideToInvite">
-        <di:waypoint x="620" y="318"/>
-        <di:waypoint x="640" y="318"/>
+
+      <bpmndi:BPMNEdge id="flow_declined_employee_edge" bpmnElement="flow_declined_employee">
+        <di:waypoint x="198" y="208"/>
+        <di:waypoint x="198" y="208"/>
       </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Flow_InviteToConduct_edge" bpmnElement="Flow_InviteToConduct">
-        <di:waypoint x="760" y="318"/>
-        <di:waypoint x="760" y="98"/>
-        <di:waypoint x="520" y="98"/>
+
+      <bpmndi:BPMNEdge id="flow_declined_end_edge" bpmnElement="flow_declined_end">
+        <di:waypoint x="216" y="208"/>
+        <di:waypoint x="370" y="208"/>
       </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Flow_ConductToDecision_edge" bpmnElement="Flow_ConductToDecision">
-        <di:waypoint x="640" y="98"/>
-        <di:waypoint x="700" y="105"/>
+
+      <bpmndi:BPMNShape id="participant_manager_shape" bpmnElement="participant_manager" isHorizontal="true">
+        <dc:Bounds x="20" y="350" width="450" height="300"/>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="receive_overtimeRequest_shape" bpmnElement="receive_overtimeRequest">
+        <dc:Bounds x="60" y="400" width="36" height="36"/>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="task_evaluateOvertimeRequest_shape" bpmnElement="task_evaluateOvertimeRequest">
+        <dc:Bounds x="130" y="390" width="180" height="56"/>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="gateway_decisionApproval_shape" bpmnElement="gateway_decisionApproval" isMarkerVisible="true">
+        <dc:Bounds x="340" y="395" width="50" height="50"/>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="end_approved_shape" bpmnElement="end_approved">
+        <dc:Bounds x="430" y="370" width="36" height="36"/>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="task_sendDeclineNotification_shape" bpmnElement="task_sendDeclineNotification">
+        <dc:Bounds x="430" y="460" width="180" height="56"/>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="end_declined_shape" bpmnElement="end_declined">
+        <dc:Bounds x="640" y="470" width="36" height="36"/>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNEdge id="flow_receive_evaluate_edge" bpmnElement="flow_receive_evaluate">
+        <di:waypoint x="96" y="418"/>
+        <di:waypoint x="130" y="418"/>
       </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Flow_DecisionToContactHR_edge" bpmnElement="Flow_DecisionToContactHR">
-        <di:waypoint x="750" y="105"/>
-        <di:waypoint x="800" y="98"/>
+
+      <bpmndi:BPMNEdge id="flow_evaluate_decision_edge" bpmnElement="flow_evaluate_decision">
+        <di:waypoint x="310" y="418"/>
+        <di:waypoint x="340" y="420"/>
       </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Flow_DecisionToFindCandidates_edge" bpmnElement="Flow_DecisionToFindCandidates">
-        <di:waypoint x="725" y="130"/>
-        <di:waypoint x="725" y="318"/>
-        <di:waypoint x="360" y="318"/>
+
+      <bpmndi:BPMNEdge id="flow_approved_end_edge" bpmnElement="flow_approved_end">
+        <di:waypoint x="390" y="420"/>
+        <di:waypoint x="430" y="388"/>
       </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Flow_ContactHRToSetPayroll_edge" bpmnElement="Flow_ContactHRToSetPayroll">
-        <di:waypoint x="920" y="98"/>
-        <di:waypoint x="1010" y="98"/>
-        <di:waypoint x="1010" y="290"/>
-        <di:waypoint x="950" y="318"/>
+
+      <bpmndi:BPMNEdge id="flow_declined_notify_edge" bpmnElement="flow_declined_notify">
+        <di:waypoint x="390" y="445"/>
+        <di:waypoint x="430" y="488"/>
       </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Flow_SendOfferToReceiveSigned_edge" bpmnElement="Flow_SendOfferToReceiveSigned">
-        <di:waypoint x="1070" y="318"/>
-        <di:waypoint x="1080" y="318"/>
+
+      <bpmndi:BPMNEdge id="flow_notify_end_edge" bpmnElement="flow_notify_end">
+        <di:waypoint x="610" y="488"/>
+        <di:waypoint x="640" y="488"/>
       </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Flow_ReceiveSignedToEnd_edge" bpmnElement="Flow_ReceiveSignedToEnd">
-        <di:waypoint x="1200" y="318"/>
-        <di:waypoint x="1118" y="108"/>
-      </bpmndi:BPMNEdge>
+
     </bpmndi:BPMNPlane>
   </bpmndi:BPMNDiagram>
 </semantic:definitions>

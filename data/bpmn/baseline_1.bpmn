@@ -1,0 +1,253 @@
+<?xml version="1.0" standalone="yes"?>
+<semantic:definitions id="BookLendingProcess"
+    targetNamespace="http://example.com/bpmn/book-lending"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:semantic="http://www.omg.org/spec/BPMN/20100524/MODEL"
+    xmlns:di="http://www.omg.org/spec/DD/20100524/DI"
+    xmlns:dc="http://www.omg.org/spec/DD/20100524/DC"
+    xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI">
+
+  <semantic:collaboration id="collab_bookLending">
+    <semantic:participant id="participant_student" name="Student" processRef="process_student"/>
+    <semantic:participant id="participant_library" name="Library System" processRef="process_library"/>
+  </semantic:collaboration>
+
+  <semantic:process id="process_student" isExecutable="true">
+    <semantic:laneSet id="laneSet_student">
+      <semantic:lane id="lane_student" name="Student">
+        <semantic:flowNodeRef>start_lending</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_request_lend</semantic:flowNodeRef>
+        <semantic:flowNodeRef>gateway_book_available</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_submit_order</semantic:flowNodeRef>
+        <semantic:flowNodeRef>end_book_lent</semantic:flowNodeRef>
+        <semantic:flowNodeRef>gateway_loan_duration</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_cancel_request</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_hold_request</semantic:flowNodeRef>
+        <semantic:flowNodeRef>intermediate_wait_2weeks</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_receive_availability</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_get_book</semantic:flowNodeRef>
+        <semantic:flowNodeRef>end_book_lent_after_hold</semantic:flowNodeRef>
+      </semantic:lane>
+    </semantic:laneSet>
+
+    <semantic:startEvent id="start_lending" name="Start Book Lending Process">
+      <semantic:outgoing>flow_1</semantic:outgoing>
+    </semantic:startEvent>
+
+    <semantic:task id="task_request_lend" name="Request to Lend Book">
+      <semantic:incoming>flow_1</semantic:incoming>
+      <semantic:outgoing>flow_2</semantic:outgoing>
+    </semantic:task>
+
+    <semantic:exclusiveGateway id="gateway_book_available" name="Is Book Available?">
+      <semantic:incoming>flow_3</semantic:incoming>
+      <semantic:outgoing>flow_4</semantic:outgoing>
+      <semantic:outgoing>flow_5</semantic:outgoing>
+    </semantic:exclusiveGateway>
+
+    <semantic:task id="task_submit_order" name="Submit Order to Lend Book">
+      <semantic:incoming>flow_4</semantic:incoming>
+      <semantic:outgoing>flow_6</semantic:outgoing>
+    </semantic:task>
+
+    <semantic:endEvent id="end_book_lent" name="Book Lent">
+      <semantic:incoming>flow_6</semantic:incoming>
+      <semantic:incoming>flow_9</semantic:incoming>
+      <semantic:incoming>flow_8</semantic:incoming>
+    </semantic:endEvent>
+
+    <semantic:exclusiveGateway id="gateway_loan_duration" name="Loan Duration?">
+      <semantic:incoming>flow_5</semantic:incoming>
+      <semantic:outgoing>flow_7</semantic:outgoing>
+      <semantic:outgoing>flow_10</semantic:outgoing>
+    </semantic:exclusiveGateway>
+
+    <semantic:task id="task_cancel_request" name="Cancel Request">
+      <semantic:incoming>flow_7</semantic:incoming>
+      <semantic:outgoing>flow_8</semantic:outgoing>
+    </semantic:task>
+
+    <semantic:task id="task_hold_request" name="Hold Request for Next Reservation">
+      <semantic:incoming>flow_10</semantic:incoming>
+      <semantic:outgoing>flow_11</semantic:outgoing>
+    </semantic:task>
+
+    <semantic:intermediateCatchEvent id="intermediate_wait_2weeks" name="Wait 2 Weeks">
+      <semantic:incoming>flow_11</semantic:incoming>
+      <semantic:outgoing>flow_12</semantic:outgoing>
+    </semantic:intermediateCatchEvent>
+
+    <semantic:task id="task_receive_availability" name="Receive Book Availability Status">
+      <semantic:incoming>flow_12</semantic:incoming>
+      <semantic:outgoing>flow_13</semantic:outgoing>
+    </semantic:task>
+
+    <semantic:task id="task_get_book" name="Get Book">
+      <semantic:incoming>flow_13</semantic:incoming>
+      <semantic:outgoing>flow_9</semantic:outgoing>
+    </semantic:task>
+
+    <semantic:sequenceFlow id="flow_1" sourceRef="start_lending" targetRef="task_request_lend"/>
+    <semantic:sequenceFlow id="flow_2" sourceRef="task_request_lend" targetRef="process_library_task_send_status"/>
+  </semantic:process>
+
+  <semantic:process id="process_library" isExecutable="true">
+    <semantic:laneSet id="laneSet_library">
+      <semantic:lane id="lane_library" name="Library System">
+        <semantic:flowNodeRef>process_library_task_send_status</semantic:flowNodeRef>
+      </semantic:lane>
+    </semantic:laneSet>
+
+    <semantic:task id="process_library_task_send_status" name="Send Book Status Reply">
+      <semantic:incoming>flow_2</semantic:incoming>
+      <semantic:outgoing>flow_3</semantic:outgoing>
+    </semantic:task>
+
+    <semantic:sequenceFlow id="flow_3" sourceRef="process_library_task_send_status" targetRef="gateway_book_available"/>
+  </semantic:process>
+
+  <semantic:sequenceFlow id="flow_4" sourceRef="gateway_book_available" targetRef="task_submit_order"/>
+  <semantic:sequenceFlow id="flow_5" sourceRef="gateway_book_available" targetRef="gateway_loan_duration"/>
+  <semantic:sequenceFlow id="flow_6" sourceRef="task_submit_order" targetRef="end_book_lent"/>
+  <semantic:sequenceFlow id="flow_7" sourceRef="gateway_loan_duration" targetRef="task_cancel_request"/>
+  <semantic:sequenceFlow id="flow_8" sourceRef="task_cancel_request" targetRef="end_book_lent"/>
+  <semantic:sequenceFlow id="flow_9" sourceRef="task_get_book" targetRef="end_book_lent"/>
+  <semantic:sequenceFlow id="flow_10" sourceRef="gateway_loan_duration" targetRef="task_hold_request"/>
+  <semantic:sequenceFlow id="flow_11" sourceRef="task_hold_request" targetRef="intermediate_wait_2weeks"/>
+  <semantic:sequenceFlow id="flow_12" sourceRef="intermediate_wait_2weeks" targetRef="task_receive_availability"/>
+  <semantic:sequenceFlow id="flow_13" sourceRef="task_receive_availability" targetRef="task_get_book"/>
+
+  <bpmndi:BPMNDiagram id="BPMNDiagram_bookLending" name="Book Lending Diagram" resolution="96.0">
+    <bpmndi:BPMNPlane bpmnElement="collab_bookLending">
+
+      <bpmndi:BPMNShape id="participant_student_shape" bpmnElement="participant_student" isHorizontal="true">
+        <dc:Bounds x="20" y="20" width="600" height="400"/>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="participant_library_shape" bpmnElement="participant_library" isHorizontal="true">
+        <dc:Bounds x="20" y="440" width="600" height="120"/>
+      </bpmndi:BPMNShape>
+
+      <!-- Student Lane -->
+      <bpmndi:BPMNShape id="start_lending_shape" bpmnElement="start_lending">
+        <dc:Bounds x="100" y="60" width="36" height="36"/>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="task_request_lend_shape" bpmnElement="task_request_lend">
+        <dc:Bounds x="160" y="50" width="120" height="60"/>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="gateway_book_available_shape" bpmnElement="gateway_book_available" isMarkerVisible="true">
+        <dc:Bounds x="320" y="55" width="50" height="50"/>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="task_submit_order_shape" bpmnElement="task_submit_order">
+        <dc:Bounds x="400" y="40" width="140" height="60"/>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="end_book_lent_shape" bpmnElement="end_book_lent">
+        <dc:Bounds x="560" y="65" width="36" height="36"/>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="gateway_loan_duration_shape" bpmnElement="gateway_loan_duration" isMarkerVisible="true">
+        <dc:Bounds x="400" y="130" width="50" height="50"/>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="task_cancel_request_shape" bpmnElement="task_cancel_request">
+        <dc:Bounds x="470" y="120" width="130" height="60"/>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="task_hold_request_shape" bpmnElement="task_hold_request">
+        <dc:Bounds x="470" y="190" width="160" height="60"/>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="intermediate_wait_2weeks_shape" bpmnElement="intermediate_wait_2weeks">
+        <dc:Bounds x="660" y="200" width="36" height="36"/>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="task_receive_availability_shape" bpmnElement="task_receive_availability">
+        <dc:Bounds x="720" y="190" width="160" height="60"/>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="task_get_book_shape" bpmnElement="task_get_book">
+        <dc:Bounds x="900" y="190" width="120" height="60"/>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="end_book_lent_after_hold_shape" bpmnElement="end_book_lent_after_hold">
+        <dc:Bounds x="1040" y="210" width="36" height="36"/>
+      </bpmndi:BPMNShape>
+
+      <!-- Library System Lane -->
+      <bpmndi:BPMNShape id="process_library_task_send_status_shape" bpmnElement="process_library_task_send_status">
+        <dc:Bounds x="160" y="480" width="160" height="60"/>
+      </bpmndi:BPMNShape>
+
+      <!-- Sequence Flows -->
+      <bpmndi:BPMNEdge id="flow_1_edge" bpmnElement="flow_1">
+        <di:waypoint x="136" y="78"/>
+        <di:waypoint x="160" y="80"/>
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="flow_2_edge" bpmnElement="flow_2">
+        <di:waypoint x="280" y="80"/>
+        <di:waypoint x="160" y="510"/>
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="flow_3_edge" bpmnElement="flow_3">
+        <di:waypoint x="320" y="510"/>
+        <di:waypoint x="345" y="80"/>
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="flow_4_edge" bpmnElement="flow_4">
+        <di:waypoint x="370" y="80"/>
+        <di:waypoint x="400" y="70"/>
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="flow_5_edge" bpmnElement="flow_5">
+        <di:waypoint x="370" y="105"/>
+        <di:waypoint x="400" y="155"/>
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="flow_6_edge" bpmnElement="flow_6">
+        <di:waypoint x="540" y="70"/>
+        <di:waypoint x="560" y="83"/>
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="flow_7_edge" bpmnElement="flow_7">
+        <di:waypoint x="425" y="155"/>
+        <di:waypoint x="470" y="150"/>
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="flow_8_edge" bpmnElement="flow_8">
+        <di:waypoint x="600" y="150"/>
+        <di:waypoint x="560" y="83"/>
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="flow_9_edge" bpmnElement="flow_9">
+        <di:waypoint x="1020" y="220"/>
+        <di:waypoint x="560" y="83"/>
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="flow_10_edge" bpmnElement="flow_10">
+        <di:waypoint x="425" y="180"/>
+        <di:waypoint x="470" y="220"/>
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="flow_11_edge" bpmnElement="flow_11">
+        <di:waypoint x="630" y="220"/>
+        <di:waypoint x="660" y="218"/>
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="flow_12_edge" bpmnElement="flow_12">
+        <di:waypoint x="696" y="218"/>
+        <di:waypoint x="720" y="220"/>
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="flow_13_edge" bpmnElement="flow_13">
+        <di:waypoint x="880" y="220"/>
+        <di:waypoint x="900" y="220"/>
+      </bpmndi:BPMNEdge>
+
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</semantic:definitions>
