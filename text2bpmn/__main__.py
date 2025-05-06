@@ -1,5 +1,4 @@
-from graphs import baseline
-from graphs import react
+from graphs import baseline,react,two_agent_graph
 from utils import render_BPMN
 import json
 #from models import MistralLLM
@@ -8,6 +7,7 @@ import config
 
 GRAPH_MAP = {
     "base_line": baseline.build_graph,
+    "two_agent_graph": two_agent_graph.build_graph,
     "react": react.build_graph
 }
 
