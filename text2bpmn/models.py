@@ -1,5 +1,6 @@
 from langchain_mistralai import ChatMistralAI
 from langchain_openai import ChatOpenAI
+from langchain_google_genai import ChatGoogleGenerativeAI
 
 import os
 from dotenv import load_dotenv
@@ -23,5 +24,13 @@ class OpenAILLM(ChatOpenAI):
         api_key = os.getenv("OPENAI_API_KEY")
         if not api_key:
             raise ValueError("Missing OPENAI_API_KEY in environment variables")
+
+        super().__init__(api_key=api_key, *args, **kwargs)
+
+class GeminiLLM(ChatGoogleGenerativeAI):
+    def __init__(self, *args, **kwargs):
+        api_key = os.getenv("GOOGLE_API_KEY")
+        if not api_key:
+            raise ValueError("Missing GOOGLE_API_KEY in environment variables")
 
         super().__init__(api_key=api_key, *args, **kwargs)

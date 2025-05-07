@@ -1,148 +1,178 @@
-<?xml version="1.0" standalone="yes"?>
-<semantic:definitions id="OvertimeRegistrationProcess"
-    targetNamespace="http://example.com/bpmn/overtime-registration"
-    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xmlns:semantic="http://www.omg.org/spec/BPMN/20100524/MODEL"
-    xmlns:di="http://www.omg.org/spec/DD/20100524/DI"
-    xmlns:dc="http://www.omg.org/spec/DD/20100524/DC"
-    xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI">
-
-  <semantic:collaboration id="collab_overtimeRegistration">
-    <semantic:participant id="participant_company" name="Company" processRef="process_overtimeRegistration"/>
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<semantic:definitions xmlns:semantic="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:omgdc="http://www.omg.org/spec/DD/20100524/DC" xmlns:omgdi="http://www.omg.org/spec/DD/20100524/DI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" id="overtimeRegistrationDefinition" targetNamespace="http://example.com/bpmn/overtime">
+  <semantic:collaboration id="overtimeRegistrationCollaboration">
+    <semantic:participant id="salesEmployee" name="Sales Employee" processRef="overtimeRegistrationProcess"/>
+    <semantic:participant id="responsibleManager" name="Responsible Manager" processRef="managerEvaluationProcess"/>
   </semantic:collaboration>
-
-  <semantic:process id="process_overtimeRegistration" isExecutable="true">
-    <semantic:laneSet id="laneSet_company">
-      <semantic:lane id="lane_salesEmployee" name="Sales Employee">
-        <semantic:flowNodeRef>start_overtimeRegistration</semantic:flowNodeRef>
-        <semantic:flowNodeRef>task_createOvertimeRegistration</semantic:flowNodeRef>
-        <semantic:flowNodeRef>task_sendOvertimeRegistration</semantic:flowNodeRef>
-        <semantic:flowNodeRef>end_overtimeDeclined</semantic:flowNodeRef>
-        <semantic:flowNodeRef>end_overtimeApproved</semantic:flowNodeRef>
-      </semantic:lane>
-      <semantic:lane id="lane_manager" name="Manager">
-        <semantic:flowNodeRef>task_evaluateOvertimeRequest</semantic:flowNodeRef>
-        <semantic:flowNodeRef>gateway_managerDecision</semantic:flowNodeRef>
+  <semantic:process id="overtimeRegistrationProcess" isExecutable="true">
+    <semantic:laneSet id="employeeLaneSet">
+      <semantic:lane id="employeeLane" name="Employee Lane">
+        <semantic:flowNodeRef>startEvent</semantic:flowNodeRef>
+        <semantic:flowNodeRef>createOvertimeRegistrationTask</semantic:flowNodeRef>
+        <semantic:flowNodeRef>sendRegistrationTask</semantic:flowNodeRef>
+        <semantic:flowNodeRef>receiveDeclinedRequestEvent</semantic:flowNodeRef>
       </semantic:lane>
     </semantic:laneSet>
-
-    <semantic:startEvent id="start_overtimeRegistration" name="Start Overtime Registration">
-      <semantic:outgoing>flow_start_to_create</semantic:outgoing>
+    <semantic:startEvent id="startEvent" name="Start Overtime Request">
+      <semantic:outgoing>flow1</semantic:outgoing>
     </semantic:startEvent>
-
-    <semantic:task id="task_createOvertimeRegistration" name="Create Overtime Registration">
-      <semantic:incoming>flow_start_to_create</semantic:incoming>
-      <semantic:outgoing>flow_create_to_send</semantic:outgoing>
+    <semantic:task id="createOvertimeRegistrationTask" name="Create Overtime Registration">
+      <semantic:incoming>flow1</semantic:incoming>
+      <semantic:outgoing>flow2</semantic:outgoing>
     </semantic:task>
-
-    <semantic:task id="task_sendOvertimeRegistration" name="Send Overtime Registration to Manager">
-      <semantic:incoming>flow_create_to_send</semantic:incoming>
-      <semantic:outgoing>flow_send_to_evaluate</semantic:outgoing>
-    </semantic:task>
-
-    <semantic:task id="task_evaluateOvertimeRequest" name="Evaluate Overtime Registration Request">
-      <semantic:incoming>flow_send_to_evaluate</semantic:incoming>
-      <semantic:outgoing>flow_evaluate_to_decision</semantic:outgoing>
-    </semantic:task>
-
-    <semantic:exclusiveGateway id="gateway_managerDecision" name="Manager Decision">
-      <semantic:incoming>flow_evaluate_to_decision</semantic:incoming>
-      <semantic:outgoing>flow_decision_to_declined</semantic:outgoing>
-      <semantic:outgoing>flow_decision_to_approved</semantic:outgoing>
-    </semantic:exclusiveGateway>
-
-    <semantic:endEvent id="end_overtimeDeclined" name="Overtime Request Declined">
-      <semantic:incoming>flow_decision_to_declined</semantic:incoming>
+    <semantic:sendTask id="sendRegistrationTask" name="Send Overtime Registration">
+      <semantic:incoming>flow2</semantic:incoming>
+      <semantic:outgoing>flow3</semantic:outgoing>
+      <semantic:messageFlow id="messageFlowToManager" sourceRef="sendRegistrationTask" targetRef="receiveRegistrationEvent"/>
+    </semantic:sendTask>
+    <semantic:intermediateCatchEvent id="receiveDeclinedRequestEvent" name="Receive Declined Request">
+      <semantic:incoming>flow5</semantic:incoming>
+      <semantic:outgoing>flow6</semantic:outgoing>
+      <semantic:messageEventDefinition id="declinedMessageDef"/>
+    </semantic:intermediateCatchEvent>
+    <semantic:endEvent id="endEventDeclined" name="End Declined">
+      <semantic:incoming>flow6</semantic:incoming>
     </semantic:endEvent>
-
-    <semantic:endEvent id="end_overtimeApproved" name="Overtime Request Approved">
-      <semantic:incoming>flow_decision_to_approved</semantic:incoming>
-    </semantic:endEvent>
-
-    <semantic:sequenceFlow id="flow_start_to_create" sourceRef="start_overtimeRegistration" targetRef="task_createOvertimeRegistration"/>
-    <semantic:sequenceFlow id="flow_create_to_send" sourceRef="task_createOvertimeRegistration" targetRef="task_sendOvertimeRegistration"/>
-    <semantic:sequenceFlow id="flow_send_to_evaluate" sourceRef="task_sendOvertimeRegistration" targetRef="task_evaluateOvertimeRequest"/>
-    <semantic:sequenceFlow id="flow_evaluate_to_decision" sourceRef="task_evaluateOvertimeRequest" targetRef="gateway_managerDecision"/>
-    <semantic:sequenceFlow id="flow_decision_to_declined" sourceRef="gateway_managerDecision" targetRef="end_overtimeDeclined"/>
-    <semantic:sequenceFlow id="flow_decision_to_approved" sourceRef="gateway_managerDecision" targetRef="end_overtimeApproved"/>
+    <semantic:sequenceFlow id="flow1" sourceRef="startEvent" targetRef="createOvertimeRegistrationTask"/>
+    <semantic:sequenceFlow id="flow2" sourceRef="createOvertimeRegistrationTask" targetRef="sendRegistrationTask"/>
+    <semantic:sequenceFlow id="flow3" sourceRef="sendRegistrationTask" targetRef="receiveDeclinedRequestEvent"/>
+    <semantic:sequenceFlow id="flow5" sourceRef="declineGatewayFlow" targetRef="receiveDeclinedRequestEvent"/>
+    <semantic:sequenceFlow id="flow6" sourceRef="receiveDeclinedRequestEvent" targetRef="endEventDeclined"/>
   </semantic:process>
-
-  <bpmndi:BPMNDiagram id="BPMNDiagram_overtimeRegistration" name="Overtime Registration Diagram" resolution="96.0">
-    <bpmndi:BPMNPlane bpmnElement="collab_overtimeRegistration">
-      <bpmndi:BPMNShape id="participant_company_shape" bpmnElement="participant_company" isHorizontal="true">
-        <dc:Bounds x="20" y="20" width="900" height="300"/>
+  <semantic:process id="managerEvaluationProcess" isExecutable="true">
+    <semantic:laneSet id="managerLaneSet">
+      <semantic:lane id="managerLane" name="Manager Lane">
+        <semantic:flowNodeRef>receiveRegistrationEvent</semantic:flowNodeRef>
+        <semantic:flowNodeRef>evaluateRegistrationTask</semantic:flowNodeRef>
+        <semantic:flowNodeRef>evaluationGateway</semantic:flowNodeRef>
+        <semantic:flowNodeRef>approveEndEvent</semantic:flowNodeRef>
+        <semantic:flowNodeRef>declineSendTask</semantic:flowNodeRef>
+      </semantic:lane>
+    </semantic:laneSet>
+    <semantic:intermediateCatchEvent id="receiveRegistrationEvent" name="Receive Overtime Registration">
+      <semantic:outgoing>flow4</semantic:outgoing>
+      <semantic:messageEventDefinition id="registrationMessageDef"/>
+    </semantic:intermediateCatchEvent>
+    <semantic:task id="evaluateRegistrationTask" name="Evaluate Overtime Registration">
+      <semantic:incoming>flow4</semantic:incoming>
+      <semantic:outgoing>flow7</semantic:outgoing>
+    </semantic:task>
+    <semantic:exclusiveGateway id="evaluationGateway" name="Approve or Decline">
+      <semantic:incoming>flow7</semantic:incoming>
+      <semantic:outgoing>approveGatewayFlow</semantic:outgoing>
+      <semantic:outgoing>declineGatewayFlow</semantic:outgoing>
+    </semantic:exclusiveGateway>
+    <semantic:endEvent id="approveEndEvent" name="End Approved">
+      <semantic:incoming>approveGatewayFlow</semantic:incoming>
+    </semantic:endEvent>
+    <semantic:sendTask id="declineSendTask" name="Send Declined Request">
+      <semantic:incoming>declineGatewayFlow</semantic:incoming>
+      <semantic:outgoing>flow5</semantic:outgoing>
+      <semantic:messageFlow id="messageFlowToEmployee" sourceRef="declineSendTask" targetRef="receiveDeclinedRequestEvent"/>
+    </semantic:sendTask>
+    <semantic:sequenceFlow id="flow4" sourceRef="receiveRegistrationEvent" targetRef="evaluateRegistrationTask"/>
+    <semantic:sequenceFlow id="flow7" sourceRef="evaluateRegistrationTask" targetRef="evaluationGateway"/>
+    <semantic:sequenceFlow id="approveGatewayFlow" name="Approve" sourceRef="evaluationGateway" targetRef="approveEndEvent"/>
+    <semantic:sequenceFlow id="declineGatewayFlow" name="Decline" sourceRef="evaluationGateway" targetRef="declineSendTask"/>
+  </semantic:process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_overtimeRegistration" name="Overtime Registration Diagram">
+    <bpmndi:BPMNPlane bpmnElement="overtimeRegistrationCollaboration">
+      <bpmndi:BPMNShape id="shape_salesEmployee" bpmnElement="salesEmployee" isHorizontal="true">
+        <omgdc:Bounds height="300" width="900" x="20" y="20"/>
       </bpmndi:BPMNShape>
-
-      <!-- Sales Employee Lane -->
-      <bpmndi:BPMNShape id="lane_salesEmployee_shape" bpmnElement="lane_salesEmployee" isHorizontal="true">
-        <dc:Bounds x="20" y="20" width="900" height="140"/>
+      <bpmndi:BPMNShape id="shape_responsibleManager" bpmnElement="responsibleManager" isHorizontal="true">
+        <omgdc:Bounds height="300" width="900" x="20" y="350"/>
       </bpmndi:BPMNShape>
-
-      <bpmndi:BPMNShape id="start_overtimeRegistration_shape" bpmnElement="start_overtimeRegistration">
-        <dc:Bounds x="100" y="70" width="36" height="36"/>
+      <bpmndi:BPMNShape id="shape_startEvent" bpmnElement="startEvent">
+        <omgdc:Bounds height="36" width="36" x="100" y="150"/>
       </bpmndi:BPMNShape>
-
-      <bpmndi:BPMNShape id="task_createOvertimeRegistration_shape" bpmnElement="task_createOvertimeRegistration">
-        <dc:Bounds x="180" y="60" width="140" height="56"/>
+      <bpmndi:BPMNShape id="shape_createOvertimeRegistrationTask" bpmnElement="createOvertimeRegistrationTask">
+        <omgdc:Bounds height="80" width="150" x="200" y="128"/>
       </bpmndi:BPMNShape>
-
-      <bpmndi:BPMNShape id="task_sendOvertimeRegistration_shape" bpmnElement="task_sendOvertimeRegistration">
-        <dc:Bounds x="350" y="60" width="180" height="56"/>
+      <bpmndi:BPMNShape id="shape_sendRegistrationTask" bpmnElement="sendRegistrationTask">
+        <omgdc:Bounds height="80" width="150" x="400" y="128"/>
       </bpmndi:BPMNShape>
-
-      <bpmndi:BPMNShape id="end_overtimeDeclined_shape" bpmnElement="end_overtimeDeclined">
-        <dc:Bounds x="780" y="40" width="36" height="36"/>
+      <bpmndi:BPMNShape id="shape_receiveDeclinedRequestEvent" bpmnElement="receiveDeclinedRequestEvent">
+        <omgdc:Bounds height="36" width="36" x="600" y="150"/>
       </bpmndi:BPMNShape>
-
-      <bpmndi:BPMNShape id="end_overtimeApproved_shape" bpmnElement="end_overtimeApproved">
-        <dc:Bounds x="780" y="120" width="36" height="36"/>
+      <bpmndi:BPMNShape id="shape_endEventDeclined" bpmnElement="endEventDeclined">
+        <omgdc:Bounds height="36" width="36" x="750" y="150"/>
       </bpmndi:BPMNShape>
-
-      <!-- Manager Lane -->
-      <bpmndi:BPMNShape id="lane_manager_shape" bpmnElement="lane_manager" isHorizontal="true">
-        <dc:Bounds x="20" y="160" width="900" height="140"/>
+      <bpmndi:BPMNShape id="shape_receiveRegistrationEvent" bpmnElement="receiveRegistrationEvent">
+        <omgdc:Bounds height="36" width="36" x="100" y="472"/>
       </bpmndi:BPMNShape>
-
-      <bpmndi:BPMNShape id="task_evaluateOvertimeRequest_shape" bpmnElement="task_evaluateOvertimeRequest">
-        <dc:Bounds x="560" y="190" width="200" height="56"/>
+      <bpmndi:BPMNShape id="shape_evaluateRegistrationTask" bpmnElement="evaluateRegistrationTask">
+        <omgdc:Bounds height="80" width="150" x="200" y="450"/>
       </bpmndi:BPMNShape>
-
-      <bpmndi:BPMNShape id="gateway_managerDecision_shape" bpmnElement="gateway_managerDecision" isMarkerVisible="true">
-        <dc:Bounds x="780" y="200" width="50" height="50"/>
+      <bpmndi:BPMNShape id="shape_evaluationGateway" bpmnElement="evaluationGateway" isMarkerVisible="true">
+        <omgdc:Bounds height="50" width="50" x="400" y="465"/>
       </bpmndi:BPMNShape>
-
-      <!-- Sequence Flows -->
-      <bpmndi:BPMNEdge id="flow_start_to_create_edge" bpmnElement="flow_start_to_create">
-        <di:waypoint x="136" y="88"/>
-        <di:waypoint x="180" y="88"/>
+      <bpmndi:BPMNShape id="shape_approveEndEvent" bpmnElement="approveEndEvent">
+        <omgdc:Bounds height="36" width="36" x="550" y="472"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_declineSendTask" bpmnElement="declineSendTask">
+        <omgdc:Bounds height="80" width="150" x="400" y="550"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="edge_flow1" bpmnElement="flow1">
+        <omgdi:waypoint x="136" y="168"/>
+        <omgdi:waypoint x="200" y="168"/>
       </bpmndi:BPMNEdge>
-
-      <bpmndi:BPMNEdge id="flow_create_to_send_edge" bpmnElement="flow_create_to_send">
-        <di:waypoint x="320" y="88"/>
-        <di:waypoint x="350" y="88"/>
+      <bpmndi:BPMNEdge id="edge_flow2" bpmnElement="flow2">
+        <omgdi:waypoint x="350" y="168"/>
+        <omgdi:waypoint x="400" y="168"/>
       </bpmndi:BPMNEdge>
-
-      <bpmndi:BPMNEdge id="flow_send_to_evaluate_edge" bpmnElement="flow_send_to_evaluate">
-        <di:waypoint x="530" y="88"/>
-        <di:waypoint x="560" y="218"/>
+      <bpmndi:BPMNEdge id="edge_flow3" bpmnElement="flow3">
+        <omgdi:waypoint x="475" y="208"/>
+        <omgdi:waypoint x="475" y="275"/>
+        <omgdi:waypoint x="618" y="275"/>
+        <omgdi:waypoint x="618" y="186"/>
       </bpmndi:BPMNEdge>
-
-      <bpmndi:BPMNEdge id="flow_evaluate_to_decision_edge" bpmnElement="flow_evaluate_to_decision">
-        <di:waypoint x="760" y="218"/>
-        <di:waypoint x="780" y="225"/>
+      <bpmndi:BPMNEdge id="edge_flow4" bpmnElement="flow4">
+        <omgdi:waypoint x="136" y="490"/>
+        <omgdi:waypoint x="200" y="490"/>
       </bpmndi:BPMNEdge>
-
-      <bpmndi:BPMNEdge id="flow_decision_to_declined_edge" bpmnElement="flow_decision_to_declined">
-        <di:waypoint x="805" y="200"/>
-        <di:waypoint x="805" y="58"/>
-        <di:waypoint x="780" y="58"/>
+      <bpmndi:BPMNEdge id="edge_flow5" bpmnElement="flow5">
+        <omgdi:waypoint x="475" y="550"/>
+        <omgdi:waypoint x="475" y="325"/>
+        <omgdi:waypoint x="618" y="325"/>
+        <omgdi:waypoint x="618" y="186"/>
       </bpmndi:BPMNEdge>
-
-      <bpmndi:BPMNEdge id="flow_decision_to_approved_edge" bpmnElement="flow_decision_to_approved">
-        <di:waypoint x="805" y="250"/>
-        <di:waypoint x="805" y="138"/>
-        <di:waypoint x="780" y="138"/>
+      <bpmndi:BPMNEdge id="edge_flow6" bpmnElement="flow6">
+        <omgdi:waypoint x="636" y="168"/>
+        <omgdi:waypoint x="750" y="168"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow7" bpmnElement="flow7">
+        <omgdi:waypoint x="350" y="490"/>
+        <omgdi:waypoint x="400" y="490"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_approveGatewayFlow" bpmnElement="approveGatewayFlow">
+        <omgdi:waypoint x="450" y="490"/>
+        <omgdi:waypoint x="550" y="490"/>
+        <omgdi:BPMNLabel>
+          <omgdc:Bounds height="14" width="44" x="480" y="470"/>
+        </omgdi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_declineGatewayFlow" bpmnElement="declineGatewayFlow">
+        <omgdi:waypoint x="425" y="515"/>
+        <omgdi:waypoint x="425" y="550"/>
+        <omgdi:BPMNLabel>
+          <omgdc:Bounds height="14" width="39" x="430" y="520"/>
+        </omgdi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_messageFlowToManager" bpmnElement="messageFlowToManager">
+        <omgdi:waypoint x="475" y="128"/>
+        <omgdi:waypoint x="475" y="60"/>
+        <omgdi:waypoint x="118" y="60"/>
+        <omgdi:waypoint x="118" y="472"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_messageFlowToEmployee" bpmnElement="messageFlowToEmployee">
+        <omgdi:waypoint x="475" y="630"/>
+        <omgdi:waypoint x="475" y="700"/>
+        <omgdi:waypoint x="618" y="700"/>
+        <omgdi:waypoint x="618" y="186"/>
       </bpmndi:BPMNEdge>
     </bpmndi:BPMNPlane>
   </bpmndi:BPMNDiagram>
 </semantic:definitions>
+```
