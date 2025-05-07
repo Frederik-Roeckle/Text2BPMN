@@ -23,15 +23,21 @@ def create_handoff_tool(
         state: Annotated[MessagesState, InjectedState],
         tool_call_id: Annotated[str, InjectedToolCallId],
     ) -> Command:
+        print(f"[HANDOFF DEBUG] Transferring to {agent_name} with tool_call_id: {tool_call_id}")
+        print(f"[HANDOFF DEBUG] Current state has {len(state['messages'])} messages")
         tool_message = {
             "role": "tool",
             "content": f"Successfully transferred to {agent_name}",
             "name": name,
             "tool_call_id": tool_call_id,
         }
+        updated_state = {**state, "messages": state["messages"] + [tool_message]}
+            
+        print(f"[HANDOFF DEBUG] After update, state has {len(updated_state['messages'])} messages")
+        print(f"[HANDOFF DEBUG] Issuing Command to go to {agent_name}")
         return Command(
             goto=agent_name,  
-            update={**state, "messages": state["messages"] + [tool_message]},  
+            update=updated_state,  
             graph=Command.PARENT,  
         )
 
@@ -40,6 +46,7 @@ def create_handoff_tool(
 def read_txt_file(file_path):
     with open(file_path, "r") as file:
         content = file.read()
+        print(f"[DEBUG] Read content from {file_path}: {content}")
     return content
 
 # -----------------------------
@@ -71,7 +78,8 @@ def build_graph():
     name="xml_Agent",
     model=get_model(),
     tools=[],
-    prompt=read_txt_file("data/promts/create_xml_prompt.txt")
+    prompt=read_txt_file("data/promts/create_xml_prompt.txt"),
+    debug=True 
     )   
 
     validate_Agent = create_react_agent(
@@ -122,8 +130,6 @@ def build_graph():
 # Entry Point
 # -----------------------------
 if __name__ == "__main__":
-    set_model(OpenAILLM(model="gpt-4.1-mini",temperature=0))
-
     graph = build_graph()
     graph.invoke({"messages": [""]})
     

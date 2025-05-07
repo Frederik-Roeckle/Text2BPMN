@@ -98,10 +98,11 @@ def main():
         print(f"Processing process description {i+1} of {len(data)}")
 
         input_message = {"role": "user", "content": item["text"]}
+        print(f"Input message: {input_message}")
         graph = GRAPH_MAP["react"]()
 
         final_chunk = None
-        for chunk in graph.stream({"messages": [input_message]}, config={"recursion_limit": 15}):
+        for chunk in graph.stream({"messages": [input_message]}, config={"recursion_limit": 10}):
             pretty_print_messages(chunk, last_message=True)
             final_chunk = chunk
 
@@ -115,9 +116,7 @@ def main():
             f.write(final_message + "\n")
     
         print(f"Results written to {output_path}")
-        render_BPMN(f"data/bpmn/baseline_{i}.bpmn",f"data/img/wu_wien7{i}.png")
-
-
+        render_BPMN(f"data/bpmn/test_{i}.bpmn",f"data/img/test_{i}.png")
     
 
     # # # Process the input file with the base_line graph
@@ -136,12 +135,9 @@ def main():
     #         modified_lines.append(result["messages"][-1].content)
     
     # Write the modified lines back as plain text
-    with open(output_path, "w") as f:
-        for item in modified_lines:
-            f.write(item + "\n")
-    
-    print(f"Results written to {output_path}")
-    render_BPMN("data/test_cases/baseline.bpmn","data/img/baseline_sv_1.png")
+   #with open(output_path, "w") as f:
+    #    for item in modified_lines:
+    #       f.write(item + "\n")
 
 
 
