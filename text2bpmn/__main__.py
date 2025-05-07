@@ -14,8 +14,8 @@ GRAPH_MAP = {
 
 
 def main():
-    #config.set_model(OpenAILLM(model="gpt-4.1-mini",temperature=0))
-    config.set_model(GeminiLLM(model="gemini-2.0-flash", temperature=0))
+    config.set_model(OpenAILLM(model="gpt-4.1-mini",temperature=0))
+    #config.set_model(GeminiLLM(model="gemini-2.0-flash", temperature=0))
 
     #input_path = "data/test_cases/example_test_case.jsonl"
     input_path = "data/test_cases/wu_wien.json"
