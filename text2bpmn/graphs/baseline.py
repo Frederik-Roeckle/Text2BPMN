@@ -1,7 +1,7 @@
 from langgraph.graph import StateGraph, MessagesState, START, END
-from agents import NormalAgent
-from config import get_model
-from agents import NormalAgent
+from text2bpmn.agents import NormalAgent
+from text2bpmn.config import get_model
+from text2bpmn.agents import NormalAgent
 
 
 

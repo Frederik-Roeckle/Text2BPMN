@@ -1,3 +1,6 @@
+# Models
+*.bpmn
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
@@ -60,6 +63,9 @@ cover/
 local_settings.py
 db.sqlite3
 db.sqlite3-journal
+
+# imges
+*.png
 
 # Flask stuff:
 instance/

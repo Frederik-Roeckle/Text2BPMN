@@ -1,19 +1,20 @@
-from graphs import baseline
-from graphs import react
-from utils import render_BPMN
-import json
-#from models import MistralLLM
-from models import OpenAILLM
-import config
+from text2bpmn.graphs import baseline, react, two_agent_graph, three_agent_graph
+from text2bpmn.utils import render_BPMN
+from text2bpmn.models import OpenAILLM, MistralLLM
+from text2bpmn.config import set_model
 
 GRAPH_MAP = {
     "base_line": baseline.build_graph,
-    "react": react.build_graph
+    "react": react.build_graph,
+    "two_agent_graph": two_agent_graph.build_graph,
+    "three_agent_graph": three_agent_graph.build_graph
 }
 
+temp_selected_graph = "three_agent_graph"
 
 def main():
-    config.set_model(OpenAILLM(model="gpt-4o-mini",temperature=0))
+    set_model(OpenAILLM(model="gpt-4o-mini",temperature=0))
+    #set_model(MistralLLM())
 
     #input_path = "data/test_cases/example_test_case.jsonl"
     input_path = "data/test_cases/short_bpmn_process.txt"
@@ -55,7 +56,7 @@ def main():
             line = line.strip()  # Remove any leading/trailing whitespace
             if not line:  # Skip empty lines
                 continue
-            result = GRAPH_MAP["base_line"]().invoke({"messages": line})
+            result = GRAPH_MAP[temp_selected_graph]().invoke({"messages": line})
             modified_lines.append(result["messages"][-1].content)
     
     # Write the modified lines back as plain text
