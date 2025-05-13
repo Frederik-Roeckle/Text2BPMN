@@ -3,6 +3,12 @@ from text2bpmn.utils import load_data
 from langchain_core.language_models.chat_models import BaseChatModel
 from abc import ABC, abstractmethod
 import logging
+from typing import Literal
+from langgraph.types import Command
+from langchain.output_parsers import PydanticOutputParser
+from langchain.prompts import PromptTemplate
+from text2bpmn.formats import EvaluatorResult
+
 
 logging.basicConfig(level=logging.INFO)
 
@@ -21,13 +27,19 @@ class BaseAgent(ABC):
     
     def add_system_message(self):
         if self.system_message:
-            self.start_messages.append(SystemMessage(content=load_data(self.system_message)))
+            if self.system_message.endswith(".txt") or self.system_message.endswith(".json"):  # file path
+                content = load_data(self.system_message)
+            else:
+                content = self.system_message  # use directly
+            self.start_messages.append(SystemMessage(content=content))
 
     def add_few_shot_examples(self):
         if self.few_shot_examples:
             examples = load_data(self.few_shot_examples)
-            self.start_messages.append(SystemMessage(content=examples))  # TODO: Check if this is correct
-               
+            # Ensure examples are objects, not strings
+            self.start_messages.append(SystemMessage(content=examples))
+
+
     def add_invoke_message(self):
         if self.invoke_message:
             self.start_messages.append(HumanMessage(content=self.invoke_message))
@@ -46,7 +58,7 @@ class NormalAgent(BaseAgent):
         self.add_few_shot_examples()
         self.start_messages += state["messages"]
         self.add_invoke_message()
-        logging.info(f"Sending the following messages to the model: {self.start_messages}")
+        #logging.info(f"Sending the following messages to the model: {self.start_messages}")
 
         response = self.model.invoke(self.start_messages)
         with open(f"{self.step}.txt", "w") as file:
@@ -65,3 +77,38 @@ class FeedbackAgent(BaseAgent):
         self.add_few_shot_examples()
         
 
+class EvaluatorAgent(BaseAgent):
+    def __init__(self, model, system_message=None, few_shot_examples=None, invoke_message=None, tools=None, step=None):
+        super().__init__(model, system_message, few_shot_examples, invoke_message, tools, step)
+        self.parser = PydanticOutputParser(pydantic_object=EvaluatorResult)
+
+        # Load prompt template and inject parser instructions
+        if self.system_message:
+            if system_message.endswith(".txt") or self.system_message.endswith(".json"):  # file path
+                raw_prompt = load_data(system_message)
+            else:
+                raw_prompt = system_message  # use directly
+         
+        self.prompt = PromptTemplate.from_template(raw_prompt).partial(
+            format_instructions=self.parser.get_format_instructions()
+        )
+
+    def invoke(self, state) -> Command[Literal["xml_Agent", "__end__"]]:
+        self.start_messages = []
+        self.add_few_shot_examples()
+        self.add_invoke_message()
+
+        # Format prompt and get model output
+        formatted_prompt = self.prompt.format()
+        messages = self.start_messages + [HumanMessage(content=formatted_prompt)] + state["messages"] # Note that the order of the promt is changed compared to the Base angent. The instruction to check the given xml is put at the end to emphazise it.
+        response = self.model.invoke(messages)
+
+        # Parse and validate output
+        parsed = self.parser.parse(response.content)
+        # Add model's reasoning to message history
+        state["messages"].append(AIMessage(content=f"{parsed.reason} (Routing to: {parsed.next_node})"))
+
+        return Command(
+            update={"messages": state["messages"]},
+            goto="__end__" if parsed.next_node == "end" else parsed.next_node
+        )

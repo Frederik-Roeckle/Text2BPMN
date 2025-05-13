@@ -1,11 +1,17 @@
 from text2bpmn.graphs import baseline
 from text2bpmn.graphs import react_with_supervisor
-from text2bpmn.utils import render_BPMN
+from Text2BPMN.text2bpmn.graphs import three_agent_graph
+
+
 import json
 #from models import MistralLLM
-from text2bpmn.models import OpenAILLM
+from text2bpmn.models import OpenAILLM, GeminiLLM
 import text2bpmn.config as config
 from langchain_core.messages import convert_to_messages
+from langchain.callbacks import get_openai_callback
+from text2bpmn.utils import render_BPMN  
+from langsmith.wrappers import wrap_openai
+from langsmith import traceable
 
 
 
@@ -51,12 +57,15 @@ def pretty_print_messages(update, last_message=False):
 
 GRAPH_MAP = {
     "base_line": baseline.build_graph,
-    "react": react_with_supervisor.build_graph
+    "react": react_with_supervisor.build_graph,
+    "supervisor": three_agent_graph.build_graph
 }
 
-
+@traceable
 def main():
-    config.set_model(OpenAILLM(model="gpt-4.1-mini",temperature=0))
+    #config.set_model(OpenAILLM(model="gpt-4.1-mini",temperature=0))
+    config.set_model(GeminiLLM(model="gemini-2.5-pro-preview-05-06", temperature=0))
+
 
     #input_path = "data/test_cases/example_test_case.jsonl"
     input_path = "data/test_cases/wu_wien.json"
@@ -85,7 +94,7 @@ def main():
     #             f.write(json.dumps(item) + "\n")
 
     # Process the input file with the base_line graph
-    print("Processing graph: react")    
+    print("Processing graph: supervisor_no_react")    
 
     
     with open(input_path, 'r') as file:
@@ -99,13 +108,16 @@ def main():
 
         input_message = {"role": "user", "content": item["text"]}
         print(f"Input message: {input_message}")
-        graph = GRAPH_MAP["react"]()
+        graph = GRAPH_MAP["supervisor"]()
 
         final_chunk = None
-        for chunk in graph.stream({"messages": [input_message]}, config={"recursion_limit": 10}):
-            pretty_print_messages(chunk, last_message=True)
-            final_chunk = chunk
+        with get_openai_callback() as cb:
+            for chunk in graph.stream({"messages": [input_message]}, config={"recursion_limit": 10}):
+                pretty_print_messages(chunk, last_message=True)
+                final_chunk = chunk
 
+        print(f"[TOKENS] Prompt: {cb.prompt_tokens}, Completion: {cb.completion_tokens}, Total: {cb.total_tokens}")
+       
         final_messages = final_chunk["supervisor"]["messages"]
         modified_lines.append(final_messages[-1].content)
     
@@ -116,7 +128,7 @@ def main():
             f.write(final_message + "\n")
     
         print(f"Results written to {output_path}")
-        render_BPMN(f"data/bpmn/test_{i}.bpmn",f"data/img/test_{i}.png")
+        render_BPMN(f"data/bpmn/baseline_{i}.bpmn",f"data/img/test_{i}.png")
     
 
     # # # Process the input file with the base_line graph

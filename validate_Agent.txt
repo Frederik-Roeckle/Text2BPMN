@@ -1,3 +1,57 @@
+***IS_VALID***
+The provided BPMN XML is fully valid and adheres to all specified rules and best practices.
+
+**Detailed Validation:**
+
+1.  **BPMN 2.0 Standard Compliance:** All elements used (e.g., `semantic:definitions`, `semantic:collaboration`, `semantic:participant`, `semantic:process`, `semantic:laneSet`, `semantic:lane`, `semantic:startEvent`, `semantic:messageEventDefinition`, `semantic:task`, `semantic:exclusiveGateway`, `semantic:endEvent`, `semantic:sequenceFlow`, and their DI counterparts) are valid BPMN 2.0 elements with correct attributes and structure. The XML is well-formed.
+
+2.  **Process Step Mapping:** Every step described in the process description has been accurately mapped to a corresponding BPMN element:
+    *   "Maintenance is required on receipt of an equipment failure by the Maintenance department." -> `participant_MaintenanceDept` (Pool) and `startEvent_FailureReceived` (Message Start Event).
+    *   "Upon receiving this message by the maintenance employee a notification has to be created." -> `lane_MaintenanceEmployee` and `task_CreateNotification`.
+    *   "After that a maintenance order has to be created based on the notifications." -> `task_CreateOrder`.
+    *   "In the next step, the maintenance employee has to plan/process the notification & the order." -> `task_PlanProcess`.
+    *   "Then the maintenance work has to be executed in the field." -> `task_ExecuteWork`.
+    *   "In case the Quality Assessment has not been passed, the maintenance work has to be executed again in the field." -> `gateway_QualityCheck` (Exclusive Gateway) with a sequence flow looping back to `task_ExecuteWork`.
+    *   "Once the Quality Assessment has been passed, the maintenance planer has to complete the maintenance order" -> `lane_MaintenancePlaner` and `task_CompleteOrder`.
+    *   "and to close the notification" -> `task_CloseNotification`.
+    *   "and finally the maintenance process is successfully completed." -> `endEvent_ProcessCompleted`.
+
+3.  **Unique IDs and References:** All elements (`semantic:*` and `bpmndi:*`) have unique `id` attributes. All `bpmnElement` references in the `BPMNDiagram` section correctly point to elements defined in the `semantic:process` or `semantic:collaboration`. `flowNodeRef` elements correctly link flow nodes to lanes.
+
+4.  **Meaningful Names:** All elements have meaningful, descriptive names (e.g., "Equipment Failure Received", "Create Notification", "Quality Assessment Passed?"). Task names generally follow a verb-noun style. No generic or blank names are used.
+
+5.  **Connectivity:**
+    *   All tasks and the gateway have at least one incoming and one outgoing sequence flow.
+    *   `startEvent_FailureReceived` has no incoming flows and one outgoing flow.
+    *   `endEvent_ProcessCompleted` has one incoming flow and no outgoing flows.
+    *   `task_ExecuteWork` correctly has two incoming flows (one from `task_PlanProcess` and one from `gateway_QualityCheck` for the loop).
+
+6.  **Coherent Flow:** The process is a single, coherent flow from the start event to the end event. There are no disconnected elements or flows.
+
+7.  **Gateways:** The `gateway_QualityCheck` is an `exclusiveGateway`, correctly modeled with one incoming flow and two outgoing flows ("Passed" and "Not Passed").
+
+8.  **Pools and Lanes:**
+    *   A single pool "Maintenance Department" (`participant_MaintenanceDept`) is present.
+    *   Two lanes, "Maintenance Employee" (`lane_MaintenanceEmployee`) and "Maintenance Planer" (`lane_MaintenancePlaner`), are correctly defined within the pool and are aligned vertically.
+    *   Tasks and events are correctly assigned to their respective lanes as per the process description.
+
+9.  **Visual Layout and Coordinates (DI):**
+    *   **No Overlaps:** The `dc:Bounds` (x, y, width, height) for all shapes (pool, lanes, tasks, events, gateway) are specified such that they do not overlap.
+    *   **Even Spacing:** Elements are reasonably spaced for clarity.
+    *   **Alignment:** Elements within each lane are generally aligned horizontally. Lanes are stacked vertically within the pool.
+    *   **Sequence Flows:** Waypoints for sequence flows ensure they connect to appropriate points on the source and target shapes (typically mid-points of edges).
+    *   **Labels:** Labels for events and gateways are positioned clearly. Sequence flow labels ("Passed", "Not Passed") are appropriately placed.
+    *   **Orthogonal Arrows:** Orthogonal (rectilinear) sequence flows are used effectively for the loopback and the flow between lanes, enhancing readability.
+    *   **Edge Crossings:** Minimized; the only significant "crossing" is the flow moving from the "Maintenance Employee" lane to the "Maintenance Planer" lane, which is necessary and clearly depicted.
+    *   **Clutter:** The diagram is visually understandable and not cluttered.
+
+10. **BPMN Anti-Patterns:** No dead paths, redundant elements, or ambiguous flows are present.
+
+11. **Message Event:** The start event `startEvent_FailureReceived` is correctly defined as a message start event using `semantic:messageEventDefinition` referencing `msg_EquipmentFailure`.
+
+The XML is well-structured, valid, and accurately represents the described process according to BPMN 2.0 standards and best practices.
+
+```xml
 <?xml version="1.0" standalone="yes"?>
 <semantic:definitions id="MaintenanceProcessDefinitions"
     targetNamespace="http://example.com/bpmn/maintenance-process"
@@ -199,4 +253,5 @@
       </bpmndi:BPMNEdge>
     </bpmndi:BPMNPlane>
   </bpmndi:BPMNDiagram>
-</semantic:definitions> (Routing to: end)
+</semantic:definitions>
+```

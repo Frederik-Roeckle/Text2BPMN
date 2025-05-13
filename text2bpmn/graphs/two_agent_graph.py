@@ -38,7 +38,7 @@ def build_graph():
 
     builder.add_edge(START, "extract")
     builder.add_edge("extract", "create_xml")
-    builder.add_edge("extract", END)
+    builder.add_edge("create_xml", END)
 
     return builder.compile()
 

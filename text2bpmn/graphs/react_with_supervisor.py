@@ -10,6 +10,7 @@ from langgraph.graph import END
 from langchain_core.tools import tool, InjectedToolCallId
 
 
+
 # -----------------------------
 # Handoff tool logic
 # -----------------------------
@@ -46,7 +47,6 @@ def create_handoff_tool(
 def read_txt_file(file_path):
     with open(file_path, "r") as file:
         content = file.read()
-        print(f"[DEBUG] Read content from {file_path}: {content}")
     return content
 
 # -----------------------------
@@ -55,13 +55,15 @@ def read_txt_file(file_path):
 def build_graph():
     # Agents
     
-    
+    prompt_extarct = read_txt_file("data/promts/extraction_prompt.txt")
+    prompt_xml = read_txt_file("data/promts/create_xml_prompt.txt")
+    prompt_validate = read_txt_file("data/promts/validate_prompt.txt")
 
     extractAgent = create_react_agent(
         name="extractAgent",
         model=get_model(),
         tools=[],
-        prompt=read_txt_file("data/promts/extraction_prompt.txt")
+        prompt=prompt_extarct
     )
 
     xmlAgent = create_handoff_tool(
@@ -78,15 +80,14 @@ def build_graph():
     name="xml_Agent",
     model=get_model(),
     tools=[],
-    prompt=read_txt_file("data/promts/create_xml_prompt.txt"),
-    debug=True 
+    prompt=prompt_xml,
     )   
 
     validate_Agent = create_react_agent(
     name="validate_Agent",
     model=get_model(),
     tools=[],
-    prompt=read_txt_file("data/promts/validate_prompt.txt")
+    prompt=prompt_validate,
     )
 
     # Supervisor creation
@@ -104,6 +105,7 @@ def build_graph():
 
     ),
     name="supervisor",
+    debug=True 
     )
 
     # Build the full graph
@@ -114,8 +116,8 @@ def build_graph():
         .add_node(validate_Agent)
         .add_node(extractAgent)
         .add_edge(START, "extractAgent")
-        .add_edge("extractAgent", "supervisor")
-        .add_edge("xml_Agent", "supervisor")
+        .add_edge("extractAgent", "xml_Agent")
+        .add_edge("xml_Agent", "validate_Agent")
         .add_edge("validate_Agent", "supervisor")
         .compile()
     )

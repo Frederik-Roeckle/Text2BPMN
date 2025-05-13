@@ -1,3 +1,4 @@
+
 <?xml version="1.0" standalone="yes"?>
 <semantic:definitions id="MaintenanceProcessDefinitions"
     targetNamespace="http://example.com/bpmn/maintenance-process"
@@ -199,4 +200,4 @@
       </bpmndi:BPMNEdge>
     </bpmndi:BPMNPlane>
   </bpmndi:BPMNDiagram>
-</semantic:definitions> (Routing to: end)
+</semantic:definitions>
