@@ -18,7 +18,7 @@ def main():
     config.set_model(GeminiLLM(model="gemini-2.5-pro-preview-05-06", temperature=0))
 
     #input_path = "data/test_cases/example_test_case.jsonl"
-    input_path = "data/test_cases/wu_wien.json"
+    input_path = "data/test_cases/subtest_set.json"
 
     #output_path = "data/test_cases/example_test_case_with_answers.jsonl"
     #output_path = "data/bpmn/baseline.bpmn"
@@ -60,12 +60,12 @@ def main():
         result = GRAPH_MAP["base_line"]().invoke({"messages": data[i]['text']})
         final_message = result["messages"][-1].content
     # Write the modified lines back as plain text
-        output_path = f"data/bpmn/baseline_{i}.bpmn"
+        output_path = f"data/bpmn/baseline_v4_{i}_{data[i]['level']}.bpmn"
         with open(output_path, "w") as f:
             f.write(final_message + "\n")
     
         print(f"Results written to {output_path}")
-        render_BPMN(f"data/bpmn/baseline_{i}.bpmn",f"data/img/{i}.png")
+        render_BPMN(f"data/bpmn/baseline_v4_{i}_{data[i]['level']}.bpmn",f"data/img/baseline_v4_{i}_{data[i]['level']}.png")
 
 
 if __name__ == "__main__":

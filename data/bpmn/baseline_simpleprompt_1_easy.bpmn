@@ -1,0 +1,80 @@
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" id="Definitions_1" targetNamespace="http://bpmn.io/schema/bpmn">
+  <bpmn:collaboration id="Collaboration_HiringProcess">
+    <bpmn:participant id="Participant_HiringManager" name="Hiring Manager" processRef="Process_HiringManager" />
+    <bpmn:participant id="Participant_HR" name="Human Resources" processRef="Process_HR" />
+    <bpmn:messageFlow id="Flow_RequisitionToHR" sourceRef="Task_CreateRequisition" targetRef="Task_FindCandidates" name="Job Requisition" />
+  </bpmn:collaboration>
+  <bpmn:process id="Process_HiringManager" isExecutable="false">
+    <bpmn:startEvent id="StartEvent_NeedIdentified" name="Need for Hire Identified">
+      <bpmn:outgoing>Flow_HM1</bpmn:outgoing>
+    </bpmn:startEvent>
+    <bpmn:task id="Task_CreateRequisition" name="Create Job Requisition">
+      <bpmn:incoming>Flow_HM1</bpmn:incoming>
+      <bpmn:outgoing>Flow_HM_End</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:sequenceFlow id="Flow_HM1" sourceRef="StartEvent_NeedIdentified" targetRef="Task_CreateRequisition" />
+    <!-- Implicit end for this participant after sending the message -->
+     <bpmn:endEvent id="EndEvent_HM" name="Requisition Sent">
+        <bpmn:incoming>Flow_HM_End</bpmn:incoming>
+     </bpmn:endEvent>
+     <bpmn:sequenceFlow id="Flow_HM_End" sourceRef="Task_CreateRequisition" targetRef="EndEvent_HM" />
+  </bpmn:process>
+  <bpmn:process id="Process_HR" isExecutable="true">
+    <bpmn:laneSet id="LaneSet_HR">
+      <bpmn:lane id="Lane_HRTeam" name="HR Team">
+        <bpmn:flowNodeRef>Task_FindCandidates</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_InviteCandidates</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_SetupPayroll</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_SendOffer</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_ReceiveContract</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>EndEvent_Hired</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Gateway_Decision</bpmn:flowNodeRef> <!-- Gateway often placed conceptually between lanes -->
+      </bpmn:lane>
+      <bpmn:lane id="Lane_HRManager" name="HR Manager">
+        <bpmn:flowNodeRef>Task_ConductInterviews</bpmn:flowNodeRef>
+      </bpmn:lane>
+    </bpmn:laneSet>
+    <bpmn:task id="Task_FindCandidates" name="Find Best Candidates (Screen CVs)">
+      <bpmn:outgoing>Flow_HR1</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:task id="Task_InviteCandidates" name="Invite Selected Candidates for Interview">
+      <bpmn:incoming>Flow_HR1</bpmn:incoming>
+      <bpmn:outgoing>Flow_HR2</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:task id="Task_ConductInterviews" name="Conduct Interviews">
+      <bpmn:incoming>Flow_HR2</bpmn:incoming>
+      <bpmn:outgoing>Flow_HR3</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:exclusiveGateway id="Gateway_Decision" name="Suitable Candidate Found?">
+      <bpmn:incoming>Flow_HR3</bpmn:incoming>
+      <bpmn:outgoing>Flow_DecisionYes</bpmn:outgoing>
+      <bpmn:outgoing>Flow_DecisionNo</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:task id="Task_SetupPayroll" name="Set up Payroll">
+      <bpmn:incoming>Flow_DecisionYes</bpmn:incoming>
+      <bpmn:outgoing>Flow_HR4</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:task id="Task_SendOffer" name="Prepare &amp; Send Offer/Contract to Candidate">
+      <bpmn:incoming>Flow_HR4</bpmn:incoming>
+      <bpmn:outgoing>Flow_HR5</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:task id="Task_ReceiveContract" name="Receive Signed Contract">
+      <bpmn:incoming>Flow_HR5</bpmn:incoming>
+      <bpmn:outgoing>Flow_HR6</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:endEvent id="EndEvent_Hired" name="Employee Hired">
+      <bpmn:incoming>Flow_HR6</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:sequenceFlow id="Flow_HR1" sourceRef="Task_FindCandidates" targetRef="Task_InviteCandidates" />
+    <bpmn:sequenceFlow id="Flow_HR2" sourceRef="Task_InviteCandidates" targetRef="Task_ConductInterviews" />
+    <bpmn:sequenceFlow id="Flow_HR3" sourceRef="Task_ConductInterviews" targetRef="Gateway_Decision" />
+    <bpmn:sequenceFlow id="Flow_DecisionYes" name="Yes" sourceRef="Gateway_Decision" targetRef="Task_SetupPayroll" />
+    <bpmn:sequenceFlow id="Flow_HR4" sourceRef="Task_SetupPayroll" targetRef="Task_SendOffer" />
+    <bpmn:sequenceFlow id="Flow_HR5" sourceRef="Task_SendOffer" targetRef="Task_ReceiveContract" />
+    <bpmn:sequenceFlow id="Flow_HR6" sourceRef="Task_ReceiveContract" targetRef="EndEvent_Hired" />
+    <bpmn:sequenceFlow id="Flow_DecisionNo" name="No" sourceRef="Gateway_Decision" targetRef="Task_FindCandidates" />
+  </bpmn:process>
+</bpmn:definitions>
+```

@@ -1,0 +1,247 @@
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" id="Definitions_1" targetNamespace="http://bpmn.io/schema/bpmn">
+  <bpmn:collaboration id="Collaboration_1">
+    <bpmn:participant id="Participant_HiringProcess" name="Hiring Process" processRef="Process_1" />
+  </bpmn:collaboration>
+  <bpmn:process id="Process_1" isExecutable="false">
+    <bpmn:laneSet id="LaneSet_1">
+      <bpmn:lane id="Lane_HiringManager" name="Hiring Manager">
+        <bpmn:flowNodeRef>StartEvent_NeedForHire</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_CreateJobRequisition</bpmn:flowNodeRef>
+      </bpmn:lane>
+      <bpmn:lane id="Lane_HRManager" name="HR Manager">
+        <bpmn:flowNodeRef>Task_ConductInterviews</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Gateway_SuitableCandidateFound</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_NotifyHRForPayroll</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_NotifyHRToSendOffer</bpmn:flowNodeRef>
+      </bpmn:lane>
+      <bpmn:lane id="Lane_HumanResources" name="Human Resources">
+        <bpmn:flowNodeRef>Task_FindCandidates</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_SelectCandidates</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_InviteCandidates</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_SendOfferContract</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Event_ReceiveSignedContract</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_OnboardNewHire</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>EndEvent_HiringCompleted</bpmn:flowNodeRef>
+      </bpmn:lane>
+    </bpmn:laneSet>
+    <bpmn:startEvent id="StartEvent_NeedForHire" name="Need for Hire Realized">
+      <bpmn:outgoing>Flow_StartToCreateReq</bpmn:outgoing>
+    </bpmn:startEvent>
+    <bpmn:task id="Task_CreateJobRequisition" name="Create Job Requisition">
+      <bpmn:incoming>Flow_StartToCreateReq</bpmn:incoming>
+      <bpmn:outgoing>Flow_CreateReqToFindCand</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:task id="Task_FindCandidates" name="Find Best Candidates">
+      <bpmn:incoming>Flow_CreateReqToFindCand</bpmn:incoming>
+      <bpmn:incoming>Flow_GatewayNoToFindCand</bpmn:incoming>
+      <bpmn:outgoing>Flow_FindCandToSelectCand</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:task id="Task_SelectCandidates" name="Select Candidates for Interview">
+      <bpmn:incoming>Flow_FindCandToSelectCand</bpmn:incoming>
+      <bpmn:outgoing>Flow_SelectCandToInviteCand</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:task id="Task_InviteCandidates" name="Invite Candidates to Interview">
+      <bpmn:incoming>Flow_SelectCandToInviteCand</bpmn:incoming>
+      <bpmn:outgoing>Flow_InviteCandToConductInt</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:task id="Task_ConductInterviews" name="Conduct Interviews">
+      <bpmn:incoming>Flow_InviteCandToConductInt</bpmn:incoming>
+      <bpmn:outgoing>Flow_ConductIntToGateway</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:exclusiveGateway id="Gateway_SuitableCandidateFound" name="Suitable Candidate Found?">
+      <bpmn:incoming>Flow_ConductIntToGateway</bpmn:incoming>
+      <bpmn:outgoing>Flow_GatewayYesToNotifyPayroll</bpmn:outgoing>
+      <bpmn:outgoing>Flow_GatewayNoToFindCand</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:task id="Task_NotifyHRForPayroll" name="Notify HR to Set Up Payroll">
+      <bpmn:incoming>Flow_GatewayYesToNotifyPayroll</bpmn:incoming>
+      <bpmn:outgoing>Flow_NotifyPayrollToNotifyOffer</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:task id="Task_NotifyHRToSendOffer" name="Notify HR to Send Offer">
+      <bpmn:incoming>Flow_NotifyPayrollToNotifyOffer</bpmn:incoming>
+      <bpmn:outgoing>Flow_NotifyOfferToSendOffer</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:task id="Task_SendOfferContract" name="Send Offer/Contract">
+      <bpmn:incoming>Flow_NotifyOfferToSendOffer</bpmn:incoming>
+      <bpmn:outgoing>Flow_SendOfferToReceiveContract</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:intermediateCatchEvent id="Event_ReceiveSignedContract" name="Receive Signed Contract">
+      <bpmn:incoming>Flow_SendOfferToReceiveContract</bpmn:incoming>
+      <bpmn:outgoing>Flow_ReceiveContractToOnboard</bpmn:outgoing>
+      <bpmn:messageEventDefinition id="MessageEventDefinition_1" />
+    </bpmn:intermediateCatchEvent>
+    <bpmn:task id="Task_OnboardNewHire" name="Onboard New Hire">
+      <bpmn:incoming>Flow_ReceiveContractToOnboard</bpmn:incoming>
+      <bpmn:outgoing>Flow_OnboardToEnd</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:endEvent id="EndEvent_HiringCompleted" name="Hiring Process Completed">
+      <bpmn:incoming>Flow_OnboardToEnd</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:sequenceFlow id="Flow_StartToCreateReq" sourceRef="StartEvent_NeedForHire" targetRef="Task_CreateJobRequisition" />
+    <bpmn:sequenceFlow id="Flow_CreateReqToFindCand" sourceRef="Task_CreateJobRequisition" targetRef="Task_FindCandidates" />
+    <bpmn:sequenceFlow id="Flow_FindCandToSelectCand" sourceRef="Task_FindCandidates" targetRef="Task_SelectCandidates" />
+    <bpmn:sequenceFlow id="Flow_SelectCandToInviteCand" sourceRef="Task_SelectCandidates" targetRef="Task_InviteCandidates" />
+    <bpmn:sequenceFlow id="Flow_InviteCandToConductInt" sourceRef="Task_InviteCandidates" targetRef="Task_ConductInterviews" />
+    <bpmn:sequenceFlow id="Flow_ConductIntToGateway" sourceRef="Task_ConductInterviews" targetRef="Gateway_SuitableCandidateFound" />
+    <bpmn:sequenceFlow id="Flow_GatewayYesToNotifyPayroll" name="Yes" sourceRef="Gateway_SuitableCandidateFound" targetRef="Task_NotifyHRForPayroll" />
+    <bpmn:sequenceFlow id="Flow_NotifyPayrollToNotifyOffer" sourceRef="Task_NotifyHRForPayroll" targetRef="Task_NotifyHRToSendOffer" />
+    <bpmn:sequenceFlow id="Flow_NotifyOfferToSendOffer" sourceRef="Task_NotifyHRToSendOffer" targetRef="Task_SendOfferContract" />
+    <bpmn:sequenceFlow id="Flow_SendOfferToReceiveContract" sourceRef="Task_SendOfferContract" targetRef="Event_ReceiveSignedContract" />
+    <bpmn:sequenceFlow id="Flow_ReceiveContractToOnboard" sourceRef="Event_ReceiveSignedContract" targetRef="Task_OnboardNewHire" />
+    <bpmn:sequenceFlow id="Flow_OnboardToEnd" sourceRef="Task_OnboardNewHire" targetRef="EndEvent_HiringCompleted" />
+    <bpmn:sequenceFlow id="Flow_GatewayNoToFindCand" name="No" sourceRef="Gateway_SuitableCandidateFound" targetRef="Task_FindCandidates">
+       <di:waypoint x="1025" y="275" />
+       <di:waypoint x="1025" y="340" />
+       <di:waypoint x="350" y="340" />
+       <di:waypoint x="350" y="420" />
+       <di:waypoint x="400" y="420" />
+    </bpmn:sequenceFlow>
+  </bpmn:process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_1">
+    <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="Collaboration_1">
+      <bpmndi:BPMNShape id="Participant_HiringProcess_di" bpmnElement="Participant_HiringProcess" isHorizontal="true">
+        <dc:Bounds x="50" y="20" width="2000" height="500" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Lane_HiringManager_di" bpmnElement="Lane_HiringManager" isHorizontal="true">
+        <dc:Bounds x="80" y="20" width="1970" height="150" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Lane_HRManager_di" bpmnElement="Lane_HRManager" isHorizontal="true">
+        <dc:Bounds x="80" y="170" width="1970" height="150" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Lane_HumanResources_di" bpmnElement="Lane_HumanResources" isHorizontal="true">
+        <dc:Bounds x="80" y="320" width="1970" height="200" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="Flow_StartToCreateReq_di" bpmnElement="Flow_StartToCreateReq">
+        <di:waypoint x="186" y="100" />
+        <di:waypoint x="250" y="100" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_CreateReqToFindCand_di" bpmnElement="Flow_CreateReqToFindCand">
+        <di:waypoint x="300" y="142" />
+        <di:waypoint x="300" y="420" />
+        <di:waypoint x="400" y="420" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_FindCandToSelectCand_di" bpmnElement="Flow_FindCandToSelectCand">
+        <di:waypoint x="500" y="420" />
+        <di:waypoint x="550" y="420" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_SelectCandToInviteCand_di" bpmnElement="Flow_SelectCandToInviteCand">
+        <di:waypoint x="650" y="420" />
+        <di:waypoint x="700" y="420" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_InviteCandToConductInt_di" bpmnElement="Flow_InviteCandToConductInt">
+        <di:waypoint x="750" y="380" />
+        <di:waypoint x="750" y="250" />
+        <di:waypoint x="850" y="250" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_ConductIntToGateway_di" bpmnElement="Flow_ConductIntToGateway">
+        <di:waypoint x="950" y="250" />
+        <di:waypoint x="1000" y="250" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_GatewayYesToNotifyPayroll_di" bpmnElement="Flow_GatewayYesToNotifyPayroll">
+        <di:waypoint x="1050" y="250" />
+        <di:waypoint x="1150" y="250" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1092" y="232" width="19" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_NotifyPayrollToNotifyOffer_di" bpmnElement="Flow_NotifyPayrollToNotifyOffer">
+        <di:waypoint x="1250" y="250" />
+        <di:waypoint x="1300" y="250" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_NotifyOfferToSendOffer_di" bpmnElement="Flow_NotifyOfferToSendOffer">
+        <di:waypoint x="1350" y="290" />
+        <di:waypoint x="1350" y="420" />
+        <di:waypoint x="1450" y="420" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_SendOfferToReceiveContract_di" bpmnElement="Flow_SendOfferToReceiveContract">
+        <di:waypoint x="1550" y="420" />
+        <di:waypoint x="1600" y="420" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_ReceiveContractToOnboard_di" bpmnElement="Flow_ReceiveContractToOnboard">
+        <di:waypoint x="1636" y="420" />
+        <di:waypoint x="1750" y="420" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_OnboardToEnd_di" bpmnElement="Flow_OnboardToEnd">
+        <di:waypoint x="1850" y="420" />
+        <di:waypoint x="1900" y="420" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_GatewayNoToFindCand_di" bpmnElement="Flow_GatewayNoToFindCand">
+        <di:waypoint x="1025" y="275" />
+        <di:waypoint x="1025" y="340" />
+        <di:waypoint x="350" y="340" />
+        <di:waypoint x="350" y="420" />
+        <di:waypoint x="400" y="420" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="679" y="322" width="17" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="StartEvent_NeedForHire_di" bpmnElement="StartEvent_NeedForHire">
+        <dc:Bounds x="150" y="82" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="128" y="125" width="84" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_CreateJobRequisition_di" bpmnElement="Task_CreateJobRequisition">
+        <dc:Bounds x="250" y="60" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_FindCandidates_di" bpmnElement="Task_FindCandidates">
+        <dc:Bounds x="400" y="380" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_SelectCandidates_di" bpmnElement="Task_SelectCandidates">
+        <dc:Bounds x="550" y="380" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_InviteCandidates_di" bpmnElement="Task_InviteCandidates">
+        <dc:Bounds x="700" y="380" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_ConductInterviews_di" bpmnElement="Task_ConductInterviews">
+        <dc:Bounds x="850" y="210" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gateway_SuitableCandidateFound_di" bpmnElement="Gateway_SuitableCandidateFound" isMarkerVisible="true">
+        <dc:Bounds x="1000" y="225" width="50" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="985" y="282" width="80" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_NotifyHRForPayroll_di" bpmnElement="Task_NotifyHRForPayroll">
+        <dc:Bounds x="1150" y="210" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_NotifyHRToSendOffer_di" bpmnElement="Task_NotifyHRToSendOffer">
+        <dc:Bounds x="1300" y="210" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_SendOfferContract_di" bpmnElement="Task_SendOfferContract">
+        <dc:Bounds x="1450" y="380" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_ReceiveSignedContract_di" bpmnElement="Event_ReceiveSignedContract">
+        <dc:Bounds x="1600" y="402" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1578" y="445" width="84" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_OnboardNewHire_di" bpmnElement="Task_OnboardNewHire">
+        <dc:Bounds x="1750" y="380" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="EndEvent_HiringCompleted_di" bpmnElement="EndEvent_HiringCompleted">
+        <dc:Bounds x="1900" y="402" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1878" y="445" width="81" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</bpmn:definitions>
+```

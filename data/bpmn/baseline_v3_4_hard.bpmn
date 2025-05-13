@@ -1,0 +1,875 @@
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" id="Definitions_P2P" targetNamespace="http://bpmn.io/schema/bpmn">
+  <bpmn:collaboration id="Collaboration_P2P">
+    <bpmn:participant id="Participant_P2P_Process" name="Purchase to Pay Process" processRef="Process_P2P" />
+  </bpmn:collaboration>
+  <bpmn:process id="Process_P2P" isExecutable="true">
+    <bpmn:laneSet id="LaneSet_P2P">
+      <bpmn:lane id="Lane_Requestor" name="Requestor">
+        <bpmn:flowNodeRef>StartEvent_P2PInitiated</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_DetermineNeeds</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_RequestIssuePR</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Gateway_PRIssuanceApproved</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_IssuePR</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Boundary_PRDisc</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_CorrectPRDiscrepancy</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_SendPRForApproval</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_Req_ReceivePRDecision</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Gateway_Req_PRHoDApproved</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_Req_CreatePO</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_Req_SendPOApproval</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_Req_ReceivePODecision</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Gateway_Req_POAppApproved</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_Req_DispatchPO</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_Req_ReceiveVendorDecision</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Gateway_Req_VendorApproved</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_Req_SearchVendor</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_Req_ReceiveGoods</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Gateway_Req_GoodService</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_Req_IssueGR</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_Req_IssueSES</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Gateway_Req_ConvergeGRSES</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_Req_ReceiveInvoice</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_Req_3WayMatch</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Gateway_Req_InvCorrect</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_Req_IdentifyInvDisc</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_Req_ReturnInvoice</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_Req_ReceiveCorrInv</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_Req_PostInvSAP</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_Req_SendInvAP</bpmn:flowNodeRef>
+      </bpmn:lane>
+      <bpmn:lane id="Lane_HoD" name="Heads of Departments">
+        <bpmn:flowNodeRef>Task_HoD_ReceivePR</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_HoD_ReviewPR</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Boundary_Budget</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_HandleBudget</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Boundary_Data</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_HandleData</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Gateway_HoD_Outcome</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_HoD_DocApprove</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_HoD_DocDecline</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_HoD_DocReject</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_HoD_SubmitDecision</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>EndEvent_HoD</bpmn:flowNodeRef>
+      </bpmn:lane>
+      <bpmn:lane id="Lane_POApprovers" name="PO Approvers">
+        <bpmn:flowNodeRef>Task_POApp_ReceivePO</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_POApp_ReviewPO</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Gateway_POApp_Outcome</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_POApp_DocApprove</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_POApp_DocReject</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_POApp_SubmitDecision</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>EndEvent_POApp</bpmn:flowNodeRef>
+      </bpmn:lane>
+      <bpmn:lane id="Lane_Vendor" name="Vendor">
+        <bpmn:flowNodeRef>Task_Vendor_ReceivePO</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_Vendor_EvalPO</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Gateway_Vendor_Outcome</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_Vendor_DocApprove</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_Vendor_DocNegotiate</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_Vendor_DocReject</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_Vendor_SendDecision</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>EndEvent_Vendor_Reject</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_Vendor_Deliver</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_Vendor_SendInv</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_Vendor_ReceiveWrongInv</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_Vendor_CorrectInv</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_Vendor_SendCorrectedInv</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>EndEvent_Vendor_InvCorr</bpmn:flowNodeRef>
+      </bpmn:lane>
+      <bpmn:lane id="Lane_APTeam" name="Accounts Payable Team">
+        <bpmn:flowNodeRef>Task_AP_ReceiveInv</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_AP_DecidePayment</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Gateway_AP_PaymentMethod</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_AP_PayFull</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_AP_PayInstallments</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Gateway_AP_ConvergePayment</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>EndEvent_Main</bpmn:flowNodeRef>
+      </bpmn:lane>
+    </bpmn:laneSet>
+
+    <!-- Requestor Lane Elements -->
+    <bpmn:startEvent id="StartEvent_P2PInitiated" name="P2P Process Initiated">
+      <bpmn:outgoing>Flow_Start_To_DetNeeds</bpmn:outgoing>
+    </bpmn:startEvent>
+    <bpmn:task id="Task_DetermineNeeds" name="Determine Business Requirements &amp; Needs">
+      <bpmn:incoming>Flow_Start_To_DetNeeds</bpmn:incoming>
+      <bpmn:incoming>Flow_GatewayPRAppr_No_To_DetNeeds</bpmn:incoming>
+      <bpmn:incoming>Flow_GatewayReqPRHoD_No_To_DetNeeds</bpmn:incoming>
+      <bpmn:incoming>Flow_GatewayReqPOApp_No_To_DetNeeds</bpmn:incoming>
+      <bpmn:outgoing>Flow_DetNeeds_To_ReqIssuePR</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:task id="Task_RequestIssuePR" name="Request to Issue Purchase Requisition">
+      <bpmn:incoming>Flow_DetNeeds_To_ReqIssuePR</bpmn:incoming>
+      <bpmn:outgoing>Flow_ReqIssuePR_To_GatewayPRAppr</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:exclusiveGateway id="Gateway_PRIssuanceApproved" name="PR Issuance Approved?">
+      <bpmn:incoming>Flow_ReqIssuePR_To_GatewayPRAppr</bpmn:incoming>
+      <bpmn:outgoing>Flow_GatewayPRAppr_Yes_To_IssuePR</bpmn:outgoing>
+      <bpmn:outgoing>Flow_GatewayPRAppr_No_To_DetNeeds</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:task id="Task_IssuePR" name="Issue Purchase Requisition (PR)">
+      <bpmn:incoming>Flow_GatewayPRAppr_Yes_To_IssuePR</bpmn:incoming>
+      <bpmn:incoming>Flow_CorrectPRDisc_To_IssuePR</bpmn:incoming>
+      <bpmn:outgoing>Flow_IssuePR_To_SendPRApproval</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:boundaryEvent id="Boundary_PRDisc" name="PR Discrepancy Occurred" attachedToRef="Task_IssuePR">
+      <bpmn:outgoing>Flow_BoundaryPRDisc_To_CorrectPRDisc</bpmn:outgoing>
+      <bpmn:errorEventDefinition id="ErrorEvDef_PRDisc" errorRef="Error_PR_Discrepancy" />
+    </bpmn:boundaryEvent>
+    <bpmn:task id="Task_CorrectPRDiscrepancy" name="Correct PR Discrepancy">
+      <bpmn:incoming>Flow_BoundaryPRDisc_To_CorrectPRDisc</bpmn:incoming>
+      <bpmn:outgoing>Flow_CorrectPRDisc_To_IssuePR</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:task id="Task_SendPRForApproval" name="Send PR for Approval">
+      <bpmn:incoming>Flow_IssuePR_To_SendPRApproval</bpmn:incoming>
+      <bpmn:outgoing>Flow_SendPRApproval_To_HoDReceivePR</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:task id="Task_Req_ReceivePRDecision" name="Receive PR Decision from HoD">
+      <bpmn:incoming>Flow_HoDSubmitDecision_To_ReqReceivePRDecision</bpmn:incoming>
+      <bpmn:outgoing>Flow_ReqReceivePRDecision_To_GatewayReqPRHoD</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:exclusiveGateway id="Gateway_Req_PRHoDApproved" name="PR Approved by HoD?">
+      <bpmn:incoming>Flow_ReqReceivePRDecision_To_GatewayReqPRHoD</bpmn:incoming>
+      <bpmn:outgoing>Flow_GatewayReqPRHoD_Yes_To_CreatePO</bpmn:outgoing>
+      <bpmn:outgoing>Flow_GatewayReqPRHoD_No_To_DetNeeds</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:task id="Task_Req_CreatePO" name="Create Purchase Order (PO)">
+      <bpmn:incoming>Flow_GatewayReqPRHoD_Yes_To_CreatePO</bpmn:incoming>
+      <bpmn:outgoing>Flow_CreatePO_To_SendPOApproval</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:task id="Task_Req_SendPOApproval" name="Send PO for Approval">
+      <bpmn:incoming>Flow_CreatePO_To_SendPOApproval</bpmn:incoming>
+      <bpmn:outgoing>Flow_SendPOApproval_To_POAppReceivePO</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:task id="Task_Req_ReceivePODecision" name="Receive PO Decision from PO Approvers">
+      <bpmn:incoming>Flow_POAppSubmitDecision_To_ReqReceivePODecision</bpmn:incoming>
+      <bpmn:outgoing>Flow_ReqReceivePODecision_To_GatewayReqPOApp</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:exclusiveGateway id="Gateway_Req_POAppApproved" name="PO Approved by PO Approvers?">
+      <bpmn:incoming>Flow_ReqReceivePODecision_To_GatewayReqPOApp</bpmn:incoming>
+      <bpmn:outgoing>Flow_GatewayReqPOApp_Yes_To_DispatchPO</bpmn:outgoing>
+      <bpmn:outgoing>Flow_GatewayReqPOApp_No_To_DetNeeds</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:task id="Task_Req_DispatchPO" name="Dispatch Approved PO to Vendor">
+      <bpmn:incoming>Flow_GatewayReqPOApp_Yes_To_DispatchPO</bpmn:incoming>
+      <bpmn:incoming>Flow_SearchVendor_To_DispatchPO</bpmn:incoming>
+      <bpmn:outgoing>Flow_DispatchPO_To_VendorReceivePO</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:task id="Task_Req_ReceiveVendorDecision" name="Receive Vendor PO Decision">
+      <bpmn:incoming>Flow_VendorSendDecision_To_ReqReceiveVendorDecision</bpmn:incoming>
+      <bpmn:outgoing>Flow_ReqReceiveVendorDecision_To_GatewayVendorApproved</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:exclusiveGateway id="Gateway_Req_VendorApproved" name="Vendor Approved/Negotiated PO?">
+      <bpmn:incoming>Flow_ReqReceiveVendorDecision_To_GatewayVendorApproved</bpmn:incoming>
+      <bpmn:outgoing>Flow_GatewayVendorApproved_Yes_To_ReceiveGoods</bpmn:outgoing>
+      <bpmn:outgoing>Flow_GatewayVendorApproved_No_To_SearchVendor</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:task id="Task_Req_SearchVendor" name="Search for New Vendor">
+      <bpmn:incoming>Flow_GatewayVendorApproved_No_To_SearchVendor</bpmn:incoming>
+      <bpmn:outgoing>Flow_SearchVendor_To_DispatchPO</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:task id="Task_Req_ReceiveGoods" name="Receive Agreed Goods/Services">
+      <bpmn:incoming>Flow_GatewayVendorApproved_Yes_To_ReceiveGoods</bpmn:incoming>
+      <bpmn:incoming>Flow_VendorDeliver_To_ReqReceiveGoods</bpmn:incoming> <!-- Added this connection -->
+      <bpmn:outgoing>Flow_ReceiveGoods_To_GatewayGoodService</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:exclusiveGateway id="Gateway_Req_GoodService" name="Goods or Service Received?">
+      <bpmn:incoming>Flow_ReceiveGoods_To_GatewayGoodService</bpmn:incoming>
+      <bpmn:outgoing>Flow_GatewayGoodService_Goods_To_IssueGR</bpmn:outgoing>
+      <bpmn:outgoing>Flow_GatewayGoodService_Service_To_IssueSES</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:task id="Task_Req_IssueGR" name="Issue Goods Receipt (GR)">
+      <bpmn:incoming>Flow_GatewayGoodService_Goods_To_IssueGR</bpmn:incoming>
+      <bpmn:outgoing>Flow_IssueGR_To_ConvergeGRSES</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:task id="Task_Req_IssueSES" name="Issue Service Entry Sheet (SES)">
+      <bpmn:incoming>Flow_GatewayGoodService_Service_To_IssueSES</bpmn:incoming>
+      <bpmn:outgoing>Flow_IssueSES_To_ConvergeGRSES</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:exclusiveGateway id="Gateway_Req_ConvergeGRSES" name="GR/SES Issued">
+      <bpmn:incoming>Flow_IssueGR_To_ConvergeGRSES</bpmn:incoming>
+      <bpmn:incoming>Flow_IssueSES_To_ConvergeGRSES</bpmn:incoming>
+      <bpmn:outgoing>Flow_ConvergeGRSES_To_ReceiveInvoice</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:task id="Task_Req_ReceiveInvoice" name="Receive Invoice from Vendor">
+      <bpmn:incoming>Flow_ConvergeGRSES_To_ReceiveInvoice</bpmn:incoming>
+      <bpmn:incoming>Flow_VendorSendInv_To_ReqReceiveInvoice</bpmn:incoming>
+      <bpmn:outgoing>Flow_ReceiveInvoice_To_3WayMatch</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:task id="Task_Req_3WayMatch" name="Perform Three-Way Match">
+      <bpmn:incoming>Flow_ReceiveInvoice_To_3WayMatch</bpmn:incoming>
+      <bpmn:incoming>Flow_ReqReceiveCorrInv_To_3WayMatch</bpmn:incoming>
+      <bpmn:outgoing>Flow_3WayMatch_To_GatewayInvCorrect</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:exclusiveGateway id="Gateway_Req_InvCorrect" name="Invoice Correct?">
+      <bpmn:incoming>Flow_3WayMatch_To_GatewayInvCorrect</bpmn:incoming>
+      <bpmn:outgoing>Flow_GatewayInvCorrect_Yes_To_PostInvSAP</bpmn:outgoing>
+      <bpmn:outgoing>Flow_GatewayInvCorrect_No_To_IdentifyInvDisc</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:task id="Task_Req_IdentifyInvDisc" name="Identify Invoice Discrepancy Details">
+      <bpmn:incoming>Flow_GatewayInvCorrect_No_To_IdentifyInvDisc</bpmn:incoming>
+      <bpmn:outgoing>Flow_IdentifyInvDisc_To_ReturnInvoice</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:task id="Task_Req_ReturnInvoice" name="Return Wrong Invoice to Vendor">
+      <bpmn:incoming>Flow_IdentifyInvDisc_To_ReturnInvoice</bpmn:incoming>
+      <bpmn:outgoing>Flow_ReturnInvoice_To_VendorReceiveWrongInv</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:task id="Task_Req_ReceiveCorrInv" name="Receive Corrected Invoice from Vendor">
+      <bpmn:incoming>Flow_VendorSendCorrectedInv_To_ReqReceiveCorrInv</bpmn:incoming>
+      <bpmn:outgoing>Flow_ReqReceiveCorrInv_To_3WayMatch</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:task id="Task_Req_PostInvSAP" name="Post Invoice in SAP">
+      <bpmn:incoming>Flow_GatewayInvCorrect_Yes_To_PostInvSAP</bpmn:incoming>
+      <bpmn:outgoing>Flow_PostInvSAP_To_SendInvAP</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:task id="Task_Req_SendInvAP" name="Send Invoice to Accounts Payable (AP) Team">
+      <bpmn:incoming>Flow_PostInvSAP_To_SendInvAP</bpmn:incoming>
+      <bpmn:outgoing>Flow_SendInvAP_To_APReceiveInv</bpmn:outgoing>
+    </bpmn:task>
+
+    <!-- Heads of Departments Lane Elements -->
+    <bpmn:task id="Task_HoD_ReceivePR" name="Receive PR Approval Request">
+      <bpmn:incoming>Flow_SendPRApproval_To_HoDReceivePR</bpmn:incoming>
+      <bpmn:outgoing>Flow_HoDReceivePR_To_HoDReviewPR</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:task id="Task_HoD_ReviewPR" name="Review PR (Needs, Budget, Form)">
+      <bpmn:incoming>Flow_HoDReceivePR_To_HoDReviewPR</bpmn:incoming>
+      <bpmn:outgoing>Flow_HoDReviewPR_To_GatewayHoDOutcome</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:boundaryEvent id="Boundary_Budget" name="Budget Overdraft Occurred" attachedToRef="Task_HoD_ReviewPR">
+      <bpmn:outgoing>Flow_BoundaryBudget_To_HandleBudget</bpmn:outgoing>
+      <bpmn:errorEventDefinition id="ErrorEvDef_Budget" errorRef="Error_Budget_Overdraft"/>
+    </bpmn:boundaryEvent>
+    <bpmn:task id="Task_HandleBudget" name="Handle Budget Overdraft">
+      <bpmn:incoming>Flow_BoundaryBudget_To_HandleBudget</bpmn:incoming>
+      <bpmn:outgoing>Flow_HandleBudget_To_HoDDocDecline</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:boundaryEvent id="Boundary_Data" name="Data Breach Occurred" attachedToRef="Task_HoD_ReviewPR">
+      <bpmn:outgoing>Flow_BoundaryData_To_HandleData</bpmn:outgoing>
+      <bpmn:errorEventDefinition id="ErrorEvDef_Data" errorRef="Error_Data_Breach"/>
+    </bpmn:boundaryEvent>
+    <bpmn:task id="Task_HandleData" name="Handle Data Breach">
+      <bpmn:incoming>Flow_BoundaryData_To_HandleData</bpmn:incoming>
+      <bpmn:outgoing>Flow_HandleData_To_HoDDocDecline</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:exclusiveGateway id="Gateway_HoD_Outcome" name="PR Review Outcome?">
+      <bpmn:incoming>Flow_HoDReviewPR_To_GatewayHoDOutcome</bpmn:incoming>
+      <bpmn:outgoing>Flow_GatewayHoDOutcome_Approve_To_DocApprove</bpmn:outgoing>
+      <bpmn:outgoing>Flow_GatewayHoDOutcome_Decline_To_DocDecline</bpmn:outgoing>
+      <bpmn:outgoing>Flow_GatewayHoDOutcome_Reject_To_DocReject</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:task id="Task_HoD_DocApprove" name="Document Approved PR Decision">
+      <bpmn:incoming>Flow_GatewayHoDOutcome_Approve_To_DocApprove</bpmn:incoming>
+      <bpmn:outgoing>Flow_HoDDocApprove_To_SubmitDecision</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:task id="Task_HoD_DocDecline" name="Document Declined PR Decision">
+      <bpmn:incoming>Flow_GatewayHoDOutcome_Decline_To_DocDecline</bpmn:incoming>
+      <bpmn:incoming>Flow_HandleBudget_To_HoDDocDecline</bpmn:incoming>
+      <bpmn:incoming>Flow_HandleData_To_HoDDocDecline</bpmn:incoming>
+      <bpmn:outgoing>Flow_HoDDocDecline_To_SubmitDecision</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:task id="Task_HoD_DocReject" name="Document Rejected (Incomplete) PR Decision">
+      <bpmn:incoming>Flow_GatewayHoDOutcome_Reject_To_DocReject</bpmn:incoming>
+      <bpmn:outgoing>Flow_HoDDocReject_To_SubmitDecision</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:task id="Task_HoD_SubmitDecision" name="Submit Final PR Decision to Requestor">
+      <bpmn:incoming>Flow_HoDDocApprove_To_SubmitDecision</bpmn:incoming>
+      <bpmn:incoming>Flow_HoDDocDecline_To_SubmitDecision</bpmn:incoming>
+      <bpmn:incoming>Flow_HoDDocReject_To_SubmitDecision</bpmn:incoming>
+      <bpmn:outgoing>Flow_HoDSubmitDecision_To_ReqReceivePRDecision</bpmn:outgoing>
+      <bpmn:outgoing>Flow_HoDSubmitDecision_To_EndHoD</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:endEvent id="EndEvent_HoD" name="PR Approval Process Ended for HoD">
+      <bpmn:incoming>Flow_HoDSubmitDecision_To_EndHoD</bpmn:incoming>
+    </bpmn:endEvent>
+
+    <!-- PO Approvers Lane Elements -->
+    <bpmn:task id="Task_POApp_ReceivePO" name="Receive PO Approval Request">
+      <bpmn:incoming>Flow_SendPOApproval_To_POAppReceivePO</bpmn:incoming>
+      <bpmn:outgoing>Flow_POAppReceivePO_To_POAppReviewPO</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:task id="Task_POApp_ReviewPO" name="Review PO Specifications">
+      <bpmn:incoming>Flow_POAppReceivePO_To_POAppReviewPO</bpmn:incoming>
+      <bpmn:outgoing>Flow_POAppReviewPO_To_GatewayPOAppOutcome</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:exclusiveGateway id="Gateway_POApp_Outcome" name="PO Review Outcome?">
+      <bpmn:incoming>Flow_POAppReviewPO_To_GatewayPOAppOutcome</bpmn:incoming>
+      <bpmn:outgoing>Flow_GatewayPOAppOutcome_Approve_To_DocApprove</bpmn:outgoing>
+      <bpmn:outgoing>Flow_GatewayPOAppOutcome_Reject_To_DocReject</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:task id="Task_POApp_DocApprove" name="Document Approved PO Decision">
+      <bpmn:incoming>Flow_GatewayPOAppOutcome_Approve_To_DocApprove</bpmn:incoming>
+      <bpmn:outgoing>Flow_POAppDocApprove_To_SubmitDecision</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:task id="Task_POApp_DocReject" name="Document Rejected PO Decision">
+      <bpmn:incoming>Flow_GatewayPOAppOutcome_Reject_To_DocReject</bpmn:incoming>
+      <bpmn:outgoing>Flow_POAppDocReject_To_SubmitDecision</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:task id="Task_POApp_SubmitDecision" name="Submit Final PO Decision to Requestor">
+      <bpmn:incoming>Flow_POAppDocApprove_To_SubmitDecision</bpmn:incoming>
+      <bpmn:incoming>Flow_POAppDocReject_To_SubmitDecision</bpmn:incoming>
+      <bpmn:outgoing>Flow_POAppSubmitDecision_To_ReqReceivePODecision</bpmn:outgoing>
+      <bpmn:outgoing>Flow_POAppSubmitDecision_To_EndPOApp</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:endEvent id="EndEvent_POApp" name="PO Approval Process Ended for PO Approvers">
+      <bpmn:incoming>Flow_POAppSubmitDecision_To_EndPOApp</bpmn:incoming>
+    </bpmn:endEvent>
+
+    <!-- Vendor Lane Elements -->
+    <bpmn:task id="Task_Vendor_ReceivePO" name="Receive PO Review Request">
+      <bpmn:incoming>Flow_DispatchPO_To_VendorReceivePO</bpmn:incoming>
+      <bpmn:outgoing>Flow_VendorReceivePO_To_VendorEvalPO</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:task id="Task_Vendor_EvalPO" name="Evaluate PO">
+      <bpmn:incoming>Flow_VendorReceivePO_To_VendorEvalPO</bpmn:incoming>
+      <bpmn:outgoing>Flow_VendorEvalPO_To_GatewayVendorOutcome</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:exclusiveGateway id="Gateway_Vendor_Outcome" name="PO Evaluation Outcome?">
+      <bpmn:incoming>Flow_VendorEvalPO_To_GatewayVendorOutcome</bpmn:incoming>
+      <bpmn:outgoing>Flow_GatewayVendorOutcome_Approve_To_DocApprove</bpmn:outgoing>
+      <bpmn:outgoing>Flow_GatewayVendorOutcome_Negotiate_To_DocNegotiate</bpmn:outgoing>
+      <bpmn:outgoing>Flow_GatewayVendorOutcome_Reject_To_DocReject</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:task id="Task_Vendor_DocApprove" name="Document Approved PO Decision">
+      <bpmn:incoming>Flow_GatewayVendorOutcome_Approve_To_DocApprove</bpmn:incoming>
+      <bpmn:outgoing>Flow_VendorDocApprove_To_SendDecision</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:task id="Task_Vendor_DocNegotiate" name="Document Negotiated PO Decision">
+      <bpmn:incoming>Flow_GatewayVendorOutcome_Negotiate_To_DocNegotiate</bpmn:incoming>
+      <bpmn:outgoing>Flow_VendorDocNegotiate_To_SendDecision</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:task id="Task_Vendor_DocReject" name="Document Rejected PO Decision">
+      <bpmn:incoming>Flow_GatewayVendorOutcome_Reject_To_DocReject</bpmn:incoming>
+      <bpmn:outgoing>Flow_VendorDocReject_To_SendDecision</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:task id="Task_Vendor_SendDecision" name="Send PO Evaluation Decision to Requestor">
+      <bpmn:incoming>Flow_VendorDocApprove_To_SendDecision</bpmn:incoming>
+      <bpmn:incoming>Flow_VendorDocNegotiate_To_SendDecision</bpmn:incoming>
+      <bpmn:incoming>Flow_VendorDocReject_To_SendDecision</bpmn:incoming>
+      <bpmn:outgoing>Flow_VendorSendDecision_To_ReqReceiveVendorDecision</bpmn:outgoing>
+      <bpmn:outgoing>Flow_VendorSendDecision_To_DeliverOrEnd</bpmn:outgoing> <!-- This needs to be conditional -->
+    </bpmn:task>
+    <!-- This gateway directs flow after vendor decision is sent -->
+    <bpmn:exclusiveGateway id="Gateway_Vendor_PostDecisionAction">
+        <bpmn:incoming>Flow_VendorSendDecision_To_DeliverOrEnd</bpmn:incoming>
+        <bpmn:outgoing>Flow_VendorDecision_To_Deliver</bpmn:outgoing> <!-- If Approved/Negotiated -->
+        <bpmn:outgoing>Flow_VendorDecision_To_EndReject</bpmn:outgoing> <!-- If Rejected -->
+    </bpmn:exclusiveGateway>
+    <bpmn:endEvent id="EndEvent_Vendor_Reject" name="PO Rejected by Vendor">
+      <bpmn:incoming>Flow_VendorDecision_To_EndReject</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:task id="Task_Vendor_Deliver" name="Deliver Agreed Goods/Services">
+      <bpmn:incoming>Flow_VendorDecision_To_Deliver</bpmn:incoming>
+      <bpmn:outgoing>Flow_VendorDeliver_To_SendInv</bpmn:outgoing>
+      <bpmn:outgoing>Flow_VendorDeliver_To_ReqReceiveGoods</bpmn:outgoing> <!-- Connect to Requestor's Receive Goods -->
+    </bpmn:task>
+    <bpmn:task id="Task_Vendor_SendInv" name="Send Invoice for Delivery">
+      <bpmn:incoming>Flow_VendorDeliver_To_SendInv</bpmn:incoming>
+      <bpmn:outgoing>Flow_VendorSendInv_To_ReqReceiveInvoice</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:task id="Task_Vendor_ReceiveWrongInv" name="Receive Wrong Invoice">
+      <bpmn:incoming>Flow_ReturnInvoice_To_VendorReceiveWrongInv</bpmn:incoming>
+      <bpmn:outgoing>Flow_VendorReceiveWrongInv_To_CorrectInv</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:task id="Task_Vendor_CorrectInv" name="Correct Invoice">
+      <bpmn:incoming>Flow_VendorReceiveWrongInv_To_CorrectInv</bpmn:incoming>
+      <bpmn:outgoing>Flow_VendorCorrectInv_To_SendCorrectedInv</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:task id="Task_Vendor_SendCorrectedInv" name="Send Corrected Invoice Back to Requestor">
+      <bpmn:incoming>Flow_VendorCorrectInv_To_SendCorrectedInv</bpmn:incoming>
+      <bpmn:outgoing>Flow_VendorSendCorrectedInv_To_ReqReceiveCorrInv</bpmn:outgoing>
+      <bpmn:outgoing>Flow_VendorSendCorrectedInv_To_EndInvCorr</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:endEvent id="EndEvent_Vendor_InvCorr" name="Invoice Correction Process Ended for Vendor">
+      <bpmn:incoming>Flow_VendorSendCorrectedInv_To_EndInvCorr</bpmn:incoming>
+    </bpmn:endEvent>
+
+    <!-- Accounts Payable Team Lane Elements -->
+    <bpmn:task id="Task_AP_ReceiveInv" name="Receive Invoice from Requestor">
+      <bpmn:incoming>Flow_SendInvAP_To_APReceiveInv</bpmn:incoming>
+      <bpmn:outgoing>Flow_APReceiveInv_To_APDecidePayment</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:task id="Task_AP_DecidePayment" name="Decide on Payment Method">
+      <bpmn:incoming>Flow_APReceiveInv_To_APDecidePayment</bpmn:incoming>
+      <bpmn:outgoing>Flow_APDecidePayment_To_GatewayAPPaymentMethod</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:exclusiveGateway id="Gateway_AP_PaymentMethod" name="Payment Method?">
+      <bpmn:incoming>Flow_APDecidePayment_To_GatewayAPPaymentMethod</bpmn:incoming>
+      <bpmn:outgoing>Flow_GatewayAPPaymentMethod_Full_To_PayFull</bpmn:outgoing>
+      <bpmn:outgoing>Flow_GatewayAPPaymentMethod_Install_To_PayInstall</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:task id="Task_AP_PayFull" name="Perform Payment in Full">
+      <bpmn:incoming>Flow_GatewayAPPaymentMethod_Full_To_PayFull</bpmn:incoming>
+      <bpmn:outgoing>Flow_PayFull_To_ConvergePayment</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:task id="Task_AP_PayInstallments" name="Perform Payment in Installments">
+      <bpmn:incoming>Flow_GatewayAPPaymentMethod_Install_To_PayInstall</bpmn:incoming>
+      <bpmn:outgoing>Flow_PayInstall_To_ConvergePayment</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:exclusiveGateway id="Gateway_AP_ConvergePayment" name="Payment Performed">
+      <bpmn:incoming>Flow_PayFull_To_ConvergePayment</bpmn:incoming>
+      <bpmn:incoming>Flow_PayInstall_To_ConvergePayment</bpmn:incoming>
+      <bpmn:outgoing>Flow_ConvergePayment_To_EndMain</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:endEvent id="EndEvent_Main" name="P2P Process Successfully Completed">
+      <bpmn:incoming>Flow_ConvergePayment_To_EndMain</bpmn:incoming>
+    </bpmn:endEvent>
+
+    <!-- Sequence Flows -->
+    <bpmn:sequenceFlow id="Flow_Start_To_DetNeeds" sourceRef="StartEvent_P2PInitiated" targetRef="Task_DetermineNeeds" />
+    <bpmn:sequenceFlow id="Flow_DetNeeds_To_ReqIssuePR" sourceRef="Task_DetermineNeeds" targetRef="Task_RequestIssuePR" />
+    <bpmn:sequenceFlow id="Flow_ReqIssuePR_To_GatewayPRAppr" sourceRef="Task_RequestIssuePR" targetRef="Gateway_PRIssuanceApproved" />
+    <bpmn:sequenceFlow id="Flow_GatewayPRAppr_Yes_To_IssuePR" name="Yes" sourceRef="Gateway_PRIssuanceApproved" targetRef="Task_IssuePR" />
+    <bpmn:sequenceFlow id="Flow_GatewayPRAppr_No_To_DetNeeds" name="No" sourceRef="Gateway_PRIssuanceApproved" targetRef="Task_DetermineNeeds" />
+    <bpmn:sequenceFlow id="Flow_BoundaryPRDisc_To_CorrectPRDisc" sourceRef="Boundary_PRDisc" targetRef="Task_CorrectPRDiscrepancy" />
+    <bpmn:sequenceFlow id="Flow_CorrectPRDisc_To_IssuePR" sourceRef="Task_CorrectPRDiscrepancy" targetRef="Task_IssuePR" />
+    <bpmn:sequenceFlow id="Flow_IssuePR_To_SendPRApproval" sourceRef="Task_IssuePR" targetRef="Task_SendPRForApproval" />
+    <bpmn:sequenceFlow id="Flow_SendPRApproval_To_HoDReceivePR" sourceRef="Task_SendPRForApproval" targetRef="Task_HoD_ReceivePR" />
+    <bpmn:sequenceFlow id="Flow_HoDReceivePR_To_HoDReviewPR" sourceRef="Task_HoD_ReceivePR" targetRef="Task_HoD_ReviewPR" />
+    <bpmn:sequenceFlow id="Flow_BoundaryBudget_To_HandleBudget" sourceRef="Boundary_Budget" targetRef="Task_HandleBudget" />
+    <bpmn:sequenceFlow id="Flow_HandleBudget_To_HoDDocDecline" sourceRef="Task_HandleBudget" targetRef="Task_HoD_DocDecline" />
+    <bpmn:sequenceFlow id="Flow_BoundaryData_To_HandleData" sourceRef="Boundary_Data" targetRef="Task_HandleData" />
+    <bpmn:sequenceFlow id="Flow_HandleData_To_HoDDocDecline" sourceRef="Task_HandleData" targetRef="Task_HoD_DocDecline" />
+    <bpmn:sequenceFlow id="Flow_HoDReviewPR_To_GatewayHoDOutcome" sourceRef="Task_HoD_ReviewPR" targetRef="Gateway_HoD_Outcome" />
+    <bpmn:sequenceFlow id="Flow_GatewayHoDOutcome_Approve_To_DocApprove" name="Approve" sourceRef="Gateway_HoD_Outcome" targetRef="Task_HoD_DocApprove" />
+    <bpmn:sequenceFlow id="Flow_GatewayHoDOutcome_Decline_To_DocDecline" name="Decline" sourceRef="Gateway_HoD_Outcome" targetRef="Task_HoD_DocDecline" />
+    <bpmn:sequenceFlow id="Flow_GatewayHoDOutcome_Reject_To_DocReject" name="Reject Incomplete" sourceRef="Gateway_HoD_Outcome" targetRef="Task_HoD_DocReject" />
+    <bpmn:sequenceFlow id="Flow_HoDDocApprove_To_SubmitDecision" sourceRef="Task_HoD_DocApprove" targetRef="Task_HoD_SubmitDecision" />
+    <bpmn:sequenceFlow id="Flow_HoDDocDecline_To_SubmitDecision" sourceRef="Task_HoD_DocDecline" targetRef="Task_HoD_SubmitDecision" />
+    <bpmn:sequenceFlow id="Flow_HoDDocReject_To_SubmitDecision" sourceRef="Task_HoD_DocReject" targetRef="Task_HoD_SubmitDecision" />
+    <bpmn:sequenceFlow id="Flow_HoDSubmitDecision_To_ReqReceivePRDecision" sourceRef="Task_HoD_SubmitDecision" targetRef="Task_Req_ReceivePRDecision" />
+    <bpmn:sequenceFlow id="Flow_HoDSubmitDecision_To_EndHoD" sourceRef="Task_HoD_SubmitDecision" targetRef="EndEvent_HoD" />
+    <bpmn:sequenceFlow id="Flow_ReqReceivePRDecision_To_GatewayReqPRHoD" sourceRef="Task_Req_ReceivePRDecision" targetRef="Gateway_Req_PRHoDApproved" />
+    <bpmn:sequenceFlow id="Flow_GatewayReqPRHoD_Yes_To_CreatePO" name="Yes" sourceRef="Gateway_Req_PRHoDApproved" targetRef="Task_Req_CreatePO" />
+    <bpmn:sequenceFlow id="Flow_GatewayReqPRHoD_No_To_DetNeeds" name="No" sourceRef="Gateway_Req_PRHoDApproved" targetRef="Task_DetermineNeeds" />
+    <bpmn:sequenceFlow id="Flow_CreatePO_To_SendPOApproval" sourceRef="Task_Req_CreatePO" targetRef="Task_Req_SendPOApproval" />
+    <bpmn:sequenceFlow id="Flow_SendPOApproval_To_POAppReceivePO" sourceRef="Task_Req_SendPOApproval" targetRef="Task_POApp_ReceivePO" />
+    <bpmn:sequenceFlow id="Flow_POAppReceivePO_To_POAppReviewPO" sourceRef="Task_POApp_ReceivePO" targetRef="Task_POApp_ReviewPO" />
+    <bpmn:sequenceFlow id="Flow_POAppReviewPO_To_GatewayPOAppOutcome" sourceRef="Task_POApp_ReviewPO" targetRef="Gateway_POApp_Outcome" />
+    <bpmn:sequenceFlow id="Flow_GatewayPOAppOutcome_Approve_To_DocApprove" name="Approve" sourceRef="Gateway_POApp_Outcome" targetRef="Task_POApp_DocApprove" />
+    <bpmn:sequenceFlow id="Flow_GatewayPOAppOutcome_Reject_To_DocReject" name="Reject" sourceRef="Gateway_POApp_Outcome" targetRef="Task_POApp_DocReject" />
+    <bpmn:sequenceFlow id="Flow_POAppDocApprove_To_SubmitDecision" sourceRef="Task_POApp_DocApprove" targetRef="Task_POApp_SubmitDecision" />
+    <bpmn:sequenceFlow id="Flow_POAppDocReject_To_SubmitDecision" sourceRef="Task_POApp_DocReject" targetRef="Task_POApp_SubmitDecision" />
+    <bpmn:sequenceFlow id="Flow_POAppSubmitDecision_To_ReqReceivePODecision" sourceRef="Task_POApp_SubmitDecision" targetRef="Task_Req_ReceivePODecision" />
+    <bpmn:sequenceFlow id="Flow_POAppSubmitDecision_To_EndPOApp" sourceRef="Task_POApp_SubmitDecision" targetRef="EndEvent_POApp" />
+    <bpmn:sequenceFlow id="Flow_ReqReceivePODecision_To_GatewayReqPOApp" sourceRef="Task_Req_ReceivePODecision" targetRef="Gateway_Req_POAppApproved" />
+    <bpmn:sequenceFlow id="Flow_GatewayReqPOApp_Yes_To_DispatchPO" name="Yes" sourceRef="Gateway_Req_POAppApproved" targetRef="Task_Req_DispatchPO" />
+    <bpmn:sequenceFlow id="Flow_GatewayReqPOApp_No_To_DetNeeds" name="No" sourceRef="Gateway_Req_POAppApproved" targetRef="Task_DetermineNeeds" />
+    <bpmn:sequenceFlow id="Flow_DispatchPO_To_VendorReceivePO" sourceRef="Task_Req_DispatchPO" targetRef="Task_Vendor_ReceivePO" />
+    <bpmn:sequenceFlow id="Flow_VendorReceivePO_To_VendorEvalPO" sourceRef="Task_Vendor_ReceivePO" targetRef="Task_Vendor_EvalPO" />
+    <bpmn:sequenceFlow id="Flow_VendorEvalPO_To_GatewayVendorOutcome" sourceRef="Task_Vendor_EvalPO" targetRef="Gateway_Vendor_Outcome" />
+    <bpmn:sequenceFlow id="Flow_GatewayVendorOutcome_Approve_To_DocApprove" name="Approve" sourceRef="Gateway_Vendor_Outcome" targetRef="Task_Vendor_DocApprove" />
+    <bpmn:sequenceFlow id="Flow_GatewayVendorOutcome_Negotiate_To_DocNegotiate" name="Negotiate" sourceRef="Gateway_Vendor_Outcome" targetRef="Task_Vendor_DocNegotiate" />
+    <bpmn:sequenceFlow id="Flow_GatewayVendorOutcome_Reject_To_DocReject" name="Reject" sourceRef="Gateway_Vendor_Outcome" targetRef="Task_Vendor_DocReject" />
+    <bpmn:sequenceFlow id="Flow_VendorDocApprove_To_SendDecision" sourceRef="Task_Vendor_DocApprove" targetRef="Task_Vendor_SendDecision" />
+    <bpmn:sequenceFlow id="Flow_VendorDocNegotiate_To_SendDecision" sourceRef="Task_Vendor_DocNegotiate" targetRef="Task_Vendor_SendDecision" />
+    <bpmn:sequenceFlow id="Flow_VendorDocReject_To_SendDecision" sourceRef="Task_Vendor_DocReject" targetRef="Task_Vendor_SendDecision" />
+    <bpmn:sequenceFlow id="Flow_VendorSendDecision_To_ReqReceiveVendorDecision" sourceRef="Task_Vendor_SendDecision" targetRef="Task_Req_ReceiveVendorDecision" />
+    <bpmn:sequenceFlow id="Flow_VendorSendDecision_To_DeliverOrEnd" sourceRef="Task_Vendor_SendDecision" targetRef="Gateway_Vendor_PostDecisionAction" />
+    <bpmn:sequenceFlow id="Flow_VendorDecision_To_Deliver" name="Approved/Negotiated" sourceRef="Gateway_Vendor_PostDecisionAction" targetRef="Task_Vendor_Deliver">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${vendorDecision == 'approve' || vendorDecision == 'negotiate'}</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="Flow_VendorDecision_To_EndReject" name="Rejected" sourceRef="Gateway_Vendor_PostDecisionAction" targetRef="EndEvent_Vendor_Reject">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${vendorDecision == 'reject'}</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="Flow_VendorDeliver_To_SendInv" sourceRef="Task_Vendor_Deliver" targetRef="Task_Vendor_SendInv" />
+    <bpmn:sequenceFlow id="Flow_VendorDeliver_To_ReqReceiveGoods" sourceRef="Task_Vendor_Deliver" targetRef="Task_Req_ReceiveGoods" />
+    <bpmn:sequenceFlow id="Flow_VendorSendInv_To_ReqReceiveInvoice" sourceRef="Task_Vendor_SendInv" targetRef="Task_Req_ReceiveInvoice" />
+    <bpmn:sequenceFlow id="Flow_ReqReceiveVendorDecision_To_GatewayVendorApproved" sourceRef="Task_Req_ReceiveVendorDecision" targetRef="Gateway_Req_VendorApproved" />
+    <bpmn:sequenceFlow id="Flow_GatewayVendorApproved_Yes_To_ReceiveGoods" name="Yes" sourceRef="Gateway_Req_VendorApproved" targetRef="Task_Req_ReceiveGoods" />
+    <bpmn:sequenceFlow id="Flow_GatewayVendorApproved_No_To_SearchVendor" name="No" sourceRef="Gateway_Req_VendorApproved" targetRef="Task_Req_SearchVendor" />
+    <bpmn:sequenceFlow id="Flow_SearchVendor_To_DispatchPO" sourceRef="Task_Req_SearchVendor" targetRef="Task_Req_DispatchPO" />
+    <bpmn:sequenceFlow id="Flow_ReceiveGoods_To_GatewayGoodService" sourceRef="Task_Req_ReceiveGoods" targetRef="Gateway_Req_GoodService" />
+    <bpmn:sequenceFlow id="Flow_GatewayGoodService_Goods_To_IssueGR" name="Goods" sourceRef="Gateway_Req_GoodService" targetRef="Task_Req_IssueGR" />
+    <bpmn:sequenceFlow id="Flow_GatewayGoodService_Service_To_IssueSES" name="Service" sourceRef="Gateway_Req_GoodService" targetRef="Task_Req_IssueSES" />
+    <bpmn:sequenceFlow id="Flow_IssueGR_To_ConvergeGRSES" sourceRef="Task_Req_IssueGR" targetRef="Gateway_Req_ConvergeGRSES" />
+    <bpmn:sequenceFlow id="Flow_IssueSES_To_ConvergeGRSES" sourceRef="Task_Req_IssueSES" targetRef="Gateway_Req_ConvergeGRSES" />
+    <bpmn:sequenceFlow id="Flow_ConvergeGRSES_To_ReceiveInvoice" sourceRef="Gateway_Req_ConvergeGRSES" targetRef="Task_Req_ReceiveInvoice" />
+    <bpmn:sequenceFlow id="Flow_ReceiveInvoice_To_3WayMatch" sourceRef="Task_Req_ReceiveInvoice" targetRef="Task_Req_3WayMatch" />
+    <bpmn:sequenceFlow id="Flow_3WayMatch_To_GatewayInvCorrect" sourceRef="Task_Req_3WayMatch" targetRef="Gateway_Req_InvCorrect" />
+    <bpmn:sequenceFlow id="Flow_GatewayInvCorrect_Yes_To_PostInvSAP" name="Yes" sourceRef="Gateway_Req_InvCorrect" targetRef="Task_Req_PostInvSAP" />
+    <bpmn:sequenceFlow id="Flow_GatewayInvCorrect_No_To_IdentifyInvDisc" name="No" sourceRef="Gateway_Req_InvCorrect" targetRef="Task_Req_IdentifyInvDisc" />
+    <bpmn:sequenceFlow id="Flow_IdentifyInvDisc_To_ReturnInvoice" sourceRef="Task_Req_IdentifyInvDisc" targetRef="Task_Req_ReturnInvoice" />
+    <bpmn:sequenceFlow id="Flow_ReturnInvoice_To_VendorReceiveWrongInv" sourceRef="Task_Req_ReturnInvoice" targetRef="Task_Vendor_ReceiveWrongInv" />
+    <bpmn:sequenceFlow id="Flow_VendorReceiveWrongInv_To_CorrectInv" sourceRef="Task_Vendor_ReceiveWrongInv" targetRef="Task_Vendor_CorrectInv" />
+    <bpmn:sequenceFlow id="Flow_VendorCorrectInv_To_SendCorrectedInv" sourceRef="Task_Vendor_CorrectInv" targetRef="Task_Vendor_SendCorrectedInv" />
+    <bpmn:sequenceFlow id="Flow_VendorSendCorrectedInv_To_ReqReceiveCorrInv" sourceRef="Task_Vendor_SendCorrectedInv" targetRef="Task_Req_ReceiveCorrInv" />
+    <bpmn:sequenceFlow id="Flow_VendorSendCorrectedInv_To_EndInvCorr" sourceRef="Task_Vendor_SendCorrectedInv" targetRef="EndEvent_Vendor_InvCorr" />
+    <bpmn:sequenceFlow id="Flow_ReqReceiveCorrInv_To_3WayMatch" sourceRef="Task_Req_ReceiveCorrInv" targetRef="Task_Req_3WayMatch" />
+    <bpmn:sequenceFlow id="Flow_PostInvSAP_To_SendInvAP" sourceRef="Task_Req_PostInvSAP" targetRef="Task_Req_SendInvAP" />
+    <bpmn:sequenceFlow id="Flow_SendInvAP_To_APReceiveInv" sourceRef="Task_Req_SendInvAP" targetRef="Task_AP_ReceiveInv" />
+    <bpmn:sequenceFlow id="Flow_APReceiveInv_To_APDecidePayment" sourceRef="Task_AP_ReceiveInv" targetRef="Task_AP_DecidePayment" />
+    <bpmn:sequenceFlow id="Flow_APDecidePayment_To_GatewayAPPaymentMethod" sourceRef="Task_AP_DecidePayment" targetRef="Gateway_AP_PaymentMethod" />
+    <bpmn:sequenceFlow id="Flow_GatewayAPPaymentMethod_Full_To_PayFull" name="Full Payment" sourceRef="Gateway_AP_PaymentMethod" targetRef="Task_AP_PayFull" />
+    <bpmn:sequenceFlow id="Flow_GatewayAPPaymentMethod_Install_To_PayInstall" name="Installments" sourceRef="Gateway_AP_PaymentMethod" targetRef="Task_AP_PayInstallments" />
+    <bpmn:sequenceFlow id="Flow_PayFull_To_ConvergePayment" sourceRef="Task_AP_PayFull" targetRef="Gateway_AP_ConvergePayment" />
+    <bpmn:sequenceFlow id="Flow_PayInstall_To_ConvergePayment" sourceRef="Task_AP_PayInstallments" targetRef="Gateway_AP_ConvergePayment" />
+    <bpmn:sequenceFlow id="Flow_ConvergePayment_To_EndMain" sourceRef="Gateway_AP_ConvergePayment" targetRef="EndEvent_Main" />
+
+    <!-- Error Definitions -->
+    <bpmn:error id="Error_PR_Discrepancy" name="PRDiscrepancyError" errorCode="ERR_PR_DISC" />
+    <bpmn:error id="Error_Budget_Overdraft" name="BudgetOverdraftError" errorCode="ERR_BUDGET_OD" />
+    <bpmn:error id="Error_Data_Breach" name="DataBreachError" errorCode="ERR_DATA_BREACH" />
+
+  </bpmn:process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_P2P">
+    <bpmndi:BPMNPlane id="BPMNPlane_P2P" bpmnElement="Collaboration_P2P">
+      <bpmndi:BPMNShape id="Participant_P2P_Process_di" bpmnElement="Participant_P2P_Process" isHorizontal="true">
+        <dc:Bounds x="100" y="10" width="4100" height="2250" /> 
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Lane_Requestor_di" bpmnElement="Lane_Requestor" isHorizontal="true">
+        <dc:Bounds x="130" y="10" width="4070" height="700" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Lane_HoD_di" bpmnElement="Lane_HoD" isHorizontal="true">
+        <dc:Bounds x="130" y="710" width="4070" height="350" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Lane_POApprovers_di" bpmnElement="Lane_POApprovers" isHorizontal="true">
+        <dc:Bounds x="130" y="1060" width="4070" height="350" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Lane_Vendor_di" bpmnElement="Lane_Vendor" isHorizontal="true">
+        <dc:Bounds x="130" y="1410" width="4070" height="500" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Lane_APTeam_di" bpmnElement="Lane_APTeam" isHorizontal="true">
+        <dc:Bounds x="130" y="1910" width="4070" height="350" />
+      </bpmndi:BPMNShape>
+
+      <!-- Requestor Shapes -->
+      <bpmndi:BPMNShape id="StartEvent_P2PInitiated_di" bpmnElement="StartEvent_P2PInitiated">
+        <dc:Bounds x="180" y="82" width="36" height="36" />
+        <bpmndi:BPMNLabel><dc:Bounds x="153" y="125" width="90" height="28" /></bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_DetermineNeeds_di" bpmnElement="Task_DetermineNeeds">
+        <dc:Bounds x="280" y="60" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_RequestIssuePR_di" bpmnElement="Task_RequestIssuePR">
+        <dc:Bounds x="430" y="60" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gateway_PRIssuanceApproved_di" bpmnElement="Gateway_PRIssuanceApproved" isMarkerVisible="true">
+        <dc:Bounds x="580" y="75" width="50" height="50" />
+        <bpmndi:BPMNLabel><dc:Bounds x="560" y="132" width="90" height="28" /></bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_IssuePR_di" bpmnElement="Task_IssuePR">
+        <dc:Bounds x="730" y="60" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Boundary_PRDisc_di" bpmnElement="Boundary_PRDisc">
+        <dc:Bounds x="762" y="122" width="36" height="36" />
+        <bpmndi:BPMNLabel><dc:Bounds x="735" y="165" width="90" height="28" /></bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_CorrectPRDiscrepancy_di" bpmnElement="Task_CorrectPRDiscrepancy">
+        <dc:Bounds x="730" y="200" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_SendPRForApproval_di" bpmnElement="Task_SendPRForApproval">
+        <dc:Bounds x="930" y="60" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_Req_ReceivePRDecision_di" bpmnElement="Task_Req_ReceivePRDecision">
+        <dc:Bounds x="930" y="200" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gateway_Req_PRHoDApproved_di" bpmnElement="Gateway_Req_PRHoDApproved" isMarkerVisible="true">
+        <dc:Bounds x="1080" y="215" width="50" height="50" />
+        <bpmndi:BPMNLabel><dc:Bounds x="1060" y="272" width="90" height="28" /></bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_Req_CreatePO_di" bpmnElement="Task_Req_CreatePO">
+        <dc:Bounds x="1230" y="200" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_Req_SendPOApproval_di" bpmnElement="Task_Req_SendPOApproval">
+        <dc:Bounds x="1380" y="200" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_Req_ReceivePODecision_di" bpmnElement="Task_Req_ReceivePODecision">
+        <dc:Bounds x="1380" y="320" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gateway_Req_POAppApproved_di" bpmnElement="Gateway_Req_POAppApproved" isMarkerVisible="true">
+        <dc:Bounds x="1530" y="335" width="50" height="50" />
+        <bpmndi:BPMNLabel><dc:Bounds x="1510" y="392" width="90" height="40" /></bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_Req_DispatchPO_di" bpmnElement="Task_Req_DispatchPO">
+        <dc:Bounds x="1680" y="320" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_Req_ReceiveVendorDecision_di" bpmnElement="Task_Req_ReceiveVendorDecision">
+        <dc:Bounds x="1680" y="440" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gateway_Req_VendorApproved_di" bpmnElement="Gateway_Req_VendorApproved" isMarkerVisible="true">
+        <dc:Bounds x="1830" y="455" width="50" height="50" />
+        <bpmndi:BPMNLabel><dc:Bounds x="1810" y="512" width="90" height="40" /></bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_Req_SearchVendor_di" bpmnElement="Task_Req_SearchVendor">
+        <dc:Bounds x="1980" y="520" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_Req_ReceiveGoods_di" bpmnElement="Task_Req_ReceiveGoods">
+        <dc:Bounds x="2030" y="440" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gateway_Req_GoodService_di" bpmnElement="Gateway_Req_GoodService" isMarkerVisible="true">
+        <dc:Bounds x="2180" y="455" width="50" height="50" />
+        <bpmndi:BPMNLabel><dc:Bounds x="2160" y="512" width="90" height="40" /></bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_Req_IssueGR_di" bpmnElement="Task_Req_IssueGR">
+        <dc:Bounds x="2330" y="380" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_Req_IssueSES_di" bpmnElement="Task_Req_IssueSES">
+        <dc:Bounds x="2330" y="500" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gateway_Req_ConvergeGRSES_di" bpmnElement="Gateway_Req_ConvergeGRSES" isMarkerVisible="true">
+        <dc:Bounds x="2480" y="455" width="50" height="50" />
+        <bpmndi:BPMNLabel><dc:Bounds x="2460" y="512" width="90" height="14" /></bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_Req_ReceiveInvoice_di" bpmnElement="Task_Req_ReceiveInvoice">
+        <dc:Bounds x="2630" y="440" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_Req_3WayMatch_di" bpmnElement="Task_Req_3WayMatch">
+        <dc:Bounds x="2780" y="440" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gateway_Req_InvCorrect_di" bpmnElement="Gateway_Req_InvCorrect" isMarkerVisible="true">
+        <dc:Bounds x="2930" y="455" width="50" height="50" />
+        <bpmndi:BPMNLabel><dc:Bounds x="2910" y="512" width="90" height="14" /></bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_Req_IdentifyInvDisc_di" bpmnElement="Task_Req_IdentifyInvDisc">
+        <dc:Bounds x="3080" y="520" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_Req_ReturnInvoice_di" bpmnElement="Task_Req_ReturnInvoice">
+        <dc:Bounds x="3230" y="520" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_Req_ReceiveCorrInv_di" bpmnElement="Task_Req_ReceiveCorrInv">
+        <dc:Bounds x="3080" y="600" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_Req_PostInvSAP_di" bpmnElement="Task_Req_PostInvSAP">
+        <dc:Bounds x="3080" y="440" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_Req_SendInvAP_di" bpmnElement="Task_Req_SendInvAP">
+        <dc:Bounds x="3230" y="440" width="100" height="80" />
+      </bpmndi:BPMNShape>
+
+      <!-- HoD Shapes -->
+      <bpmndi:BPMNShape id="Task_HoD_ReceivePR_di" bpmnElement="Task_HoD_ReceivePR">
+        <dc:Bounds x="930" y="760" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_HoD_ReviewPR_di" bpmnElement="Task_HoD_ReviewPR">
+        <dc:Bounds x="1080" y="760" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Boundary_Budget_di" bpmnElement="Boundary_Budget">
+        <dc:Bounds x="1112" y="822" width="36" height="36" />
+        <bpmndi:BPMNLabel><dc:Bounds x="1085" y="865" width="90" height="28" /></bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_HandleBudget_di" bpmnElement="Task_HandleBudget">
+        <dc:Bounds x="1080" y="900" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Boundary_Data_di" bpmnElement="Boundary_Data">
+        <dc:Bounds x="1062" y="822" width="36" height="36" />
+         <bpmndi:BPMNLabel><dc:Bounds x="1035" y="865" width="90" height="28" /></bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_HandleData_di" bpmnElement="Task_HandleData">
+        <dc:Bounds x="930" y="900" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gateway_HoD_Outcome_di" bpmnElement="Gateway_HoD_Outcome" isMarkerVisible="true">
+        <dc:Bounds x="1280" y="775" width="50" height="50" />
+        <bpmndi:BPMNLabel><dc:Bounds x="1260" y="832" width="90" height="28" /></bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_HoD_DocApprove_di" bpmnElement="Task_HoD_DocApprove">
+        <dc:Bounds x="1430" y="720" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_HoD_DocDecline_di" bpmnElement="Task_HoD_DocDecline">
+        <dc:Bounds x="1430" y="820" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_HoD_DocReject_di" bpmnElement="Task_HoD_DocReject">
+        <dc:Bounds x="1430" y="920" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_HoD_SubmitDecision_di" bpmnElement="Task_HoD_SubmitDecision">
+        <dc:Bounds x="1630" y="820" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="EndEvent_HoD_di" bpmnElement="EndEvent_HoD">
+        <dc:Bounds x="1780" y="842" width="36" height="36" />
+        <bpmndi:BPMNLabel><dc:Bounds x="1753" y="885" width="90" height="40" /></bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <!-- PO Approvers Shapes -->
+      <bpmndi:BPMNShape id="Task_POApp_ReceivePO_di" bpmnElement="Task_POApp_ReceivePO">
+        <dc:Bounds x="1380" y="1110" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_POApp_ReviewPO_di" bpmnElement="Task_POApp_ReviewPO">
+        <dc:Bounds x="1530" y="1110" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gateway_POApp_Outcome_di" bpmnElement="Gateway_POApp_Outcome" isMarkerVisible="true">
+        <dc:Bounds x="1680" y="1125" width="50" height="50" />
+        <bpmndi:BPMNLabel><dc:Bounds x="1660" y="1182" width="90" height="28" /></bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_POApp_DocApprove_di" bpmnElement="Task_POApp_DocApprove">
+        <dc:Bounds x="1830" y="1070" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_POApp_DocReject_di" bpmnElement="Task_POApp_DocReject">
+        <dc:Bounds x="1830" y="1170" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_POApp_SubmitDecision_di" bpmnElement="Task_POApp_SubmitDecision">
+        <dc:Bounds x="2030" y="1110" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="EndEvent_POApp_di" bpmnElement="EndEvent_POApp">
+        <dc:Bounds x="2180" y="1132" width="36" height="36" />
+        <bpmndi:BPMNLabel><dc:Bounds x="2153" y="1175" width="90" height="40" /></bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <!-- Vendor Shapes -->
+      <bpmndi:BPMNShape id="Task_Vendor_ReceivePO_di" bpmnElement="Task_Vendor_ReceivePO">
+        <dc:Bounds x="1680" y="1460" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_Vendor_EvalPO_di" bpmnElement="Task_Vendor_EvalPO">
+        <dc:Bounds x="1830" y="1460" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gateway_Vendor_Outcome_di" bpmnElement="Gateway_Vendor_Outcome" isMarkerVisible="true">
+        <dc:Bounds x="1980" y="1475" width="50" height="50" />
+        <bpmndi:BPMNLabel><dc:Bounds x="1960" y="1532" width="90" height="28" /></bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_Vendor_DocApprove_di" bpmnElement="Task_Vendor_DocApprove">
+        <dc:Bounds x="2130" y="1420" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_Vendor_DocNegotiate_di" bpmnElement="Task_Vendor_DocNegotiate">
+        <dc:Bounds x="2130" y="1520" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_Vendor_DocReject_di" bpmnElement="Task_Vendor_DocReject">
+        <dc:Bounds x="2130" y="1620" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_Vendor_SendDecision_di" bpmnElement="Task_Vendor_SendDecision">
+        <dc:Bounds x="2280" y="1520" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gateway_Vendor_PostDecisionAction_di" bpmnElement="Gateway_Vendor_PostDecisionAction" isMarkerVisible="true">
+        <dc:Bounds x="2430" y="1535" width="50" height="50" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="EndEvent_Vendor_Reject_di" bpmnElement="EndEvent_Vendor_Reject">
+        <dc:Bounds x="2530" y="1642" width="36" height="36" />
+        <bpmndi:BPMNLabel><dc:Bounds x="2503" y="1685" width="90" height="28" /></bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_Vendor_Deliver_di" bpmnElement="Task_Vendor_Deliver">
+        <dc:Bounds x="2530" y="1460" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_Vendor_SendInv_di" bpmnElement="Task_Vendor_SendInv">
+        <dc:Bounds x="2680" y="1460" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_Vendor_ReceiveWrongInv_di" bpmnElement="Task_Vendor_ReceiveWrongInv">
+        <dc:Bounds x="3230" y="1620" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_Vendor_CorrectInv_di" bpmnElement="Task_Vendor_CorrectInv">
+        <dc:Bounds x="3380" y="1620" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_Vendor_SendCorrectedInv_di" bpmnElement="Task_Vendor_SendCorrectedInv">
+        <dc:Bounds x="3530" y="1620" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="EndEvent_Vendor_InvCorr_di" bpmnElement="EndEvent_Vendor_InvCorr">
+        <dc:Bounds x="3680" y="1642" width="36" height="36" />
+        <bpmndi:BPMNLabel><dc:Bounds x="3653" y="1685" width="90" height="40" /></bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <!-- AP Team Shapes -->
+      <bpmndi:BPMNShape id="Task_AP_ReceiveInv_di" bpmnElement="Task_AP_ReceiveInv">
+        <dc:Bounds x="3230" y="1960" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_AP_DecidePayment_di" bpmnElement="Task_AP_DecidePayment">
+        <dc:Bounds x="3380" y="1960" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gateway_AP_PaymentMethod_di" bpmnElement="Gateway_AP_PaymentMethod" isMarkerVisible="true">
+        <dc:Bounds x="3530" y="1975" width="50" height="50" />
+        <bpmndi:BPMNLabel><dc:Bounds x="3510" y="2032" width="90" height="14" /></bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_AP_PayFull_di" bpmnElement="Task_AP_PayFull">
+        <dc:Bounds x="3680" y="1920" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_AP_PayInstallments_di" bpmnElement="Task_AP_PayInstallments">
+        <dc:Bounds x="3680" y="2020" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gateway_AP_ConvergePayment_di" bpmnElement="Gateway_AP_ConvergePayment" isMarkerVisible="true">
+        <dc:Bounds x="3830" y="1975" width="50" height="50" />
+        <bpmndi:BPMNLabel><dc:Bounds x="3810" y="2032" width="90" height="14" /></bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="EndEvent_Main_di" bpmnElement="EndEvent_Main">
+        <dc:Bounds x="3980" y="1982" width="36" height="36" />
+        <bpmndi:BPMNLabel><dc:Bounds x="3953" y="2025" width="90" height="40" /></bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <!-- Sequence Flow Lines -->
+      <bpmndi:BPMNEdge id="Flow_Start_To_DetNeeds_di" bpmnElement="Flow_Start_To_DetNeeds"><di:waypoint x="216" y="100" /><di:waypoint x="280" y="100" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_DetNeeds_To_ReqIssuePR_di" bpmnElement="Flow_DetNeeds_To_ReqIssuePR"><di:waypoint x="380" y="100" /><di:waypoint x="430" y="100" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_ReqIssuePR_To_GatewayPRAppr_di" bpmnElement="Flow_ReqIssuePR_To_GatewayPRAppr"><di:waypoint x="530" y="100" /><di:waypoint x="580" y="100" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_GatewayPRAppr_Yes_To_IssuePR_di" bpmnElement="Flow_GatewayPRAppr_Yes_To_IssuePR"><di:waypoint x="630" y="100" /><di:waypoint x="730" y="100" /><bpmndi:BPMNLabel><dc:Bounds x="670" y="82" width="20" height="14" /></bpmndi:BPMNLabel></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_GatewayPRAppr_No_To_DetNeeds_di" bpmnElement="Flow_GatewayPRAppr_No_To_DetNeeds"><di:waypoint x="605" y="75" /><di:waypoint x="605" y="30" /><di:waypoint x="330" y="30" /><di:waypoint x="330" y="60" /><bpmndi:BPMNLabel><dc:Bounds x="460" y="12" width="20" height="14" /></bpmndi:BPMNLabel></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_BoundaryPRDisc_To_CorrectPRDisc_di" bpmnElement="Flow_BoundaryPRDisc_To_CorrectPRDisc"><di:waypoint x="780" y="158" /><di:waypoint x="780" y="200" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_CorrectPRDisc_To_IssuePR_di" bpmnElement="Flow_CorrectPRDisc_To_IssuePR"><di:waypoint x="780" y="280" /><di:waypoint x="780" y="140" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_IssuePR_To_SendPRApproval_di" bpmnElement="Flow_IssuePR_To_SendPRApproval"><di:waypoint x="830" y="100" /><di:waypoint x="930" y="100" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_SendPRApproval_To_HoDReceivePR_di" bpmnElement="Flow_SendPRApproval_To_HoDReceivePR"><di:waypoint x="980" y="140" /><di:waypoint x="980" y="760" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_HoDReceivePR_To_HoDReviewPR_di" bpmnElement="Flow_HoDReceivePR_To_HoDReviewPR"><di:waypoint x="1030" y="800" /><di:waypoint x="1080" y="800" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_BoundaryBudget_To_HandleBudget_di" bpmnElement="Flow_BoundaryBudget_To_HandleBudget"><di:waypoint x="1130" y="858" /><di:waypoint x="1130" y="900" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_HandleBudget_To_HoDDocDecline_di" bpmnElement="Flow_HandleBudget_To_HoDDocDecline"><di:waypoint x="1180" y="940" /><di:waypoint x="1430" y="860" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_BoundaryData_To_HandleData_di" bpmnElement="Flow_BoundaryData_To_HandleData"><di:waypoint x="980" y="858" /><di:waypoint x="980" y="900" /></bpmndi:BPMNEdge> <!-- Adjusted X for data breach handler -->
+      <bpmndi:BPMNEdge id="Flow_HandleData_To_HoDDocDecline_di" bpmnElement="Flow_HandleData_To_HoDDocDecline"><di:waypoint x="1030" y="940" /><di:waypoint x="1430" y="860" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_HoDReviewPR_To_GatewayHoDOutcome_di" bpmnElement="Flow_HoDReviewPR_To_GatewayHoDOutcome"><di:waypoint x="1180" y="800" /><di:waypoint x="1280" y="800" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_GatewayHoDOutcome_Approve_To_DocApprove_di" bpmnElement="Flow_GatewayHoDOutcome_Approve_To_DocApprove"><di:waypoint x="1305" y="775" /><di:waypoint x="1305" y="760" /><di:waypoint x="1430" y="760" /><bpmndi:BPMNLabel><dc:Bounds x="1310" y="738" width="44" height="14" /></bpmndi:BPMNLabel></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_GatewayHoDOutcome_Decline_To_DocDecline_di" bpmnElement="Flow_GatewayHoDOutcome_Decline_To_DocDecline"><di:waypoint x="1330" y="800" /><di:waypoint x="1430" y="860" /><bpmndi:BPMNLabel><dc:Bounds x="1360" y="822" width="40" height="14" /></bpmndi:BPMNLabel></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_GatewayHoDOutcome_Reject_To_DocReject_di" bpmnElement="Flow_GatewayHoDOutcome_Reject_To_DocReject"><di:waypoint x="1305" y="825" /><di:waypoint x="1305" y="960" /><di:waypoint x="1430" y="960" /><bpmndi:BPMNLabel><dc:Bounds x="1310" y="938" width="85" height="14" /></bpmndi:BPMNLabel></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_HoDDocApprove_To_SubmitDecision_di" bpmnElement="Flow_HoDDocApprove_To_SubmitDecision"><di:waypoint x="1530" y="760" /><di:waypoint x="1680" y="760" /><di:waypoint x="1680" y="820" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_HoDDocDecline_To_SubmitDecision_di" bpmnElement="Flow_HoDDocDecline_To_SubmitDecision"><di:waypoint x="1530" y="860" /><di:waypoint x="1630" y="860" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_HoDDocReject_To_SubmitDecision_di" bpmnElement="Flow_HoDDocReject_To_SubmitDecision"><di:waypoint x="1530" y="960" /><di:waypoint x="1680" y="960" /><di:waypoint x="1680" y="900" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_HoDSubmitDecision_To_ReqReceivePRDecision_di" bpmnElement="Flow_HoDSubmitDecision_To_ReqReceivePRDecision"><di:waypoint x="1680" y="820" /><di:waypoint x="1680" y="240" /><di:waypoint x="1030" y="240" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_HoDSubmitDecision_To_EndHoD_di" bpmnElement="Flow_HoDSubmitDecision_To_EndHoD"><di:waypoint x="1730" y="860" /><di:waypoint x="1780" y="860" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_ReqReceivePRDecision_To_GatewayReqPRHoD_di" bpmnElement="Flow_ReqReceivePRDecision_To_GatewayReqPRHoD"><di:waypoint x="1030" y="240" /><di:waypoint x="1080" y="240" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_GatewayReqPRHoD_Yes_To_CreatePO_di" bpmnElement="Flow_GatewayReqPRHoD_Yes_To_CreatePO"><di:waypoint x="1130" y="240" /><di:waypoint x="1230" y="240" /><bpmndi:BPMNLabel><dc:Bounds x="1170" y="222" width="20" height="14" /></bpmndi:BPMNLabel></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_GatewayReqPRHoD_No_To_DetNeeds_di" bpmnElement="Flow_GatewayReqPRHoD_No_To_DetNeeds"><di:waypoint x="1105" y="215" /><di:waypoint x="1105" y="30" /><di:waypoint x="330" y="30" /><di:waypoint x="330" y="60" /><bpmndi:BPMNLabel><dc:Bounds x="710" y="12" width="20" height="14" /></bpmndi:BPMNLabel></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_CreatePO_To_SendPOApproval_di" bpmnElement="Flow_CreatePO_To_SendPOApproval"><di:waypoint x="1330" y="240" /><di:waypoint x="1380" y="240" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_SendPOApproval_To_POAppReceivePO_di" bpmnElement="Flow_SendPOApproval_To_POAppReceivePO"><di:waypoint x="1430" y="280" /><di:waypoint x="1430" y="1110" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_POAppReceivePO_To_POAppReviewPO_di" bpmnElement="Flow_POAppReceivePO_To_POAppReviewPO"><di:waypoint x="1480" y="1150" /><di:waypoint x="1530" y="1150" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_POAppReviewPO_To_GatewayPOAppOutcome_di" bpmnElement="Flow_POAppReviewPO_To_GatewayPOAppOutcome"><di:waypoint x="1630" y="1150" /><di:waypoint x="1680" y="1150" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_GatewayPOAppOutcome_Approve_To_DocApprove_di" bpmnElement="Flow_GatewayPOAppOutcome_Approve_To_DocApprove"><di:waypoint x="1705" y="1125" /><di:waypoint x="1705" y="1110" /><di:waypoint x="1830" y="1110" /><bpmndi:BPMNLabel><dc:Bounds x="1710" y="1088" width="44" height="14" /></bpmndi:BPMNLabel></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_GatewayPOAppOutcome_Reject_To_DocReject_di" bpmnElement="Flow_GatewayPOAppOutcome_Reject_To_DocReject"><di:waypoint x="1705" y="1175" /><di:waypoint x="1705" y="1210" /><di:waypoint x="1830" y="1210" /><bpmndi:BPMNLabel><dc:Bounds x="1710" y="1188" width="37" height="14" /></bpmndi:BPMNLabel></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_POAppDocApprove_To_SubmitDecision_di" bpmnElement="Flow_POAppDocApprove_To_SubmitDecision"><di:waypoint x="1930" y="1110" /><di:waypoint x="2030" y="1150" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_POAppDocReject_To_SubmitDecision_di" bpmnElement="Flow_POAppDocReject_To_SubmitDecision"><di:waypoint x="1930" y="1210" /><di:waypoint x="2030" y="1150" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_POAppSubmitDecision_To_ReqReceivePODecision_di" bpmnElement="Flow_POAppSubmitDecision_To_ReqReceivePODecision"><di:waypoint x="2080" y="1110" /><di:waypoint x="2080" y="360" /><di:waypoint x="1480" y="360" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_POAppSubmitDecision_To_EndPOApp_di" bpmnElement="Flow_POAppSubmitDecision_To_EndPOApp"><di:waypoint x="2130" y="1150" /><di:waypoint x="2180" y="1150" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_ReqReceivePODecision_To_GatewayReqPOApp_di" bpmnElement="Flow_ReqReceivePODecision_To_GatewayReqPOApp"><di:waypoint x="1480" y="360" /><di:waypoint x="1530" y="360" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_GatewayReqPOApp_Yes_To_DispatchPO_di" bpmnElement="Flow_GatewayReqPOApp_Yes_To_DispatchPO"><di:waypoint x="1580" y="360" /><di:waypoint x="1680" y="360" /><bpmndi:BPMNLabel><dc:Bounds x="1620" y="342" width="20" height="14" /></bpmndi:BPMNLabel></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_GatewayReqPOApp_No_To_DetNeeds_di" bpmnElement="Flow_GatewayReqPOApp_No_To_DetNeeds"><di:waypoint x="1555" y="335" /><di:waypoint x="1555" y="30" /><di:waypoint x="330" y="30" /><di:waypoint x="330" y="60" /><bpmndi:BPMNLabel><dc:Bounds x="935" y="12" width="20" height="14" /></bpmndi:BPMNLabel></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_DispatchPO_To_VendorReceivePO_di" bpmnElement="Flow_DispatchPO_To_VendorReceivePO"><di:waypoint x="1730" y="400" /><di:waypoint x="1730" y="1460" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_VendorReceivePO_To_VendorEvalPO_di" bpmnElement="Flow_VendorReceivePO_To_VendorEvalPO"><di:waypoint x="1780" y="1500" /><di:waypoint x="1830" y="1500" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_VendorEvalPO_To_GatewayVendorOutcome_di" bpmnElement="Flow_VendorEvalPO_To_GatewayVendorOutcome"><di:waypoint x="1930" y="1500" /><di:waypoint x="1980" y="1500" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_GatewayVendorOutcome_Approve_To_DocApprove_di" bpmnElement="Flow_GatewayVendorOutcome_Approve_To_DocApprove"><di:waypoint x="2005" y="1475" /><di:waypoint x="2005" y="1460" /><di:waypoint x="2130" y="1460" /><bpmndi:BPMNLabel><dc:Bounds x="2010" y="1438" width="44" height="14" /></bpmndi:BPMNLabel></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_GatewayVendorOutcome_Negotiate_To_DocNegotiate_di" bpmnElement="Flow_GatewayVendorOutcome_Negotiate_To_DocNegotiate"><di:waypoint x="2030" y="1500" /><di:waypoint x="2130" y="1560" /><bpmndi:BPMNLabel><dc:Bounds x="2060" y="1522" width="55" height="14" /></bpmndi:BPMNLabel></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_GatewayVendorOutcome_Reject_To_DocReject_di" bpmnElement="Flow_GatewayVendorOutcome_Reject_To_DocReject"><di:waypoint x="2005" y="1525" /><di:waypoint x="2005" y="1660" /><di:waypoint x="2130" y="1660" /><bpmndi:BPMNLabel><dc:Bounds x="2010" y="1638" width="37" height="14" /></bpmndi:BPMNLabel></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_VendorDocApprove_To_SendDecision_di" bpmnElement="Flow_VendorDocApprove_To_SendDecision"><di:waypoint x="2230" y="1460" /><di:waypoint x="2330" y="1460" /><di:waypoint x="2330" y="1520" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_VendorDocNegotiate_To_SendDecision_di" bpmnElement="Flow_VendorDocNegotiate_To_SendDecision"><di:waypoint x="2230" y="1560" /><di:waypoint x="2280" y="1560" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_VendorDocReject_To_SendDecision_di" bpmnElement="Flow_VendorDocReject_To_SendDecision"><di:waypoint x="2230" y="1660" /><di:waypoint x="2330" y="1660" /><di:waypoint x="2330" y="1600" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_VendorSendDecision_To_ReqReceiveVendorDecision_di" bpmnElement="Flow_VendorSendDecision_To_ReqReceiveVendorDecision"><di:waypoint x="2330" y="1520" /><di:waypoint x="2330" y="480" /><di:waypoint x="1780" y="480" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_VendorSendDecision_To_DeliverOrEnd_di" bpmnElement="Flow_VendorSendDecision_To_DeliverOrEnd"><di:waypoint x="2380" y="1560" /><di:waypoint x="2430" y="1560" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_VendorDecision_To_Deliver_di" bpmnElement="Flow_VendorDecision_To_Deliver"><di:waypoint x="2455" y="1535" /><di:waypoint x="2455" y="1500" /><di:waypoint x="2530" y="1500" /><bpmndi:BPMNLabel><dc:Bounds x="2460" y="1513" width="60" height="28" /></bpmndi:BPMNLabel></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_VendorDecision_To_EndReject_di" bpmnElement="Flow_VendorDecision_To_EndReject"><di:waypoint x="2455" y="1585" /><di:waypoint x="2455" y="1660" /><di:waypoint x="2530" y="1660" /><bpmndi:BPMNLabel><dc:Bounds x="2460" y="1600" width="47" height="14" /></bpmndi:BPMNLabel></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_VendorDeliver_To_SendInv_di" bpmnElement="Flow_VendorDeliver_To_SendInv"><di:waypoint x="2630" y="1500" /><di:waypoint x="2680" y="1500" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_VendorDeliver_To_ReqReceiveGoods_di" bpmnElement="Flow_VendorDeliver_To_ReqReceiveGoods"><di:waypoint x="2580" y="1460" /><di:waypoint x="2580" y="480" /><di:waypoint x="2130" y="480" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_VendorSendInv_To_ReqReceiveInvoice_di" bpmnElement="Flow_VendorSendInv_To_ReqReceiveInvoice"><di:waypoint x="2730" y="1460" /><di:waypoint x="2730" y="520" /><di:waypoint x="2730" y="480" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_ReqReceiveVendorDecision_To_GatewayVendorApproved_di" bpmnElement="Flow_ReqReceiveVendorDecision_To_GatewayVendorApproved"><di:waypoint x="1780" y="480" /><di:waypoint x="1830" y="480" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_GatewayVendorApproved_Yes_To_ReceiveGoods_di" bpmnElement="Flow_GatewayVendorApproved_Yes_To_ReceiveGoods"><di:waypoint x="1880" y="480" /><di:waypoint x="2030" y="480" /><bpmndi:BPMNLabel><dc:Bounds x="1945" y="462" width="20" height="14" /></bpmndi:BPMNLabel></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_GatewayVendorApproved_No_To_SearchVendor_di" bpmnElement="Flow_GatewayVendorApproved_No_To_SearchVendor"><di:waypoint x="1855" y="505" /><di:waypoint x="1855" y="560" /><di:waypoint x="1980" y="560" /><bpmndi:BPMNLabel><dc:Bounds x="1910" y="538" width="20" height="14" /></bpmndi:BPMNLabel></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_SearchVendor_To_DispatchPO_di" bpmnElement="Flow_SearchVendor_To_DispatchPO"><di:waypoint x="2030" y="600" /><di:waypoint x="2030" y="650" /><di:waypoint x="1730" y="650" /><di:waypoint x="1730" y="400" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_ReceiveGoods_To_GatewayGoodService_di" bpmnElement="Flow_ReceiveGoods_To_GatewayGoodService"><di:waypoint x="2130" y="480" /><di:waypoint x="2180" y="480" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_GatewayGoodService_Goods_To_IssueGR_di" bpmnElement="Flow_GatewayGoodService_Goods_To_IssueGR"><di:waypoint x="2205" y="455" /><di:waypoint x="2205" y="420" /><di:waypoint x="2330" y="420" /><bpmndi:BPMNLabel><dc:Bounds x="2210" y="433" width="34" height="14" /></bpmndi:BPMNLabel></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_GatewayGoodService_Service_To_IssueSES_di" bpmnElement="Flow_GatewayGoodService_Service_To_IssueSES"><di:waypoint x="2205" y="505" /><di:waypoint x="2205" y="540" /><di:waypoint x="2330" y="540" /><bpmndi:BPMNLabel><dc:Bounds x="2210" y="518" width="40" height="14" /></bpmndi:BPMNLabel></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_IssueGR_To_ConvergeGRSES_di" bpmnElement="Flow_IssueGR_To_ConvergeGRSES"><di:waypoint x="2430" y="420" /><di:waypoint x="2505" y="420" /><di:waypoint x="2505" y="455" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_IssueSES_To_ConvergeGRSES_di" bpmnElement="Flow_IssueSES_To_ConvergeGRSES"><di:waypoint x="2430" y="540" /><di:waypoint x="2505" y="540" /><di:waypoint x="2505" y="505" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_ConvergeGRSES_To_ReceiveInvoice_di" bpmnElement="Flow_ConvergeGRSES_To_ReceiveInvoice"><di:waypoint x="2530" y="480" /><di:waypoint x="2630" y="480" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_ReceiveInvoice_To_3WayMatch_di" bpmnElement="Flow_ReceiveInvoice_To_3WayMatch"><di:waypoint x="2730" y="480" /><di:waypoint x="2780" y="480" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_3WayMatch_To_GatewayInvCorrect_di" bpmnElement="Flow_3WayMatch_To_GatewayInvCorrect"><di:waypoint x="2880" y="480" /><di:waypoint x="2930" y="480" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_GatewayInvCorrect_Yes_To_PostInvSAP_di" bpmnElement="Flow_GatewayInvCorrect_Yes_To_PostInvSAP"><di:waypoint x="2980" y="480" /><di:waypoint x="3080" y="480" /><bpmndi:BPMNLabel><dc:Bounds x="3020" y="462" width="20" height="14" /></bpmndi:BPMNLabel></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_GatewayInvCorrect_No_To_IdentifyInvDisc_di" bpmnElement="Flow_GatewayInvCorrect_No_To_IdentifyInvDisc"><di:waypoint x="2955" y="505" /><di:waypoint x="2955" y="560" /><di:waypoint x="3080" y="560" /><bpmndi:BPMNLabel><dc:Bounds x="3010" y="538" width="20" height="14" /></bpmndi:BPMNLabel></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_IdentifyInvDisc_To_ReturnInvoice_di" bpmnElement="Flow_IdentifyInvDisc_To_ReturnInvoice"><di:waypoint x="3180" y="560" /><di:waypoint x="3230" y="560" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_ReturnInvoice_To_VendorReceiveWrongInv_di" bpmnElement="Flow_ReturnInvoice_To_VendorReceiveWrongInv"><di:waypoint x="3280" y="600" /><di:waypoint x="3280" y="1620" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_VendorReceiveWrongInv_To_CorrectInv_di" bpmnElement="Flow_VendorReceiveWrongInv_To_CorrectInv"><di:waypoint x="3330" y="1660" /><di:waypoint x="3380" y="1660" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_VendorCorrectInv_To_SendCorrectedInv_di" bpmnElement="Flow_VendorCorrectInv_To_SendCorrectedInv"><di:waypoint x="3480" y="1660" /><di:waypoint x="3530" y="1660" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_VendorSendCorrectedInv_To_ReqReceiveCorrInv_di" bpmnElement="Flow_VendorSendCorrectedInv_To_ReqReceiveCorrInv"><di:waypoint x="3580" y="1620" /><di:waypoint x="3580" y="640" /><di:waypoint x="3180" y="640" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_VendorSendCorrectedInv_To_EndInvCorr_di" bpmnElement="Flow_VendorSendCorrectedInv_To_EndInvCorr"><di:waypoint x="3630" y="1660" /><di:waypoint x="3680" y="1660" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_ReqReceiveCorrInv_To_3WayMatch_di" bpmnElement="Flow_ReqReceiveCorrInv_To_3WayMatch"><di:waypoint x="3130" y="600" /><di:waypoint x="3130" y="520" /><di:waypoint x="2880" y="520" /><di:waypoint x="2830" y="520" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_PostInvSAP_To_SendInvAP_di" bpmnElement="Flow_PostInvSAP_To_SendInvAP"><di:waypoint x="3180" y="480" /><di:waypoint x="3230" y="480" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_SendInvAP_To_APReceiveInv_di" bpmnElement="Flow_SendInvAP_To_APReceiveInv"><di:waypoint x="3280" y="520" /><di:waypoint x="3280" y="1960" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_APReceiveInv_To_APDecidePayment_di" bpmnElement="Flow_APReceiveInv_To_APDecidePayment"><di:waypoint x="3330" y="2000" /><di:waypoint x="3380" y="2000" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_APDecidePayment_To_GatewayAPPaymentMethod_di" bpmnElement="Flow_APDecidePayment_To_GatewayAPPaymentMethod"><di:waypoint x="3480" y="2000" /><di:waypoint x="3530" y="2000" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_GatewayAPPaymentMethod_Full_To_PayFull_di" bpmnElement="Flow_GatewayAPPaymentMethod_Full_To_PayFull"><di:waypoint x="3555" y="1975" /><di:waypoint x="3555" y="1960" /><di:waypoint x="3680" y="1960" /><bpmndi:BPMNLabel><dc:Bounds x="3560" y="1938" width="68" height="14" /></bpmndi:BPMNLabel></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_GatewayAPPaymentMethod_Install_To_PayInstall_di" bpmnElement="Flow_GatewayAPPaymentMethod_Install_To_PayInstall"><di:waypoint x="3555" y="2025" /><di:waypoint x="3555" y="2060" /><di:waypoint x="3680" y="2060" /><bpmndi:BPMNLabel><dc:Bounds x="3560" y="2038" width="60" height="14" /></bpmndi:BPMNLabel></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_PayFull_To_ConvergePayment_di" bpmnElement="Flow_PayFull_To_ConvergePayment"><di:waypoint x="3780" y="1960" /><di:waypoint x="3855" y="1960" /><di:waypoint x="3855" y="1975" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_PayInstall_To_ConvergePayment_di" bpmnElement="Flow_PayInstall_To_ConvergePayment"><di:waypoint x="3780" y="2060" /><di:waypoint x="3855" y="2060" /><di:waypoint x="3855" y="2025" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_ConvergePayment_To_EndMain_di" bpmnElement="Flow_ConvergePayment_To_EndMain"><di:waypoint x="3880" y="2000" /><di:waypoint x="3980" y="2000" /></bpmndi:BPMNEdge>
+
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</bpmn:definitions>
+```
