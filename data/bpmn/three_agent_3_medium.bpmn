@@ -1,0 +1,342 @@
+<?xml version="1.0" standalone="yes"?>
+<semantic:definitions id="definitions_OnlineProductOrdering"
+    targetNamespace="http://example.com/bpmn/OnlineProductOrdering"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:semantic="http://www.omg.org/spec/BPMN/20100524/MODEL"
+    xmlns:di="http://www.omg.org/spec/DD/20100524/DI"
+    xmlns:dc="http://www.omg.org/spec/DD/20100524/DC"
+    xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI">
+
+  <semantic:collaboration id="collab_OnlineProductOrdering">
+    <semantic:participant id="participant_PurchaserPool" name="Purchasing Process" processRef="onlineProductOrderingProcess"/>
+  </semantic:collaboration>
+
+  <semantic:process id="onlineProductOrderingProcess" isExecutable="true">
+    <semantic:laneSet id="laneSet_Purchaser">
+      <semantic:lane id="lane_Purchaser" name="Purchaser">
+        <semantic:flowNodeRef>startEvent_ProductRequired</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_OpenWebsite</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_DefineSearch</semantic:flowNodeRef>
+        <semantic:flowNodeRef>gateway_SearchSuccessful</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_SelectItemQuantity</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_AddToCart</semantic:flowNodeRef>
+        <semantic:flowNodeRef>gateway_AddMoreItems</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_ReviewCart</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_CheckBudget</semantic:flowNodeRef>
+        <semantic:flowNodeRef>gateway_BudgetSufficient</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_ProceedCheckout</semantic:flowNodeRef>
+        <semantic:flowNodeRef>gateway_UserRegistered</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_PerformLogin</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_RegisterAndLogin</semantic:flowNodeRef>
+        <semantic:flowNodeRef>gateway_AuthComplete</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_ConfirmAddress</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_ChoosePaymentMethod</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_PerformPayment</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_ConfirmPayment</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_LeaveWebsite</semantic:flowNodeRef>
+        <semantic:flowNodeRef>endEvent_WebsiteClosed</semantic:flowNodeRef>
+      </semantic:lane>
+    </semantic:laneSet>
+
+    <semantic:startEvent id="startEvent_ProductRequired" name="Product Requirement Realized">
+      <semantic:outgoing>flow_1</semantic:outgoing>
+    </semantic:startEvent>
+
+    <semantic:task id="task_OpenWebsite" name="Open Ordering Website (Firefox)">
+      <semantic:incoming>flow_1</semantic:incoming>
+      <semantic:outgoing>flow_2</semantic:outgoing>
+    </semantic:task>
+
+    <semantic:task id="task_DefineSearch" name="Define Product Search (Characteristics &amp; Specifications)">
+      <semantic:incoming>flow_2</semantic:incoming>
+      <semantic:incoming>flow_8</semantic:incoming>
+      <semantic:outgoing>flow_3</semantic:outgoing>
+    </semantic:task>
+
+    <semantic:exclusiveGateway id="gateway_SearchSuccessful" name="Product Search Successful?">
+      <semantic:incoming>flow_3</semantic:incoming>
+      <semantic:outgoing>flow_4</semantic:outgoing> <!-- Successful -->
+      <semantic:outgoing>flow_5</semantic:outgoing> <!-- Not Successful -->
+    </semantic:exclusiveGateway>
+
+    <semantic:task id="task_SelectItemQuantity" name="Select Item and Quantity">
+      <semantic:incoming>flow_4</semantic:incoming>
+      <semantic:outgoing>flow_6</semantic:outgoing>
+    </semantic:task>
+
+    <semantic:task id="task_AddToCart" name="Add Item to Shopping Cart">
+      <semantic:incoming>flow_6</semantic:incoming>
+      <semantic:outgoing>flow_7</semantic:outgoing>
+    </semantic:task>
+
+    <semantic:exclusiveGateway id="gateway_AddMoreItems" name="Add More Items?">
+      <semantic:incoming>flow_7</semantic:incoming>
+      <semantic:outgoing>flow_8</semantic:outgoing> <!-- Yes, loop -->
+      <semantic:outgoing>flow_9</semantic:outgoing> <!-- No -->
+    </semantic:exclusiveGateway>
+
+    <semantic:task id="task_ReviewCart" name="Review Shopping Cart">
+      <semantic:incoming>flow_9</semantic:incoming>
+      <semantic:incoming>flow_12</semantic:incoming>
+      <semantic:outgoing>flow_10</semantic:outgoing>
+    </semantic:task>
+
+    <semantic:task id="task_CheckBudget" name="Check Budget">
+      <semantic:incoming>flow_10</semantic:incoming>
+      <semantic:outgoing>flow_11</semantic:outgoing>
+    </semantic:task>
+
+    <semantic:exclusiveGateway id="gateway_BudgetSufficient" name="Sufficient Budget?">
+      <semantic:incoming>flow_11</semantic:incoming>
+      <semantic:outgoing>flow_12</semantic:outgoing> <!-- Insufficient, loop -->
+      <semantic:outgoing>flow_13</semantic:outgoing> <!-- Sufficient -->
+    </semantic:exclusiveGateway>
+
+    <semantic:task id="task_ProceedCheckout" name="Proceed to Checkout">
+      <semantic:incoming>flow_13</semantic:incoming>
+      <semantic:outgoing>flow_14</semantic:outgoing>
+    </semantic:task>
+
+    <semantic:exclusiveGateway id="gateway_UserRegistered" name="Already Registered?">
+      <semantic:incoming>flow_14</semantic:incoming>
+      <semantic:outgoing>flow_15</semantic:outgoing> <!-- Yes -->
+      <semantic:outgoing>flow_16</semantic:outgoing> <!-- No -->
+    </semantic:exclusiveGateway>
+
+    <semantic:task id="task_PerformLogin" name="Log In">
+      <semantic:incoming>flow_15</semantic:incoming>
+      <semantic:outgoing>flow_17</semantic:outgoing>
+    </semantic:task>
+
+    <semantic:task id="task_RegisterAndLogin" name="Register &amp; Log In">
+      <semantic:incoming>flow_16</semantic:incoming>
+      <semantic:outgoing>flow_18</semantic:outgoing>
+    </semantic:task>
+
+    <semantic:exclusiveGateway id="gateway_AuthComplete" name="Merge Login/Registration">
+      <semantic:incoming>flow_17</semantic:incoming>
+      <semantic:incoming>flow_18</semantic:incoming>
+      <semantic:outgoing>flow_19</semantic:outgoing>
+    </semantic:exclusiveGateway>
+
+    <semantic:task id="task_ConfirmAddress" name="Confirm Delivery Address">
+      <semantic:incoming>flow_19</semantic:incoming>
+      <semantic:outgoing>flow_20</semantic:outgoing>
+    </semantic:task>
+
+    <semantic:task id="task_ChoosePaymentMethod" name="Choose Payment Method">
+      <semantic:incoming>flow_20</semantic:incoming>
+      <semantic:outgoing>flow_21</semantic:outgoing>
+    </semantic:task>
+
+    <semantic:task id="task_PerformPayment" name="Perform Payment">
+      <semantic:incoming>flow_21</semantic:incoming>
+      <semantic:outgoing>flow_22</semantic:outgoing>
+    </semantic:task>
+
+    <semantic:task id="task_ConfirmPayment" name="Confirm Payment">
+      <semantic:incoming>flow_22</semantic:incoming>
+      <semantic:outgoing>flow_23</semantic:outgoing>
+    </semantic:task>
+
+    <semantic:task id="task_LeaveWebsite" name="Leave Website">
+      <semantic:incoming>flow_5</semantic:incoming>
+      <semantic:incoming>flow_23</semantic:incoming>
+      <semantic:outgoing>flow_24</semantic:outgoing>
+    </semantic:task>
+
+    <semantic:endEvent id="endEvent_WebsiteClosed" name="Website Closed">
+      <semantic:incoming>flow_24</semantic:incoming>
+    </semantic:endEvent>
+
+    <semantic:sequenceFlow id="flow_1" sourceRef="startEvent_ProductRequired" targetRef="task_OpenWebsite"/>
+    <semantic:sequenceFlow id="flow_2" sourceRef="task_OpenWebsite" targetRef="task_DefineSearch"/>
+    <semantic:sequenceFlow id="flow_3" sourceRef="task_DefineSearch" targetRef="gateway_SearchSuccessful"/>
+    <semantic:sequenceFlow id="flow_4" name="Successful" sourceRef="gateway_SearchSuccessful" targetRef="task_SelectItemQuantity"/>
+    <semantic:sequenceFlow id="flow_5" name="Not Successful" sourceRef="gateway_SearchSuccessful" targetRef="task_LeaveWebsite"/>
+    <semantic:sequenceFlow id="flow_6" sourceRef="task_SelectItemQuantity" targetRef="task_AddToCart"/>
+    <semantic:sequenceFlow id="flow_7" sourceRef="task_AddToCart" targetRef="gateway_AddMoreItems"/>
+    <semantic:sequenceFlow id="flow_8" name="Yes, add more items" sourceRef="gateway_AddMoreItems" targetRef="task_DefineSearch"/>
+    <semantic:sequenceFlow id="flow_9" name="No, no more items" sourceRef="gateway_AddMoreItems" targetRef="task_ReviewCart"/>
+    <semantic:sequenceFlow id="flow_10" sourceRef="task_ReviewCart" targetRef="task_CheckBudget"/>
+    <semantic:sequenceFlow id="flow_11" sourceRef="task_CheckBudget" targetRef="gateway_BudgetSufficient"/>
+    <semantic:sequenceFlow id="flow_12" name="Insufficient Budget" sourceRef="gateway_BudgetSufficient" targetRef="task_ReviewCart"/>
+    <semantic:sequenceFlow id="flow_13" name="Sufficient Budget" sourceRef="gateway_BudgetSufficient" targetRef="task_ProceedCheckout"/>
+    <semantic:sequenceFlow id="flow_14" sourceRef="task_ProceedCheckout" targetRef="gateway_UserRegistered"/>
+    <semantic:sequenceFlow id="flow_15" name="Yes, Already Registered" sourceRef="gateway_UserRegistered" targetRef="task_PerformLogin"/>
+    <semantic:sequenceFlow id="flow_16" name="No, Not Registered" sourceRef="gateway_UserRegistered" targetRef="task_RegisterAndLogin"/>
+    <semantic:sequenceFlow id="flow_17" sourceRef="task_PerformLogin" targetRef="gateway_AuthComplete"/>
+    <semantic:sequenceFlow id="flow_18" sourceRef="task_RegisterAndLogin" targetRef="gateway_AuthComplete"/>
+    <semantic:sequenceFlow id="flow_19" sourceRef="gateway_AuthComplete" targetRef="task_ConfirmAddress"/>
+    <semantic:sequenceFlow id="flow_20" sourceRef="task_ConfirmAddress" targetRef="task_ChoosePaymentMethod"/>
+    <semantic:sequenceFlow id="flow_21" sourceRef="task_ChoosePaymentMethod" targetRef="task_PerformPayment"/>
+    <semantic:sequenceFlow id="flow_22" sourceRef="task_PerformPayment" targetRef="task_ConfirmPayment"/>
+    <semantic:sequenceFlow id="flow_23" sourceRef="task_ConfirmPayment" targetRef="task_LeaveWebsite"/>
+    <semantic:sequenceFlow id="flow_24" sourceRef="task_LeaveWebsite" targetRef="endEvent_WebsiteClosed"/>
+
+  </semantic:process>
+
+  <bpmndi:BPMNDiagram id="BPMNDiagram_OnlineProductOrdering" name="Online Product Ordering Diagram" resolution="96.0">
+    <bpmndi:BPMNPlane bpmnElement="collab_OnlineProductOrdering">
+      <bpmndi:BPMNShape id="participant_PurchaserPool_shape" bpmnElement="participant_PurchaserPool" isHorizontal="true">
+        <dc:Bounds x="30" y="30" width="3100" height="480"/>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="startEvent_ProductRequired_di" bpmnElement="startEvent_ProductRequired">
+        <dc:Bounds x="100" y="252" width="36" height="36"/>
+        <bpmndi:BPMNLabel><dc:Bounds x="70" y="293" width="90" height="28"/></bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="task_OpenWebsite_di" bpmnElement="task_OpenWebsite">
+        <dc:Bounds x="220" y="230" width="100" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="task_DefineSearch_di" bpmnElement="task_DefineSearch">
+        <dc:Bounds x="370" y="230" width="100" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="gateway_SearchSuccessful_di" bpmnElement="gateway_SearchSuccessful" isMarkerVisible="true">
+        <dc:Bounds x="520" y="245" width="50" height="50"/>
+         <bpmndi:BPMNLabel><dc:Bounds x="500" y="300" width="90" height="28"/></bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="task_SelectItemQuantity_di" bpmnElement="task_SelectItemQuantity">
+        <dc:Bounds x="670" y="230" width="100" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="task_AddToCart_di" bpmnElement="task_AddToCart">
+        <dc:Bounds x="820" y="230" width="100" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="gateway_AddMoreItems_di" bpmnElement="gateway_AddMoreItems" isMarkerVisible="true">
+        <dc:Bounds x="970" y="245" width="50" height="50"/>
+        <bpmndi:BPMNLabel><dc:Bounds x="950" y="300" width="90" height="14"/></bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="task_ReviewCart_di" bpmnElement="task_ReviewCart">
+        <dc:Bounds x="1120" y="230" width="100" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="task_CheckBudget_di" bpmnElement="task_CheckBudget">
+        <dc:Bounds x="1270" y="230" width="100" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="gateway_BudgetSufficient_di" bpmnElement="gateway_BudgetSufficient" isMarkerVisible="true">
+        <dc:Bounds x="1420" y="245" width="50" height="50"/>
+        <bpmndi:BPMNLabel><dc:Bounds x="1400" y="300" width="90" height="14"/></bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="task_ProceedCheckout_di" bpmnElement="task_ProceedCheckout">
+        <dc:Bounds x="1570" y="230" width="100" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="gateway_UserRegistered_di" bpmnElement="gateway_UserRegistered" isMarkerVisible="true">
+        <dc:Bounds x="1720" y="245" width="50" height="50"/>
+        <bpmndi:BPMNLabel><dc:Bounds x="1700" y="300" width="90" height="14"/></bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="task_PerformLogin_di" bpmnElement="task_PerformLogin">
+        <dc:Bounds x="1870" y="140" width="100" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="task_RegisterAndLogin_di" bpmnElement="task_RegisterAndLogin">
+        <dc:Bounds x="1870" y="320" width="100" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="gateway_AuthComplete_di" bpmnElement="gateway_AuthComplete" isMarkerVisible="true">
+        <dc:Bounds x="2020" y="245" width="50" height="50"/>
+        <bpmndi:BPMNLabel><dc:Bounds x="1980" y="300" width="130" height="28"/></bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="task_ConfirmAddress_di" bpmnElement="task_ConfirmAddress">
+        <dc:Bounds x="2170" y="230" width="100" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="task_ChoosePaymentMethod_di" bpmnElement="task_ChoosePaymentMethod">
+        <dc:Bounds x="2320" y="230" width="100" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="task_PerformPayment_di" bpmnElement="task_PerformPayment">
+        <dc:Bounds x="2470" y="230" width="100" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="task_ConfirmPayment_di" bpmnElement="task_ConfirmPayment">
+        <dc:Bounds x="2620" y="230" width="100" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="task_LeaveWebsite_di" bpmnElement="task_LeaveWebsite">
+        <dc:Bounds x="2820" y="230" width="100" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="endEvent_WebsiteClosed_di" bpmnElement="endEvent_WebsiteClosed">
+        <dc:Bounds x="2970" y="252" width="36" height="36"/>
+        <bpmndi:BPMNLabel><dc:Bounds x="2943" y="293" width="90" height="14"/></bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNEdge id="flow_1_di" bpmnElement="flow_1">
+        <di:waypoint x="136" y="270"/> <di:waypoint x="220" y="270"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_2_di" bpmnElement="flow_2">
+        <di:waypoint x="320" y="270"/> <di:waypoint x="370" y="270"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_3_di" bpmnElement="flow_3">
+        <di:waypoint x="470" y="270"/> <di:waypoint x="520" y="270"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_4_di" bpmnElement="flow_4">
+        <di:waypoint x="570" y="270"/> <di:waypoint x="670" y="270"/>
+        <bpmndi:BPMNLabel><dc:Bounds x="595" y="252" width="50" height="14"/></bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_5_di" bpmnElement="flow_5">
+        <di:waypoint x="545" y="295"/> <di:waypoint x="545" y="430"/>
+        <di:waypoint x="2820" y="430"/> <di:waypoint x="2820" y="310"/>
+        <bpmndi:BPMNLabel><dc:Bounds x="550" y="408" width="80" height="14"/></bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_6_di" bpmnElement="flow_6">
+        <di:waypoint x="770" y="270"/> <di:waypoint x="820" y="270"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_7_di" bpmnElement="flow_7">
+        <di:waypoint x="920" y="270"/> <di:waypoint x="970" y="270"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_8_di" bpmnElement="flow_8">
+        <di:waypoint x="995" y="245"/> <di:waypoint x="995" y="100"/>
+        <di:waypoint x="420" y="100"/> <di:waypoint x="420" y="230"/>
+        <bpmndi:BPMNLabel><dc:Bounds x="660" y="82" width="100" height="14"/></bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_9_di" bpmnElement="flow_9">
+        <di:waypoint x="1020" y="270"/> <di:waypoint x="1120" y="270"/>
+        <bpmndi:BPMNLabel><dc:Bounds x="1030" y="252" width="90" height="14"/></bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_10_di" bpmnElement="flow_10">
+        <di:waypoint x="1220" y="270"/> <di:waypoint x="1270" y="270"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_11_di" bpmnElement="flow_11">
+        <di:waypoint x="1370" y="270"/> <di:waypoint x="1420" y="270"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_12_di" bpmnElement="flow_12">
+        <di:waypoint x="1445" y="245"/> <di:waypoint x="1445" y="100"/>
+        <di:waypoint x="1170" y="100"/> <di:waypoint x="1170" y="230"/>
+        <bpmndi:BPMNLabel><dc:Bounds x="1250" y="82" width="100" height="14"/></bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_13_di" bpmnElement="flow_13">
+        <di:waypoint x="1470" y="270"/> <di:waypoint x="1570" y="270"/>
+        <bpmndi:BPMNLabel><dc:Bounds x="1480" y="252" width="80" height="14"/></bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_14_di" bpmnElement="flow_14">
+        <di:waypoint x="1670" y="270"/> <di:waypoint x="1720" y="270"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_15_di" bpmnElement="flow_15">
+        <di:waypoint x="1745" y="245"/> <di:waypoint x="1745" y="180"/> <di:waypoint x="1870" y="180"/>
+        <bpmndi:BPMNLabel><dc:Bounds x="1750" y="200" width="110" height="14"/></bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_16_di" bpmnElement="flow_16">
+        <di:waypoint x="1745" y="295"/> <di:waypoint x="1745" y="360"/> <di:waypoint x="1870" y="360"/>
+        <bpmndi:BPMNLabel><dc:Bounds x="1750" y="325" width="90" height="14"/></bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_17_di" bpmnElement="flow_17">
+        <di:waypoint x="1970" y="180"/> <di:waypoint x="2045" y="180"/> <di:waypoint x="2045" y="245"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_18_di" bpmnElement="flow_18">
+        <di:waypoint x="1970" y="360"/> <di:waypoint x="2045" y="360"/> <di:waypoint x="2045" y="295"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_19_di" bpmnElement="flow_19">
+        <di:waypoint x="2070" y="270"/> <di:waypoint x="2170" y="270"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_20_di" bpmnElement="flow_20">
+        <di:waypoint x="2270" y="270"/> <di:waypoint x="2320" y="270"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_21_di" bpmnElement="flow_21">
+        <di:waypoint x="2420" y="270"/> <di:waypoint x="2470" y="270"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_22_di" bpmnElement="flow_22">
+        <di:waypoint x="2570" y="270"/> <di:waypoint x="2620" y="270"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_23_di" bpmnElement="flow_23">
+        <di:waypoint x="2720" y="270"/> <di:waypoint x="2820" y="270"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_24_di" bpmnElement="flow_24">
+        <di:waypoint x="2920" y="270"/> <di:waypoint x="2970" y="270"/>
+      </bpmndi:BPMNEdge>
+
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</semantic:definitions> (Routing to: end)

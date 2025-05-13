@@ -1,6 +1,6 @@
 from text2bpmn.graphs import baseline
 from text2bpmn.graphs import react_with_supervisor
-from Text2BPMN.text2bpmn.graphs import three_agent_graph
+from text2bpmn.graphs import three_agent_graph
 
 
 import json
@@ -68,7 +68,7 @@ def main():
 
 
     #input_path = "data/test_cases/example_test_case.jsonl"
-    input_path = "data/test_cases/wu_wien.json"
+    input_path = "data/test_cases/subtest_set.json"
 
     #output_path = "data/test_cases/example_test_case_with_answers.jsonl"
     
@@ -94,8 +94,9 @@ def main():
     #             f.write(json.dumps(item) + "\n")
 
     # Process the input file with the base_line graph
-    print("Processing graph: supervisor_no_react")    
+    print("Processing graph: three_agent_graph")    
 
+    #
     
     with open(input_path, 'r') as file:
          data = json.load(file)
@@ -112,7 +113,7 @@ def main():
 
         final_chunk = None
         with get_openai_callback() as cb:
-            for chunk in graph.stream({"messages": [input_message]}, config={"recursion_limit": 10}):
+            for chunk in graph.stream({"messages": [input_message]}):
                 pretty_print_messages(chunk, last_message=True)
                 final_chunk = chunk
 
@@ -123,12 +124,12 @@ def main():
     
         final_message = final_messages[-1].content
         # Write the modified lines back as plain text
-        output_path = f"data/bpmn/baseline_{i}.bpmn"
+        output_path = f"data/bpmn/three_agent_{i}_{data[i]['level']}.bpmn"        
         with open(output_path, "w") as f:
             f.write(final_message + "\n")
     
         print(f"Results written to {output_path}")
-        render_BPMN(f"data/bpmn/baseline_{i}.bpmn",f"data/img/test_{i}.png")
+        render_BPMN(f"data/bpmn/three_agent_{i}_{data[i]['level']}.bpmn",f"data/img/three_agent_{i}_{data[i]['level']}.png")
     
 
     # # # Process the input file with the base_line graph
