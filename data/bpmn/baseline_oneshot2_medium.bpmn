@@ -1,0 +1,312 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<semantic:definitions xmlns:semantic="http://www.omg.org/spec/BPMN/20100524/MODEL"
+                      xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI"
+                      xmlns:dc="http://www.omg.org/spec/DD/20100524/DC"
+                      xmlns:di="http://www.omg.org/spec/DD/20100524/DI"
+                      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                      id="definitions_InvoiceApproval"
+                      targetNamespace="http://example.com/bpmn/invoiceApproval">
+
+  <semantic:collaboration id="collab_InvoiceApproval" name="Invoice Approval Collaboration">
+    <semantic:participant id="participant_InvoiceProcessor" name="Invoice Processor" processRef="process_InvoiceProcessor"/>
+    <semantic:participant id="participant_FirstApprover" name="First Approver" processRef="process_FirstApprover"/>
+    <semantic:participant id="participant_SecondApprover" name="Second Approver" processRef="process_SecondApprover"/>
+
+    <semantic:messageFlow id="messageFlow_Req1stApproval" name="1st Approval Request" sourceRef="sendTask_SendFor1stApproval" targetRef="messageStartEvent_1stRequestReceived"/>
+    <semantic:messageFlow id="messageFlow_Resp1stApproval" name="1st Approval Decision" sourceRef="sendTask_Submit1stDecision" targetRef="intermediateCatchEvent_1stDecisionReceived"/>
+    <semantic:messageFlow id="messageFlow_Req2ndApproval" name="2nd Approval Request" sourceRef="sendTask_SendFor2ndApproval" targetRef="messageStartEvent_2ndRequestReceived"/>
+    <semantic:messageFlow id="messageFlow_Resp2ndApproval" name="2nd Approval Decision" sourceRef="sendTask_Submit2ndDecision" targetRef="intermediateCatchEvent_2ndDecisionReceived"/>
+  </semantic:collaboration>
+
+  <semantic:process id="process_InvoiceProcessor" name="Invoice Processing Main Process" isExecutable="false">
+    <semantic:startEvent id="startEvent_InvoiceReceived" name="Invoice Received">
+      <semantic:outgoing>seqFlow_to_Send1stApproval</semantic:outgoing>
+    </semantic:startEvent>
+    <semantic:sendTask id="sendTask_SendFor1stApproval" name="Send for 1st Approval">
+      <semantic:incoming>seqFlow_to_Send1stApproval</semantic:incoming>
+      <semantic:outgoing>seqFlow_to_Receive1stDecision</semantic:outgoing>
+    </semantic:sendTask>
+    <semantic:intermediateCatchEvent id="intermediateCatchEvent_1stDecisionReceived" name="1st Decision Received">
+      <semantic:incoming>seqFlow_to_Receive1stDecision</semantic:incoming>
+      <semantic:outgoing>seqFlow_to_Gw1stOutcome</semantic:outgoing>
+      <semantic:messageEventDefinition messageRef="message_1stDecision"/>
+    </semantic:intermediateCatchEvent>
+    <semantic:exclusiveGateway id="exclusiveGateway_1stApprovalOutcome" name="1st Approved?" gatewayDirection="Diverging">
+      <semantic:incoming>seqFlow_to_Gw1stOutcome</semantic:incoming>
+      <semantic:outgoing>seqFlow_1stApproved</semantic:outgoing>
+      <semantic:outgoing>seqFlow_1stRejected</semantic:outgoing>
+    </semantic:exclusiveGateway>
+    <semantic:sendTask id="sendTask_SendFor2ndApproval" name="Send for 2nd Approval">
+      <semantic:incoming>seqFlow_1stApproved</semantic:incoming>
+      <semantic:outgoing>seqFlow_to_Receive2ndDecision</semantic:outgoing>
+    </semantic:sendTask>
+    <semantic:intermediateCatchEvent id="intermediateCatchEvent_2ndDecisionReceived" name="2nd Decision Received">
+      <semantic:incoming>seqFlow_to_Receive2ndDecision</semantic:incoming>
+      <semantic:outgoing>seqFlow_to_Gw2ndOutcome</semantic:outgoing>
+      <semantic:messageEventDefinition messageRef="message_2ndDecision"/>
+    </semantic:intermediateCatchEvent>
+    <semantic:exclusiveGateway id="exclusiveGateway_2ndApprovalOutcome" name="2nd Approved?" gatewayDirection="Diverging">
+      <semantic:incoming>seqFlow_to_Gw2ndOutcome</semantic:incoming>
+      <semantic:outgoing>seqFlow_2ndApproved</semantic:outgoing>
+      <semantic:outgoing>seqFlow_2ndRejected</semantic:outgoing>
+    </semantic:exclusiveGateway>
+    <semantic:endEvent id="endEvent_SignatureObtained" name="Signature/Approval Obtained">
+      <semantic:incoming>seqFlow_2ndApproved</semantic:incoming>
+    </semantic:endEvent>
+    <semantic:endEvent id="endEvent_Rejected1stStage" name="Invoice Rejected (1st Stage)">
+      <semantic:incoming>seqFlow_1stRejected</semantic:incoming>
+    </semantic:endEvent>
+    <semantic:endEvent id="endEvent_Rejected2ndStage" name="Invoice Rejected (2nd Stage)">
+      <semantic:incoming>seqFlow_2ndRejected</semantic:incoming>
+    </semantic:endEvent>
+
+    <semantic:sequenceFlow id="seqFlow_to_Send1stApproval" sourceRef="startEvent_InvoiceReceived" targetRef="sendTask_SendFor1stApproval"/>
+    <semantic:sequenceFlow id="seqFlow_to_Receive1stDecision" sourceRef="sendTask_SendFor1stApproval" targetRef="intermediateCatchEvent_1stDecisionReceived"/>
+    <semantic:sequenceFlow id="seqFlow_to_Gw1stOutcome" sourceRef="intermediateCatchEvent_1stDecisionReceived" targetRef="exclusiveGateway_1stApprovalOutcome"/>
+    <semantic:sequenceFlow id="seqFlow_1stApproved" name="Approved" sourceRef="exclusiveGateway_1stApprovalOutcome" targetRef="sendTask_SendFor2ndApproval"/>
+    <semantic:sequenceFlow id="seqFlow_1stRejected" name="Rejected" sourceRef="exclusiveGateway_1stApprovalOutcome" targetRef="endEvent_Rejected1stStage"/>
+    <semantic:sequenceFlow id="seqFlow_to_Receive2ndDecision" sourceRef="sendTask_SendFor2ndApproval" targetRef="intermediateCatchEvent_2ndDecisionReceived"/>
+    <semantic:sequenceFlow id="seqFlow_to_Gw2ndOutcome" sourceRef="intermediateCatchEvent_2ndDecisionReceived" targetRef="exclusiveGateway_2ndApprovalOutcome"/>
+    <semantic:sequenceFlow id="seqFlow_2ndApproved" name="Approved" sourceRef="exclusiveGateway_2ndApprovalOutcome" targetRef="endEvent_SignatureObtained"/>
+    <semantic:sequenceFlow id="seqFlow_2ndRejected" name="Rejected" sourceRef="exclusiveGateway_2ndApprovalOutcome" targetRef="endEvent_Rejected2ndStage"/>
+  </semantic:process>
+
+  <semantic:process id="process_FirstApprover" name="First Approval Process" isExecutable="false">
+    <semantic:startEvent id="messageStartEvent_1stRequestReceived" name="1st Approval Request Received">
+      <semantic:outgoing>seqFlow_to_Perform1stApproval</semantic:outgoing>
+      <semantic:messageEventDefinition messageRef="message_1stRequest"/>
+    </semantic:startEvent>
+    <semantic:userTask id="userTask_Perform1stApproval" name="Perform Approval (1st Stage)">
+      <semantic:incoming>seqFlow_to_Perform1stApproval</semantic:incoming>
+      <semantic:outgoing>seqFlow_to_Submit1stDecision</semantic:outgoing>
+    </semantic:userTask>
+    <semantic:sendTask id="sendTask_Submit1stDecision" name="Submit 1st Decision">
+      <semantic:incoming>seqFlow_to_Submit1stDecision</semantic:incoming>
+      <semantic:outgoing>seqFlow_to_End1stApproval</semantic:outgoing>
+    </semantic:sendTask>
+    <semantic:endEvent id="endEvent_1stDecisionSubmitted" name="1st Decision Submitted">
+      <semantic:incoming>seqFlow_to_End1stApproval</semantic:incoming>
+    </semantic:endEvent>
+
+    <semantic:sequenceFlow id="seqFlow_to_Perform1stApproval" sourceRef="messageStartEvent_1stRequestReceived" targetRef="userTask_Perform1stApproval"/>
+    <semantic:sequenceFlow id="seqFlow_to_Submit1stDecision" sourceRef="userTask_Perform1stApproval" targetRef="sendTask_Submit1stDecision"/>
+    <semantic:sequenceFlow id="seqFlow_to_End1stApproval" sourceRef="sendTask_Submit1stDecision" targetRef="endEvent_1stDecisionSubmitted"/>
+  </semantic:process>
+
+  <semantic:process id="process_SecondApprover" name="Second Approval Process" isExecutable="false">
+    <semantic:startEvent id="messageStartEvent_2ndRequestReceived" name="2nd Approval Request Received">
+      <semantic:outgoing>seqFlow_to_Perform2ndApproval</semantic:outgoing>
+      <semantic:messageEventDefinition messageRef="message_2ndRequest"/>
+    </semantic:startEvent>
+    <semantic:userTask id="userTask_Perform2ndApproval" name="Perform Approval (2nd Stage)">
+      <semantic:incoming>seqFlow_to_Perform2ndApproval</semantic:incoming>
+      <semantic:outgoing>seqFlow_to_Submit2ndDecision</semantic:outgoing>
+    </semantic:userTask>
+    <semantic:sendTask id="sendTask_Submit2ndDecision" name="Submit 2nd Decision">
+      <semantic:incoming>seqFlow_to_Submit2ndDecision</semantic:incoming>
+      <semantic:outgoing>seqFlow_to_End2ndApproval</semantic:outgoing>
+    </semantic:sendTask>
+    <semantic:endEvent id="endEvent_2ndDecisionSubmitted" name="2nd Decision Submitted">
+      <semantic:incoming>seqFlow_to_End2ndApproval</semantic:incoming>
+    </semantic:endEvent>
+
+    <semantic:sequenceFlow id="seqFlow_to_Perform2ndApproval" sourceRef="messageStartEvent_2ndRequestReceived" targetRef="userTask_Perform2ndApproval"/>
+    <semantic:sequenceFlow id="seqFlow_to_Submit2ndDecision" sourceRef="userTask_Perform2ndApproval" targetRef="sendTask_Submit2ndDecision"/>
+    <semantic:sequenceFlow id="seqFlow_to_End2ndApproval" sourceRef="sendTask_Submit2ndDecision" targetRef="endEvent_2ndDecisionSubmitted"/>
+  </semantic:process>
+
+  <semantic:message id="message_1stRequest" name="Msg_1stApprovalRequest"/>
+  <semantic:message id="message_1stDecision" name="Msg_1stApprovalDecision"/>
+  <semantic:message id="message_2ndRequest" name="Msg_2ndApprovalRequest"/>
+  <semantic:message id="message_2ndDecision" name="Msg_2ndApprovalDecision"/>
+
+  <bpmndi:BPMNDiagram id="diagram_InvoiceApproval" name="Invoice Approval Process Diagram">
+    <bpmndi:BPMNPlane bpmnElement="collab_InvoiceApproval">
+      <bpmndi:BPMNShape id="shape_participant_InvoiceProcessor" bpmnElement="participant_InvoiceProcessor" isHorizontal="true">
+        <dc:Bounds x="20" y="20" width="1050" height="250"/>
+        <bpmndi:BPMNLabel/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_participant_FirstApprover" bpmnElement="participant_FirstApprover" isHorizontal="true">
+        <dc:Bounds x="20" y="300" width="1050" height="200"/>
+        <bpmndi:BPMNLabel/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_participant_SecondApprover" bpmnElement="participant_SecondApprover" isHorizontal="true">
+        <dc:Bounds x="20" y="530" width="1050" height="200"/>
+        <bpmndi:BPMNLabel/>
+      </bpmndi:BPMNShape>
+
+      <!-- Invoice Processor Elements -->
+      <bpmndi:BPMNShape id="shape_startEvent_InvoiceReceived" bpmnElement="startEvent_InvoiceReceived">
+        <dc:Bounds x="80" y="127" width="36" height="36"/>
+        <bpmndi:BPMNLabel><dc:Bounds x="62" y="168" width="73" height="14"/></bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_sendTask_SendFor1stApproval" bpmnElement="sendTask_SendFor1stApproval">
+        <dc:Bounds x="180" y="105" width="100" height="80"/>
+        <bpmndi:BPMNLabel/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_intermediateCatchEvent_1stDecisionReceived" bpmnElement="intermediateCatchEvent_1stDecisionReceived">
+        <dc:Bounds x="340" y="127" width="36" height="36"/>
+        <bpmndi:BPMNLabel><dc:Bounds x="310" y="168" width="96" height="14"/></bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_exclusiveGateway_1stApprovalOutcome" bpmnElement="exclusiveGateway_1stApprovalOutcome" isMarkerVisible="true">
+        <dc:Bounds x="440" y="120" width="50" height="50"/>
+        <bpmndi:BPMNLabel><dc:Bounds x="427" y="175" width="77" height="14"/></bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_sendTask_SendFor2ndApproval" bpmnElement="sendTask_SendFor2ndApproval">
+        <dc:Bounds x="550" y="105" width="100" height="80"/>
+        <bpmndi:BPMNLabel/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_intermediateCatchEvent_2ndDecisionReceived" bpmnElement="intermediateCatchEvent_2ndDecisionReceived">
+        <dc:Bounds x="710" y="127" width="36" height="36"/>
+        <bpmndi:BPMNLabel><dc:Bounds x="680" y="168" width="96" height="14"/></bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_exclusiveGateway_2ndApprovalOutcome" bpmnElement="exclusiveGateway_2ndApprovalOutcome" isMarkerVisible="true">
+        <dc:Bounds x="810" y="120" width="50" height="50"/>
+        <bpmndi:BPMNLabel><dc:Bounds x="797" y="175" width="77" height="14"/></bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_endEvent_SignatureObtained" bpmnElement="endEvent_SignatureObtained">
+        <dc:Bounds x="920" y="127" width="36" height="36"/>
+        <bpmndi:BPMNLabel><dc:Bounds x="890" y="168" width="97" height="28"/></bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_endEvent_Rejected1stStage" bpmnElement="endEvent_Rejected1stStage">
+        <dc:Bounds x="550" y="200" width="36" height="36"/>
+        <bpmndi:BPMNLabel><dc:Bounds x="520" y="241" width="97" height="28"/></bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_endEvent_Rejected2ndStage" bpmnElement="endEvent_Rejected2ndStage">
+        <dc:Bounds x="920" y="200" width="36" height="36"/>
+        <bpmndi:BPMNLabel><dc:Bounds x="890" y="241" width="97" height="28"/></bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <!-- First Approver Elements -->
+      <bpmndi:BPMNShape id="shape_messageStartEvent_1stRequestReceived" bpmnElement="messageStartEvent_1stRequestReceived">
+        <dc:Bounds x="210" y="362" width="36" height="36"/>
+        <bpmndi:BPMNLabel><dc:Bounds x="180" y="403" width="97" height="28"/></bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_userTask_Perform1stApproval" bpmnElement="userTask_Perform1stApproval">
+        <dc:Bounds x="310" y="340" width="100" height="80"/>
+        <bpmndi:BPMNLabel/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_sendTask_Submit1stDecision" bpmnElement="sendTask_Submit1stDecision">
+        <dc:Bounds x="460" y="340" width="100" height="80"/>
+        <bpmndi:BPMNLabel/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_endEvent_1stDecisionSubmitted" bpmnElement="endEvent_1stDecisionSubmitted">
+        <dc:Bounds x="610" y="362" width="36" height="36"/>
+        <bpmndi:BPMNLabel><dc:Bounds x="580" y="403" width="97" height="28"/></bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <!-- Second Approver Elements -->
+      <bpmndi:BPMNShape id="shape_messageStartEvent_2ndRequestReceived" bpmnElement="messageStartEvent_2ndRequestReceived">
+        <dc:Bounds x="580" y="592" width="36" height="36"/>
+        <bpmndi:BPMNLabel><dc:Bounds x="550" y="633" width="97" height="28"/></bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_userTask_Perform2ndApproval" bpmnElement="userTask_Perform2ndApproval">
+        <dc:Bounds x="680" y="570" width="100" height="80"/>
+        <bpmndi:BPMNLabel/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_sendTask_Submit2ndDecision" bpmnElement="sendTask_Submit2ndDecision">
+        <dc:Bounds x="830" y="570" width="100" height="80"/>
+        <bpmndi:BPMNLabel/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_endEvent_2ndDecisionSubmitted" bpmnElement="endEvent_2ndDecisionSubmitted">
+        <dc:Bounds x="980" y="592" width="36" height="36"/>
+        <bpmndi:BPMNLabel><dc:Bounds x="950" y="633" width="97" height="28"/></bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <!-- Sequence Flows Invoice Processor -->
+      <bpmndi:BPMNEdge id="edge_seqFlow_to_Send1stApproval" bpmnElement="seqFlow_to_Send1stApproval">
+        <di:waypoint x="116" y="145"/>
+        <di:waypoint x="180" y="145"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_seqFlow_to_Receive1stDecision" bpmnElement="seqFlow_to_Receive1stDecision">
+        <di:waypoint x="280" y="145"/>
+        <di:waypoint x="340" y="145"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_seqFlow_to_Gw1stOutcome" bpmnElement="seqFlow_to_Gw1stOutcome">
+        <di:waypoint x="376" y="145"/>
+        <di:waypoint x="440" y="145"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_seqFlow_1stApproved" bpmnElement="seqFlow_1stApproved">
+        <di:waypoint x="490" y="145"/>
+        <di:waypoint x="550" y="145"/>
+        <bpmndi:BPMNLabel><dc:Bounds x="500" y="125" width="50" height="14"/></bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_seqFlow_1stRejected" bpmnElement="seqFlow_1stRejected">
+        <di:waypoint x="465" y="170"/>
+        <di:waypoint x="465" y="218"/>
+        <di:waypoint x="550" y="218"/>
+        <bpmndi:BPMNLabel><dc:Bounds x="470" y="190" width="50" height="14"/></bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_seqFlow_to_Receive2ndDecision" bpmnElement="seqFlow_to_Receive2ndDecision">
+        <di:waypoint x="650" y="145"/>
+        <di:waypoint x="710" y="145"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_seqFlow_to_Gw2ndOutcome" bpmnElement="seqFlow_to_Gw2ndOutcome">
+        <di:waypoint x="746" y="145"/>
+        <di:waypoint x="810" y="145"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_seqFlow_2ndApproved" bpmnElement="seqFlow_2ndApproved">
+        <di:waypoint x="860" y="145"/>
+        <di:waypoint x="920" y="145"/>
+        <bpmndi:BPMNLabel><dc:Bounds x="870" y="125" width="50" height="14"/></bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_seqFlow_2ndRejected" bpmnElement="seqFlow_2ndRejected">
+        <di:waypoint x="835" y="170"/>
+        <di:waypoint x="835" y="218"/>
+        <di:waypoint x="920" y="218"/>
+        <bpmndi:BPMNLabel><dc:Bounds x="840" y="190" width="50" height="14"/></bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+
+      <!-- Sequence Flows First Approver -->
+      <bpmndi:BPMNEdge id="edge_seqFlow_to_Perform1stApproval" bpmnElement="seqFlow_to_Perform1stApproval">
+        <di:waypoint x="246" y="380"/>
+        <di:waypoint x="310" y="380"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_seqFlow_to_Submit1stDecision" bpmnElement="seqFlow_to_Submit1stDecision">
+        <di:waypoint x="410" y="380"/>
+        <di:waypoint x="460" y="380"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_seqFlow_to_End1stApproval" bpmnElement="seqFlow_to_End1stApproval">
+        <di:waypoint x="560" y="380"/>
+        <di:waypoint x="610" y="380"/>
+      </bpmndi:BPMNEdge>
+
+      <!-- Sequence Flows Second Approver -->
+      <bpmndi:BPMNEdge id="edge_seqFlow_to_Perform2ndApproval" bpmnElement="seqFlow_to_Perform2ndApproval">
+        <di:waypoint x="616" y="610"/>
+        <di:waypoint x="680" y="610"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_seqFlow_to_Submit2ndDecision" bpmnElement="seqFlow_to_Submit2ndDecision">
+        <di:waypoint x="780" y="610"/>
+        <di:waypoint x="830" y="610"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_seqFlow_to_End2ndApproval" bpmnElement="seqFlow_to_End2ndApproval">
+        <di:waypoint x="930" y="610"/>
+        <di:waypoint x="980" y="610"/>
+      </bpmndi:BPMNEdge>
+
+      <!-- Message Flows -->
+      <bpmndi:BPMNEdge id="edge_messageFlow_Req1stApproval" bpmnElement="messageFlow_Req1stApproval">
+        <di:waypoint x="230" y="185"/> <!-- bottom-center of sendTask_SendFor1stApproval -->
+        <di:waypoint x="228" y="362"/> <!-- top-center of messageStartEvent_1stRequestReceived -->
+        <bpmndi:BPMNLabel><dc:Bounds x="180" y="268" width="97" height="14"/></bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_messageFlow_Resp1stApproval" bpmnElement="messageFlow_Resp1stApproval">
+        <di:waypoint x="510" y="340"/> <!-- top-center of sendTask_Submit1stDecision -->
+        <di:waypoint x="358" y="163"/> <!-- bottom-center of intermediateCatchEvent_1stDecisionReceived -->
+        <bpmndi:BPMNLabel><dc:Bounds x="380" y="245" width="97" height="14"/></bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_messageFlow_Req2ndApproval" bpmnElement="messageFlow_Req2ndApproval">
+        <di:waypoint x="600" y="185"/> <!-- bottom-center of sendTask_SendFor2ndApproval -->
+        <di:waypoint x="598" y="592"/> <!-- top-center of messageStartEvent_2ndRequestReceived -->
+        <bpmndi:BPMNLabel><dc:Bounds x="550" y="383" width="97" height="14"/></bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_messageFlow_Resp2ndApproval" bpmnElement="messageFlow_Resp2ndApproval">
+        <di:waypoint x="880" y="570"/> <!-- top-center of sendTask_Submit2ndDecision -->
+        <di:waypoint x="728" y="163"/> <!-- bottom-center of intermediateCatchEvent_2ndDecisionReceived -->
+        <bpmndi:BPMNLabel><dc:Bounds x="750" y="361" width="97" height="14"/></bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</semantic:definitions>

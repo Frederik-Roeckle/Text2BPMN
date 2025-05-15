@@ -23,7 +23,8 @@ def build_graph():
 
     baseline = NormalAgent(
         model=get_model(),
-        system_message="data/promts/baseline_prompt.txt",
+        system_message="data/promts/baseline_prompt_few.txt",
+        few_shot_examples="data/examples/five_shot_examples.json",
         step="baseline"
     )
 
