@@ -1,0 +1,174 @@
+<?xml version="1.0" standalone="yes"?>
+<semantic:definitions id="maintenanceDefinitions"
+    targetNamespace="http://example.com/bpmn/maintenance-process"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:semantic="http://www.omg.org/spec/BPMN/20100524/MODEL"
+    xmlns:di="http://www.omg.org/spec/DD/20100524/DI"
+    xmlns:dc="http://www.omg.org/spec/DD/20100524/DC"
+    xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI">
+
+  <semantic:collaboration id="collab_maintenance">
+    <semantic:participant id="participant_maintenance_dept" name="Maintenance Department" processRef="process_maintenance"/>
+  </semantic:collaboration>
+
+  <semantic:process id="process_maintenance" name="Maintenance Process" isExecutable="true">
+    <semantic:laneSet id="laneSet_maintenance">
+      <semantic:lane id="lane_employee" name="Maintenance Employee">
+        <semantic:flowNodeRef>start_event_1</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_1</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_2</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_3</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_4</semantic:flowNodeRef>
+        <semantic:flowNodeRef>gateway_1</semantic:flowNodeRef>
+      </semantic:lane>
+      <semantic:lane id="lane_planer" name="Maintenance Planer">
+        <semantic:flowNodeRef>task_5</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_6</semantic:flowNodeRef>
+        <semantic:flowNodeRef>end_event_1</semantic:flowNodeRef>
+      </semantic:lane>
+    </semantic:laneSet>
+
+    <semantic:startEvent id="start_event_1" name="Equipment Failure Received">
+      <semantic:outgoing>flow_s1_t1</semantic:outgoing>
+    </semantic:startEvent>
+    <semantic:task id="task_1" name="Create Notification">
+      <semantic:incoming>flow_s1_t1</semantic:incoming>
+      <semantic:outgoing>flow_t1_t2</semantic:outgoing>
+    </semantic:task>
+    <semantic:task id="task_2" name="Create Maintenance Order">
+      <semantic:incoming>flow_t1_t2</semantic:incoming>
+      <semantic:outgoing>flow_t2_t3</semantic:outgoing>
+    </semantic:task>
+    <semantic:task id="task_3" name="Plan and Process Notification and Order">
+      <semantic:incoming>flow_t2_t3</semantic:incoming>
+      <semantic:outgoing>flow_t3_t4</semantic:outgoing>
+    </semantic:task>
+    <semantic:task id="task_4" name="Execute Maintenance Work in Field">
+      <semantic:incoming>flow_t3_t4</semantic:incoming>
+      <semantic:incoming>flow_g1_t4_notpassed</semantic:incoming>
+      <semantic:outgoing>flow_t4_g1</semantic:outgoing>
+    </semantic:task>
+    <semantic:exclusiveGateway id="gateway_1" name="Quality Assessment Passed?">
+      <semantic:incoming>flow_t4_g1</semantic:incoming>
+      <semantic:outgoing>flow_g1_t4_notpassed</semantic:outgoing>
+      <semantic:outgoing>flow_g1_t5_passed</semantic:outgoing>
+    </semantic:exclusiveGateway>
+    <semantic:task id="task_5" name="Complete Maintenance Order">
+      <semantic:incoming>flow_g1_t5_passed</semantic:incoming>
+      <semantic:outgoing>flow_t5_t6</semantic:outgoing>
+    </semantic:task>
+    <semantic:task id="task_6" name="Close Notification">
+      <semantic:incoming>flow_t5_t6</semantic:incoming>
+      <semantic:outgoing>flow_t6_e1</semantic:outgoing>
+    </semantic:task>
+    <semantic:endEvent id="end_event_1" name="Maintenance Process Completed">
+      <semantic:incoming>flow_t6_e1</semantic:incoming>
+    </semantic:endEvent>
+
+    <semantic:sequenceFlow id="flow_s1_t1" sourceRef="start_event_1" targetRef="task_1"/>
+    <semantic:sequenceFlow id="flow_t1_t2" sourceRef="task_1" targetRef="task_2"/>
+    <semantic:sequenceFlow id="flow_t2_t3" sourceRef="task_2" targetRef="task_3"/>
+    <semantic:sequenceFlow id="flow_t3_t4" sourceRef="task_3" targetRef="task_4"/>
+    <semantic:sequenceFlow id="flow_t4_g1" sourceRef="task_4" targetRef="gateway_1"/>
+    <semantic:sequenceFlow id="flow_g1_t4_notpassed" name="Not Passed" sourceRef="gateway_1" targetRef="task_4"/>
+    <semantic:sequenceFlow id="flow_g1_t5_passed" name="Passed" sourceRef="gateway_1" targetRef="task_5"/>
+    <semantic:sequenceFlow id="flow_t5_t6" sourceRef="task_5" targetRef="task_6"/>
+    <semantic:sequenceFlow id="flow_t6_e1" sourceRef="task_6" targetRef="end_event_1"/>
+  </semantic:process>
+
+  <bpmndi:BPMNDiagram id="BPMNDiagram_maintenanceProcess" name="Maintenance Process Diagram" resolution="96.0">
+    <bpmndi:BPMNPlane bpmnElement="collab_maintenance">
+      <bpmndi:BPMNShape id="participant_maintenance_dept_shape" bpmnElement="participant_maintenance_dept" isHorizontal="true">
+        <dc:Bounds x="10" y="10" width="1150" height="500"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="lane_employee_shape" bpmnElement="lane_employee" isHorizontal="true">
+        <dc:Bounds x="40" y="10" width="1120" height="250"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="lane_planer_shape" bpmnElement="lane_planer" isHorizontal="true">
+        <dc:Bounds x="40" y="260" width="1120" height="250"/>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="start_event_1_shape" bpmnElement="start_event_1">
+        <dc:Bounds x="60" y="117" width="36" height="36"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="42" y="158" width="72" height="28"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="task_1_shape" bpmnElement="task_1">
+        <dc:Bounds x="150" y="95" width="100" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="task_2_shape" bpmnElement="task_2">
+        <dc:Bounds x="300" y="95" width="100" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="task_3_shape" bpmnElement="task_3">
+        <dc:Bounds x="450" y="95" width="100" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="task_4_shape" bpmnElement="task_4">
+        <dc:Bounds x="600" y="95" width="100" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="gateway_1_shape" bpmnElement="gateway_1" isMarkerVisible="true">
+        <dc:Bounds x="750" y="110" width="50" height="50"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="730" y="165" width="90" height="28"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="task_5_shape" bpmnElement="task_5">
+        <dc:Bounds x="725" y="345" width="100" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="task_6_shape" bpmnElement="task_6">
+        <dc:Bounds x="900" y="345" width="100" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="end_event_1_shape" bpmnElement="end_event_1">
+        <dc:Bounds x="1050" y="367" width="36" height="36"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1025" y="408" width="86" height="28"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNEdge id="flow_s1_t1_edge" bpmnElement="flow_s1_t1">
+        <di:waypoint x="96" y="135"/>
+        <di:waypoint x="150" y="135"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_t1_t2_edge" bpmnElement="flow_t1_t2">
+        <di:waypoint x="250" y="135"/>
+        <di:waypoint x="300" y="135"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_t2_t3_edge" bpmnElement="flow_t2_t3">
+        <di:waypoint x="400" y="135"/>
+        <di:waypoint x="450" y="135"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_t3_t4_edge" bpmnElement="flow_t3_t4">
+        <di:waypoint x="550" y="135"/>
+        <di:waypoint x="600" y="135"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_t4_g1_edge" bpmnElement="flow_t4_g1">
+        <di:waypoint x="700" y="135"/>
+        <di:waypoint x="750" y="135"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_g1_t4_notpassed_edge" bpmnElement="flow_g1_t4_notpassed">
+        <di:waypoint x="775" y="110"/>
+        <di:waypoint x="775" y="70"/>
+        <di:waypoint x="650" y="70"/>
+        <di:waypoint x="650" y="95"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="678" y="50" width="70" height="14"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_g1_t5_passed_edge" bpmnElement="flow_g1_t5_passed">
+        <di:waypoint x="775" y="160"/>
+        <di:waypoint x="775" y="345"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="785" y="245" width="50" height="14"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_t5_t6_edge" bpmnElement="flow_t5_t6">
+        <di:waypoint x="825" y="385"/>
+        <di:waypoint x="900" y="385"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_t6_e1_edge" bpmnElement="flow_t6_e1">
+        <di:waypoint x="1000" y="385"/>
+        <di:waypoint x="1050" y="385"/>
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</semantic:definitions>

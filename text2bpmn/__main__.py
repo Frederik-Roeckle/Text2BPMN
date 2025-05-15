@@ -8,7 +8,7 @@ import json
 from text2bpmn.models import OpenAILLM, GeminiLLM
 import text2bpmn.config as config
 from langchain_core.messages import convert_to_messages
-from langchain.callbacks import get_openai_callback
+from langchain_community.callbacks import get_openai_callback
 from text2bpmn.utils import render_BPMN  
 from langsmith.wrappers import wrap_openai
 from langsmith import traceable
@@ -68,7 +68,7 @@ def main():
 
 
     #input_path = "data/test_cases/example_test_case.jsonl"
-    input_path = "data/test_cases/subtest_set.json"
+    input_path = "data/test_cases/wu_wien_easy.json"
 
     #output_path = "data/test_cases/example_test_case_with_answers.jsonl"
     
@@ -124,12 +124,12 @@ def main():
     
         final_message = final_messages[-1].content
         # Write the modified lines back as plain text
-        output_path = f"data/bpmn/three_agent_{i}_{data[i]['level']}.bpmn"        
+        output_path = f"data/bpmn/three_agent_{data[i]['id']}.bpmn"
         with open(output_path, "w") as f:
             f.write(final_message + "\n")
     
         print(f"Results written to {output_path}")
-        render_BPMN(f"data/bpmn/three_agent_{i}_{data[i]['level']}.bpmn",f"data/img/three_agent_{i}_{data[i]['level']}.png")
+        render_BPMN(f"ata/bpmn/three_agent_{data[i]['id']}.bpmn", f"data/img/three_agent_{data[i]['id']}.png")
     
 
     # # # Process the input file with the base_line graph

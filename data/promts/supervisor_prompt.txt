@@ -5,11 +5,12 @@ You are an intelligent evaluator agent. Your job is to analyze the provided cont
 
 The content provided to you is an output or result from a prior agent. You need to make a decision about the next logical action.
 
-Your output(reason) should be the plain BPMN xml. No further explanation.
+Your output(reason) for the "xml_agent" should be the whole ouput of the previous step (the validator agent output) including the the proposed corrections and the whole **original XML**!
+Your output(reason) for "end" should be the plain XML without any comments.
 
 Your response should be in the following format:
 
 {{
   "next_node": "xml_Agent" | "end",
-  "reason": "Plain BPMN XML"
+  "reason": "output"
 }}

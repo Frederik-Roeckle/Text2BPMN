@@ -1,0 +1,231 @@
+<?xml version="1.0" standalone="yes"?>
+<semantic:definitions id="StockWithdrawalProcessDefs"
+    targetNamespace="http://example.com/bpmn/stock-withdrawal"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:semantic="http://www.omg.org/spec/BPMN/20100524/MODEL"
+    xmlns:di="http://www.omg.org/spec/DD/20100524/DI"
+    xmlns:dc="http://www.omg.org/spec/DD/20100524/DC"
+    xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI">
+
+  <semantic:collaboration id="collab_stock_withdrawal">
+    <semantic:participant id="participant_production_dept" name="Production Department" processRef="process_stock_withdrawal"/>
+  </semantic:collaboration>
+
+  <semantic:process id="process_stock_withdrawal" name="Stock Withdrawal Posting in SAP" isExecutable="true">
+    <semantic:laneSet id="laneSet_production">
+      <semantic:lane id="lane_employee" name="Employee">
+        <semantic:flowNodeRef>start_event_1</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_determine_goods</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_select_inventory_comp</semantic:flowNodeRef>
+        <semantic:flowNodeRef>subprocess_post_goods_issue</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_save_goods_issue</semantic:flowNodeRef>
+        <semantic:flowNodeRef>end_event_1</semantic:flowNodeRef>
+      </semantic:lane>
+    </semantic:laneSet>
+
+    <semantic:startEvent id="start_event_1" name="Realization of Need for Stock Withdrawal Posting">
+      <semantic:outgoing>flow_1</semantic:outgoing>
+    </semantic:startEvent>
+    <semantic:task id="task_determine_goods" name="Determine Goods from Warehouse">
+      <semantic:incoming>flow_1</semantic:incoming>
+      <semantic:outgoing>flow_2</semantic:outgoing>
+    </semantic:task>
+    <semantic:task id="task_select_inventory_comp" name="Select Inventory Management Component">
+      <semantic:incoming>flow_2</semantic:incoming>
+      <semantic:outgoing>flow_3</semantic:outgoing>
+    </semantic:task>
+    <semantic:subProcess id="subprocess_post_goods_issue" name="Post Goods Issue">
+      <semantic:incoming>flow_3</semantic:incoming>
+      <semantic:outgoing>flow_4</semantic:outgoing>
+      <semantic:startEvent id="sub_start_pgi" name="Start Posting Goods Issue">
+        <semantic:outgoing>flow_6</semantic:outgoing>
+      </semantic:startEvent>
+      <semantic:task id="sub_task_enter_header" name="Enter Header Data for Posting &amp; First Line Item">
+        <semantic:incoming>flow_6</semantic:incoming>
+        <semantic:outgoing>flow_7</semantic:outgoing>
+      </semantic:task>
+      <semantic:parallelGateway id="sub_pgw_split_items" name="Prepare Goods/Items Entry">
+        <semantic:incoming>flow_7</semantic:incoming>
+        <semantic:outgoing>flow_8</semantic:outgoing>
+        <semantic:outgoing>flow_9</semantic:outgoing>
+      </semantic:parallelGateway>
+      <semantic:task id="sub_task_enter_goods" name="Enter Goods">
+        <semantic:incoming>flow_8</semantic:incoming>
+        <semantic:outgoing>flow_10</semantic:outgoing>
+      </semantic:task>
+      <semantic:exclusiveGateway id="sub_xgw_check_additional" name="Additional Items Needed?">
+        <semantic:incoming>flow_9</semantic:incoming>
+        <semantic:outgoing>flow_11</semantic:outgoing>
+        <semantic:outgoing>flow_12</semantic:outgoing>
+      </semantic:exclusiveGateway>
+      <semantic:task id="sub_task_create_additional" name="Create Additional Items">
+        <semantic:incoming>flow_11</semantic:incoming>
+        <semantic:outgoing>flow_13</semantic:outgoing>
+      </semantic:task>
+      <semantic:parallelGateway id="sub_pgw_join_items" name="Finalize Goods/Items Entry">
+        <semantic:incoming>flow_10</semantic:incoming>
+        <semantic:incoming>flow_12</semantic:incoming>
+        <semantic:incoming>flow_13</semantic:incoming>
+        <semantic:outgoing>flow_14</semantic:outgoing>
+      </semantic:parallelGateway>
+      <semantic:endEvent id="sub_end_pgi" name="Goods Issue Data Entry Complete">
+        <semantic:incoming>flow_14</semantic:incoming>
+      </semantic:endEvent>
+      <semantic:sequenceFlow id="flow_6" sourceRef="sub_start_pgi" targetRef="sub_task_enter_header"/>
+      <semantic:sequenceFlow id="flow_7" sourceRef="sub_task_enter_header" targetRef="sub_pgw_split_items"/>
+      <semantic:sequenceFlow id="flow_8" sourceRef="sub_pgw_split_items" targetRef="sub_task_enter_goods"/>
+      <semantic:sequenceFlow id="flow_9" sourceRef="sub_pgw_split_items" targetRef="sub_xgw_check_additional"/>
+      <semantic:sequenceFlow id="flow_10" sourceRef="sub_task_enter_goods" targetRef="sub_pgw_join_items"/>
+      <semantic:sequenceFlow id="flow_11" name="Yes, items needed" sourceRef="sub_xgw_check_additional" targetRef="sub_task_create_additional"/>
+      <semantic:sequenceFlow id="flow_12" name="No, items not needed" sourceRef="sub_xgw_check_additional" targetRef="sub_pgw_join_items"/>
+      <semantic:sequenceFlow id="flow_13" sourceRef="sub_task_create_additional" targetRef="sub_pgw_join_items"/>
+      <semantic:sequenceFlow id="flow_14" sourceRef="sub_pgw_join_items" targetRef="sub_end_pgi"/>
+    </semantic:subProcess>
+    <semantic:task id="task_save_goods_issue" name="Save Goods Issue">
+      <semantic:incoming>flow_4</semantic:incoming>
+      <semantic:outgoing>flow_5</semantic:outgoing>
+    </semantic:task>
+    <semantic:endEvent id="end_event_1" name="Posting Successfully Done">
+      <semantic:incoming>flow_5</semantic:incoming>
+    </semantic:endEvent>
+
+    <semantic:sequenceFlow id="flow_1" sourceRef="start_event_1" targetRef="task_determine_goods"/>
+    <semantic:sequenceFlow id="flow_2" sourceRef="task_determine_goods" targetRef="task_select_inventory_comp"/>
+    <semantic:sequenceFlow id="flow_3" sourceRef="task_select_inventory_comp" targetRef="subprocess_post_goods_issue"/>
+    <semantic:sequenceFlow id="flow_4" sourceRef="subprocess_post_goods_issue" targetRef="task_save_goods_issue"/>
+    <semantic:sequenceFlow id="flow_5" sourceRef="task_save_goods_issue" targetRef="end_event_1"/>
+  </semantic:process>
+
+  <bpmndi:BPMNDiagram id="BPMNDiagram_StockWithdrawal" name="Stock Withdrawal Diagram" resolution="96.0">
+    <bpmndi:BPMNPlane bpmnElement="collab_stock_withdrawal">
+      <bpmndi:BPMNShape id="participant_production_dept_shape" bpmnElement="participant_production_dept" isHorizontal="true">
+        <dc:Bounds x="20" y="20" width="1550" height="500"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="lane_employee_shape" bpmnElement="lane_employee" isHorizontal="true">
+        <dc:Bounds x="50" y="20" width="1520" height="500"/>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="start_event_1_shape" bpmnElement="start_event_1">
+        <dc:Bounds x="100" y="258" width="36" height="36"/>
+        <bpmndi:BPMNLabel><dc:Bounds x="70" y="300" width="90" height="40"/></bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="task_determine_goods_shape" bpmnElement="task_determine_goods">
+        <dc:Bounds x="180" y="240" width="100" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="task_select_inventory_comp_shape" bpmnElement="task_select_inventory_comp">
+        <dc:Bounds x="330" y="240" width="100" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="subprocess_post_goods_issue_shape" bpmnElement="subprocess_post_goods_issue" isExpanded="true">
+        <dc:Bounds x="480" y="70" width="750" height="400"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="task_save_goods_issue_shape" bpmnElement="task_save_goods_issue">
+        <dc:Bounds x="1280" y="240" width="100" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="end_event_1_shape" bpmnElement="end_event_1">
+        <dc:Bounds x="1430" y="258" width="36" height="36"/>
+        <bpmndi:BPMNLabel><dc:Bounds x="1400" y="300" width="90" height="28"/></bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <!-- Elements within SubProcess -->
+      <bpmndi:BPMNShape id="sub_start_pgi_shape" bpmnElement="sub_start_pgi">
+        <dc:Bounds x="500" y="258" width="36" height="36"/>
+        <bpmndi:BPMNLabel><dc:Bounds x="480" y="300" width="90" height="28"/></bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="sub_task_enter_header_shape" bpmnElement="sub_task_enter_header">
+        <dc:Bounds x="580" y="240" width="100" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="sub_pgw_split_items_shape" bpmnElement="sub_pgw_split_items" isMarkerVisible="true">
+        <dc:Bounds x="730" y="253" width="50" height="50"/>
+        <bpmndi:BPMNLabel><dc:Bounds x="710" y="309" width="90" height="28"/></bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="sub_task_enter_goods_shape" bpmnElement="sub_task_enter_goods">
+        <dc:Bounds x="830" y="150" width="100" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="sub_xgw_check_additional_shape" bpmnElement="sub_xgw_check_additional" isMarkerVisible="true">
+        <dc:Bounds x="830" y="323" width="50" height="50"/>
+        <bpmndi:BPMNLabel><dc:Bounds x="810" y="379" width="90" height="28"/></bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="sub_task_create_additional_shape" bpmnElement="sub_task_create_additional">
+        <dc:Bounds x="930" y="310" width="100" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="sub_pgw_join_items_shape" bpmnElement="sub_pgw_join_items" isMarkerVisible="true">
+        <dc:Bounds x="1080" y="253" width="50" height="50"/>
+        <bpmndi:BPMNLabel><dc:Bounds x="1060" y="309" width="90" height="28"/></bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="sub_end_pgi_shape" bpmnElement="sub_end_pgi">
+        <dc:Bounds x="1180" y="258" width="36" height="36"/>
+        <bpmndi:BPMNLabel><dc:Bounds x="1150" y="300" width="90" height="40"/></bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <!-- Main Process Sequence Flows -->
+      <bpmndi:BPMNEdge id="flow_1_edge" bpmnElement="flow_1">
+        <di:waypoint x="136" y="276"/>
+        <di:waypoint x="180" y="276"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_2_edge" bpmnElement="flow_2">
+        <di:waypoint x="280" y="280"/>
+        <di:waypoint x="330" y="280"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_3_edge" bpmnElement="flow_3">
+        <di:waypoint x="430" y="280"/>
+        <di:waypoint x="480" y="270"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_4_edge" bpmnElement="flow_4">
+        <di:waypoint x="1230" y="270"/>
+        <di:waypoint x="1280" y="280"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_5_edge" bpmnElement="flow_5">
+        <di:waypoint x="1380" y="280"/>
+        <di:waypoint x="1430" y="276"/>
+      </bpmndi:BPMNEdge>
+
+      <!-- SubProcess Sequence Flows -->
+      <bpmndi:BPMNEdge id="flow_6_edge" bpmnElement="flow_6">
+        <di:waypoint x="536" y="276"/>
+        <di:waypoint x="580" y="276"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_7_edge" bpmnElement="flow_7">
+        <di:waypoint x="680" y="280"/>
+        <di:waypoint x="730" y="278"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_8_edge" bpmnElement="flow_8">
+        <di:waypoint x="755" y="253"/>
+        <di:waypoint x="755" y="190"/>
+        <di:waypoint x="830" y="190"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_9_edge" bpmnElement="flow_9">
+        <di:waypoint x="755" y="303"/>
+        <di:waypoint x="755" y="348"/>
+        <di:waypoint x="830" y="348"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_10_edge" bpmnElement="flow_10">
+        <di:waypoint x="930" y="190"/>
+        <di:waypoint x="1080" y="190"/>
+        <di:waypoint x="1080" y="253"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_11_edge" bpmnElement="flow_11">
+        <di:waypoint x="880" y="348"/>
+        <di:waypoint x="930" y="348"/>
+        <bpmndi:BPMNLabel><dc:Bounds x="885" y="328" width="80" height="14"/></bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_12_edge" bpmnElement="flow_12">
+        <di:waypoint x="855" y="373"/>
+        <di:waypoint x="855" y="410"/>
+        <di:waypoint x="1050" y="410"/>
+        <di:waypoint x="1050" y="278"/>
+        <di:waypoint x="1080" y="278"/>
+        <bpmndi:BPMNLabel><dc:Bounds x="900" y="415" width="100" height="28"/></bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_13_edge" bpmnElement="flow_13">
+        <di:waypoint x="1030" y="350"/>
+        <di:waypoint x="1050" y="350"/>
+        <di:waypoint x="1050" y="278"/>
+        <di:waypoint x="1080" y="278"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_14_edge" bpmnElement="flow_14">
+        <di:waypoint x="1130" y="278"/>
+        <di:waypoint x="1180" y="276"/>
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</semantic:definitions>

@@ -51,12 +51,17 @@ class BaseAgent(ABC):
 class NormalAgent(BaseAgent):
     def __init__(self, model: BaseChatModel, system_message=None, few_shot_examples=None, invoke_message=None, tools=None,step=None):
         super().__init__(model, system_message, few_shot_examples, invoke_message, tools, step)
-
+ 
     def invoke(self, state):
+        self.start_messages = []
+
         self.add_tools()
         self.add_system_message()
         self.add_few_shot_examples()
-        self.start_messages += state["messages"]
+
+        if state["messages"]:
+            self.start_messages.append(state["messages"][-1])
+
         self.add_invoke_message()
         #logging.info(f"Sending the following messages to the model: {self.start_messages}")
 
@@ -64,6 +69,10 @@ class NormalAgent(BaseAgent):
         with open(f"{self.step}.txt", "w") as file:
             file.write(response.content)
         return {"messages": [response]}
+    
+    
+    
+    
     
 
     
@@ -94,21 +103,19 @@ class EvaluatorAgent(BaseAgent):
         )
 
     def invoke(self, state) -> Command[Literal["xml_Agent", "__end__"]]:
-        self.start_messages = []
-        self.add_few_shot_examples()
-        self.add_invoke_message()
+        latest_message = state["messages"][-1]
 
-        # Format prompt and get model output
         formatted_prompt = self.prompt.format()
-        messages = self.start_messages + [HumanMessage(content=formatted_prompt)] + state["messages"] # Note that the order of the promt is changed compared to the Base angent. The instruction to check the given xml is put at the end to emphazise it.
+        messages = [SystemMessage(content=formatted_prompt), latest_message]  # Only include these two
+
         response = self.model.invoke(messages)
 
-        # Parse and validate output
         parsed = self.parser.parse(response.content)
-        # Add model's reasoning to message history
-        state["messages"].append(AIMessage(content=f"{parsed.reason} (Routing to: {parsed.next_node})"))
 
         return Command(
-            update={"messages": state["messages"]},
+            update={"messages": [latest_message]},  # Keep message state lean
             goto="__end__" if parsed.next_node == "end" else parsed.next_node
         )
+
+    
+   
