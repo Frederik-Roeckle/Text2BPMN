@@ -1,0 +1,516 @@
+<?xml version="1.0" standalone="yes"?>
+<semantic:definitions id="CommitmentAndInvoiceProcess"
+    targetNamespace="http://example.com/bpmn/CommitmentAndInvoiceProcess"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:semantic="http://www.omg.org/spec/BPMN/20100524/MODEL"
+    xmlns:di="http://www.omg.org/spec/DD/20100524/DI"
+    xmlns:dc="http://www.omg.org/spec/DD/20100524/DC"
+    xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI">
+
+  <semantic:collaboration id="collab_CommitmentAndInvoice">
+    <semantic:participant id="participant_CommitmentAndInvoiceManagement" name="Commitment and Invoice Management" processRef="process_CommitmentAndInvoice"/>
+  </semantic:collaboration>
+
+  <semantic:process id="process_CommitmentAndInvoice" isExecutable="true">
+    <semantic:laneSet id="laneSet_CommitmentAndInvoice">
+      <semantic:lane id="lane_MonetaryDepartment" name="Monetary Department">
+        <semantic:flowNodeRef>start_event_1</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_1</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_2</semantic:flowNodeRef>
+        <semantic:flowNodeRef>gateway_1</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_3</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_4</semantic:flowNodeRef>
+      </semantic:lane>
+      <semantic:lane id="lane_AccountsPayableDepartment" name="Accounts Payable Department">
+        <semantic:flowNodeRef>task_5</semantic:flowNodeRef>
+        <semantic:flowNodeRef>gateway_2</semantic:flowNodeRef>
+        <semantic:flowNodeRef>subprocess_1</semantic:flowNodeRef>
+        <semantic:flowNodeRef>subprocess_2</semantic:flowNodeRef>
+        <semantic:flowNodeRef>gateway_3</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_6</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_7</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_8</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_9</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_10</semantic:flowNodeRef>
+        <semantic:flowNodeRef>gateway_4</semantic:flowNodeRef>
+        <semantic:flowNodeRef>subprocess_3</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_11</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_12</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_13</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_14</semantic:flowNodeRef>
+        <semantic:flowNodeRef>end_event_1</semantic:flowNodeRef>
+      </semantic:lane>
+    </semantic:laneSet>
+
+    <semantic:startEvent id="start_event_1" name="Commitment &amp; Invoice Process Received">
+      <semantic:outgoing>flow_start_to_task1</semantic:outgoing>
+    </semantic:startEvent>
+
+    <semantic:task id="task_1" name="Post Funds Commitment in SAP">
+      <semantic:incoming>flow_start_to_task1</semantic:incoming>
+      <semantic:outgoing>flow_task1_to_task2</semantic:outgoing>
+    </semantic:task>
+
+    <semantic:task id="task_2" name="Save Funds Commitment Document">
+      <semantic:incoming>flow_task1_to_task2</semantic:incoming>
+      <semantic:outgoing>flow_task2_to_gateway1</semantic:outgoing>
+    </semantic:task>
+
+    <semantic:exclusiveGateway id="gateway_1" name="Refer to Posting Report?">
+      <semantic:incoming>flow_task2_to_gateway1</semantic:incoming>
+      <semantic:outgoing>flow_gateway1_to_task3</semantic:outgoing>
+      <semantic:outgoing>flow_gateway1_to_task5</semantic:outgoing>
+    </semantic:exclusiveGateway>
+
+    <semantic:task id="task_3" name="Define Posting Report Entries">
+      <semantic:incoming>flow_gateway1_to_task3</semantic:incoming>
+      <semantic:outgoing>flow_task3_to_task4</semantic:outgoing>
+    </semantic:task>
+
+    <semantic:task id="task_4" name="Execute Entries &amp; View Posting Report">
+      <semantic:incoming>flow_task3_to_task4</semantic:incoming>
+      <semantic:outgoing>flow_task4_to_task5</semantic:outgoing>
+    </semantic:task>
+
+    <semantic:task id="task_5" name="Receive Invoice from External Service Provider">
+      <semantic:incoming>flow_task4_to_task5</semantic:incoming>
+      <semantic:incoming>flow_gateway1_to_task5</semantic:incoming>
+      <semantic:outgoing>flow_task5_to_gateway2</semantic:outgoing>
+    </semantic:task>
+
+    <semantic:parallelGateway id="gateway_2" name="Split for Prerequisites">
+      <semantic:incoming>flow_task5_to_gateway2</semantic:incoming>
+      <semantic:outgoing>flow_gateway2_to_subprocess1</semantic:outgoing>
+      <semantic:outgoing>flow_gateway2_to_subprocess2</semantic:outgoing>
+    </semantic:parallelGateway>
+
+    <semantic:subProcess id="subprocess_1" name="Maintain Vendor Master Data">
+      <semantic:incoming>flow_gateway2_to_subprocess1</semantic:incoming>
+      <semantic:outgoing>flow_subprocess1_to_gateway3</semantic:outgoing>
+    </semantic:subProcess>
+
+    <semantic:subProcess id="subprocess_2" name="Create Cost Centre (CC)">
+      <semantic:incoming>flow_gateway2_to_subprocess2</semantic:incoming>
+      <semantic:outgoing>flow_subprocess2_to_gateway3</semantic:outgoing>
+    </semantic:subProcess>
+
+    <semantic:parallelGateway id="gateway_3" name="Join Prerequisites">
+      <semantic:incoming>flow_subprocess1_to_gateway3</semantic:incoming>
+      <semantic:incoming>flow_subprocess2_to_gateway3</semantic:incoming>
+      <semantic:outgoing>flow_gateway3_to_task6</semantic:outgoing>
+    </semantic:parallelGateway>
+
+    <semantic:task id="task_6" name="Bundle Data and Post Invoice (Create Payment Request)">
+      <semantic:incoming>flow_gateway3_to_task6</semantic:incoming>
+      <semantic:outgoing>flow_task6_to_task7</semantic:outgoing>
+    </semantic:task>
+
+    <semantic:task id="task_7" name="Define Initial Screen Entries for Payment Request">
+      <semantic:incoming>flow_task6_to_task7</semantic:incoming>
+      <semantic:outgoing>flow_task7_to_task8</semantic:outgoing>
+    </semantic:task>
+
+    <semantic:task id="task_8" name="Define Tax Details &amp; Assign CC">
+      <semantic:incoming>flow_task7_to_task8</semantic:incoming>
+      <semantic:outgoing>flow_task8_to_task9</semantic:outgoing>
+    </semantic:task>
+
+    <semantic:task id="task_9" name="Save Invoice Posting (Display in Report)">
+      <semantic:incoming>flow_task8_to_task9</semantic:incoming>
+      <semantic:outgoing>flow_task9_to_task10</semantic:outgoing>
+    </semantic:task>
+
+    <semantic:task id="task_10" name="Display Document and Check Status">
+      <semantic:incoming>flow_task9_to_task10</semantic:incoming>
+      <semantic:outgoing>flow_task10_to_gateway4</semantic:outgoing>
+    </semantic:task>
+
+    <semantic:exclusiveGateway id="gateway_4" name="Is Document Parked?">
+      <semantic:incoming>flow_task10_to_gateway4</semantic:incoming>
+      <semantic:outgoing>flow_gateway4_to_subprocess3</semantic:outgoing>
+      <semantic:outgoing>flow_gateway4_to_task11_no</semantic:outgoing>
+    </semantic:exclusiveGateway>
+
+    <semantic:subProcess id="subprocess_3" name="Customize Document for Release">
+      <semantic:incoming>flow_gateway4_to_subprocess3</semantic:incoming>
+      <semantic:outgoing>flow_subprocess3_to_task11</semantic:outgoing>
+    </semantic:subProcess>
+
+    <semantic:task id="task_11" name="Define Posting Details for Payment Request">
+      <semantic:incoming>flow_subprocess3_to_task11</semantic:incoming>
+      <semantic:incoming>flow_gateway4_to_task11_no</semantic:incoming>
+      <semantic:outgoing>flow_task11_to_task12</semantic:outgoing>
+    </semantic:task>
+
+    <semantic:task id="task_12" name="Execute Entries (Display Matching Documents)">
+      <semantic:incoming>flow_task11_to_task12</semantic:incoming>
+      <semantic:outgoing>flow_task12_to_task13</semantic:outgoing>
+    </semantic:task>
+
+    <semantic:task id="task_13" name="Select Corresponding Document via Checkbox">
+      <semantic:incoming>flow_task12_to_task13</semantic:incoming>
+      <semantic:outgoing>flow_task13_to_task14</semantic:outgoing>
+    </semantic:task>
+
+    <semantic:task id="task_14" name="Post the Document">
+      <semantic:incoming>flow_task13_to_task14</semantic:incoming>
+      <semantic:outgoing>flow_task14_to_end</semantic:outgoing>
+    </semantic:task>
+
+    <semantic:endEvent id="end_event_1" name="Commitment and Invoice Process Maintained">
+      <semantic:incoming>flow_task14_to_end</semantic:incoming>
+    </semantic:endEvent>
+
+    <semantic:sequenceFlow id="flow_start_to_task1" sourceRef="start_event_1" targetRef="task_1"/>
+    <semantic:sequenceFlow id="flow_task1_to_task2" sourceRef="task_1" targetRef="task_2"/>
+    <semantic:sequenceFlow id="flow_task2_to_gateway1" sourceRef="task_2" targetRef="gateway_1"/>
+    <semantic:sequenceFlow id="flow_gateway1_to_task3" name="Yes, Refer to Report" sourceRef="gateway_1" targetRef="task_3"/>
+    <semantic:sequenceFlow id="flow_task3_to_task4" sourceRef="task_3" targetRef="task_4"/>
+    <semantic:sequenceFlow id="flow_task4_to_task5" sourceRef="task_4" targetRef="task_5"/>
+    <semantic:sequenceFlow id="flow_gateway1_to_task5" name="No, Skip Report" sourceRef="gateway_1" targetRef="task_5"/>
+    <semantic:sequenceFlow id="flow_task5_to_gateway2" sourceRef="task_5" targetRef="gateway_2"/>
+    <semantic:sequenceFlow id="flow_gateway2_to_subprocess1" sourceRef="gateway_2" targetRef="subprocess_1"/>
+    <semantic:sequenceFlow id="flow_gateway2_to_subprocess2" sourceRef="gateway_2" targetRef="subprocess_2"/>
+    <semantic:sequenceFlow id="flow_subprocess1_to_gateway3" sourceRef="subprocess_1" targetRef="gateway_3"/>
+    <semantic:sequenceFlow id="flow_subprocess2_to_gateway3" sourceRef="subprocess_2" targetRef="gateway_3"/>
+    <semantic:sequenceFlow id="flow_gateway3_to_task6" sourceRef="gateway_3" targetRef="task_6"/>
+    <semantic:sequenceFlow id="flow_task6_to_task7" sourceRef="task_6" targetRef="task_7"/>
+    <semantic:sequenceFlow id="flow_task7_to_task8" sourceRef="task_7" targetRef="task_8"/>
+    <semantic:sequenceFlow id="flow_task8_to_task9" sourceRef="task_8" targetRef="task_9"/>
+    <semantic:sequenceFlow id="flow_task9_to_task10" sourceRef="task_9" targetRef="task_10"/>
+    <semantic:sequenceFlow id="flow_task10_to_gateway4" sourceRef="task_10" targetRef="gateway_4"/>
+    <semantic:sequenceFlow id="flow_gateway4_to_subprocess3" name="Yes, Parked" sourceRef="gateway_4" targetRef="subprocess_3"/>
+    <semantic:sequenceFlow id="flow_subprocess3_to_task11" sourceRef="subprocess_3" targetRef="task_11"/>
+    <semantic:sequenceFlow id="flow_gateway4_to_task11_no" name="No, Not Parked" sourceRef="gateway_4" targetRef="task_11"/>
+    <semantic:sequenceFlow id="flow_task11_to_task12" sourceRef="task_11" targetRef="task_12"/>
+    <semantic:sequenceFlow id="flow_task12_to_task13" sourceRef="task_12" targetRef="task_13"/>
+    <semantic:sequenceFlow id="flow_task13_to_task14" sourceRef="task_13" targetRef="task_14"/>
+    <semantic:sequenceFlow id="flow_task14_to_end" sourceRef="task_14" targetRef="end_event_1"/>
+  </semantic:process>
+
+  <bpmndi:BPMNDiagram id="BPMNDiagram_CommitmentAndInvoice" name="Commitment and Invoice Diagram" resolution="96.0">
+    <bpmndi:BPMNPlane bpmnElement="collab_CommitmentAndInvoice">
+      <bpmndi:BPMNShape id="participant_CommitmentAndInvoiceManagement_shape" bpmnElement="participant_CommitmentAndInvoiceManagement" isHorizontal="true">
+        <dc:Bounds x="10" y="10" width="2000" height="1000"/>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="lane_MonetaryDepartment_shape" bpmnElement="lane_MonetaryDepartment" isHorizontal="true">
+        <dc:Bounds x="40" y="10" width="1970" height="250"/>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="lane_AccountsPayableDepartment_shape" bpmnElement="lane_AccountsPayableDepartment" isHorizontal="true">
+        <dc:Bounds x="40" y="260" width="1970" height="750"/>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="start_event_1_shape" bpmnElement="start_event_1">
+        <dc:Bounds x="80" y="102" width="36" height="36"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="50" y="143" width="96" height="40"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="task_1_shape" bpmnElement="task_1">
+        <dc:Bounds x="166" y="90" width="100" height="60"/>
+         <bpmndi:BPMNLabel>
+          <dc:Bounds x="168" y="97" width="96" height="46"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="task_2_shape" bpmnElement="task_2">
+        <dc:Bounds x="316" y="90" width="100" height="60"/>
+         <bpmndi:BPMNLabel>
+          <dc:Bounds x="318" y="97" width="96" height="46"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="gateway_1_shape" bpmnElement="gateway_1" isMarkerVisible="true">
+        <dc:Bounds x="466" y="95" width="50" height="50"/>
+         <bpmndi:BPMNLabel>
+          <dc:Bounds x="441" y="150" width="100" height="28"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="task_3_shape" bpmnElement="task_3">
+        <dc:Bounds x="566" y="40" width="100" height="60"/>
+         <bpmndi:BPMNLabel>
+          <dc:Bounds x="568" y="47" width="96" height="46"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="task_4_shape" bpmnElement="task_4">
+        <dc:Bounds x="716" y="40" width="100" height="60"/>
+         <bpmndi:BPMNLabel>
+          <dc:Bounds x="718" y="47" width="96" height="46"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="task_5_shape" bpmnElement="task_5">
+        <dc:Bounds x="80" y="350" width="100" height="60"/>
+         <bpmndi:BPMNLabel>
+          <dc:Bounds x="82" y="357" width="96" height="46"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="gateway_2_shape" bpmnElement="gateway_2" isMarkerVisible="true">
+        <dc:Bounds x="230" y="355" width="50" height="50"/>
+         <bpmndi:BPMNLabel>
+          <dc:Bounds x="205" y="410" width="100" height="28"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="subprocess_1_shape" bpmnElement="subprocess_1" isExpanded="false">
+        <dc:Bounds x="330" y="290" width="100" height="60"/>
+         <bpmndi:BPMNLabel>
+          <dc:Bounds x="332" y="297" width="96" height="46"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="subprocess_2_shape" bpmnElement="subprocess_2" isExpanded="false">
+        <dc:Bounds x="330" y="420" width="100" height="60"/>
+         <bpmndi:BPMNLabel>
+          <dc:Bounds x="332" y="427" width="96" height="46"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="gateway_3_shape" bpmnElement="gateway_3" isMarkerVisible="true">
+        <dc:Bounds x="480" y="355" width="50" height="50"/>
+         <bpmndi:BPMNLabel>
+          <dc:Bounds x="455" y="410" width="100" height="28"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="task_6_shape" bpmnElement="task_6">
+        <dc:Bounds x="580" y="350" width="100" height="60"/>
+         <bpmndi:BPMNLabel>
+          <dc:Bounds x="582" y="357" width="96" height="46"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="task_7_shape" bpmnElement="task_7">
+        <dc:Bounds x="730" y="350" width="100" height="60"/>
+         <bpmndi:BPMNLabel>
+          <dc:Bounds x="732" y="357" width="96" height="46"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="task_8_shape" bpmnElement="task_8">
+        <dc:Bounds x="880" y="350" width="100" height="60"/>
+         <bpmndi:BPMNLabel>
+          <dc:Bounds x="882" y="357" width="96" height="46"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="task_9_shape" bpmnElement="task_9">
+        <dc:Bounds x="1030" y="350" width="100" height="60"/>
+         <bpmndi:BPMNLabel>
+          <dc:Bounds x="1032" y="357" width="96" height="46"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="task_10_shape" bpmnElement="task_10">
+        <dc:Bounds x="1180" y="350" width="100" height="60"/>
+         <bpmndi:BPMNLabel>
+          <dc:Bounds x="1182" y="357" width="96" height="46"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="gateway_4_shape" bpmnElement="gateway_4" isMarkerVisible="true">
+        <dc:Bounds x="1330" y="355" width="50" height="50"/>
+         <bpmndi:BPMNLabel>
+          <dc:Bounds x="1305" y="410" width="100" height="28"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="subprocess_3_shape" bpmnElement="subprocess_3" isExpanded="false">
+        <dc:Bounds x="1430" y="290" width="100" height="60"/>
+         <bpmndi:BPMNLabel>
+          <dc:Bounds x="1432" y="297" width="96" height="46"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="task_11_shape" bpmnElement="task_11">
+        <dc:Bounds x="1430" y="420" width="100" height="60"/>
+         <bpmndi:BPMNLabel>
+          <dc:Bounds x="1432" y="427" width="96" height="46"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="task_12_shape" bpmnElement="task_12">
+        <dc:Bounds x="1580" y="420" width="100" height="60"/>
+         <bpmndi:BPMNLabel>
+          <dc:Bounds x="1582" y="427" width="96" height="46"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="task_13_shape" bpmnElement="task_13">
+        <dc:Bounds x="1730" y="420" width="100" height="60"/>
+         <bpmndi:BPMNLabel>
+          <dc:Bounds x="1732" y="427" width="96" height="46"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="task_14_shape" bpmnElement="task_14">
+        <dc:Bounds x="1880" y="420" width="100" height="60"/>
+         <bpmndi:BPMNLabel>
+          <dc:Bounds x="1882" y="427" width="96" height="46"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="end_event_1_shape" bpmnElement="end_event_1">
+        <dc:Bounds x="1892" y="552" width="36" height="36"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1862" y="593" width="96" height="40"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNEdge id="flow_start_to_task1_edge" bpmnElement="flow_start_to_task1">
+        <di:waypoint x="116" y="120"/>
+        <di:waypoint x="166" y="120"/>
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="flow_task1_to_task2_edge" bpmnElement="flow_task1_to_task2">
+        <di:waypoint x="266" y="120"/>
+        <di:waypoint x="316" y="120"/>
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="flow_task2_to_gateway1_edge" bpmnElement="flow_task2_to_gateway1">
+        <di:waypoint x="416" y="120"/>
+        <di:waypoint x="466" y="120"/>
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="flow_gateway1_to_task3_edge" bpmnElement="flow_gateway1_to_task3">
+        <di:waypoint x="491" y="95"/>
+        <di:waypoint x="491" y="70"/>
+        <di:waypoint x="566" y="70"/>
+         <bpmndi:BPMNLabel>
+          <dc:Bounds x="495" y="75" width="66" height="28"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="flow_task3_to_task4_edge" bpmnElement="flow_task3_to_task4">
+        <di:waypoint x="666" y="70"/>
+        <di:waypoint x="716" y="70"/>
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="flow_task4_to_task5_edge" bpmnElement="flow_task4_to_task5">
+        <di:waypoint x="766" y="100"/>
+        <di:waypoint x="766" y="200"/>
+        <di:waypoint x="130" y="200"/>
+        <di:waypoint x="130" y="350"/>
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="flow_gateway1_to_task5_edge" bpmnElement="flow_gateway1_to_task5">
+        <di:waypoint x="491" y="145"/>
+        <di:waypoint x="491" y="380"/>
+        <di:waypoint x="180" y="380"/>
+         <bpmndi:BPMNLabel>
+          <dc:Bounds x="495" y="250" width="70" height="28"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="flow_task5_to_gateway2_edge" bpmnElement="flow_task5_to_gateway2">
+        <di:waypoint x="180" y="380"/>
+        <di:waypoint x="230" y="380"/>
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="flow_gateway2_to_subprocess1_edge" bpmnElement="flow_gateway2_to_subprocess1">
+        <di:waypoint x="255" y="355"/>
+        <di:waypoint x="255" y="320"/>
+        <di:waypoint x="330" y="320"/>
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="flow_gateway2_to_subprocess2_edge" bpmnElement="flow_gateway2_to_subprocess2">
+        <di:waypoint x="255" y="405"/>
+        <di:waypoint x="255" y="450"/>
+        <di:waypoint x="330" y="450"/>
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="flow_subprocess1_to_gateway3_edge" bpmnElement="flow_subprocess1_to_gateway3">
+        <di:waypoint x="430" y="320"/>
+        <di:waypoint x="505" y="320"/>
+        <di:waypoint x="505" y="355"/>
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="flow_subprocess2_to_gateway3_edge" bpmnElement="flow_subprocess2_to_gateway3">
+        <di:waypoint x="430" y="450"/>
+        <di:waypoint x="505" y="450"/>
+        <di:waypoint x="505" y="405"/>
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="flow_gateway3_to_task6_edge" bpmnElement="flow_gateway3_to_task6">
+        <di:waypoint x="530" y="380"/>
+        <di:waypoint x="580" y="380"/>
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="flow_task6_to_task7_edge" bpmnElement="flow_task6_to_task7">
+        <di:waypoint x="680" y="380"/>
+        <di:waypoint x="730" y="380"/>
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="flow_task7_to_task8_edge" bpmnElement="flow_task7_to_task8">
+        <di:waypoint x="830" y="380"/>
+        <di:waypoint x="880" y="380"/>
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="flow_task8_to_task9_edge" bpmnElement="flow_task8_to_task9">
+        <di:waypoint x="980" y="380"/>
+        <di:waypoint x="1030" y="380"/>
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="flow_task9_to_task10_edge" bpmnElement="flow_task9_to_task10">
+        <di:waypoint x="1130" y="380"/>
+        <di:waypoint x="1180" y="380"/>
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="flow_task10_to_gateway4_edge" bpmnElement="flow_task10_to_gateway4">
+        <di:waypoint x="1280" y="380"/>
+        <di:waypoint x="1330" y="380"/>
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="flow_gateway4_to_subprocess3_edge" bpmnElement="flow_gateway4_to_subprocess3">
+        <di:waypoint x="1355" y="355"/>
+        <di:waypoint x="1355" y="320"/>
+        <di:waypoint x="1430" y="320"/>
+         <bpmndi:BPMNLabel>
+          <dc:Bounds x="1360" y="325" width="60" height="28"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="flow_subprocess3_to_task11_edge" bpmnElement="flow_subprocess3_to_task11">
+        <di:waypoint x="1480" y="350"/>
+        <di:waypoint x="1480" y="420"/>
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="flow_gateway4_to_task11_no_edge" bpmnElement="flow_gateway4_to_task11_no">
+        <di:waypoint x="1355" y="405"/>
+        <di:waypoint x="1355" y="450"/>
+        <di:waypoint x="1430" y="450"/>
+         <bpmndi:BPMNLabel>
+          <dc:Bounds x="1360" y="420" width="65" height="28"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="flow_task11_to_task12_edge" bpmnElement="flow_task11_to_task12">
+        <di:waypoint x="1530" y="450"/>
+        <di:waypoint x="1580" y="450"/>
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="flow_task12_to_task13_edge" bpmnElement="flow_task12_to_task13">
+        <di:waypoint x="1680" y="450"/>
+        <di:waypoint x="1730" y="450"/>
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="flow_task13_to_task14_edge" bpmnElement="flow_task13_to_task14">
+        <di:waypoint x="1830" y="450"/>
+        <di:waypoint x="1880" y="450"/>
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="flow_task14_to_end_edge" bpmnElement="flow_task14_to_end">
+        <di:waypoint x="1930" y="480"/>
+        <di:waypoint x="1930" y="570"/>
+        <di:waypoint x="1928" y="570"/>
+      </bpmndi:BPMNEdge>
+
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</semantic:definitions>

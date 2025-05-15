@@ -1,0 +1,1028 @@
+<?xml version="1.0" standalone="yes"?>
+<semantic:definitions id="ProductionOrderProcessing"
+    targetNamespace="http://example.com/bpmn/productionOrderProcessing"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:semantic="http://www.omg.org/spec/BPMN/20100524/MODEL"
+    xmlns:di="http://www.omg.org/spec/DD/20100524/DI"
+    xmlns:dc="http://www.omg.org/spec/DD/20100524/DC"
+    xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI">
+
+  <semantic:collaboration id="collab_productionProcess">
+    <semantic:participant id="participant_productionDept" name="Production Department" processRef="productionProcess"/>
+  </semantic:collaboration>
+
+  <semantic:process id="productionProcess" isExecutable="true">
+    <semantic:laneSet id="laneSet_production">
+      <semantic:lane id="lane_productionManager" name="Production Manager">
+        <semantic:flowNodeRef>el_s1</semantic:flowNodeRef>
+        <semantic:flowNodeRef>el_t1</semantic:flowNodeRef>
+        <semantic:flowNodeRef>el_g1</semantic:flowNodeRef>
+        <semantic:flowNodeRef>el_ca1</semantic:flowNodeRef>
+        <semantic:flowNodeRef>el_t2</semantic:flowNodeRef>
+        <semantic:flowNodeRef>el_t9</semantic:flowNodeRef>
+        <semantic:flowNodeRef>el_g4_x</semantic:flowNodeRef>
+        <semantic:flowNodeRef>el_t10</semantic:flowNodeRef>
+        <semantic:flowNodeRef>el_g5_x</semantic:flowNodeRef>
+        <semantic:flowNodeRef>el_t11</semantic:flowNodeRef>
+        <semantic:flowNodeRef>el_t12</semantic:flowNodeRef>
+        <semantic:flowNodeRef>el_t13</semantic:flowNodeRef>
+        <semantic:flowNodeRef>el_t14</semantic:flowNodeRef>
+        <semantic:flowNodeRef>el_t15</semantic:flowNodeRef>
+        <semantic:flowNodeRef>el_g6_x</semantic:flowNodeRef>
+        <semantic:flowNodeRef>el_t16</semantic:flowNodeRef>
+        <semantic:flowNodeRef>el_t17</semantic:flowNodeRef>
+        <semantic:flowNodeRef>el_g7_x_join</semantic:flowNodeRef>
+        <semantic:flowNodeRef>el_g8_x_join</semantic:flowNodeRef>
+        <semantic:flowNodeRef>el_g9_x_join</semantic:flowNodeRef>
+        <semantic:flowNodeRef>el_t18</semantic:flowNodeRef>
+        <semantic:flowNodeRef>el_t19</semantic:flowNodeRef>
+        <semantic:flowNodeRef>el_t33</semantic:flowNodeRef>
+        <semantic:flowNodeRef>el_g18_p_split</semantic:flowNodeRef>
+        <semantic:flowNodeRef>el_t34</semantic:flowNodeRef>
+        <semantic:flowNodeRef>el_t35</semantic:flowNodeRef>
+        <semantic:flowNodeRef>el_t36</semantic:flowNodeRef>
+        <semantic:flowNodeRef>el_g19_p_join</semantic:flowNodeRef>
+        <semantic:flowNodeRef>el_ca4</semantic:flowNodeRef>
+        <semantic:flowNodeRef>el_t37</semantic:flowNodeRef>
+        <semantic:flowNodeRef>el_e1</semantic:flowNodeRef>
+      </semantic:lane>
+      <semantic:lane id="lane_productionAssistant" name="Production Assistant">
+        <semantic:flowNodeRef>el_t3</semantic:flowNodeRef>
+        <semantic:flowNodeRef>el_g2_p_split</semantic:flowNodeRef>
+        <semantic:flowNodeRef>el_t4</semantic:flowNodeRef>
+        <semantic:flowNodeRef>el_t5</semantic:flowNodeRef>
+        <semantic:flowNodeRef>el_t6</semantic:flowNodeRef>
+        <semantic:flowNodeRef>el_g3_p_join</semantic:flowNodeRef>
+        <semantic:flowNodeRef>el_t7</semantic:flowNodeRef>
+        <semantic:flowNodeRef>el_t8</semantic:flowNodeRef>
+        <semantic:flowNodeRef>el_ca2</semantic:flowNodeRef>
+        <semantic:flowNodeRef>el_t20</semantic:flowNodeRef>
+        <semantic:flowNodeRef>el_g10_p_split</semantic:flowNodeRef>
+        <semantic:flowNodeRef>el_t21</semantic:flowNodeRef>
+        <semantic:flowNodeRef>el_t22</semantic:flowNodeRef>
+        <semantic:flowNodeRef>el_t23</semantic:flowNodeRef>
+        <semantic:flowNodeRef>el_g11_p_join</semantic:flowNodeRef>
+        <semantic:flowNodeRef>el_t24</semantic:flowNodeRef>
+        <semantic:flowNodeRef>el_t25</semantic:flowNodeRef>
+        <semantic:flowNodeRef>el_g12_x</semantic:flowNodeRef>
+        <semantic:flowNodeRef>el_t26</semantic:flowNodeRef>
+        <semantic:flowNodeRef>el_t27</semantic:flowNodeRef>
+        <semantic:flowNodeRef>el_g13_x_join</semantic:flowNodeRef>
+        <semantic:flowNodeRef>el_g14_p_split</semantic:flowNodeRef>
+        <semantic:flowNodeRef>el_t28</semantic:flowNodeRef>
+        <semantic:flowNodeRef>el_t29</semantic:flowNodeRef>
+        <semantic:flowNodeRef>el_g15_p_join</semantic:flowNodeRef>
+        <semantic:flowNodeRef>el_g16_x</semantic:flowNodeRef>
+        <semantic:flowNodeRef>el_t30</semantic:flowNodeRef>
+        <semantic:flowNodeRef>el_t31</semantic:flowNodeRef>
+        <semantic:flowNodeRef>el_g17_x_join</semantic:flowNodeRef>
+        <semantic:flowNodeRef>el_t32</semantic:flowNodeRef>
+        <semantic:flowNodeRef>el_ca3</semantic:flowNodeRef>
+      </semantic:lane>
+    </semantic:laneSet>
+
+    <semantic:startEvent id="el_s1" name="Receipt of Production Order Request">
+      <semantic:outgoing>sf_s1_t1</semantic:outgoing>
+    </semantic:startEvent>
+    <semantic:task id="el_t1" name="Release Production Order in SAP">
+      <semantic:incoming>sf_s1_t1</semantic:incoming>
+      <semantic:outgoing>sf_t1_g1</semantic:outgoing>
+    </semantic:task>
+    <semantic:exclusiveGateway id="el_g1" name="Order Released?">
+      <semantic:incoming>sf_t1_g1</semantic:incoming>
+      <semantic:outgoing>sf_g1_ca1</semantic:outgoing>
+      <semantic:outgoing>sf_g1_t2</semantic:outgoing>
+    </semantic:exclusiveGateway>
+    <semantic:callActivity id="el_ca1" name="Check Production Order Logs">
+      <semantic:incoming>sf_g1_ca1</semantic:incoming>
+      <semantic:outgoing>sf_ca1_t2</semantic:outgoing>
+    </semantic:callActivity>
+    <semantic:task id="el_t2" name="Save Releasing Process">
+      <semantic:incoming>sf_g1_t2</semantic:incoming>
+      <semantic:incoming>sf_ca1_t2</semantic:incoming>
+      <semantic:outgoing>sf_t2_t3</semantic:outgoing>
+    </semantic:task>
+    <semantic:task id="el_t3" name="Initiate Material Withdrawal">
+      <semantic:incoming>sf_t2_t3</semantic:incoming>
+      <semantic:outgoing>sf_t3_g2psplit</semantic:outgoing>
+    </semantic:task>
+    <semantic:boundaryEvent id="el_be1" name="Material Shortage Risk" attachedToRef="el_t7" cancelActivity="false">
+       <semantic:errorEventDefinition errorRef="error_materialShortage"/>
+    </semantic:boundaryEvent>
+    <semantic:parallelGateway id="el_g2_p_split" name="Define GI Parameters Split">
+      <semantic:incoming>sf_t3_g2psplit</semantic:incoming>
+      <semantic:outgoing>sf_g2psplit_t4</semantic:outgoing>
+      <semantic:outgoing>sf_g2psplit_t5</semantic:outgoing>
+      <semantic:outgoing>sf_g2psplit_t6</semantic:outgoing>
+    </semantic:parallelGateway>
+    <semantic:task id="el_t4" name="Define Movement Type 261 for GI">
+      <semantic:incoming>sf_g2psplit_t4</semantic:incoming>
+      <semantic:outgoing>sf_t4_g3pjoin</semantic:outgoing>
+    </semantic:task>
+    <semantic:task id="el_t5" name="Define Plant &amp; Storage Area for GI">
+      <semantic:incoming>sf_g2psplit_t5</semantic:incoming>
+      <semantic:outgoing>sf_t5_g3pjoin</semantic:outgoing>
+    </semantic:task>
+    <semantic:task id="el_t6" name="Define Order Number for GI">
+      <semantic:incoming>sf_g2psplit_t6</semantic:incoming>
+      <semantic:outgoing>sf_t6_g3pjoin</semantic:outgoing>
+    </semantic:task>
+    <semantic:parallelGateway id="el_g3_p_join" name="Define GI Parameters Join">
+      <semantic:incoming>sf_t4_g3pjoin</semantic:incoming>
+      <semantic:incoming>sf_t5_g3pjoin</semantic:incoming>
+      <semantic:incoming>sf_t6_g3pjoin</semantic:incoming>
+      <semantic:outgoing>sf_g3pjoin_t7</semantic:outgoing>
+    </semantic:parallelGateway>
+    <semantic:task id="el_t7" name="Post Goods Issue (MIGO)">
+      <semantic:incoming>sf_g3pjoin_t7</semantic:incoming>
+      <semantic:outgoing>sf_t7_t8</semantic:outgoing>
+    </semantic:task>
+    <semantic:task id="el_t8" name="Save Goods Issue Process">
+      <semantic:incoming>sf_t7_t8</semantic:incoming>
+      <semantic:outgoing>sf_t8_t9</semantic:outgoing>
+    </semantic:task>
+    <semantic:task id="el_t9" name="Initiate Production Order Confirmation">
+      <semantic:incoming>sf_t8_t9</semantic:incoming>
+      <semantic:outgoing>sf_t9_g4x</semantic:outgoing>
+    </semantic:task>
+    <semantic:exclusiveGateway id="el_g4_x" name="PDC or Manual Confirmation?">
+      <semantic:incoming>sf_t9_g4x</semantic:incoming>
+      <semantic:outgoing>sf_g4x_t10</semantic:outgoing>
+      <semantic:outgoing>sf_g4x_g5x</semantic:outgoing>
+    </semantic:exclusiveGateway>
+    <semantic:task id="el_t10" name="Confirm via PDC Interface">
+      <semantic:incoming>sf_g4x_t10</semantic:incoming>
+      <semantic:outgoing>sf_t10_g9xjoin</semantic:outgoing>
+    </semantic:task>
+    <semantic:exclusiveGateway id="el_g5_x" name="Manual Confirmation Type?">
+      <semantic:incoming>sf_g4x_g5x</semantic:incoming>
+      <semantic:outgoing>sf_g5x_t11</semantic:outgoing>
+      <semantic:outgoing>sf_g5x_t12</semantic:outgoing>
+      <semantic:outgoing>sf_g5x_t13</semantic:outgoing>
+      <semantic:outgoing>sf_g5x_t14</semantic:outgoing>
+    </semantic:exclusiveGateway>
+    <semantic:task id="el_t11" name="Enter Time Ticket">
+      <semantic:incoming>sf_g5x_t11</semantic:incoming>
+      <semantic:outgoing>sf_t11_g8xjoin</semantic:outgoing>
+    </semantic:task>
+    <semantic:task id="el_t12" name="Enter Time Event">
+      <semantic:incoming>sf_g5x_t12</semantic:incoming>
+      <semantic:outgoing>sf_t12_g8xjoin</semantic:outgoing>
+    </semantic:task>
+    <semantic:task id="el_t13" name="Enter Collective Entry">
+      <semantic:incoming>sf_g5x_t13</semantic:incoming>
+      <semantic:outgoing>sf_t13_g8xjoin</semantic:outgoing>
+    </semantic:task>
+    <semantic:task id="el_t14" name="Enter Order Number for Progress Conf.">
+      <semantic:incoming>sf_g5x_t14</semantic:incoming>
+      <semantic:outgoing>sf_t14_t15</semantic:outgoing>
+    </semantic:task>
+    <semantic:task id="el_t15" name="Specify Progress Confirmation Type">
+      <semantic:incoming>sf_t14_t15</semantic:incoming>
+      <semantic:outgoing>sf_t15_g6x</semantic:outgoing>
+    </semantic:task>
+    <semantic:exclusiveGateway id="el_g6_x" name="Partial or Final Progress Conf.?">
+      <semantic:incoming>sf_t15_g6x</semantic:incoming>
+      <semantic:outgoing>sf_g6x_t16</semantic:outgoing>
+      <semantic:outgoing>sf_g6x_t17</semantic:outgoing>
+    </semantic:exclusiveGateway>
+    <semantic:task id="el_t16" name="Select Partial Confirmation">
+      <semantic:incoming>sf_g6x_t16</semantic:incoming>
+      <semantic:outgoing>sf_t16_g7xjoin</semantic:outgoing>
+    </semantic:task>
+    <semantic:task id="el_t17" name="Select Final Confirmation">
+      <semantic:incoming>sf_g6x_t17</semantic:incoming>
+      <semantic:outgoing>sf_t17_g7xjoin</semantic:outgoing>
+    </semantic:task>
+    <semantic:exclusiveGateway id="el_g7_x_join" name="Join Progress Conf. Type">
+      <semantic:incoming>sf_t16_g7xjoin</semantic:incoming>
+      <semantic:incoming>sf_t17_g7xjoin</semantic:incoming>
+      <semantic:outgoing>sf_g7xjoin_g8xjoin</semantic:outgoing>
+    </semantic:exclusiveGateway>
+    <semantic:exclusiveGateway id="el_g8_x_join" name="Join Manual Confirmation Types">
+      <semantic:incoming>sf_t11_g8xjoin</semantic:incoming>
+      <semantic:incoming>sf_t12_g8xjoin</semantic:incoming>
+      <semantic:incoming>sf_t13_g8xjoin</semantic:incoming>
+      <semantic:incoming>sf_g7xjoin_g8xjoin</semantic:incoming>
+      <semantic:outgoing>sf_g8xjoin_g9xjoin</semantic:outgoing>
+    </semantic:exclusiveGateway>
+    <semantic:exclusiveGateway id="el_g9_x_join" name="Join Confirmation Method">
+      <semantic:incoming>sf_t10_g9xjoin</semantic:incoming>
+      <semantic:incoming>sf_g8xjoin_g9xjoin</semantic:incoming>
+      <semantic:outgoing>sf_g9xjoin_t18</semantic:outgoing>
+    </semantic:exclusiveGateway>
+    <semantic:task id="el_t18" name="Save Confirmation Process">
+      <semantic:incoming>sf_g9xjoin_t18</semantic:incoming>
+      <semantic:outgoing>sf_t18_t19</semantic:outgoing>
+    </semantic:task>
+    <semantic:task id="el_t19" name="Post Production Order Confirmation">
+      <semantic:incoming>sf_t18_t19</semantic:incoming>
+      <semantic:outgoing>sf_t19_ca2</semantic:outgoing>
+    </semantic:task>
+    <semantic:callActivity id="el_ca2" name="Check Production Order for Accrued Costs">
+      <semantic:incoming>sf_t19_ca2</semantic:incoming>
+      <semantic:outgoing>sf_ca2_t20</semantic:outgoing>
+    </semantic:callActivity>
+    <semantic:task id="el_t20" name="Initiate Goods Receipt Posting">
+      <semantic:incoming>sf_ca2_t20</semantic:incoming>
+      <semantic:outgoing>sf_t20_g10psplit</semantic:outgoing>
+    </semantic:task>
+    <semantic:parallelGateway id="el_g10_p_split" name="Define GR Parameters Split">
+      <semantic:incoming>sf_t20_g10psplit</semantic:incoming>
+      <semantic:outgoing>sf_g10psplit_t21</semantic:outgoing>
+      <semantic:outgoing>sf_g10psplit_t22</semantic:outgoing>
+      <semantic:outgoing>sf_g10psplit_t23</semantic:outgoing>
+    </semantic:parallelGateway>
+    <semantic:task id="el_t21" name="Define Movement Type 101 for GR">
+      <semantic:incoming>sf_g10psplit_t21</semantic:incoming>
+      <semantic:outgoing>sf_t21_g11pjoin</semantic:outgoing>
+    </semantic:task>
+    <semantic:task id="el_t22" name="Specify Production Order for GR">
+      <semantic:incoming>sf_g10psplit_t22</semantic:incoming>
+      <semantic:outgoing>sf_t22_g11pjoin</semantic:outgoing>
+    </semantic:task>
+    <semantic:task id="el_t23" name="Indicate Plant &amp; Storage Area for GR">
+      <semantic:incoming>sf_g10psplit_t23</semantic:incoming>
+      <semantic:outgoing>sf_t23_g11pjoin</semantic:outgoing>
+    </semantic:task>
+    <semantic:parallelGateway id="el_g11_p_join" name="Define GR Parameters Join">
+      <semantic:incoming>sf_t21_g11pjoin</semantic:incoming>
+      <semantic:incoming>sf_t22_g11pjoin</semantic:incoming>
+      <semantic:incoming>sf_t23_g11pjoin</semantic:incoming>
+      <semantic:outgoing>sf_g11pjoin_t24</semantic:outgoing>
+    </semantic:parallelGateway>
+    <semantic:task id="el_t24" name="Save GR &amp; Post to Warehouse">
+      <semantic:incoming>sf_g11pjoin_t24</semantic:incoming>
+      <semantic:outgoing>sf_t24_t25</semantic:outgoing>
+    </semantic:task>
+    <semantic:task id="el_t25" name="Initiate Overhead Computation">
+      <semantic:incoming>sf_t24_t25</semantic:incoming>
+      <semantic:outgoing>sf_t25_g12x</semantic:outgoing>
+    </semantic:task>
+    <semantic:exclusiveGateway id="el_g12_x" name="Individual or Collective Overhead Proc.?">
+      <semantic:incoming>sf_t25_g12x</semantic:incoming>
+      <semantic:outgoing>sf_g12x_t26</semantic:outgoing>
+      <semantic:outgoing>sf_g12x_t27</semantic:outgoing>
+    </semantic:exclusiveGateway>
+    <semantic:task id="el_t26" name="Select Individual Processing">
+      <semantic:incoming>sf_g12x_t26</semantic:incoming>
+      <semantic:outgoing>sf_t26_g13xjoin</semantic:outgoing>
+    </semantic:task>
+    <semantic:task id="el_t27" name="Select Collective Processing">
+      <semantic:incoming>sf_g12x_t27</semantic:incoming>
+      <semantic:outgoing>sf_t27_g13xjoin</semantic:outgoing>
+    </semantic:task>
+    <semantic:exclusiveGateway id="el_g13_x_join" name="Join Overhead Proc. Type">
+      <semantic:incoming>sf_t26_g13xjoin</semantic:incoming>
+      <semantic:incoming>sf_t27_g13xjoin</semantic:incoming>
+      <semantic:outgoing>sf_g13xjoin_g14psplit</semantic:outgoing>
+    </semantic:exclusiveGateway>
+    <semantic:parallelGateway id="el_g14_p_split" name="Define Overhead Parameters Split">
+      <semantic:incoming>sf_g13xjoin_g14psplit</semantic:incoming>
+      <semantic:outgoing>sf_g14psplit_t28</semantic:outgoing>
+      <semantic:outgoing>sf_g14psplit_t29</semantic:outgoing>
+    </semantic:parallelGateway>
+    <semantic:task id="el_t28" name="Specify Order Number for Overheads">
+      <semantic:incoming>sf_g14psplit_t28</semantic:incoming>
+      <semantic:outgoing>sf_t28_g15pjoin</semantic:outgoing>
+    </semantic:task>
+    <semantic:task id="el_t29" name="Specify Period for Overheads">
+      <semantic:incoming>sf_g14psplit_t29</semantic:incoming>
+      <semantic:outgoing>sf_t29_g15pjoin</semantic:outgoing>
+    </semantic:task>
+    <semantic:parallelGateway id="el_g15_p_join" name="Define Overhead Parameters Join">
+      <semantic:incoming>sf_t28_g15pjoin</semantic:incoming>
+      <semantic:incoming>sf_t29_g15pjoin</semantic:incoming>
+      <semantic:outgoing>sf_g15pjoin_g16x</semantic:outgoing>
+    </semantic:parallelGateway>
+    <semantic:exclusiveGateway id="el_g16_x" name="Post Overhead Results?">
+      <semantic:incoming>sf_g15pjoin_g16x</semantic:incoming>
+      <semantic:outgoing>sf_g16x_t30</semantic:outgoing>
+      <semantic:outgoing>sf_g16x_t31</semantic:outgoing>
+    </semantic:exclusiveGateway>
+    <semantic:task id="el_t30" name="Deselect 'Test run' for Overheads">
+      <semantic:incoming>sf_g16x_t30</semantic:incoming>
+      <semantic:outgoing>sf_t30_g17xjoin</semantic:outgoing>
+    </semantic:task>
+    <semantic:task id="el_t31" name="Select 'Test run' for Overheads">
+      <semantic:incoming>sf_g16x_t31</semantic:incoming>
+      <semantic:outgoing>sf_t31_g17xjoin</semantic:outgoing>
+    </semantic:task>
+    <semantic:exclusiveGateway id="el_g17_x_join" name="Join Overhead Post/Test Choice">
+      <semantic:incoming>sf_t30_g17xjoin</semantic:incoming>
+      <semantic:incoming>sf_t31_g17xjoin</semantic:incoming>
+      <semantic:outgoing>sf_g17xjoin_t32</semantic:outgoing>
+    </semantic:exclusiveGateway>
+    <semantic:task id="el_t32" name="Execute Overhead Calculation">
+      <semantic:incoming>sf_g17xjoin_t32</semantic:incoming>
+      <semantic:outgoing>sf_t32_ca3</semantic:outgoing>
+    </semantic:task>
+    <semantic:callActivity id="el_ca3" name="Check PO for Overhead Surcharge">
+      <semantic:incoming>sf_t32_ca3</semantic:incoming>
+      <semantic:outgoing>sf_ca3_t33</semantic:outgoing>
+    </semantic:callActivity>
+    <semantic:task id="el_t33" name="Initiate Post Settlement">
+      <semantic:incoming>sf_ca3_t33</semantic:incoming>
+      <semantic:outgoing>sf_t33_g18psplit</semantic:outgoing>
+    </semantic:task>
+    <semantic:parallelGateway id="el_g18_p_split" name="Define Settlement Parameters Split">
+      <semantic:incoming>sf_t33_g18psplit</semantic:incoming>
+      <semantic:outgoing>sf_g18psplit_t34</semantic:outgoing>
+      <semantic:outgoing>sf_g18psplit_t35</semantic:outgoing>
+      <semantic:outgoing>sf_g18psplit_t36</semantic:outgoing>
+    </semantic:parallelGateway>
+    <semantic:task id="el_t34" name="Define Order Number for Settlement">
+      <semantic:incoming>sf_g18psplit_t34</semantic:incoming>
+      <semantic:outgoing>sf_t34_g19pjoin</semantic:outgoing>
+    </semantic:task>
+    <semantic:task id="el_t35" name="Define Period for Settlement">
+      <semantic:incoming>sf_g18psplit_t35</semantic:incoming>
+      <semantic:outgoing>sf_t35_g19pjoin</semantic:outgoing>
+    </semantic:task>
+    <semantic:task id="el_t36" name="Deselect 'Test run' for Settlement">
+      <semantic:incoming>sf_g18psplit_t36</semantic:incoming>
+      <semantic:outgoing>sf_t36_g19pjoin</semantic:outgoing>
+    </semantic:task>
+    <semantic:parallelGateway id="el_g19_p_join" name="Define Settlement Parameters Join">
+      <semantic:incoming>sf_t34_g19pjoin</semantic:incoming>
+      <semantic:incoming>sf_t35_g19pjoin</semantic:incoming>
+      <semantic:incoming>sf_t36_g19pjoin</semantic:incoming>
+      <semantic:outgoing>sf_g19pjoin_ca4</semantic:outgoing>
+    </semantic:parallelGateway>
+    <semantic:callActivity id="el_ca4" name="Verify All Costs Settled via Cost Analysis">
+      <semantic:incoming>sf_g19pjoin_ca4</semantic:incoming>
+      <semantic:outgoing>sf_ca4_t37</semantic:outgoing>
+    </semantic:callActivity>
+    <semantic:task id="el_t37" name="Check Produced Quantity Availability &amp; Evaluation">
+      <semantic:incoming>sf_ca4_t37</semantic:incoming>
+      <semantic:outgoing>sf_t37_e1</semantic:outgoing>
+    </semantic:task>
+    <semantic:boundaryEvent id="el_be2" name="Final Check Risks" attachedToRef="el_t37" cancelActivity="false">
+       <semantic:errorEventDefinition errorRef="error_finalCheck"/>
+    </semantic:boundaryEvent>
+    <semantic:endEvent id="el_e1" name="Production Order Processed Successfully">
+      <semantic:incoming>sf_t37_e1</semantic:incoming>
+    </semantic:endEvent>
+
+    <semantic:sequenceFlow id="sf_s1_t1" sourceRef="el_s1" targetRef="el_t1"/>
+    <semantic:sequenceFlow id="sf_t1_g1" sourceRef="el_t1" targetRef="el_g1"/>
+    <semantic:sequenceFlow id="sf_g1_ca1" name="Not Released" sourceRef="el_g1" targetRef="el_ca1"/>
+    <semantic:sequenceFlow id="sf_g1_t2" name="Released" sourceRef="el_g1" targetRef="el_t2"/>
+    <semantic:sequenceFlow id="sf_ca1_t2" sourceRef="el_ca1" targetRef="el_t2"/>
+    <semantic:sequenceFlow id="sf_t2_t3" sourceRef="el_t2" targetRef="el_t3"/>
+    <semantic:sequenceFlow id="sf_t3_g2psplit" sourceRef="el_t3" targetRef="el_g2_p_split"/>
+    <semantic:sequenceFlow id="sf_g2psplit_t4" sourceRef="el_g2_p_split" targetRef="el_t4"/>
+    <semantic:sequenceFlow id="sf_g2psplit_t5" sourceRef="el_g2_p_split" targetRef="el_t5"/>
+    <semantic:sequenceFlow id="sf_g2psplit_t6" sourceRef="el_g2_p_split" targetRef="el_t6"/>
+    <semantic:sequenceFlow id="sf_t4_g3pjoin" sourceRef="el_t4" targetRef="el_g3_p_join"/>
+    <semantic:sequenceFlow id="sf_t5_g3pjoin" sourceRef="el_t5" targetRef="el_g3_p_join"/>
+    <semantic:sequenceFlow id="sf_t6_g3pjoin" sourceRef="el_t6" targetRef="el_g3_p_join"/>
+    <semantic:sequenceFlow id="sf_g3pjoin_t7" sourceRef="el_g3_p_join" targetRef="el_t7"/>
+    <semantic:sequenceFlow id="sf_t7_t8" sourceRef="el_t7" targetRef="el_t8"/>
+    <semantic:sequenceFlow id="sf_t8_t9" sourceRef="el_t8" targetRef="el_t9"/>
+    <semantic:sequenceFlow id="sf_t9_g4x" sourceRef="el_t9" targetRef="el_g4_x"/>
+    <semantic:sequenceFlow id="sf_g4x_t10" name="PDC Interface" sourceRef="el_g4_x" targetRef="el_t10"/>
+    <semantic:sequenceFlow id="sf_g4x_g5x" name="Manual Confirmation" sourceRef="el_g4_x" targetRef="el_g5_x"/>
+    <semantic:sequenceFlow id="sf_g5x_t11" name="Time Ticket" sourceRef="el_g5_x" targetRef="el_t11"/>
+    <semantic:sequenceFlow id="sf_g5x_t12" name="Time Event" sourceRef="el_g5_x" targetRef="el_t12"/>
+    <semantic:sequenceFlow id="sf_g5x_t13" name="Collective Entry" sourceRef="el_g5_x" targetRef="el_t13"/>
+    <semantic:sequenceFlow id="sf_g5x_t14" name="Progress Confirmation" sourceRef="el_g5_x" targetRef="el_t14"/>
+    <semantic:sequenceFlow id="sf_t14_t15" sourceRef="el_t14" targetRef="el_t15"/>
+    <semantic:sequenceFlow id="sf_t15_g6x" sourceRef="el_t15" targetRef="el_g6_x"/>
+    <semantic:sequenceFlow id="sf_g6x_t16" name="Partial Confirmation" sourceRef="el_g6_x" targetRef="el_t16"/>
+    <semantic:sequenceFlow id="sf_g6x_t17" name="Final Confirmation" sourceRef="el_g6_x" targetRef="el_t17"/>
+    <semantic:sequenceFlow id="sf_t16_g7xjoin" sourceRef="el_t16" targetRef="el_g7_x_join"/>
+    <semantic:sequenceFlow id="sf_t17_g7xjoin" sourceRef="el_t17" targetRef="el_g7_x_join"/>
+    <semantic:sequenceFlow id="sf_g7xjoin_g8xjoin" sourceRef="el_g7_x_join" targetRef="el_g8_x_join"/>
+    <semantic:sequenceFlow id="sf_t11_g8xjoin" sourceRef="el_t11" targetRef="el_g8_x_join"/>
+    <semantic:sequenceFlow id="sf_t12_g8xjoin" sourceRef="el_t12" targetRef="el_g8_x_join"/>
+    <semantic:sequenceFlow id="sf_t13_g8xjoin" sourceRef="el_t13" targetRef="el_g8_x_join"/>
+    <semantic:sequenceFlow id="sf_t10_g9xjoin" sourceRef="el_t10" targetRef="el_g9_x_join"/>
+    <semantic:sequenceFlow id="sf_g8xjoin_g9xjoin" sourceRef="el_g8_x_join" targetRef="el_g9_x_join"/>
+    <semantic:sequenceFlow id="sf_g9xjoin_t18" sourceRef="el_g9_x_join" targetRef="el_t18"/>
+    <semantic:sequenceFlow id="sf_t18_t19" sourceRef="el_t18" targetRef="el_t19"/>
+    <semantic:sequenceFlow id="sf_t19_ca2" sourceRef="el_t19" targetRef="el_ca2"/>
+    <semantic:sequenceFlow id="sf_ca2_t20" sourceRef="el_ca2" targetRef="el_t20"/>
+    <semantic:sequenceFlow id="sf_t20_g10psplit" sourceRef="el_t20" targetRef="el_g10_p_split"/>
+    <semantic:sequenceFlow id="sf_g10psplit_t21" sourceRef="el_g10_p_split" targetRef="el_t21"/>
+    <semantic:sequenceFlow id="sf_g10psplit_t22" sourceRef="el_g10_p_split" targetRef="el_t22"/>
+    <semantic:sequenceFlow id="sf_g10psplit_t23" sourceRef="el_g10_p_split" targetRef="el_t23"/>
+    <semantic:sequenceFlow id="sf_t21_g11pjoin" sourceRef="el_t21" targetRef="el_g11_p_join"/>
+    <semantic:sequenceFlow id="sf_t22_g11pjoin" sourceRef="el_t22" targetRef="el_g11_p_join"/>
+    <semantic:sequenceFlow id="sf_t23_g11pjoin" sourceRef="el_t23" targetRef="el_g11_p_join"/>
+    <semantic:sequenceFlow id="sf_g11pjoin_t24" sourceRef="el_g11_p_join" targetRef="el_t24"/>
+    <semantic:sequenceFlow id="sf_t24_t25" sourceRef="el_t24" targetRef="el_t25"/>
+    <semantic:sequenceFlow id="sf_t25_g12x" sourceRef="el_t25" targetRef="el_g12_x"/>
+    <semantic:sequenceFlow id="sf_g12x_t26" name="Individual Processing" sourceRef="el_g12_x" targetRef="el_t26"/>
+    <semantic:sequenceFlow id="sf_g12x_t27" name="Collective Processing" sourceRef="el_g12_x" targetRef="el_t27"/>
+    <semantic:sequenceFlow id="sf_t26_g13xjoin" sourceRef="el_t26" targetRef="el_g13_x_join"/>
+    <semantic:sequenceFlow id="sf_t27_g13xjoin" sourceRef="el_t27" targetRef="el_g13_x_join"/>
+    <semantic:sequenceFlow id="sf_g13xjoin_g14psplit" sourceRef="el_g13_x_join" targetRef="el_g14_p_split"/>
+    <semantic:sequenceFlow id="sf_g14psplit_t28" sourceRef="el_g14_p_split" targetRef="el_t28"/>
+    <semantic:sequenceFlow id="sf_g14psplit_t29" sourceRef="el_g14_p_split" targetRef="el_t29"/>
+    <semantic:sequenceFlow id="sf_t28_g15pjoin" sourceRef="el_t28" targetRef="el_g15_p_join"/>
+    <semantic:sequenceFlow id="sf_t29_g15pjoin" sourceRef="el_t29" targetRef="el_g15_p_join"/>
+    <semantic:sequenceFlow id="sf_g15pjoin_g16x" sourceRef="el_g15_p_join" targetRef="el_g16_x"/>
+    <semantic:sequenceFlow id="sf_g16x_t30" name="Post Results" sourceRef="el_g16_x" targetRef="el_t30"/>
+    <semantic:sequenceFlow id="sf_g16x_t31" name="Test Run" sourceRef="el_g16_x" targetRef="el_t31"/>
+    <semantic:sequenceFlow id="sf_t30_g17xjoin" sourceRef="el_t30" targetRef="el_g17_x_join"/>
+    <semantic:sequenceFlow id="sf_t31_g17xjoin" sourceRef="el_t31" targetRef="el_g17_x_join"/>
+    <semantic:sequenceFlow id="sf_g17xjoin_t32" sourceRef="el_g17_x_join" targetRef="el_t32"/>
+    <semantic:sequenceFlow id="sf_t32_ca3" sourceRef="el_t32" targetRef="el_ca3"/>
+    <semantic:sequenceFlow id="sf_ca3_t33" sourceRef="el_ca3" targetRef="el_t33"/>
+    <semantic:sequenceFlow id="sf_t33_g18psplit" sourceRef="el_t33" targetRef="el_g18_p_split"/>
+    <semantic:sequenceFlow id="sf_g18psplit_t34" sourceRef="el_g18_p_split" targetRef="el_t34"/>
+    <semantic:sequenceFlow id="sf_g18psplit_t35" sourceRef="el_g18_p_split" targetRef="el_t35"/>
+    <semantic:sequenceFlow id="sf_g18psplit_t36" sourceRef="el_g18_p_split" targetRef="el_t36"/>
+    <semantic:sequenceFlow id="sf_t34_g19pjoin" sourceRef="el_t34" targetRef="el_g19_p_join"/>
+    <semantic:sequenceFlow id="sf_t35_g19pjoin" sourceRef="el_t35" targetRef="el_g19_p_join"/>
+    <semantic:sequenceFlow id="sf_t36_g19pjoin" sourceRef="el_t36" targetRef="el_g19_p_join"/>
+    <semantic:sequenceFlow id="sf_g19pjoin_ca4" sourceRef="el_g19_p_join" targetRef="el_ca4"/>
+    <semantic:sequenceFlow id="sf_ca4_t37" sourceRef="el_ca4" targetRef="el_t37"/>
+    <semantic:sequenceFlow id="sf_t37_e1" sourceRef="el_t37" targetRef="el_e1"/>
+    
+    <semantic:error id="error_materialShortage" name="Material Shortage Error" errorCode="MAT_SHORTAGE"/>
+    <semantic:error id="error_finalCheck" name="Final Check Error" errorCode="FINAL_CHECK_ERR"/>
+
+  </semantic:process>
+
+  <bpmndi:BPMNDiagram id="BPMNDiagram_productionProcess">
+    <bpmndi:BPMNPlane bpmnElement="collab_productionProcess">
+      <bpmndi:BPMNShape id="participant_productionDept_shape" bpmnElement="participant_productionDept" isHorizontal="true">
+        <dc:Bounds x="20" y="20" width="4000" height="1200"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="lane_productionManager_shape" bpmnElement="lane_productionManager" isHorizontal="true">
+        <dc:Bounds x="50" y="20" width="3970" height="600"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="lane_productionAssistant_shape" bpmnElement="lane_productionAssistant" isHorizontal="true">
+        <dc:Bounds x="50" y="620" width="3970" height="600"/>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="el_s1_shape" bpmnElement="el_s1">
+        <dc:Bounds x="100" y="100" width="36" height="36"/>
+        <bpmndi:BPMNLabel><dc:Bounds x="80" y="140" width="100" height="40"/></bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="el_t1_shape" bpmnElement="el_t1">
+        <dc:Bounds x="186" y="90" width="100" height="56"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="el_g1_shape" bpmnElement="el_g1" isMarkerVisible="true">
+        <dc:Bounds x="336" y="95" width="50" height="50"/>
+        <bpmndi:BPMNLabel><dc:Bounds x="320" y="150" width="80" height="20"/></bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="el_ca1_shape" bpmnElement="el_ca1">
+        <dc:Bounds x="436" y="40" width="100" height="56"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="el_t2_shape" bpmnElement="el_t2">
+        <dc:Bounds x="436" y="160" width="100" height="56"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="el_t3_shape" bpmnElement="el_t3">
+        <dc:Bounds x="586" y="690" width="100" height="56"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="el_g2_p_split_shape" bpmnElement="el_g2_p_split">
+        <dc:Bounds x="736" y="695" width="50" height="50"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="el_t4_shape" bpmnElement="el_t4">
+        <dc:Bounds x="836" y="630" width="100" height="56"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="el_t5_shape" bpmnElement="el_t5">
+        <dc:Bounds x="836" y="700" width="100" height="56"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="el_t6_shape" bpmnElement="el_t6">
+        <dc:Bounds x="836" y="770" width="100" height="56"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="el_g3_p_join_shape" bpmnElement="el_g3_p_join">
+        <dc:Bounds x="986" y="695" width="50" height="50"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="el_t7_shape" bpmnElement="el_t7">
+        <dc:Bounds x="1086" y="690" width="100" height="56"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="el_be1_shape" bpmnElement="el_be1">
+        <dc:Bounds x="1166" y="728" width="36" height="36"/>
+        <bpmndi:BPMNLabel><dc:Bounds x="1140" y="768" width="90" height="20"/></bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="el_t8_shape" bpmnElement="el_t8">
+        <dc:Bounds x="1236" y="690" width="100" height="56"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="el_t9_shape" bpmnElement="el_t9">
+        <dc:Bounds x="1386" y="90" width="100" height="56"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="el_g4_x_shape" bpmnElement="el_g4_x" isMarkerVisible="true">
+        <dc:Bounds x="1536" y="95" width="50" height="50"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="el_t10_shape" bpmnElement="el_t10">
+        <dc:Bounds x="1636" y="40" width="100" height="56"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="el_g5_x_shape" bpmnElement="el_g5_x" isMarkerVisible="true">
+        <dc:Bounds x="1636" y="165" width="50" height="50"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="el_t11_shape" bpmnElement="el_t11">
+        <dc:Bounds x="1736" y="100" width="100" height="56"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="el_t12_shape" bpmnElement="el_t12">
+        <dc:Bounds x="1736" y="170" width="100" height="56"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="el_t13_shape" bpmnElement="el_t13">
+        <dc:Bounds x="1736" y="240" width="100" height="56"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="el_t14_shape" bpmnElement="el_t14">
+        <dc:Bounds x="1736" y="310" width="100" height="56"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="el_t15_shape" bpmnElement="el_t15">
+        <dc:Bounds x="1886" y="310" width="100" height="56"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="el_g6_x_shape" bpmnElement="el_g6_x" isMarkerVisible="true">
+        <dc:Bounds x="2036" y="315" width="50" height="50"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="el_t16_shape" bpmnElement="el_t16">
+        <dc:Bounds x="2136" y="270" width="100" height="56"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="el_t17_shape" bpmnElement="el_t17">
+        <dc:Bounds x="2136" y="360" width="100" height="56"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="el_g7_x_join_shape" bpmnElement="el_g7_x_join" isMarkerVisible="true">
+        <dc:Bounds x="2286" y="315" width="50" height="50"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="el_g8_x_join_shape" bpmnElement="el_g8_x_join" isMarkerVisible="true">
+        <dc:Bounds x="2436" y="165" width="50" height="50"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="el_g9_x_join_shape" bpmnElement="el_g9_x_join" isMarkerVisible="true">
+        <dc:Bounds x="2586" y="95" width="50" height="50"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="el_t18_shape" bpmnElement="el_t18">
+        <dc:Bounds x="2686" y="90" width="100" height="56"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="el_t19_shape" bpmnElement="el_t19">
+        <dc:Bounds x="2836" y="90" width="100" height="56"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="el_ca2_shape" bpmnElement="el_ca2">
+        <dc:Bounds x="2986" y="690" width="100" height="56"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="el_t20_shape" bpmnElement="el_t20">
+        <dc:Bounds x="3136" y="690" width="100" height="56"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="el_g10_p_split_shape" bpmnElement="el_g10_p_split">
+        <dc:Bounds x="100" y="795" width="50" height="50"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="el_t21_shape" bpmnElement="el_t21">
+        <dc:Bounds x="200" y="730" width="100" height="56"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="el_t22_shape" bpmnElement="el_t22">
+        <dc:Bounds x="200" y="800" width="100" height="56"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="el_t23_shape" bpmnElement="el_t23">
+        <dc:Bounds x="200" y="870" width="100" height="56"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="el_g11_p_join_shape" bpmnElement="el_g11_p_join">
+        <dc:Bounds x="350" y="795" width="50" height="50"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="el_t24_shape" bpmnElement="el_t24">
+        <dc:Bounds x="450" y="790" width="100" height="56"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="el_t25_shape" bpmnElement="el_t25">
+        <dc:Bounds x="600" y="790" width="100" height="56"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="el_g12_x_shape" bpmnElement="el_g12_x" isMarkerVisible="true">
+        <dc:Bounds x="750" y="795" width="50" height="50"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="el_t26_shape" bpmnElement="el_t26">
+        <dc:Bounds x="850" y="740" width="100" height="56"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="el_t27_shape" bpmnElement="el_t27">
+        <dc:Bounds x="850" y="850" width="100" height="56"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="el_g13_x_join_shape" bpmnElement="el_g13_x_join" isMarkerVisible="true">
+        <dc:Bounds x="1000" y="795" width="50" height="50"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="el_g14_p_split_shape" bpmnElement="el_g14_p_split">
+        <dc:Bounds x="1100" y="795" width="50" height="50"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="el_t28_shape" bpmnElement="el_t28">
+        <dc:Bounds x="1200" y="740" width="100" height="56"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="el_t29_shape" bpmnElement="el_t29">
+        <dc:Bounds x="1200" y="850" width="100" height="56"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="el_g15_p_join_shape" bpmnElement="el_g15_p_join">
+        <dc:Bounds x="1350" y="795" width="50" height="50"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="el_g16_x_shape" bpmnElement="el_g16_x" isMarkerVisible="true">
+        <dc:Bounds x="1450" y="795" width="50" height="50"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="el_t30_shape" bpmnElement="el_t30">
+        <dc:Bounds x="1550" y="740" width="100" height="56"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="el_t31_shape" bpmnElement="el_t31">
+        <dc:Bounds x="1550" y="850" width="100" height="56"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="el_g17_x_join_shape" bpmnElement="el_g17_x_join" isMarkerVisible="true">
+        <dc:Bounds x="1700" y="795" width="50" height="50"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="el_t32_shape" bpmnElement="el_t32">
+        <dc:Bounds x="1800" y="790" width="100" height="56"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="el_ca3_shape" bpmnElement="el_ca3">
+        <dc:Bounds x="1950" y="790" width="100" height="56"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="el_t33_shape" bpmnElement="el_t33">
+        <dc:Bounds x="2100" y="90" width="100" height="56"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="el_g18_p_split_shape" bpmnElement="el_g18_p_split">
+        <dc:Bounds x="2250" y="95" width="50" height="50"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="el_t34_shape" bpmnElement="el_t34">
+        <dc:Bounds x="2350" y="30" width="100" height="56"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="el_t35_shape" bpmnElement="el_t35">
+        <dc:Bounds x="2350" y="100" width="100" height="56"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="el_t36_shape" bpmnElement="el_t36">
+        <dc:Bounds x="2350" y="170" width="100" height="56"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="el_g19_p_join_shape" bpmnElement="el_g19_p_join">
+        <dc:Bounds x="2500" y="95" width="50" height="50"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="el_ca4_shape" bpmnElement="el_ca4">
+        <dc:Bounds x="2600" y="90" width="100" height="56"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="el_t37_shape" bpmnElement="el_t37">
+        <dc:Bounds x="2750" y="90" width="100" height="56"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="el_be2_shape" bpmnElement="el_be2">
+        <dc:Bounds x="2830" y="128" width="36" height="36"/>
+        <bpmndi:BPMNLabel><dc:Bounds x="2810" y="168" width="80" height="20"/></bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="el_e1_shape" bpmnElement="el_e1">
+        <dc:Bounds x="2900" y="100" width="36" height="36"/>
+        <bpmndi:BPMNLabel><dc:Bounds x="2880" y="140" width="100" height="40"/></bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNEdge id="sf_s1_t1_edge" bpmnElement="sf_s1_t1">
+        <di:waypoint x="136" y="118"/>
+        <di:waypoint x="186" y="118"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="sf_t1_g1_edge" bpmnElement="sf_t1_g1">
+        <di:waypoint x="286" y="118"/>
+        <di:waypoint x="336" y="120"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="sf_g1_ca1_edge" bpmnElement="sf_g1_ca1">
+        <di:waypoint x="361" y="95"/>
+        <di:waypoint x="361" y="68"/>
+        <di:waypoint x="436" y="68"/>
+        <bpmndi:BPMNLabel><dc:Bounds x="365" y="75" width="70" height="20"/></bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="sf_g1_t2_edge" bpmnElement="sf_g1_t2">
+        <di:waypoint x="361" y="145"/>
+        <di:waypoint x="361" y="188"/>
+        <di:waypoint x="436" y="188"/>
+        <bpmndi:BPMNLabel><dc:Bounds x="365" y="160" width="60" height="20"/></bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="sf_ca1_t2_edge" bpmnElement="sf_ca1_t2">
+        <di:waypoint x="486" y="96"/>
+        <di:waypoint x="486" y="160"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="sf_t2_t3_edge" bpmnElement="sf_t2_t3">
+        <di:waypoint x="536" y="188"/>
+        <di:waypoint x="561" y="188"/>
+        <di:waypoint x="561" y="718"/>
+        <di:waypoint x="586" y="718"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="sf_t3_g2psplit_edge" bpmnElement="sf_t3_g2psplit">
+        <di:waypoint x="686" y="718"/>
+        <di:waypoint x="736" y="720"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="sf_g2psplit_t4_edge" bpmnElement="sf_g2psplit_t4">
+        <di:waypoint x="761" y="695"/>
+        <di:waypoint x="761" y="658"/>
+        <di:waypoint x="836" y="658"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="sf_g2psplit_t5_edge" bpmnElement="sf_g2psplit_t5">
+        <di:waypoint x="786" y="720"/>
+        <di:waypoint x="836" y="728"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="sf_g2psplit_t6_edge" bpmnElement="sf_g2psplit_t6">
+        <di:waypoint x="761" y="745"/>
+        <di:waypoint x="761" y="798"/>
+        <di:waypoint x="836" y="798"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="sf_t4_g3pjoin_edge" bpmnElement="sf_t4_g3pjoin">
+        <di:waypoint x="936" y="658"/>
+        <di:waypoint x="1011" y="658"/>
+        <di:waypoint x="1011" y="695"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="sf_t5_g3pjoin_edge" bpmnElement="sf_t5_g3pjoin">
+        <di:waypoint x="936" y="728"/>
+        <di:waypoint x="986" y="720"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="sf_t6_g3pjoin_edge" bpmnElement="sf_t6_g3pjoin">
+        <di:waypoint x="936" y="798"/>
+        <di:waypoint x="1011" y="798"/>
+        <di:waypoint x="1011" y="745"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="sf_g3pjoin_t7_edge" bpmnElement="sf_g3pjoin_t7">
+        <di:waypoint x="1036" y="720"/>
+        <di:waypoint x="1086" y="718"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="sf_t7_t8_edge" bpmnElement="sf_t7_t8">
+        <di:waypoint x="1186" y="718"/>
+        <di:waypoint x="1236" y="718"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="sf_t8_t9_edge" bpmnElement="sf_t8_t9">
+        <di:waypoint x="1336" y="718"/>
+        <di:waypoint x="1361" y="718"/>
+        <di:waypoint x="1361" y="118"/>
+        <di:waypoint x="1386" y="118"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="sf_t9_g4x_edge" bpmnElement="sf_t9_g4x">
+        <di:waypoint x="1486" y="118"/>
+        <di:waypoint x="1536" y="120"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="sf_g4x_t10_edge" bpmnElement="sf_g4x_t10">
+        <di:waypoint x="1561" y="95"/>
+        <di:waypoint x="1561" y="68"/>
+        <di:waypoint x="1636" y="68"/>
+        <bpmndi:BPMNLabel><dc:Bounds x="1565" y="75" width="70" height="20"/></bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="sf_g4x_g5x_edge" bpmnElement="sf_g4x_g5x">
+        <di:waypoint x="1561" y="145"/>
+        <di:waypoint x="1561" y="190"/>
+        <di:waypoint x="1636" y="190"/>
+        <bpmndi:BPMNLabel><dc:Bounds x="1565" y="160" width="70" height="30"/></bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="sf_g5x_t11_edge" bpmnElement="sf_g5x_t11">
+        <di:waypoint x="1661" y="165"/>
+        <di:waypoint x="1661" y="128"/>
+        <di:waypoint x="1736" y="128"/>
+        <bpmndi:BPMNLabel><dc:Bounds x="1665" y="140" width="70" height="20"/></bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="sf_g5x_t12_edge" bpmnElement="sf_g5x_t12">
+        <di:waypoint x="1686" y="190"/>
+        <di:waypoint x="1736" y="198"/>
+        <bpmndi:BPMNLabel><dc:Bounds x="1690" y="195" width="70" height="20"/></bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="sf_g5x_t13_edge" bpmnElement="sf_g5x_t13">
+        <di:waypoint x="1661" y="215"/>
+        <di:waypoint x="1661" y="268"/>
+        <di:waypoint x="1736" y="268"/>
+        <bpmndi:BPMNLabel><dc:Bounds x="1665" y="235" width="70" height="30"/></bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="sf_g5x_t14_edge" bpmnElement="sf_g5x_t14">
+        <di:waypoint x="1661" y="215"/>
+        <di:waypoint x="1661" y="338"/>
+        <di:waypoint x="1736" y="338"/>
+        <bpmndi:BPMNLabel><dc:Bounds x="1665" y="270" width="70" height="30"/></bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="sf_t14_t15_edge" bpmnElement="sf_t14_t15">
+        <di:waypoint x="1836" y="338"/>
+        <di:waypoint x="1886" y="338"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="sf_t15_g6x_edge" bpmnElement="sf_t15_g6x">
+        <di:waypoint x="1986" y="338"/>
+        <di:waypoint x="2036" y="340"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="sf_g6x_t16_edge" bpmnElement="sf_g6x_t16">
+        <di:waypoint x="2061" y="315"/>
+        <di:waypoint x="2061" y="298"/>
+        <di:waypoint x="2136" y="298"/>
+        <bpmndi:BPMNLabel><dc:Bounds x="2065" y="300" width="70" height="30"/></bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="sf_g6x_t17_edge" bpmnElement="sf_g6x_t17">
+        <di:waypoint x="2061" y="365"/>
+        <di:waypoint x="2061" y="388"/>
+        <di:waypoint x="2136" y="388"/>
+        <bpmndi:BPMNLabel><dc:Bounds x="2065" y="370" width="70" height="30"/></bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="sf_t16_g7xjoin_edge" bpmnElement="sf_t16_g7xjoin">
+        <di:waypoint x="2236" y="298"/>
+        <di:waypoint x="2311" y="298"/>
+        <di:waypoint x="2311" y="315"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="sf_t17_g7xjoin_edge" bpmnElement="sf_t17_g7xjoin">
+        <di:waypoint x="2236" y="388"/>
+        <di:waypoint x="2311" y="388"/>
+        <di:waypoint x="2311" y="365"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="sf_g7xjoin_g8xjoin_edge" bpmnElement="sf_g7xjoin_g8xjoin">
+        <di:waypoint x="2336" y="340"/>
+        <di:waypoint x="2461" y="340"/>
+        <di:waypoint x="2461" y="215"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="sf_t11_g8xjoin_edge" bpmnElement="sf_t11_g8xjoin">
+        <di:waypoint x="1836" y="128"/>
+        <di:waypoint x="2461" y="128"/>
+        <di:waypoint x="2461" y="165"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="sf_t12_g8xjoin_edge" bpmnElement="sf_t12_g8xjoin">
+        <di:waypoint x="1836" y="198"/>
+        <di:waypoint x="2436" y="190"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="sf_t13_g8xjoin_edge" bpmnElement="sf_t13_g8xjoin">
+        <di:waypoint x="1836" y="268"/>
+        <di:waypoint x="2461" y="268"/>
+        <di:waypoint x="2461" y="215"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="sf_t10_g9xjoin_edge" bpmnElement="sf_t10_g9xjoin">
+        <di:waypoint x="1736" y="68"/>
+        <di:waypoint x="2611" y="68"/>
+        <di:waypoint x="2611" y="95"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="sf_g8xjoin_g9xjoin_edge" bpmnElement="sf_g8xjoin_g9xjoin">
+        <di:waypoint x="2486" y="190"/>
+        <di:waypoint x="2586" y="120"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="sf_g9xjoin_t18_edge" bpmnElement="sf_g9xjoin_t18">
+        <di:waypoint x="2636" y="120"/>
+        <di:waypoint x="2686" y="118"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="sf_t18_t19_edge" bpmnElement="sf_t18_t19">
+        <di:waypoint x="2786" y="118"/>
+        <di:waypoint x="2836" y="118"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="sf_t19_ca2_edge" bpmnElement="sf_t19_ca2">
+        <di:waypoint x="2936" y="118"/>
+        <di:waypoint x="2961" y="118"/>
+        <di:waypoint x="2961" y="718"/>
+        <di:waypoint x="2986" y="718"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="sf_ca2_t20_edge" bpmnElement="sf_ca2_t20">
+        <di:waypoint x="3086" y="718"/>
+        <di:waypoint x="3136" y="718"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="sf_t20_g10psplit_edge" bpmnElement="sf_t20_g10psplit">
+        <di:waypoint x="3236" y="718"/>
+        <di:waypoint x="3261" y="718"/>
+        <di:waypoint x="3261" y="820"/>
+        <di:waypoint x="150" y="820"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="sf_g10psplit_t21_edge" bpmnElement="sf_g10psplit_t21">
+        <di:waypoint x="125" y="795"/>
+        <di:waypoint x="125" y="758"/>
+        <di:waypoint x="200" y="758"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="sf_g10psplit_t22_edge" bpmnElement="sf_g10psplit_t22">
+        <di:waypoint x="150" y="820"/>
+        <di:waypoint x="200" y="828"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="sf_g10psplit_t23_edge" bpmnElement="sf_g10psplit_t23">
+        <di:waypoint x="125" y="845"/>
+        <di:waypoint x="125" y="898"/>
+        <di:waypoint x="200" y="898"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="sf_t21_g11pjoin_edge" bpmnElement="sf_t21_g11pjoin">
+        <di:waypoint x="300" y="758"/>
+        <di:waypoint x="375" y="758"/>
+        <di:waypoint x="375" y="795"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="sf_t22_g11pjoin_edge" bpmnElement="sf_t22_g11pjoin">
+        <di:waypoint x="300" y="828"/>
+        <di:waypoint x="350" y="820"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="sf_t23_g11pjoin_edge" bpmnElement="sf_t23_g11pjoin">
+        <di:waypoint x="300" y="898"/>
+        <di:waypoint x="375" y="898"/>
+        <di:waypoint x="375" y="845"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="sf_g11pjoin_t24_edge" bpmnElement="sf_g11pjoin_t24">
+        <di:waypoint x="400" y="820"/>
+        <di:waypoint x="450" y="818"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="sf_t24_t25_edge" bpmnElement="sf_t24_t25">
+        <di:waypoint x="550" y="818"/>
+        <di:waypoint x="600" y="818"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="sf_t25_g12x_edge" bpmnElement="sf_t25_g12x">
+        <di:waypoint x="700" y="818"/>
+        <di:waypoint x="750" y="820"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="sf_g12x_t26_edge" bpmnElement="sf_g12x_t26">
+        <di:waypoint x="775" y="795"/>
+        <di:waypoint x="775" y="768"/>
+        <di:waypoint x="850" y="768"/>
+        <bpmndi:BPMNLabel><dc:Bounds x="780" y="770" width="70" height="30"/></bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="sf_g12x_t27_edge" bpmnElement="sf_g12x_t27">
+        <di:waypoint x="775" y="845"/>
+        <di:waypoint x="775" y="878"/>
+        <di:waypoint x="850" y="878"/>
+        <bpmndi:BPMNLabel><dc:Bounds x="780" y="850" width="70" height="30"/></bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="sf_t26_g13xjoin_edge" bpmnElement="sf_t26_g13xjoin">
+        <di:waypoint x="950" y="768"/>
+        <di:waypoint x="1025" y="768"/>
+        <di:waypoint x="1025" y="795"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="sf_t27_g13xjoin_edge" bpmnElement="sf_t27_g13xjoin">
+        <di:waypoint x="950" y="878"/>
+        <di:waypoint x="1025" y="878"/>
+        <di:waypoint x="1025" y="845"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="sf_g13xjoin_g14psplit_edge" bpmnElement="sf_g13xjoin_g14psplit">
+        <di:waypoint x="1050" y="820"/>
+        <di:waypoint x="1100" y="820"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="sf_g14psplit_t28_edge" bpmnElement="sf_g14psplit_t28">
+        <di:waypoint x="1125" y="795"/>
+        <di:waypoint x="1125" y="768"/>
+        <di:waypoint x="1200" y="768"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="sf_g14psplit_t29_edge" bpmnElement="sf_g14psplit_t29">
+        <di:waypoint x="1125" y="845"/>
+        <di:waypoint x="1125" y="878"/>
+        <di:waypoint x="1200" y="878"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="sf_t28_g15pjoin_edge" bpmnElement="sf_t28_g15pjoin">
+        <di:waypoint x="1300" y="768"/>
+        <di:waypoint x="1375" y="768"/>
+        <di:waypoint x="1375" y="795"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="sf_t29_g15pjoin_edge" bpmnElement="sf_t29_g15pjoin">
+        <di:waypoint x="1300" y="878"/>
+        <di:waypoint x="1375" y="878"/>
+        <di:waypoint x="1375" y="845"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="sf_g15pjoin_g16x_edge" bpmnElement="sf_g15pjoin_g16x">
+        <di:waypoint x="1400" y="820"/>
+        <di:waypoint x="1450" y="820"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="sf_g16x_t30_edge" bpmnElement="sf_g16x_t30">
+        <di:waypoint x="1475" y="795"/>
+        <di:waypoint x="1475" y="768"/>
+        <di:waypoint x="1550" y="768"/>
+        <bpmndi:BPMNLabel><dc:Bounds x="1480" y="770" width="70" height="20"/></bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="sf_g16x_t31_edge" bpmnElement="sf_g16x_t31">
+        <di:waypoint x="1475" y="845"/>
+        <di:waypoint x="1475" y="878"/>
+        <di:waypoint x="1550" y="878"/>
+        <bpmndi:BPMNLabel><dc:Bounds x="1480" y="850" width="70" height="20"/></bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="sf_t30_g17xjoin_edge" bpmnElement="sf_t30_g17xjoin">
+        <di:waypoint x="1650" y="768"/>
+        <di:waypoint x="1725" y="768"/>
+        <di:waypoint x="1725" y="795"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="sf_t31_g17xjoin_edge" bpmnElement="sf_t31_g17xjoin">
+        <di:waypoint x="1650" y="878"/>
+        <di:waypoint x="1725" y="878"/>
+        <di:waypoint x="1725" y="845"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="sf_g17xjoin_t32_edge" bpmnElement="sf_g17xjoin_t32">
+        <di:waypoint x="1750" y="820"/>
+        <di:waypoint x="1800" y="818"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="sf_t32_ca3_edge" bpmnElement="sf_t32_ca3">
+        <di:waypoint x="1900" y="818"/>
+        <di:waypoint x="1950" y="818"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="sf_ca3_t33_edge" bpmnElement="sf_ca3_t33">
+        <di:waypoint x="2050" y="818"/>
+        <di:waypoint x="2075" y="818"/>
+        <di:waypoint x="2075" y="118"/>
+        <di:waypoint x="2100" y="118"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="sf_t33_g18psplit_edge" bpmnElement="sf_t33_g18psplit">
+        <di:waypoint x="2200" y="118"/>
+        <di:waypoint x="2250" y="120"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="sf_g18psplit_t34_edge" bpmnElement="sf_g18psplit_t34">
+        <di:waypoint x="2275" y="95"/>
+        <di:waypoint x="2275" y="58"/>
+        <di:waypoint x="2350" y="58"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="sf_g18psplit_t35_edge" bpmnElement="sf_g18psplit_t35">
+        <di:waypoint x="2300" y="120"/>
+        <di:waypoint x="2350" y="128"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="sf_g18psplit_t36_edge" bpmnElement="sf_g18psplit_t36">
+        <di:waypoint x="2275" y="145"/>
+        <di:waypoint x="2275" y="198"/>
+        <di:waypoint x="2350" y="198"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="sf_t34_g19pjoin_edge" bpmnElement="sf_t34_g19pjoin">
+        <di:waypoint x="2450" y="58"/>
+        <di:waypoint x="2525" y="58"/>
+        <di:waypoint x="2525" y="95"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="sf_t35_g19pjoin_edge" bpmnElement="sf_t35_g19pjoin">
+        <di:waypoint x="2450" y="128"/>
+        <di:waypoint x="2500" y="120"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="sf_t36_g19pjoin_edge" bpmnElement="sf_t36_g19pjoin">
+        <di:waypoint x="2450" y="198"/>
+        <di:waypoint x="2525" y="198"/>
+        <di:waypoint x="2525" y="145"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="sf_g19pjoin_ca4_edge" bpmnElement="sf_g19pjoin_ca4">
+        <di:waypoint x="2550" y="120"/>
+        <di:waypoint x="2600" y="118"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="sf_ca4_t37_edge" bpmnElement="sf_ca4_t37">
+        <di:waypoint x="2700" y="118"/>
+        <di:waypoint x="2750" y="118"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="sf_t37_e1_edge" bpmnElement="sf_t37_e1">
+        <di:waypoint x="2850" y="118"/>
+        <di:waypoint x="2900" y="118"/>
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</semantic:definitions>

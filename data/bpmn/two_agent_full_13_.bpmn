@@ -1,0 +1,483 @@
+<?xml version="1.0" standalone="yes"?>
+<semantic:definitions id="ChocolateProductionProcess_definitions"
+    targetNamespace="http://example.com/bpmn/chocolate_production"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:semantic="http://www.omg.org/spec/BPMN/20100524/MODEL"
+    xmlns:di="http://www.omg.org/spec/DD/20100524/DI"
+    xmlns:dc="http://www.omg.org/spec/DD/20100524/DC"
+    xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI">
+
+  <semantic:collaboration id="collab_chocolate_production">
+    <semantic:participant id="participant_chocolate_production_pool" name="Chocolate Production Process Pool" processRef="chocolateProductionProcess"/>
+  </semantic:collaboration>
+
+  <semantic:process id="chocolateProductionProcess" name="Chocolate Production Process" isExecutable="true">
+    <semantic:laneSet id="laneSet_chocolate_production">
+      <semantic:lane id="lane_production_department" name="Production Department">
+        <semantic:flowNodeRef>el_se_order_received</semantic:flowNodeRef>
+        <semantic:flowNodeRef>el_t_book_order</semantic:flowNodeRef>
+        <semantic:flowNodeRef>el_t_manage_recipe</semantic:flowNodeRef>
+        <semantic:flowNodeRef>el_t_send_feedback_mm</semantic:flowNodeRef>
+      </semantic:lane>
+      <semantic:lane id="lane_material_management_department" name="Material Management Department">
+        <semantic:flowNodeRef>el_t_check_materials</semantic:flowNodeRef>
+        <semantic:flowNodeRef>el_t_inform_purchaser</semantic:flowNodeRef>
+        <semantic:flowNodeRef>el_g_materials_available</semantic:flowNodeRef>
+        <semantic:flowNodeRef>el_t_prepare_production</semantic:flowNodeRef>
+        <semantic:flowNodeRef>el_t_inform_operators</semantic:flowNodeRef>
+      </semantic:lane>
+      <semantic:lane id="lane_purchaser" name="Purchaser">
+        <semantic:flowNodeRef>el_t_place_material_order</semantic:flowNodeRef>
+      </semantic:lane>
+      <semantic:lane id="lane_operators" name="Operators">
+        <semantic:flowNodeRef>el_sp_chocolate_production</semantic:flowNodeRef>
+        <semantic:flowNodeRef>el_t_packaging</semantic:flowNodeRef>
+        <semantic:flowNodeRef>el_ee_production_finished</semantic:flowNodeRef>
+      </semantic:lane>
+    </semantic:laneSet>
+
+    <semantic:startEvent id="el_se_order_received" name="Chocolate Production Order Received">
+      <semantic:outgoing>sf_order_received_to_book_order</semantic:outgoing>
+    </semantic:startEvent>
+
+    <semantic:task id="el_t_book_order" name="Book Order in SAP">
+      <semantic:incoming>sf_order_received_to_book_order</semantic:incoming>
+      <semantic:outgoing>sf_book_order_to_manage_recipe</semantic:outgoing>
+    </semantic:task>
+
+    <semantic:task id="el_t_manage_recipe" name="Manage Recipe for Chocolate Production Order">
+      <semantic:incoming>sf_book_order_to_manage_recipe</semantic:incoming>
+      <semantic:outgoing>sf_manage_recipe_to_send_feedback</semantic:outgoing>
+    </semantic:task>
+
+    <semantic:task id="el_t_send_feedback_mm" name="Send Feedback to MM Department">
+      <semantic:incoming>sf_manage_recipe_to_send_feedback</semantic:incoming>
+      <semantic:outgoing>sf_send_feedback_to_check_materials</semantic:outgoing>
+    </semantic:task>
+
+    <semantic:task id="el_t_check_materials" name="Check Materials Availability in SAP MM">
+      <semantic:incoming>sf_send_feedback_to_check_materials</semantic:incoming>
+      <semantic:outgoing>sf_check_materials_to_inform_purchaser</semantic:outgoing>
+    </semantic:task>
+
+    <semantic:task id="el_t_inform_purchaser" name="Inform Purchaser">
+      <semantic:incoming>sf_check_materials_to_inform_purchaser</semantic:incoming>
+      <semantic:outgoing>sf_inform_purchaser_to_gateway</semantic:outgoing>
+    </semantic:task>
+
+    <semantic:exclusiveGateway id="el_g_materials_available" name="Materials Available?">
+      <semantic:incoming>sf_inform_purchaser_to_gateway</semantic:incoming>
+      <semantic:outgoing>sf_gateway_to_prepare_production_available</semantic:outgoing>
+      <semantic:outgoing>sf_gateway_to_place_order_not_available</semantic:outgoing>
+    </semantic:exclusiveGateway>
+
+    <semantic:task id="el_t_prepare_production" name="Prepare Production Process">
+      <semantic:incoming>sf_gateway_to_prepare_production_available</semantic:incoming>
+      <semantic:incoming>sf_place_order_to_prepare_production</semantic:incoming>
+      <semantic:outgoing>sf_prepare_production_to_inform_operators</semantic:outgoing>
+    </semantic:task>
+
+    <semantic:task id="el_t_place_material_order" name="Place Material Order">
+      <semantic:incoming>sf_gateway_to_place_order_not_available</semantic:incoming>
+      <semantic:outgoing>sf_place_order_to_prepare_production</semantic:outgoing>
+    </semantic:task>
+
+    <semantic:task id="el_t_inform_operators" name="Inform Operators to Start Production">
+      <semantic:incoming>sf_prepare_production_to_inform_operators</semantic:incoming>
+      <semantic:outgoing>sf_inform_operators_to_sub_process</semantic:outgoing>
+    </semantic:task>
+
+    <semantic:subProcess id="el_sp_chocolate_production" name="Chocolate Production">
+      <semantic:incoming>sf_inform_operators_to_sub_process</semantic:incoming>
+      <semantic:outgoing>sf_sub_process_to_packaging</semantic:outgoing>
+      <semantic:startEvent id="el_sp_se_start" name="Begin Chocolate Production">
+        <semantic:outgoing>sf_sp_start_to_roast_grind</semantic:outgoing>
+      </semantic:startEvent>
+      <semantic:task id="el_sp_t_roast_grind" name="Roast and Grind Cocoa Beans">
+        <semantic:incoming>sf_sp_start_to_roast_grind</semantic:incoming>
+        <semantic:outgoing>sf_sp_roast_grind_to_create_powder</semantic:outgoing>
+      </semantic:task>
+      <semantic:task id="el_sp_t_create_powder" name="Create Cocoa Powder">
+        <semantic:incoming>sf_sp_roast_grind_to_create_powder</semantic:incoming>
+        <semantic:outgoing>sf_sp_create_powder_to_create_press_mass</semantic:outgoing>
+      </semantic:task>
+      <semantic:task id="el_sp_t_create_press_mass" name="Create and Press Cocoa Mass">
+        <semantic:incoming>sf_sp_create_powder_to_create_press_mass</semantic:incoming>
+        <semantic:outgoing>sf_sp_create_press_mass_to_pg_split_cake_butter</semantic:outgoing>
+      </semantic:task>
+      <semantic:parallelGateway id="el_sp_pg_split_cake_butter" name="Split for Cocoa Cake and Cocoa Butter Production">
+        <semantic:incoming>sf_sp_create_press_mass_to_pg_split_cake_butter</semantic:incoming>
+        <semantic:outgoing>sf_sp_pg_split_to_produce_cake</semantic:outgoing>
+        <semantic:outgoing>sf_sp_pg_split_to_produce_butter</semantic:outgoing>
+      </semantic:parallelGateway>
+      <semantic:task id="el_sp_t_produce_cake" name="Produce Cocoa Cake">
+        <semantic:incoming>sf_sp_pg_split_to_produce_cake</semantic:incoming>
+        <semantic:outgoing>sf_sp_produce_cake_to_pg_sync</semantic:outgoing>
+      </semantic:task>
+      <semantic:task id="el_sp_t_produce_butter" name="Produce Cocoa Butter">
+        <semantic:incoming>sf_sp_pg_split_to_produce_butter</semantic:incoming>
+        <semantic:outgoing>sf_sp_produce_butter_to_pg_split_aroma_milk</semantic:outgoing>
+      </semantic:task>
+      <semantic:parallelGateway id="el_sp_pg_split_aroma_milk" name="Split for Aroma and Milk Processing">
+        <semantic:incoming>sf_sp_produce_butter_to_pg_split_aroma_milk</semantic:incoming>
+        <semantic:outgoing>sf_sp_pg_split_aroma_milk_to_stir_aroma</semantic:outgoing>
+        <semantic:outgoing>sf_sp_pg_split_aroma_milk_to_mix_milk</semantic:outgoing>
+      </semantic:parallelGateway>
+      <semantic:task id="el_sp_t_stir_aroma" name="Stir Aroma">
+        <semantic:incoming>sf_sp_pg_split_aroma_milk_to_stir_aroma</semantic:incoming>
+        <semantic:outgoing>sf_sp_stir_aroma_to_pg_join_aroma_milk</semantic:outgoing>
+      </semantic:task>
+      <semantic:task id="el_sp_t_mix_milk" name="Mix Milk">
+        <semantic:incoming>sf_sp_pg_split_aroma_milk_to_mix_milk</semantic:incoming>
+        <semantic:outgoing>sf_sp_mix_milk_to_pg_join_aroma_milk</semantic:outgoing>
+      </semantic:task>
+      <semantic:parallelGateway id="el_sp_pg_join_aroma_milk" name="Join Aroma and Milk Processing">
+        <semantic:incoming>sf_sp_stir_aroma_to_pg_join_aroma_milk</semantic:incoming>
+        <semantic:incoming>sf_sp_mix_milk_to_pg_join_aroma_milk</semantic:incoming>
+        <semantic:outgoing>sf_sp_pg_join_aroma_milk_to_create_choc_mass</semantic:outgoing>
+      </semantic:parallelGateway>
+      <semantic:task id="el_sp_t_create_choc_mass" name="Create Chocolate Mass">
+        <semantic:incoming>sf_sp_pg_join_aroma_milk_to_create_choc_mass</semantic:incoming>
+        <semantic:outgoing>sf_sp_create_choc_mass_to_shape_choc_mass</semantic:outgoing>
+      </semantic:task>
+      <semantic:task id="el_sp_t_shape_choc_mass" name="Shape Chocolate Mass">
+        <semantic:incoming>sf_sp_create_choc_mass_to_shape_choc_mass</semantic:incoming>
+        <semantic:outgoing>sf_sp_shape_choc_mass_to_chocolate_created</semantic:outgoing>
+      </semantic:task>
+      <semantic:task id="el_sp_t_chocolate_created" name="Chocolate Created">
+        <semantic:incoming>sf_sp_shape_choc_mass_to_chocolate_created</semantic:incoming>
+        <semantic:outgoing>sf_sp_chocolate_created_to_pg_sync</semantic:outgoing>
+      </semantic:task>
+      <semantic:parallelGateway id="el_sp_pg_sync_cake_chocolate" name="Synchronize Cake Production and Chocolate Creation">
+        <semantic:incoming>sf_sp_produce_cake_to_pg_sync</semantic:incoming>
+        <semantic:incoming>sf_sp_chocolate_created_to_pg_sync</semantic:incoming>
+        <semantic:outgoing>sf_sp_pg_sync_to_break_cake</semantic:outgoing>
+      </semantic:parallelGateway>
+      <semantic:task id="el_sp_t_break_cake" name="Break Cocoa Cake">
+        <semantic:incoming>sf_sp_pg_sync_to_break_cake</semantic:incoming>
+        <semantic:outgoing>sf_sp_break_cake_to_sp_end</semantic:outgoing>
+      </semantic:task>
+      <semantic:endEvent id="el_sp_ee_finished" name="Sub-Production Finished">
+        <semantic:incoming>sf_sp_break_cake_to_sp_end</semantic:incoming>
+      </semantic:endEvent>
+      <semantic:sequenceFlow id="sf_sp_start_to_roast_grind" sourceRef="el_sp_se_start" targetRef="el_sp_t_roast_grind"/>
+      <semantic:sequenceFlow id="sf_sp_roast_grind_to_create_powder" sourceRef="el_sp_t_roast_grind" targetRef="el_sp_t_create_powder"/>
+      <semantic:sequenceFlow id="sf_sp_create_powder_to_create_press_mass" sourceRef="el_sp_t_create_powder" targetRef="el_sp_t_create_press_mass"/>
+      <semantic:sequenceFlow id="sf_sp_create_press_mass_to_pg_split_cake_butter" sourceRef="el_sp_t_create_press_mass" targetRef="el_sp_pg_split_cake_butter"/>
+      <semantic:sequenceFlow id="sf_sp_pg_split_to_produce_cake" sourceRef="el_sp_pg_split_cake_butter" targetRef="el_sp_t_produce_cake"/>
+      <semantic:sequenceFlow id="sf_sp_pg_split_to_produce_butter" sourceRef="el_sp_pg_split_cake_butter" targetRef="el_sp_t_produce_butter"/>
+      <semantic:sequenceFlow id="sf_sp_produce_butter_to_pg_split_aroma_milk" sourceRef="el_sp_t_produce_butter" targetRef="el_sp_pg_split_aroma_milk"/>
+      <semantic:sequenceFlow id="sf_sp_pg_split_aroma_milk_to_stir_aroma" sourceRef="el_sp_pg_split_aroma_milk" targetRef="el_sp_t_stir_aroma"/>
+      <semantic:sequenceFlow id="sf_sp_pg_split_aroma_milk_to_mix_milk" sourceRef="el_sp_pg_split_aroma_milk" targetRef="el_sp_t_mix_milk"/>
+      <semantic:sequenceFlow id="sf_sp_stir_aroma_to_pg_join_aroma_milk" sourceRef="el_sp_t_stir_aroma" targetRef="el_sp_pg_join_aroma_milk"/>
+      <semantic:sequenceFlow id="sf_sp_mix_milk_to_pg_join_aroma_milk" sourceRef="el_sp_t_mix_milk" targetRef="el_sp_pg_join_aroma_milk"/>
+      <semantic:sequenceFlow id="sf_sp_pg_join_aroma_milk_to_create_choc_mass" sourceRef="el_sp_pg_join_aroma_milk" targetRef="el_sp_t_create_choc_mass"/>
+      <semantic:sequenceFlow id="sf_sp_create_choc_mass_to_shape_choc_mass" sourceRef="el_sp_t_create_choc_mass" targetRef="el_sp_t_shape_choc_mass"/>
+      <semantic:sequenceFlow id="sf_sp_shape_choc_mass_to_chocolate_created" sourceRef="el_sp_t_shape_choc_mass" targetRef="el_sp_t_chocolate_created"/>
+      <semantic:sequenceFlow id="sf_sp_produce_cake_to_pg_sync" sourceRef="el_sp_t_produce_cake" targetRef="el_sp_pg_sync_cake_chocolate"/>
+      <semantic:sequenceFlow id="sf_sp_chocolate_created_to_pg_sync" sourceRef="el_sp_t_chocolate_created" targetRef="el_sp_pg_sync_cake_chocolate"/>
+      <semantic:sequenceFlow id="sf_sp_pg_sync_to_break_cake" sourceRef="el_sp_pg_sync_cake_chocolate" targetRef="el_sp_t_break_cake"/>
+      <semantic:sequenceFlow id="sf_sp_break_cake_to_sp_end" sourceRef="el_sp_t_break_cake" targetRef="el_sp_ee_finished"/>
+    </semantic:subProcess>
+
+    <semantic:task id="el_t_packaging" name="Carry out Packaging">
+      <semantic:incoming>sf_sub_process_to_packaging</semantic:incoming>
+      <semantic:outgoing>sf_packaging_to_end_event</semantic:outgoing>
+    </semantic:task>
+
+    <semantic:endEvent id="el_ee_production_finished" name="Production Order Successfully Produced">
+      <semantic:incoming>sf_packaging_to_end_event</semantic:incoming>
+    </semantic:endEvent>
+
+    <semantic:sequenceFlow id="sf_order_received_to_book_order" sourceRef="el_se_order_received" targetRef="el_t_book_order"/>
+    <semantic:sequenceFlow id="sf_book_order_to_manage_recipe" sourceRef="el_t_book_order" targetRef="el_t_manage_recipe"/>
+    <semantic:sequenceFlow id="sf_manage_recipe_to_send_feedback" sourceRef="el_t_manage_recipe" targetRef="el_t_send_feedback_mm"/>
+    <semantic:sequenceFlow id="sf_send_feedback_to_check_materials" sourceRef="el_t_send_feedback_mm" targetRef="el_t_check_materials"/>
+    <semantic:sequenceFlow id="sf_check_materials_to_inform_purchaser" sourceRef="el_t_check_materials" targetRef="el_t_inform_purchaser"/>
+    <semantic:sequenceFlow id="sf_inform_purchaser_to_gateway" sourceRef="el_t_inform_purchaser" targetRef="el_g_materials_available"/>
+    <semantic:sequenceFlow id="sf_gateway_to_prepare_production_available" name="Materials Available" sourceRef="el_g_materials_available" targetRef="el_t_prepare_production"/>
+    <semantic:sequenceFlow id="sf_gateway_to_place_order_not_available" name="Materials Not Available" sourceRef="el_g_materials_available" targetRef="el_t_place_material_order"/>
+    <semantic:sequenceFlow id="sf_place_order_to_prepare_production" sourceRef="el_t_place_material_order" targetRef="el_t_prepare_production"/>
+    <semantic:sequenceFlow id="sf_prepare_production_to_inform_operators" sourceRef="el_t_prepare_production" targetRef="el_t_inform_operators"/>
+    <semantic:sequenceFlow id="sf_inform_operators_to_sub_process" sourceRef="el_t_inform_operators" targetRef="el_sp_chocolate_production"/>
+    <semantic:sequenceFlow id="sf_sub_process_to_packaging" sourceRef="el_sp_chocolate_production" targetRef="el_t_packaging"/>
+    <semantic:sequenceFlow id="sf_packaging_to_end_event" sourceRef="el_t_packaging" targetRef="el_ee_production_finished"/>
+
+  </semantic:process>
+
+  <bpmndi:BPMNDiagram id="BPMNDiagram_chocolate_production" name="Chocolate Production Diagram" resolution="96.0">
+    <bpmndi:BPMNPlane bpmnElement="collab_chocolate_production">
+      <bpmndi:BPMNShape id="participant_chocolate_production_pool_shape" bpmnElement="participant_chocolate_production_pool" isHorizontal="true">
+        <dc:Bounds x="20" y="20" width="2000" height="1200"/>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="lane_production_department_shape" bpmnElement="lane_production_department" isHorizontal="true">
+        <dc:Bounds x="50" y="20" width="1970" height="200"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="lane_material_management_department_shape" bpmnElement="lane_material_management_department" isHorizontal="true">
+        <dc:Bounds x="50" y="220" width="1970" height="250"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="lane_purchaser_shape" bpmnElement="lane_purchaser" isHorizontal="true">
+        <dc:Bounds x="50" y="470" width="1970" height="150"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="lane_operators_shape" bpmnElement="lane_operators" isHorizontal="true">
+        <dc:Bounds x="50" y="620" width="1970" height="600"/>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="el_se_order_received_shape" bpmnElement="el_se_order_received">
+        <dc:Bounds x="100" y="100" width="36" height="36"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="70" y="140" width="96" height="40"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="el_t_book_order_shape" bpmnElement="el_t_book_order">
+        <dc:Bounds x="200" y="90" width="100" height="56"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="el_t_manage_recipe_shape" bpmnElement="el_t_manage_recipe">
+        <dc:Bounds x="350" y="90" width="100" height="56"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="el_t_send_feedback_mm_shape" bpmnElement="el_t_send_feedback_mm">
+        <dc:Bounds x="500" y="90" width="100" height="56"/>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="el_t_check_materials_shape" bpmnElement="el_t_check_materials">
+        <dc:Bounds x="500" y="280" width="100" height="56"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="el_t_inform_purchaser_shape" bpmnElement="el_t_inform_purchaser">
+        <dc:Bounds x="650" y="280" width="100" height="56"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="el_g_materials_available_shape" bpmnElement="el_g_materials_available" isMarkerVisible="true">
+        <dc:Bounds x="800" y="285" width="50" height="50"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="780" y="340" width="90" height="27"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="el_t_prepare_production_shape" bpmnElement="el_t_prepare_production">
+        <dc:Bounds x="900" y="280" width="100" height="56"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="el_t_inform_operators_shape" bpmnElement="el_t_inform_operators">
+        <dc:Bounds x="1050" y="280" width="100" height="56"/>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="el_t_place_material_order_shape" bpmnElement="el_t_place_material_order">
+        <dc:Bounds x="900" y="500" width="100" height="56"/>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="el_sp_chocolate_production_shape" bpmnElement="el_sp_chocolate_production" isExpanded="true">
+        <dc:Bounds x="100" y="650" width="1600" height="450"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="el_sp_se_start_shape" bpmnElement="el_sp_se_start">
+        <dc:Bounds x="150" y="850" width="36" height="36"/>
+         <bpmndi:BPMNLabel>
+          <dc:Bounds x="120" y="890" width="96" height="40"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="el_sp_t_roast_grind_shape" bpmnElement="el_sp_t_roast_grind">
+        <dc:Bounds x="250" y="840" width="100" height="56"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="el_sp_t_create_powder_shape" bpmnElement="el_sp_t_create_powder">
+        <dc:Bounds x="400" y="840" width="100" height="56"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="el_sp_t_create_press_mass_shape" bpmnElement="el_sp_t_create_press_mass">
+        <dc:Bounds x="550" y="840" width="100" height="56"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="el_sp_pg_split_cake_butter_shape" bpmnElement="el_sp_pg_split_cake_butter" isMarkerVisible="true">
+        <dc:Bounds x="700" y="845" width="50" height="50"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="el_sp_t_produce_cake_shape" bpmnElement="el_sp_t_produce_cake">
+        <dc:Bounds x="800" y="750" width="100" height="56"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="el_sp_t_produce_butter_shape" bpmnElement="el_sp_t_produce_butter">
+        <dc:Bounds x="800" y="940" width="100" height="56"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="el_sp_pg_split_aroma_milk_shape" bpmnElement="el_sp_pg_split_aroma_milk" isMarkerVisible="true">
+        <dc:Bounds x="950" y="945" width="50" height="50"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="el_sp_t_stir_aroma_shape" bpmnElement="el_sp_t_stir_aroma">
+        <dc:Bounds x="1050" y="880" width="100" height="56"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="el_sp_t_mix_milk_shape" bpmnElement="el_sp_t_mix_milk">
+        <dc:Bounds x="1050" y="1010" width="100" height="56"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="el_sp_pg_join_aroma_milk_shape" bpmnElement="el_sp_pg_join_aroma_milk" isMarkerVisible="true">
+        <dc:Bounds x="1200" y="945" width="50" height="50"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="el_sp_t_create_choc_mass_shape" bpmnElement="el_sp_t_create_choc_mass">
+        <dc:Bounds x="1300" y="940" width="100" height="56"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="el_sp_t_shape_choc_mass_shape" bpmnElement="el_sp_t_shape_choc_mass">
+        <dc:Bounds x="1450" y="940" width="100" height="56"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="el_sp_t_chocolate_created_shape" bpmnElement="el_sp_t_chocolate_created">
+        <dc:Bounds x="1300" y="750" width="100" height="56"/> <!-- Adjusted Y to align with sync gateway -->
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="el_sp_pg_sync_cake_chocolate_shape" bpmnElement="el_sp_pg_sync_cake_chocolate" isMarkerVisible="true">
+        <dc:Bounds x="1150" y="755" width="50" height="50"/> <!-- Adjusted X and Y -->
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="el_sp_t_break_cake_shape" bpmnElement="el_sp_t_break_cake">
+        <dc:Bounds x="1000" y="750" width="100" height="56"/> <!-- Adjusted X -->
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="el_sp_ee_finished_shape" bpmnElement="el_sp_ee_finished">
+        <dc:Bounds x="1600" y="850" width="36" height="36"/>
+         <bpmndi:BPMNLabel>
+          <dc:Bounds x="1570" y="890" width="96" height="40"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="el_t_packaging_shape" bpmnElement="el_t_packaging">
+        <dc:Bounds x="1750" y="840" width="100" height="56"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="el_ee_production_finished_shape" bpmnElement="el_ee_production_finished">
+        <dc:Bounds x="1900" y="850" width="36" height="36"/>
+         <bpmndi:BPMNLabel>
+          <dc:Bounds x="1870" y="890" width="96" height="40"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNEdge id="sf_order_received_to_book_order_edge" bpmnElement="sf_order_received_to_book_order">
+        <di:waypoint x="136" y="118"/>
+        <di:waypoint x="200" y="118"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="sf_book_order_to_manage_recipe_edge" bpmnElement="sf_book_order_to_manage_recipe">
+        <di:waypoint x="300" y="118"/>
+        <di:waypoint x="350" y="118"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="sf_manage_recipe_to_send_feedback_edge" bpmnElement="sf_manage_recipe_to_send_feedback">
+        <di:waypoint x="450" y="118"/>
+        <di:waypoint x="500" y="118"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="sf_send_feedback_to_check_materials_edge" bpmnElement="sf_send_feedback_to_check_materials">
+        <di:waypoint x="550" y="146"/>
+        <di:waypoint x="550" y="280"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="sf_check_materials_to_inform_purchaser_edge" bpmnElement="sf_check_materials_to_inform_purchaser">
+        <di:waypoint x="600" y="308"/>
+        <di:waypoint x="650" y="308"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="sf_inform_purchaser_to_gateway_edge" bpmnElement="sf_inform_purchaser_to_gateway">
+        <di:waypoint x="750" y="308"/>
+        <di:waypoint x="800" y="310"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="sf_gateway_to_prepare_production_available_edge" bpmnElement="sf_gateway_to_prepare_production_available">
+        <di:waypoint x="850" y="310"/>
+        <di:waypoint x="900" y="308"/>
+         <bpmndi:BPMNLabel>
+          <dc:Bounds x="855" y="285" width="80" height="20"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="sf_gateway_to_place_order_not_available_edge" bpmnElement="sf_gateway_to_place_order_not_available">
+        <di:waypoint x="825" y="335"/>
+        <di:waypoint x="825" y="528"/>
+        <di:waypoint x="900" y="528"/>
+         <bpmndi:BPMNLabel>
+          <dc:Bounds x="830" y="420" width="80" height="40"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="sf_place_order_to_prepare_production_edge" bpmnElement="sf_place_order_to_prepare_production">
+        <di:waypoint x="950" y="500"/>
+        <di:waypoint x="950" y="336"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="sf_prepare_production_to_inform_operators_edge" bpmnElement="sf_prepare_production_to_inform_operators">
+        <di:waypoint x="1000" y="308"/>
+        <di:waypoint x="1050" y="308"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="sf_inform_operators_to_sub_process_edge" bpmnElement="sf_inform_operators_to_sub_process">
+        <di:waypoint x="1100" y="336"/>
+        <di:waypoint x="1100" y="650"/>
+        <di:waypoint x="100" y="650"/>
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="sf_sp_start_to_roast_grind_edge" bpmnElement="sf_sp_start_to_roast_grind">
+        <di:waypoint x="186" y="868"/>
+        <di:waypoint x="250" y="868"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="sf_sp_roast_grind_to_create_powder_edge" bpmnElement="sf_sp_roast_grind_to_create_powder">
+        <di:waypoint x="350" y="868"/>
+        <di:waypoint x="400" y="868"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="sf_sp_create_powder_to_create_press_mass_edge" bpmnElement="sf_sp_create_powder_to_create_press_mass">
+        <di:waypoint x="500" y="868"/>
+        <di:waypoint x="550" y="868"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="sf_sp_create_press_mass_to_pg_split_cake_butter_edge" bpmnElement="sf_sp_create_press_mass_to_pg_split_cake_butter">
+        <di:waypoint x="650" y="868"/>
+        <di:waypoint x="700" y="870"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="sf_sp_pg_split_to_produce_cake_edge" bpmnElement="sf_sp_pg_split_to_produce_cake">
+        <di:waypoint x="725" y="845"/>
+        <di:waypoint x="725" y="778"/>
+        <di:waypoint x="800" y="778"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="sf_sp_pg_split_to_produce_butter_edge" bpmnElement="sf_sp_pg_split_to_produce_butter">
+        <di:waypoint x="725" y="895"/>
+        <di:waypoint x="725" y="968"/>
+        <di:waypoint x="800" y="968"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="sf_sp_produce_butter_to_pg_split_aroma_milk_edge" bpmnElement="sf_sp_produce_butter_to_pg_split_aroma_milk">
+        <di:waypoint x="900" y="968"/>
+        <di:waypoint x="950" y="970"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="sf_sp_pg_split_aroma_milk_to_stir_aroma_edge" bpmnElement="sf_sp_pg_split_aroma_milk_to_stir_aroma">
+        <di:waypoint x="975" y="945"/>
+        <di:waypoint x="975" y="908"/>
+        <di:waypoint x="1050" y="908"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="sf_sp_pg_split_aroma_milk_to_mix_milk_edge" bpmnElement="sf_sp_pg_split_aroma_milk_to_mix_milk">
+        <di:waypoint x="975" y="995"/>
+        <di:waypoint x="975" y="1038"/>
+        <di:waypoint x="1050" y="1038"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="sf_sp_stir_aroma_to_pg_join_aroma_milk_edge" bpmnElement="sf_sp_stir_aroma_to_pg_join_aroma_milk">
+        <di:waypoint x="1150" y="908"/>
+        <di:waypoint x="1225" y="908"/>
+        <di:waypoint x="1225" y="945"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="sf_sp_mix_milk_to_pg_join_aroma_milk_edge" bpmnElement="sf_sp_mix_milk_to_pg_join_aroma_milk">
+        <di:waypoint x="1150" y="1038"/>
+        <di:waypoint x="1225" y="1038"/>
+        <di:waypoint x="1225" y="995"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="sf_sp_pg_join_aroma_milk_to_create_choc_mass_edge" bpmnElement="sf_sp_pg_join_aroma_milk_to_create_choc_mass">
+        <di:waypoint x="1250" y="970"/>
+        <di:waypoint x="1300" y="968"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="sf_sp_create_choc_mass_to_shape_choc_mass_edge" bpmnElement="sf_sp_create_choc_mass_to_shape_choc_mass">
+        <di:waypoint x="1400" y="968"/>
+        <di:waypoint x="1450" y="968"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="sf_sp_shape_choc_mass_to_chocolate_created_edge" bpmnElement="sf_sp_shape_choc_mass_to_chocolate_created">
+        <di:waypoint x="1500" y="940"/>
+        <di:waypoint x="1500" y="778"/>
+        <di:waypoint x="1400" y="778"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="sf_sp_produce_cake_to_pg_sync_edge" bpmnElement="sf_sp_produce_cake_to_pg_sync">
+        <di:waypoint x="900" y="778"/>
+        <di:waypoint x="1150" y="780"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="sf_sp_chocolate_created_to_pg_sync_edge" bpmnElement="sf_sp_chocolate_created_to_pg_sync">
+        <di:waypoint x="1300" y="778"/>
+        <di:waypoint x="1200" y="780"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="sf_sp_pg_sync_to_break_cake_edge" bpmnElement="sf_sp_pg_sync_to_break_cake">
+        <di:waypoint x="1150" y="780"/>
+        <di:waypoint x="1100" y="778"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="sf_sp_break_cake_to_sp_end_edge" bpmnElement="sf_sp_break_cake_to_sp_end">
+        <di:waypoint x="1050" y="750"/>
+        <di:waypoint x="1050" y="700"/>
+        <di:waypoint x="1618" y="700"/>
+        <di:waypoint x="1618" y="850"/>
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="sf_sub_process_to_packaging_edge" bpmnElement="sf_sub_process_to_packaging">
+        <di:waypoint x="1700" y="868"/>
+        <di:waypoint x="1750" y="868"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="sf_packaging_to_end_event_edge" bpmnElement="sf_packaging_to_end_event">
+        <di:waypoint x="1850" y="868"/>
+        <di:waypoint x="1900" y="868"/>
+      </bpmndi:BPMNEdge>
+
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</semantic:definitions>

@@ -1,0 +1,295 @@
+<?xml version="1.0" standalone="yes"?>
+<semantic:definitions id="SalesAndOperationsPlanning"
+    targetNamespace="http://example.com/bpmn/sop"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:semantic="http://www.omg.org/spec/BPMN/20100524/MODEL"
+    xmlns:di="http://www.omg.org/spec/DD/20100524/DI"
+    xmlns:dc="http://www.omg.org/spec/DD/20100524/DC"
+    xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI">
+
+  <semantic:collaboration id="collab_sopProcess">
+    <semantic:participant id="participant_productionDept" name="Production Department" processRef="sopProcess"/>
+  </semantic:collaboration>
+
+  <semantic:process id="sopProcess" isExecutable="true">
+    <semantic:laneSet id="laneSet_sop">
+      <semantic:lane id="lane_productionAssistant" name="Production Assistant">
+        <semantic:flowNodeRef>start_event_main</semantic:flowNodeRef>
+        <semantic:flowNodeRef>subprocess_create_indep_demand</semantic:flowNodeRef>
+        <semantic:flowNodeRef>subprocess_derive_dep_demand</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_combine_demand</semantic:flowNodeRef>
+        <semantic:flowNodeRef>end_event_main</semantic:flowNodeRef>
+        <semantic:flowNodeRef>sp_cid_start_1</semantic:flowNodeRef>
+        <semantic:flowNodeRef>sp_cid_task_1</semantic:flowNodeRef>
+        <semantic:flowNodeRef>sp_cid_task_2</semantic:flowNodeRef>
+        <semantic:flowNodeRef>sp_cid_task_3</semantic:flowNodeRef>
+        <semantic:flowNodeRef>sp_cid_task_4</semantic:flowNodeRef>
+        <semantic:flowNodeRef>sp_cid_end_1</semantic:flowNodeRef>
+        <semantic:flowNodeRef>sp_ddd_start_1</semantic:flowNodeRef>
+        <semantic:flowNodeRef>sp_ddd_task_1</semantic:flowNodeRef>
+        <semantic:flowNodeRef>sp_ddd_task_2</semantic:flowNodeRef>
+        <semantic:flowNodeRef>sp_ddd_task_3</semantic:flowNodeRef>
+        <semantic:flowNodeRef>sp_ddd_pg_split_1</semantic:flowNodeRef>
+        <semantic:flowNodeRef>sp_ddd_task_4</semantic:flowNodeRef>
+        <semantic:flowNodeRef>sp_ddd_task_5</semantic:flowNodeRef>
+        <semantic:flowNodeRef>sp_ddd_pg_join_1</semantic:flowNodeRef>
+        <semantic:flowNodeRef>sp_ddd_end_1</semantic:flowNodeRef>
+      </semantic:lane>
+    </semantic:laneSet>
+
+    <semantic:startEvent id="start_event_main" name="SOP Maintenance Initiated">
+      <semantic:outgoing>flow_main_1</semantic:outgoing>
+    </semantic:startEvent>
+
+    <semantic:subProcess id="subprocess_create_indep_demand" name="Create Independent Demand">
+      <semantic:incoming>flow_main_1</semantic:incoming>
+      <semantic:outgoing>flow_main_2</semantic:outgoing>
+      <semantic:startEvent id="sp_cid_start_1" name="Start Independent Demand Creation">
+        <semantic:outgoing>flow_cid_1</semantic:outgoing>
+      </semantic:startEvent>
+      <semantic:task id="sp_cid_task_1" name="Define Demand Transfer Parameters (in SAP)">
+        <semantic:incoming>flow_cid_1</semantic:incoming>
+        <semantic:outgoing>flow_cid_2</semantic:outgoing>
+      </semantic:task>
+      <semantic:task id="sp_cid_task_2" name="Transfer Planning Data to Demand Management">
+        <semantic:incoming>flow_cid_2</semantic:incoming>
+        <semantic:outgoing>flow_cid_3</semantic:outgoing>
+      </semantic:task>
+      <semantic:task id="sp_cid_task_3" name="Confirm Entries for Demand Transfer">
+        <semantic:incoming>flow_cid_3</semantic:incoming>
+        <semantic:outgoing>flow_cid_4</semantic:outgoing>
+      </semantic:task>
+      <semantic:task id="sp_cid_task_4" name="Select 'Transfer Now' Field">
+        <semantic:incoming>flow_cid_4</semantic:incoming>
+        <semantic:outgoing>flow_cid_5</semantic:outgoing>
+      </semantic:task>
+      <semantic:endEvent id="sp_cid_end_1" name="Independent Demand Created">
+        <semantic:incoming>flow_cid_5</semantic:incoming>
+      </semantic:endEvent>
+      <semantic:sequenceFlow id="flow_cid_1" sourceRef="sp_cid_start_1" targetRef="sp_cid_task_1"/>
+      <semantic:sequenceFlow id="flow_cid_2" sourceRef="sp_cid_task_1" targetRef="sp_cid_task_2"/>
+      <semantic:sequenceFlow id="flow_cid_3" sourceRef="sp_cid_task_2" targetRef="sp_cid_task_3"/>
+      <semantic:sequenceFlow id="flow_cid_4" sourceRef="sp_cid_task_3" targetRef="sp_cid_task_4"/>
+      <semantic:sequenceFlow id="flow_cid_5" sourceRef="sp_cid_task_4" targetRef="sp_cid_end_1"/>
+    </semantic:subProcess>
+
+    <semantic:subProcess id="subprocess_derive_dep_demand" name="Derive Dependent Demand via MRP">
+      <semantic:incoming>flow_main_2</semantic:incoming>
+      <semantic:outgoing>flow_main_3</semantic:outgoing>
+      <semantic:startEvent id="sp_ddd_start_1" name="Start Dependent Demand Derivation">
+        <semantic:outgoing>flow_ddd_1</semantic:outgoing>
+      </semantic:startEvent>
+      <semantic:task id="sp_ddd_task_1" name="Define MRP Parameters (using Planning data in SAP)">
+        <semantic:incoming>flow_ddd_1</semantic:incoming>
+        <semantic:outgoing>flow_ddd_2</semantic:outgoing>
+      </semantic:task>
+      <semantic:task id="sp_ddd_task_2" name="Confirm MRP Parameter Entries">
+        <semantic:incoming>flow_ddd_2</semantic:incoming>
+        <semantic:outgoing>flow_ddd_3</semantic:outgoing>
+      </semantic:task>
+      <semantic:task id="sp_ddd_task_3" name="Execute MRP Entries Again (Explodes BOM &amp; Determines Dependent Requirements)">
+        <semantic:incoming>flow_ddd_3</semantic:incoming>
+        <semantic:outgoing>flow_ddd_4</semantic:outgoing>
+      </semantic:task>
+      <semantic:parallelGateway id="sp_ddd_pg_split_1" name="Split for Material Sourcing Options">
+        <semantic:incoming>flow_ddd_4</semantic:incoming>
+        <semantic:outgoing>flow_ddd_5</semantic:outgoing>
+        <semantic:outgoing>flow_ddd_6</semantic:outgoing>
+      </semantic:parallelGateway>
+      <semantic:task id="sp_ddd_task_4" name="Create Purchase Requisitions (PRs) for External Purchase">
+        <semantic:incoming>flow_ddd_5</semantic:incoming>
+        <semantic:outgoing>flow_ddd_7</semantic:outgoing>
+      </semantic:task>
+      <semantic:task id="sp_ddd_task_5" name="Create Planned Production Orders for In-house Production">
+        <semantic:incoming>flow_ddd_6</semantic:incoming>
+        <semantic:outgoing>flow_ddd_8</semantic:outgoing>
+      </semantic:task>
+      <semantic:parallelGateway id="sp_ddd_pg_join_1" name="Join Material Sourcing Paths">
+        <semantic:incoming>flow_ddd_7</semantic:incoming>
+        <semantic:incoming>flow_ddd_8</semantic:incoming>
+        <semantic:outgoing>flow_ddd_9</semantic:outgoing>
+      </semantic:parallelGateway>
+      <semantic:endEvent id="sp_ddd_end_1" name="Dependent Demand Derived">
+        <semantic:incoming>flow_ddd_9</semantic:incoming>
+      </semantic:endEvent>
+      <semantic:sequenceFlow id="flow_ddd_1" sourceRef="sp_ddd_start_1" targetRef="sp_ddd_task_1"/>
+      <semantic:sequenceFlow id="flow_ddd_2" sourceRef="sp_ddd_task_1" targetRef="sp_ddd_task_2"/>
+      <semantic:sequenceFlow id="flow_ddd_3" sourceRef="sp_ddd_task_2" targetRef="sp_ddd_task_3" name="After system warning 'Please check input parameters'"/>
+      <semantic:sequenceFlow id="flow_ddd_4" sourceRef="sp_ddd_task_3" targetRef="sp_ddd_pg_split_1"/>
+      <semantic:sequenceFlow id="flow_ddd_5" sourceRef="sp_ddd_pg_split_1" targetRef="sp_ddd_task_4"/>
+      <semantic:sequenceFlow id="flow_ddd_6" sourceRef="sp_ddd_pg_split_1" targetRef="sp_ddd_task_5"/>
+      <semantic:sequenceFlow id="flow_ddd_7" sourceRef="sp_ddd_task_4" targetRef="sp_ddd_pg_join_1"/>
+      <semantic:sequenceFlow id="flow_ddd_8" sourceRef="sp_ddd_task_5" targetRef="sp_ddd_pg_join_1"/>
+      <semantic:sequenceFlow id="flow_ddd_9" sourceRef="sp_ddd_pg_join_1" targetRef="sp_ddd_end_1"/>
+    </semantic:subProcess>
+
+    <semantic:task id="task_combine_demand" name="Combine Independent and Dependent Demand">
+      <semantic:incoming>flow_main_3</semantic:incoming>
+      <semantic:outgoing>flow_main_4</semantic:outgoing>
+    </semantic:task>
+
+    <semantic:endEvent id="end_event_main" name="SOP Maintenance Successfully Completed">
+      <semantic:incoming>flow_main_4</semantic:incoming>
+    </semantic:endEvent>
+
+    <semantic:sequenceFlow id="flow_main_1" sourceRef="start_event_main" targetRef="subprocess_create_indep_demand"/>
+    <semantic:sequenceFlow id="flow_main_2" sourceRef="subprocess_create_indep_demand" targetRef="subprocess_derive_dep_demand"/>
+    <semantic:sequenceFlow id="flow_main_3" sourceRef="subprocess_derive_dep_demand" targetRef="task_combine_demand"/>
+    <semantic:sequenceFlow id="flow_main_4" sourceRef="task_combine_demand" targetRef="end_event_main"/>
+  </semantic:process>
+
+  <bpmndi:BPMNDiagram id="BPMNDiagram_sopProcess" name="SOP Diagram" resolution="96.0">
+    <bpmndi:BPMNPlane bpmnElement="collab_sopProcess">
+      <bpmndi:BPMNShape id="participant_productionDept_shape" bpmnElement="participant_productionDept" isHorizontal="true">
+        <dc:Bounds x="10" y="10" width="1600" height="1000"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="lane_productionAssistant_shape" bpmnElement="lane_productionAssistant" isHorizontal="true">
+        <dc:Bounds x="40" y="10" width="1570" height="1000"/>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="start_event_main_shape" bpmnElement="start_event_main">
+        <dc:Bounds x="70" y="482" width="36" height="36"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="subprocess_create_indep_demand_shape" bpmnElement="subprocess_create_indep_demand" isExpanded="true">
+        <dc:Bounds x="150" y="60" width="600" height="300"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="sp_cid_start_1_shape" bpmnElement="sp_cid_start_1">
+        <dc:Bounds x="180" y="192" width="36" height="36"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="sp_cid_task_1_shape" bpmnElement="sp_cid_task_1">
+        <dc:Bounds x="260" y="170" width="100" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="sp_cid_task_2_shape" bpmnElement="sp_cid_task_2">
+        <dc:Bounds x="400" y="170" width="100" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="sp_cid_task_3_shape" bpmnElement="sp_cid_task_3">
+        <dc:Bounds x="540" y="170" width="100" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="sp_cid_task_4_shape" bpmnElement="sp_cid_task_4">
+        <dc:Bounds x="680" y="170" width="100" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="sp_cid_end_1_shape" bpmnElement="sp_cid_end_1">
+        <dc:Bounds x="820" y="192" width="36" height="36"/>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="subprocess_derive_dep_demand_shape" bpmnElement="subprocess_derive_dep_demand" isExpanded="true">
+        <dc:Bounds x="150" y="400" width="1000" height="450"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="sp_ddd_start_1_shape" bpmnElement="sp_ddd_start_1">
+        <dc:Bounds x="180" y="602" width="36" height="36"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="sp_ddd_task_1_shape" bpmnElement="sp_ddd_task_1">
+        <dc:Bounds x="260" y="580" width="100" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="sp_ddd_task_2_shape" bpmnElement="sp_ddd_task_2">
+        <dc:Bounds x="400" y="580" width="100" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="sp_ddd_task_3_shape" bpmnElement="sp_ddd_task_3">
+        <dc:Bounds x="540" y="580" width="100" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="sp_ddd_pg_split_1_shape" bpmnElement="sp_ddd_pg_split_1" isMarkerVisible="true">
+        <dc:Bounds x="680" y="595" width="50" height="50"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="sp_ddd_task_4_shape" bpmnElement="sp_ddd_task_4">
+        <dc:Bounds x="770" y="500" width="100" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="sp_ddd_task_5_shape" bpmnElement="sp_ddd_task_5">
+        <dc:Bounds x="770" y="680" width="100" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="sp_ddd_pg_join_1_shape" bpmnElement="sp_ddd_pg_join_1" isMarkerVisible="true">
+        <dc:Bounds x="910" y="595" width="50" height="50"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="sp_ddd_end_1_shape" bpmnElement="sp_ddd_end_1">
+        <dc:Bounds x="1000" y="602" width="36" height="36"/>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="task_combine_demand_shape" bpmnElement="task_combine_demand">
+        <dc:Bounds x="1200" y="460" width="100" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="end_event_main_shape" bpmnElement="end_event_main">
+        <dc:Bounds x="1350" y="482" width="36" height="36"/>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNEdge id="flow_main_1_edge" bpmnElement="flow_main_1">
+        <di:waypoint x="106" y="500"/>
+        <di:waypoint x="150" y="500"/>
+        <di:waypoint x="150" y="360"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_main_2_edge" bpmnElement="flow_main_2">
+        <di:waypoint x="450" y="360"/>
+        <di:waypoint x="450" y="400"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_main_3_edge" bpmnElement="flow_main_3">
+        <di:waypoint x="1150" y="625"/>
+        <di:waypoint x="1250" y="625"/>
+        <di:waypoint x="1250" y="540"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_main_4_edge" bpmnElement="flow_main_4">
+        <di:waypoint x="1300" y="500"/>
+        <di:waypoint x="1350" y="500"/>
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="flow_cid_1_edge" bpmnElement="flow_cid_1">
+        <di:waypoint x="216" y="210"/>
+        <di:waypoint x="260" y="210"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_cid_2_edge" bpmnElement="flow_cid_2">
+        <di:waypoint x="360" y="210"/>
+        <di:waypoint x="400" y="210"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_cid_3_edge" bpmnElement="flow_cid_3">
+        <di:waypoint x="500" y="210"/>
+        <di:waypoint x="540" y="210"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_cid_4_edge" bpmnElement="flow_cid_4">
+        <di:waypoint x="640" y="210"/>
+        <di:waypoint x="680" y="210"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_cid_5_edge" bpmnElement="flow_cid_5">
+        <di:waypoint x="780" y="210"/>
+        <di:waypoint x="820" y="210"/>
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="flow_ddd_1_edge" bpmnElement="flow_ddd_1">
+        <di:waypoint x="216" y="620"/>
+        <di:waypoint x="260" y="620"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_ddd_2_edge" bpmnElement="flow_ddd_2">
+        <di:waypoint x="360" y="620"/>
+        <di:waypoint x="400" y="620"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_ddd_3_edge" bpmnElement="flow_ddd_3">
+        <di:waypoint x="500" y="620"/>
+        <di:waypoint x="540" y="620"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_ddd_4_edge" bpmnElement="flow_ddd_4">
+        <di:waypoint x="640" y="620"/>
+        <di:waypoint x="680" y="620"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_ddd_5_edge" bpmnElement="flow_ddd_5">
+        <di:waypoint x="705" y="595"/>
+        <di:waypoint x="705" y="540"/>
+        <di:waypoint x="770" y="540"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_ddd_6_edge" bpmnElement="flow_ddd_6">
+        <di:waypoint x="705" y="645"/>
+        <di:waypoint x="705" y="720"/>
+        <di:waypoint x="770" y="720"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_ddd_7_edge" bpmnElement="flow_ddd_7">
+        <di:waypoint x="870" y="540"/>
+        <di:waypoint x="935" y="540"/>
+        <di:waypoint x="935" y="595"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_ddd_8_edge" bpmnElement="flow_ddd_8">
+        <di:waypoint x="870" y="720"/>
+        <di:waypoint x="935" y="720"/>
+        <di:waypoint x="935" y="645"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_ddd_9_edge" bpmnElement="flow_ddd_9">
+        <di:waypoint x="960" y="620"/>
+        <di:waypoint x="1000" y="620"/>
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</semantic:definitions>

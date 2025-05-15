@@ -1,0 +1,257 @@
+
+<?xml version="1.0" encoding="UTF-8"?>
+<semantic:definitions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xmlns:semantic="http://www.omg.org/spec/BPMN/20100524/MODEL"
+  xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI"
+  xmlns:dc="http://www.omg.org/spec/DD/20100524/DC"
+  xmlns:di="http://www.omg.org/spec/DD/20100524/DI"
+  id="definitions_hiring_process"
+  targetNamespace="http://example.com/bpmn/hiringProcess">
+
+  <semantic:collaboration id="collab_hiringProcess">
+    <semantic:participant id="participant_hiringProcessPool" name="Hiring Process Pool" processRef="hiringProcess"/>
+  </semantic:collaboration>
+
+  <semantic:process id="hiringProcess" isExecutable="true">
+    <semantic:laneSet id="laneSet_hiringProcess">
+      <semantic:lane id="lane_hiring_manager" name="Hiring Manager">
+        <semantic:flowNodeRef>el_start_1</semantic:flowNodeRef>
+        <semantic:flowNodeRef>el_task_1</semantic:flowNodeRef>
+      </semantic:lane>
+      <semantic:lane id="lane_hr_manager" name="HR Manager">
+        <semantic:flowNodeRef>el_task_4</semantic:flowNodeRef>
+        <semantic:flowNodeRef>el_gateway_1</semantic:flowNodeRef>
+        <semantic:flowNodeRef>el_task_instruct_hr</semantic:flowNodeRef>
+      </semantic:lane>
+      <semantic:lane id="lane_hr" name="Human Resources (HR)">
+        <semantic:flowNodeRef>el_task_2</semantic:flowNodeRef>
+        <semantic:flowNodeRef>el_task_3</semantic:flowNodeRef>
+        <semantic:flowNodeRef>el_pg_split_1</semantic:flowNodeRef>
+        <semantic:flowNodeRef>el_task_5</semantic:flowNodeRef>
+        <semantic:flowNodeRef>el_task_6</semantic:flowNodeRef>
+        <semantic:flowNodeRef>el_task_8</semantic:flowNodeRef>
+        <semantic:flowNodeRef>el_pg_join_1</semantic:flowNodeRef>
+        <semantic:flowNodeRef>el_end_1</semantic:flowNodeRef>
+      </semantic:lane>
+      <semantic:lane id="lane_candidate" name="Candidate">
+        <semantic:flowNodeRef>el_task_7</semantic:flowNodeRef>
+      </semantic:lane>
+    </semantic:laneSet>
+
+    <semantic:startEvent id="el_start_1" name="Hiring Need Identified">
+      <semantic:outgoing>flow_1</semantic:outgoing>
+    </semantic:startEvent>
+    <semantic:task id="el_task_1" name="Create Job Advertisement/Requisition">
+      <semantic:incoming>flow_1</semantic:incoming>
+      <semantic:outgoing>flow_2</semantic:outgoing>
+    </semantic:task>
+    <semantic:task id="el_task_2" name="Find Best Candidates (CVs &amp; Letters)">
+      <semantic:incoming>flow_2</semantic:incoming>
+      <semantic:incoming>flow_7</semantic:incoming>
+      <semantic:outgoing>flow_3</semantic:outgoing>
+    </semantic:task>
+    <semantic:task id="el_task_3" name="Invite Selected Candidates for Interview">
+      <semantic:incoming>flow_3</semantic:incoming>
+      <semantic:outgoing>flow_4</semantic:outgoing>
+    </semantic:task>
+    <semantic:task id="el_task_4" name="Conduct Interviews">
+      <semantic:incoming>flow_4</semantic:incoming>
+      <semantic:outgoing>flow_5</semantic:outgoing>
+    </semantic:task>
+    <semantic:exclusiveGateway id="el_gateway_1" name="Suitable Candidate Found?">
+      <semantic:incoming>flow_5</semantic:incoming>
+      <semantic:outgoing>flow_6</semantic:outgoing> <!-- Yes -->
+      <semantic:outgoing>flow_7</semantic:outgoing> <!-- No -->
+    </semantic:exclusiveGateway>
+    <semantic:task id="el_task_instruct_hr" name="Instruct HR for Payroll and Offer">
+      <semantic:incoming>flow_6</semantic:incoming>
+      <semantic:outgoing>flow_8</semantic:outgoing>
+    </semantic:task>
+    <semantic:parallelGateway id="el_pg_split_1" name="Initiate Payroll and Offer Process">
+      <semantic:incoming>flow_8</semantic:incoming>
+      <semantic:outgoing>flow_9</semantic:outgoing>
+      <semantic:outgoing>flow_10</semantic:outgoing>
+    </semantic:parallelGateway>
+    <semantic:task id="el_task_5" name="Set up Payroll">
+      <semantic:incoming>flow_9</semantic:incoming>
+      <semantic:outgoing>flow_13</semantic:outgoing>
+    </semantic:task>
+    <semantic:task id="el_task_6" name="Send Offer/Contract to Candidate">
+      <semantic:incoming>flow_10</semantic:incoming>
+      <semantic:outgoing>flow_11</semantic:outgoing>
+    </semantic:task>
+    <semantic:task id="el_task_7" name="Sign Contract">
+      <semantic:incoming>flow_11</semantic:incoming>
+      <semantic:outgoing>flow_12</semantic:outgoing>
+    </semantic:task>
+    <semantic:task id="el_task_8" name="Receive Signed Contract">
+      <semantic:incoming>flow_12</semantic:incoming>
+      <semantic:outgoing>flow_14</semantic:outgoing>
+    </semantic:task>
+    <semantic:parallelGateway id="el_pg_join_1" name="Finalize Hiring Prerequisites">
+      <semantic:incoming>flow_13</semantic:incoming>
+      <semantic:incoming>flow_14</semantic:incoming>
+      <semantic:outgoing>flow_15</semantic:outgoing>
+    </semantic:parallelGateway>
+    <semantic:endEvent id="el_end_1" name="Person Hired">
+      <semantic:incoming>flow_15</semantic:incoming>
+    </semantic:endEvent>
+
+    <semantic:sequenceFlow id="flow_1" sourceRef="el_start_1" targetRef="el_task_1"/>
+    <semantic:sequenceFlow id="flow_2" sourceRef="el_task_1" targetRef="el_task_2"/>
+    <semantic:sequenceFlow id="flow_3" sourceRef="el_task_2" targetRef="el_task_3"/>
+    <semantic:sequenceFlow id="flow_4" sourceRef="el_task_3" targetRef="el_task_4"/>
+    <semantic:sequenceFlow id="flow_5" sourceRef="el_task_4" targetRef="el_gateway_1"/>
+    <semantic:sequenceFlow id="flow_6" name="Yes" sourceRef="el_gateway_1" targetRef="el_task_instruct_hr"/>
+    <semantic:sequenceFlow id="flow_7" name="No" sourceRef="el_gateway_1" targetRef="el_task_2"/>
+    <semantic:sequenceFlow id="flow_8" sourceRef="el_task_instruct_hr" targetRef="el_pg_split_1"/>
+    <semantic:sequenceFlow id="flow_9" sourceRef="el_pg_split_1" targetRef="el_task_5"/>
+    <semantic:sequenceFlow id="flow_10" sourceRef="el_pg_split_1" targetRef="el_task_6"/>
+    <semantic:sequenceFlow id="flow_11" sourceRef="el_task_6" targetRef="el_task_7"/>
+    <semantic:sequenceFlow id="flow_12" sourceRef="el_task_7" targetRef="el_task_8"/>
+    <semantic:sequenceFlow id="flow_13" sourceRef="el_task_5" targetRef="el_pg_join_1"/>
+    <semantic:sequenceFlow id="flow_14" sourceRef="el_task_8" targetRef="el_pg_join_1"/>
+    <semantic:sequenceFlow id="flow_15" sourceRef="el_pg_join_1" targetRef="el_end_1"/>
+  </semantic:process>
+
+  <bpmndi:BPMNDiagram id="BPMNDiagram_hiringProcess">
+    <bpmndi:BPMNPlane id="BPMNPlane_hiringProcess" bpmnElement="collab_hiringProcess">
+      <bpmndi:BPMNShape id="shape_participant_hiringProcessPool" bpmnElement="participant_hiringProcessPool" isHorizontal="true">
+        <dc:Bounds x="20" y="20" width="1900" height="760"/> 
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_lane_hiring_manager" bpmnElement="lane_hiring_manager" isHorizontal="true">
+        <dc:Bounds x="50" y="20" width="1870" height="160"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_lane_hr_manager" bpmnElement="lane_hr_manager" isHorizontal="true">
+        <dc:Bounds x="50" y="180" width="1870" height="160"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_lane_hr" bpmnElement="lane_hr" isHorizontal="true">
+        <dc:Bounds x="50" y="340" width="1870" height="280"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_lane_candidate" bpmnElement="lane_candidate" isHorizontal="true">
+        <dc:Bounds x="50" y="620" width="1870" height="160"/>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="shape_el_start_1" bpmnElement="el_start_1">
+        <dc:Bounds x="100" y="82" width="36" height="36"/>
+        <bpmndi:BPMNLabel><dc:Bounds x="80" y="123" width="76" height="28"/></bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_el_task_1" bpmnElement="el_task_1">
+        <dc:Bounds x="220" y="60" width="100" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_el_task_2" bpmnElement="el_task_2">
+        <dc:Bounds x="400" y="440" width="100" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_el_task_3" bpmnElement="el_task_3">
+        <dc:Bounds x="580" y="440" width="100" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_el_task_4" bpmnElement="el_task_4">
+        <dc:Bounds x="760" y="220" width="100" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_el_gateway_1" bpmnElement="el_gateway_1" isMarkerVisible="true">
+        <dc:Bounds x="940" y="235" width="50" height="50"/>
+        <bpmndi:BPMNLabel><dc:Bounds x="915" y="290" width="100" height="28"/></bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_el_task_instruct_hr" bpmnElement="el_task_instruct_hr">
+        <dc:Bounds x="1025" y="220" width="100" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_el_pg_split_1" bpmnElement="el_pg_split_1">
+        <dc:Bounds x="1050" y="465" width="50" height="50"/>
+        <bpmndi:BPMNLabel><dc:Bounds x="1025" y="520" width="100" height="40"/></bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_el_task_5" bpmnElement="el_task_5">
+        <dc:Bounds x="1180" y="390" width="100" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_el_task_6" bpmnElement="el_task_6">
+        <dc:Bounds x="1180" y="510" width="100" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_el_task_7" bpmnElement="el_task_7">
+        <dc:Bounds x="1350" y="660" width="100" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_el_task_8" bpmnElement="el_task_8">
+        <dc:Bounds x="1530" y="510" width="100" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_el_pg_join_1" bpmnElement="el_pg_join_1">
+        <dc:Bounds x="1700" y="465" width="50" height="50"/>
+        <bpmndi:BPMNLabel><dc:Bounds x="1675" y="520" width="100" height="40"/></bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_el_end_1" bpmnElement="el_end_1">
+        <dc:Bounds x="1820" y="472" width="36" height="36"/>
+        <bpmndi:BPMNLabel><dc:Bounds x="1800" y="513" width="76" height="28"/></bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNEdge id="edge_flow_1" bpmnElement="flow_1">
+        <di:waypoint x="136" y="100"/>
+        <di:waypoint x="220" y="100"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_2" bpmnElement="flow_2">
+        <di:waypoint x="270" y="140"/> <!-- Exit bottom of task_1 -->
+        <di:waypoint x="270" y="480"/>
+        <di:waypoint x="400" y="480"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_3" bpmnElement="flow_3">
+        <di:waypoint x="500" y="480"/>
+        <di:waypoint x="580" y="480"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_4" bpmnElement="flow_4">
+        <di:waypoint x="630" y="440"/> <!-- Exit top of task_3 -->
+        <di:waypoint x="630" y="260"/>
+        <di:waypoint x="760" y="260"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_5" bpmnElement="flow_5">
+        <di:waypoint x="860" y="260"/>
+        <di:waypoint x="940" y="260"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_6" bpmnElement="flow_6">
+        <di:waypoint x="990" y="260"/>
+        <di:waypoint x="1025" y="260"/>
+         <bpmndi:BPMNLabel><dc:Bounds x="1000" y="240" width="20" height="14"/></bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_7" bpmnElement="flow_7">
+        <di:waypoint x="965" y="235"/> <!-- Exit top of gateway -->
+        <di:waypoint x="965" y="200"/>
+        <di:waypoint x="450" y="200"/>
+        <di:waypoint x="450" y="440"/> <!-- Enter top of task_2 -->
+        <bpmndi:BPMNLabel><dc:Bounds x="970" y="205" width="20" height="14"/></bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_8" bpmnElement="flow_8">
+        <di:waypoint x="1075" y="300"/> <!-- Exit bottom of task_instruct_hr -->
+        <di:waypoint x="1075" y="465"/> <!-- Enter top of pg_split_1 -->
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_9" bpmnElement="flow_9">
+        <di:waypoint x="1075" y="465"/> <!-- Exit top of pg_split_1 -->
+        <di:waypoint x="1075" y="430"/>
+        <di:waypoint x="1180" y="430"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_10" bpmnElement="flow_10">
+        <di:waypoint x="1075" y="515"/> <!-- Exit bottom of pg_split_1 -->
+        <di:waypoint x="1075" y="550"/>
+        <di:waypoint x="1180" y="550"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_11" bpmnElement="flow_11">
+        <di:waypoint x="1230" y="590"/> <!-- Exit bottom of task_6 -->
+        <di:waypoint x="1230" y="700"/>
+        <di:waypoint x="1350" y="700"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_12" bpmnElement="flow_12">
+        <di:waypoint x="1400" y="660"/> <!-- Exit top of task_7 -->
+        <di:waypoint x="1400" y="550"/>
+        <di:waypoint x="1530" y="550"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_13" bpmnElement="flow_13">
+        <di:waypoint x="1280" y="430"/>
+        <di:waypoint x="1725" y="430"/>
+        <di:waypoint x="1725" y="465"/> <!-- Enter top of pg_join_1 -->
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_14" bpmnElement="flow_14">
+        <di:waypoint x="1630" y="550"/>
+        <di:waypoint x="1725" y="550"/>
+        <di:waypoint x="1725" y="515"/> <!-- Enter bottom of pg_join_1 -->
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_15" bpmnElement="flow_15">
+        <di:waypoint x="1750" y="490"/>
+        <di:waypoint x="1820" y="490"/>
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</semantic:definitions>

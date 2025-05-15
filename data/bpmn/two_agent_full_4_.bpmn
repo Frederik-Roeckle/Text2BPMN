@@ -1,0 +1,139 @@
+<?xml version="1.0" standalone="yes"?>
+<semantic:definitions id="InvoiceProcessDefinitions"
+    targetNamespace="http://example.com/bpmn/invoice-process"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:semantic="http://www.omg.org/spec/BPMN/20100524/MODEL"
+    xmlns:di="http://www.omg.org/spec/DD/20100524/DI"
+    xmlns:dc="http://www.omg.org/spec/DD/20100524/DC"
+    xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI">
+
+  <semantic:collaboration id="collab_InvoiceProcess">
+    <semantic:participant id="participant_APDepartment" name="Accounts Payable Department" processRef="process_APInvoice"/>
+  </semantic:collaboration>
+
+  <semantic:process id="process_APInvoice" isExecutable="true">
+    <semantic:laneSet id="laneSet_AP">
+      <semantic:lane id="lane_APProcessor" name="AP Processor">
+        <semantic:flowNodeRef>startEvent_InvoiceInitiated</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_SelectDeliveries</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_ProduceInvoiceData</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_CheckOrder</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_PostInvoice</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_CheckQuotation</semantic:flowNodeRef>
+        <semantic:flowNodeRef>endEvent_OrderFulfilled</semantic:flowNodeRef>
+      </semantic:lane>
+    </semantic:laneSet>
+
+    <semantic:startEvent id="startEvent_InvoiceInitiated" name="Invoice Creation Initiated">
+      <semantic:outgoing>flow1_StartToSelect</semantic:outgoing>
+    </semantic:startEvent>
+
+    <semantic:task id="task_SelectDeliveries" name="Select Number of Posted Deliveries">
+      <semantic:incoming>flow1_StartToSelect</semantic:incoming>
+      <semantic:outgoing>flow2_SelectToProduce</semantic:outgoing>
+    </semantic:task>
+
+    <semantic:task id="task_ProduceInvoiceData" name="Execute to Produce Invoice Data">
+      <semantic:incoming>flow2_SelectToProduce</semantic:incoming>
+      <semantic:outgoing>flow3_ProduceToCheckOrder</semantic:outgoing>
+    </semantic:task>
+
+    <semantic:task id="task_CheckOrder" name="Check Order Using Invoice">
+      <semantic:incoming>flow3_ProduceToCheckOrder</semantic:incoming>
+      <semantic:outgoing>flow4_CheckOrderToPost</semantic:outgoing>
+    </semantic:task>
+
+    <semantic:task id="task_PostInvoice" name="Post Invoice in System">
+      <semantic:incoming>flow4_CheckOrderToPost</semantic:incoming>
+      <semantic:outgoing>flow5_PostToCheckQuote</semantic:outgoing>
+    </semantic:task>
+
+    <semantic:task id="task_CheckQuotation" name="Check Original Quotation">
+      <semantic:incoming>flow5_PostToCheckQuote</semantic:incoming>
+      <semantic:outgoing>flow6_CheckQuoteToEnd</semantic:outgoing>
+    </semantic:task>
+
+    <semantic:endEvent id="endEvent_OrderFulfilled" name="Order Fulfilment Completed">
+      <semantic:incoming>flow6_CheckQuoteToEnd</semantic:incoming>
+    </semantic:endEvent>
+
+    <semantic:sequenceFlow id="flow1_StartToSelect" sourceRef="startEvent_InvoiceInitiated" targetRef="task_SelectDeliveries"/>
+    <semantic:sequenceFlow id="flow2_SelectToProduce" sourceRef="task_SelectDeliveries" targetRef="task_ProduceInvoiceData"/>
+    <semantic:sequenceFlow id="flow3_ProduceToCheckOrder" sourceRef="task_ProduceInvoiceData" targetRef="task_CheckOrder"/>
+    <semantic:sequenceFlow id="flow4_CheckOrderToPost" sourceRef="task_CheckOrder" targetRef="task_PostInvoice"/>
+    <semantic:sequenceFlow id="flow5_PostToCheckQuote" sourceRef="task_PostInvoice" targetRef="task_CheckQuotation"/>
+    <semantic:sequenceFlow id="flow6_CheckQuoteToEnd" sourceRef="task_CheckQuotation" targetRef="endEvent_OrderFulfilled"/>
+  </semantic:process>
+
+  <bpmndi:BPMNDiagram id="BPMNDiagram_APInvoice" name="AP Invoice Process Diagram" resolution="96.0">
+    <bpmndi:BPMNPlane bpmnElement="collab_InvoiceProcess">
+      <bpmndi:BPMNShape id="participant_APDepartment_shape" bpmnElement="participant_APDepartment" isHorizontal="true">
+        <dc:Bounds x="20" y="20" width="1400" height="250"/>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="startEvent_InvoiceInitiated_shape" bpmnElement="startEvent_InvoiceInitiated">
+        <dc:Bounds x="100" y="127" width="36" height="36"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="70" y="168" width="96" height="28"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="task_SelectDeliveries_shape" bpmnElement="task_SelectDeliveries">
+        <dc:Bounds x="200" y="105" width="180" height="80"/>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="task_ProduceInvoiceData_shape" bpmnElement="task_ProduceInvoiceData">
+        <dc:Bounds x="440" y="105" width="180" height="80"/>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="task_CheckOrder_shape" bpmnElement="task_CheckOrder">
+        <dc:Bounds x="680" y="105" width="180" height="80"/>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="task_PostInvoice_shape" bpmnElement="task_PostInvoice">
+        <dc:Bounds x="920" y="105" width="150" height="80"/>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="task_CheckQuotation_shape" bpmnElement="task_CheckQuotation">
+        <dc:Bounds x="1130" y="105" width="150" height="80"/>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="endEvent_OrderFulfilled_shape" bpmnElement="endEvent_OrderFulfilled">
+        <dc:Bounds x="1340" y="127" width="36" height="36"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1310" y="168" width="96" height="28"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNEdge id="flow1_StartToSelect_edge" bpmnElement="flow1_StartToSelect">
+        <di:waypoint x="136" y="145"/>
+        <di:waypoint x="200" y="145"/>
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="flow2_SelectToProduce_edge" bpmnElement="flow2_SelectToProduce">
+        <di:waypoint x="380" y="145"/>
+        <di:waypoint x="440" y="145"/>
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="flow3_ProduceToCheckOrder_edge" bpmnElement="flow3_ProduceToCheckOrder">
+        <di:waypoint x="620" y="145"/>
+        <di:waypoint x="680" y="145"/>
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="flow4_CheckOrderToPost_edge" bpmnElement="flow4_CheckOrderToPost">
+        <di:waypoint x="860" y="145"/>
+        <di:waypoint x="920" y="145"/>
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="flow5_PostToCheckQuote_edge" bpmnElement="flow5_PostToCheckQuote">
+        <di:waypoint x="1070" y="145"/>
+        <di:waypoint x="1130" y="145"/>
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="flow6_CheckQuoteToEnd_edge" bpmnElement="flow6_CheckQuoteToEnd">
+        <di:waypoint x="1280" y="145"/>
+        <di:waypoint x="1340" y="145"/>
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</semantic:definitions>

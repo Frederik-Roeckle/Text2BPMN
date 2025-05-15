@@ -1,86 +1,240 @@
+```json
 {
-  "process_name": "Overtime Registration Approval Process",
+  "process_name": "Revenue Forecast and Revenue Process in SAP ECC",
   "pools": [
     {
-      "name": "Company",
+      "name": "Accounts Receivable Department",
       "lanes": [
         {
-          "name": "Sales Employee",
-          "elements": ["start_1", "task_1", "task_2", "end_declined_1", "end_approved_1"]
-        },
-        {
-          "name": "Manager",
-          "elements": ["task_3", "gateway_1"]
+          "name": "AR Processor",
+          "elements": [
+            "se_start_1",
+            "task_post_forecast_rev",
+            "task_define_forecast_details",
+            "task_save_forecast_doc",
+            "task_display_forecast_post",
+            "task_create_customer_define_params",
+            "task_save_customer",
+            "task_define_account_group",
+            "task_assign_customer_sales_org",
+            "task_check_cost_centre_status",
+            "gw_cost_centre_blocked",
+            "task_create_new_cost_centre",
+            "task_create_payment_req",
+            "task_save_payment_req_doc",
+            "task_display_parked_payment_doc",
+            "sub_release_posting",
+            "task_assign_req_cat_fi",
+            "task_link_req_cat_doc_type",
+            "task_control_proc_req_cat",
+            "task_assign_workflow",
+            "task_post_acceptance_req",
+            "ee_end_1"
+          ]
         }
       ]
     }
   ],
   "elements": [
     {
-      "id": "start_1",
+      "id": "se_start_1",
       "type": "StartEvent",
-      "name": "Start Overtime Registration"
+      "name": "Revenue Forecast Request Received"
     },
     {
-      "id": "task_1",
+      "id": "task_post_forecast_rev",
       "type": "Task",
-      "name": "Create Overtime Registration"
+      "name": "Post Forecast Revenue in SAP ECC"
     },
     {
-      "id": "task_2",
+      "id": "task_define_forecast_details",
       "type": "Task",
-      "name": "Send Overtime Registration to Manager"
+      "name": "Define Forecast Posting Details"
     },
     {
-      "id": "task_3",
+      "id": "task_save_forecast_doc",
       "type": "Task",
-      "name": "Evaluate Overtime Registration Request"
+      "name": "Save Forecast Document"
     },
     {
-      "id": "gateway_1",
+      "id": "task_display_forecast_post",
+      "type": "Task",
+      "name": "Display Forecast Posting"
+    },
+    {
+      "id": "task_create_customer_define_params",
+      "type": "Task",
+      "name": "Create Customer and Define Parameters (SAP ECC & CRM)"
+    },
+    {
+      "id": "task_save_customer",
+      "type": "Task",
+      "name": "Save Customer"
+    },
+    {
+      "id": "task_define_account_group",
+      "type": "Task",
+      "name": "Define Account Group (Customer General)"
+    },
+    {
+      "id": "task_assign_customer_sales_org",
+      "type": "Task",
+      "name": "Assign Customer to Sales Org & Company Code"
+    },
+    {
+      "id": "task_check_cost_centre_status",
+      "type": "Task",
+      "name": "Check Cost Centre Blocking Status"
+    },
+    {
+      "id": "gw_cost_centre_blocked",
       "type": "ExclusiveGateway",
-      "name": "Manager Decision"
+      "name": "Cost Centre Blocked?"
     },
     {
-      "id": "end_declined_1",
-      "type": "EndEvent",
-      "name": "Overtime Request Declined"
+      "id": "task_create_new_cost_centre",
+      "type": "Task",
+      "name": "Create New Cost Centre"
     },
     {
-      "id": "end_approved_1",
+      "id": "task_create_payment_req",
+      "type": "Task",
+      "name": "Create Payment Request (Acceptance Request)"
+    },
+    {
+      "id": "task_save_payment_req_doc",
+      "type": "Task",
+      "name": "Save Payment Request Document"
+    },
+    {
+      "id": "task_display_parked_payment_doc",
+      "type": "Task",
+      "name": "Display Parked Payment Request Document"
+    },
+    {
+      "id": "sub_release_posting",
+      "type": "SubProcess",
+      "name": "Release Parked Posting and Customize Document"
+    },
+    {
+      "id": "task_assign_req_cat_fi",
+      "type": "Task",
+      "name": "Assign Request Category to FI Document Type"
+    },
+    {
+      "id": "task_link_req_cat_doc_type",
+      "type": "Task",
+      "name": "Link 'Acceptance Request' Category to Document Type"
+    },
+    {
+      "id": "task_control_proc_req_cat",
+      "type": "Task",
+      "name": "Control Processing of Request Categories"
+    },
+    {
+      "id": "task_assign_workflow",
+      "type": "Task",
+      "name": "Assign Workflow to Request Type"
+    },
+    {
+      "id": "task_post_acceptance_req",
+      "type": "Task",
+      "name": "Post Acceptance Request"
+    },
+    {
+      "id": "ee_end_1",
       "type": "EndEvent",
-      "name": "Overtime Request Approved"
+      "name": "Revenue Forecast Process Completed"
     }
   ],
   "sequence_flows": [
     {
-      "source": "start_1",
-      "target": "task_1"
+      "source": "se_start_1",
+      "target": "task_post_forecast_rev"
     },
     {
-      "source": "task_1",
-      "target": "task_2"
+      "source": "task_post_forecast_rev",
+      "target": "task_define_forecast_details"
     },
     {
-      "source": "task_2",
-      "target": "task_3"
+      "source": "task_define_forecast_details",
+      "target": "task_save_forecast_doc"
     },
     {
-      "source": "task_3",
-      "target": "gateway_1"
+      "source": "task_save_forecast_doc",
+      "target": "task_display_forecast_post"
     },
     {
-      "source": "gateway_1",
-      "target": "end_declined_1",
-      "condition": "If Manager declines request"
+      "source": "task_display_forecast_post",
+      "target": "task_create_customer_define_params"
     },
     {
-      "source": "gateway_1",
-      "target": "end_approved_1",
-      "condition": "If Manager approves request"
+      "source": "task_create_customer_define_params",
+      "target": "task_save_customer"
+    },
+    {
+      "source": "task_save_customer",
+      "target": "task_define_account_group"
+    },
+    {
+      "source": "task_define_account_group",
+      "target": "task_assign_customer_sales_org"
+    },
+    {
+      "source": "task_assign_customer_sales_org",
+      "target": "task_check_cost_centre_status"
+    },
+    {
+      "source": "task_check_cost_centre_status",
+      "target": "gw_cost_centre_blocked"
+    },
+    {
+      "source": "gw_cost_centre_blocked",
+      "target": "task_create_new_cost_centre",
+      "condition": "Cost centre blocked"
+    },
+    {
+      "source": "gw_cost_centre_blocked",
+      "target": "task_create_payment_req",
+      "condition": "Cost centre not blocked"
+    },
+    {
+      "source": "task_create_new_cost_centre",
+      "target": "task_create_payment_req"
+    },
+    {
+      "source": "task_create_payment_req",
+      "target": "task_save_payment_req_doc"
+    },
+    {
+      "source": "task_save_payment_req_doc",
+      "target": "task_display_parked_payment_doc"
+    },
+    {
+      "source": "task_display_parked_payment_doc",
+      "target": "task_assign_req_cat_fi"
+    },
+    {
+      "source": "task_assign_req_cat_fi",
+      "target": "task_link_req_cat_doc_type"
+    },
+    {
+      "source": "task_link_req_cat_doc_type",
+      "target": "task_control_proc_req_cat"
+    },
+    {
+      "source": "task_control_proc_req_cat",
+      "target": "task_assign_workflow"
+    },
+    {
+      "source": "task_assign_workflow",
+      "target": "task_post_acceptance_req"
+    },
+    {
+      "source": "task_post_acceptance_req",
+      "target": "ee_end_1"
     }
-  ]
+  ],
+  "process_description": "a) The Accounts Receivable (AR) department has received a request to perform the revenue forecast & revenue process in SAP ECC System. b) The AR Processor needs first to post the forecast revenue. In the Initial screen, following parameters have be defined at the same time: defining document type “11”, document date, posting date and company code. c)Upon entering the parameters, the posting details of the forecast has to be further defined. The AR Processer has then to note the fund & the functional area. d) Then the document has to be saved. Like in the Commitment & Invoice process, one may refer to the posting report, resulting in displaying the forecast posting. e) In the next step, the individual customer has to be created (depending on the Customer & Sales Accounting data) using SAP ECC and CRM (Customer Relationship Management System). The AR Processor has to create completer customer (complete in this context means sales & accounting data of a customer). f) Then, the newly created customer has to be assigned to a sales organization and to a company code. g) First step in this is to define the Account group which is customer general. h) In the Initial screen in defining the customer, following entries need to be defined at the same time: which are first to define the payment transaction tab, in which the customer’s bank account has to be defined. In the next tab, the company code data has to be defined, in which the reconciliation account 140000 has to be defined and the G/L account 140000 has to be also checked. i) After entering the required parameters, the AR Processor may now save the customer and as a result a confirmation message containing “Customer .. created”. j) In the next step, the revenues has to be posted against the cost centre. A common risk in this step is that the cost centre may be blocked against revenue posting.  To prevent this, the cost centre created for Commitment & Invoice process has to be checked in that it is not blocked against revenue posting. The AR Processor has then to display the control tab in cost centre. If the cost centre is blocked against revenue posting, then a new cost centre without revenue posting blocking has to be created. If on the other hand the cost centre is not blocked, then the acceptance request can be created. k) In the next step, the AR Processor has to create the payment request. In the Initial screen, following parameters are to be defined at the same time: defining document type “DR”, indicate the customer, defining the period, the commitment item, the fund, the funds center, the G/L account, the amount and the cost centre has to be also assigned to the acceptance request. l) After entering the required parameters, the document has to be saved. m) The AR processor may now display the document and as a result, the document status is “parked”. n) Following the same procedure like in the Commitment & Invoice process, the parked posting has to be released, in which the document has to be further customized. o) In the customization process, the request category has to be assigned to FI document type and the request category “acceptance request” has to be further linked to the document type. Then the processing of request categories has to be controlled and the workflow has to be assigned to the specific request type. p) The acceptance request can now be posted and finally the Revenue forecast process is successfully completed by the posting."
 }
-
-Textual Description:
-a) Overtime Registration needs to be requested from an employee in the sales department to the responsible Manager. b) First, the employee needs to create an overtime registration and also needs to send this registration to his Manager. c) Upon receipt of this request, the Manager evaluates/estimates this overtime registration request. d) On this level, the Manager may either decline the registration request and then the employee will receive the declined request, or he may approve the request and at this stage the process ends for both choices.
+```

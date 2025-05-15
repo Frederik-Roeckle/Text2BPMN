@@ -48,7 +48,7 @@ def main():
     
 
     # Process the input file with the base_line graph
-    print("Processing graph: baseline")    
+    print("Processing graph: two_agent_graph")    
 
     with open(input_path, 'r') as file:
         data = json.load(file)
@@ -58,15 +58,15 @@ def main():
     #    file_content = f.read().strip()
     for i in range(len(data)):
         print(f"Processing process description {i+1} of {len(data)}")
-        result = GRAPH_MAP["base_line"]().invoke({"messages": data[i]['text']})
+        result = GRAPH_MAP["two_agent_graph"]().invoke({"messages": data[i]['text']})
         final_message = result["messages"][-1].content
     # Write the modified lines back as plain text
-        output_path = f"data/bpmn/baseline_full_{i}_.bpmn"
+        output_path = f"data/bpmn/two_agent_full_{i}_.bpmn"
         with open(output_path, "w") as f:
             f.write(final_message + "\n")
     
         print(f"Results written to {output_path}")
-        render_BPMN(f"data/bpmn/baseline_full_{i}_.bpmn",f"data/img/baseline_full_{i}_.png")
+        render_BPMN(f"data/bpmn/two_agent_full_{i}_.bpmn",f"data/img/two_agent_full_{i}_.png")
 
 
 if __name__ == "__main__":
