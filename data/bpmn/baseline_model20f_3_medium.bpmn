@@ -1,0 +1,267 @@
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<semantic:definitions xmlns:semantic="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:omgdi="http://www.omg.org/spec/DD/20100524/DI" xmlns:omgdc="http://www.omg.org/spec/DD/20100524/DC" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" id="sid-38422fae-e532-449a-bb9a-93369b481c9a" targetNamespace="http://bpmn.io/schema/bpmn" exporter="bpmn-js (https://demo.bpmn.io)" exporterVersion="13.0.1">
+  <semantic:process id="Process_1" isExecutable="true">
+    <semantic:startEvent id="StartEvent_1" name="Realize product required">
+      <semantic:outgoing>SequenceFlow_0v15ewr</semantic:outgoing>
+    </semantic:startEvent>
+    <semantic:task id="Task_0wtbh9z" name="Open ordering website">
+      <semantic:incoming>SequenceFlow_0v15ewr</semantic:incoming>
+      <semantic:outgoing>SequenceFlow_199v101</semantic:outgoing>
+    </semantic:task>
+    <semantic:sequenceFlow id="SequenceFlow_0v15ewr" sourceRef="StartEvent_1" targetRef="Task_0wtbh9z" />
+    <semantic:task id="Task_194a99t" name="Define product search">
+      <semantic:incoming>SequenceFlow_199v101</semantic:incoming>
+      <semantic:outgoing>SequenceFlow_0v99999</semantic:outgoing>
+    </semantic:task>
+    <semantic:sequenceFlow id="SequenceFlow_199v101" sourceRef="Task_0wtbh9z" targetRef="Task_194a99t" />
+    <semantic:exclusiveGateway id="ExclusiveGateway_0gc4946" name="Search successful?">
+      <semantic:incoming>SequenceFlow_0v99999</semantic:incoming>
+      <semantic:outgoing>SequenceFlow_0000001</semantic:outgoing>
+      <semantic:outgoing>SequenceFlow_0000002</semantic:outgoing>
+    </semantic:exclusiveGateway>
+    <semantic:sequenceFlow id="SequenceFlow_0v99999" sourceRef="Task_194a99t" targetRef="ExclusiveGateway_0gc4946" />
+    <semantic:endEvent id="EndEvent_049qt4z" name="Website closed">
+      <semantic:incoming>SequenceFlow_0000001</semantic:incoming>
+    </semantic:endEvent>
+    <semantic:sequenceFlow id="SequenceFlow_0000001" name="No" sourceRef="ExclusiveGateway_0gc4946" targetRef="EndEvent_049qt4z" />
+    <semantic:task id="Task_0000003" name="Select item and quantity">
+      <semantic:incoming>SequenceFlow_0000002</semantic:incoming>
+      <semantic:outgoing>SequenceFlow_0000004</semantic:outgoing>
+    </semantic:task>
+    <semantic:sequenceFlow id="SequenceFlow_0000002" name="Yes" sourceRef="ExclusiveGateway_0gc4946" targetRef="Task_0000003" />
+    <semantic:exclusiveGateway id="ExclusiveGateway_0000005" name="Add more items?">
+      <semantic:incoming>SequenceFlow_0000004</semantic:incoming>
+      <semantic:outgoing>SequenceFlow_0000006</semantic:outgoing>
+      <semantic:outgoing>SequenceFlow_0000007</semantic:outgoing>
+    </semantic:exclusiveGateway>
+    <semantic:sequenceFlow id="SequenceFlow_0000004" sourceRef="Task_0000003" targetRef="ExclusiveGateway_0000005" />
+    <semantic:sequenceFlow id="SequenceFlow_0000006" name="Yes" sourceRef="ExclusiveGateway_0000005" targetRef="Task_194a99t" />
+    <semantic:task id="Task_0000008" name="Review shopping cart and check budget">
+      <semantic:incoming>SequenceFlow_0000007</semantic:incoming>
+      <semantic:outgoing>SequenceFlow_0000009</semantic:outgoing>
+    </semantic:task>
+    <semantic:sequenceFlow id="SequenceFlow_0000007" name="No" sourceRef="ExclusiveGateway_0000005" targetRef="Task_0000008" />
+    <semantic:exclusiveGateway id="ExclusiveGateway_0000010" name="Sufficient budget?">
+      <semantic:incoming>SequenceFlow_0000009</semantic:incoming>
+      <semantic:outgoing>SequenceFlow_0000011</semantic:outgoing>
+      <semantic:outgoing>SequenceFlow_0000012</semantic:outgoing>
+    </semantic:exclusiveGateway>
+    <semantic:sequenceFlow id="SequenceFlow_0000009" sourceRef="Task_0000008" targetRef="ExclusiveGateway_0000010" />
+    <semantic:sequenceFlow id="SequenceFlow_0000011" name="No" sourceRef="ExclusiveGateway_0000010" targetRef="Task_0000008" />
+    <semantic:task id="Task_0000013" name="Register / Log in">
+      <semantic:incoming>SequenceFlow_0000012</semantic:incoming>
+      <semantic:outgoing>SequenceFlow_0000014</semantic:outgoing>
+    </semantic:task>
+    <semantic:sequenceFlow id="SequenceFlow_0000012" name="Yes" sourceRef="ExclusiveGateway_0000010" targetRef="Task_0000013" />
+    <semantic:task id="Task_0000015" name="Confirm delivery address">
+      <semantic:incoming>SequenceFlow_0000014</semantic:incoming>
+      <semantic:outgoing>SequenceFlow_0000016</semantic:outgoing>
+    </semantic:task>
+    <semantic:sequenceFlow id="SequenceFlow_0000014" sourceRef="Task_0000013" targetRef="Task_0000015" />
+    <semantic:exclusiveGateway id="ExclusiveGateway_0000017" name="Choose payment method">
+      <semantic:incoming>SequenceFlow_0000016</semantic:incoming>
+      <semantic:outgoing>SequenceFlow_0000018</semantic:outgoing>
+      <semantic:outgoing>SequenceFlow_0000019</semantic:outgoing>
+      <semantic:outgoing>SequenceFlow_0000020</semantic:outgoing>
+    </semantic:exclusiveGateway>
+    <semantic:sequenceFlow id="SequenceFlow_0000016" sourceRef="Task_0000015" targetRef="ExclusiveGateway_0000017" />
+    <semantic:task id="Task_0000021" name="Perform payment">
+      <semantic:incoming>SequenceFlow_0000018</semantic:incoming>
+      <semantic:incoming>SequenceFlow_0000019</semantic:incoming>
+      <semantic:incoming>SequenceFlow_0000020</semantic:incoming>
+      <semantic:outgoing>SequenceFlow_0000022</semantic:outgoing>
+    </semantic:task>
+    <semantic:sequenceFlow id="SequenceFlow_0000018" name="Bank transfer" sourceRef="ExclusiveGateway_0000017" targetRef="Task_0000021" />
+    <semantic:sequenceFlow id="SequenceFlow_0000019" name="Credit card" sourceRef="ExclusiveGateway_0000017" targetRef="Task_0000021" />
+    <semantic:sequenceFlow id="SequenceFlow_0000020" name="Credit invoice" sourceRef="ExclusiveGateway_0000017" targetRef="Task_0000021" />
+    <semantic:task id="Task_0000023" name="Confirm payment">
+      <semantic:incoming>SequenceFlow_0000022</semantic:incoming>
+      <semantic:outgoing>SequenceFlow_0000024</semantic:outgoing>
+    </semantic:task>
+    <semantic:sequenceFlow id="SequenceFlow_0000022" sourceRef="Task_0000021" targetRef="Task_0000023" />
+    <semantic:endEvent id="EndEvent_0000025" name="Website closed">
+      <semantic:incoming>SequenceFlow_0000024</semantic:incoming>
+    </semantic:endEvent>
+    <semantic:sequenceFlow id="SequenceFlow_0000024" sourceRef="Task_0000023" targetRef="EndEvent_0000025" />
+  </semantic:process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_1">
+    <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="Process_1">
+      <bpmndi:BPMNShape id="StartEvent_1_di" bpmnElement="StartEvent_1">
+        <omgdc:Bounds x="162" y="102" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds x="142" y="145" width="76" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_0wtbh9z_di" bpmnElement="Task_0wtbh9z">
+        <omgdc:Bounds x="262" y="80" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="SequenceFlow_0v15ewr_di" bpmnElement="SequenceFlow_0v15ewr">
+        <omgdi:waypoint x="198" y="120" />
+        <omgdi:waypoint x="262" y="120" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="Task_194a99t_di" bpmnElement="Task_194a99t">
+        <omgdc:Bounds x="422" y="80" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="SequenceFlow_199v101_di" bpmnElement="SequenceFlow_199v101">
+        <omgdi:waypoint x="362" y="120" />
+        <omgdi:waypoint x="422" y="120" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="ExclusiveGateway_0gc4946_di" bpmnElement="ExclusiveGateway_0gc4946" isMarkerVisible="true">
+        <omgdc:Bounds x="582" y="95" width="50" height="50" />
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds x="565" y="65" width="84" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="SequenceFlow_0v99999_di" bpmnElement="SequenceFlow_0v99999">
+        <omgdi:waypoint x="522" y="120" />
+        <omgdi:waypoint x="582" y="120" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="EndEvent_049qt4z_di" bpmnElement="EndEvent_049qt4z">
+        <omgdc:Bounds x="702" y="32" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds x="682" y="75" width="76" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="SequenceFlow_0000001_di" bpmnElement="SequenceFlow_0000001">
+        <omgdi:waypoint x="607" y="95" />
+        <omgdi:waypoint x="607" y="50" />
+        <omgdi:waypoint x="702" y="50" />
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds x="630" y="62" width="15" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="Task_0000003_di" bpmnElement="Task_0000003">
+        <omgdc:Bounds x="702" y="80" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="SequenceFlow_0000002_di" bpmnElement="SequenceFlow_0000002">
+        <omgdi:waypoint x="632" y="120" />
+        <omgdi:waypoint x="702" y="120" />
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds x="662" y="102" width="19" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="ExclusiveGateway_0000005_di" bpmnElement="ExclusiveGateway_0000005" isMarkerVisible="true">
+        <omgdc:Bounds x="862" y="95" width="50" height="50" />
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds x="842" y="65" width="90" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="SequenceFlow_0000004_di" bpmnElement="SequenceFlow_0000004">
+        <omgdi:waypoint x="802" y="120" />
+        <omgdi:waypoint x="862" y="120" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="SequenceFlow_0000006_di" bpmnElement="SequenceFlow_0000006">
+        <omgdi:waypoint x="887" y="95" />
+        <omgdi:waypoint x="887" y="50" />
+        <omgdi:waypoint x="472" y="50" />
+        <omgdi:waypoint x="472" y="80" />
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds x="882" y="62" width="19" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="Task_0000008_di" bpmnElement="Task_0000008">
+        <omgdc:Bounds x="982" y="80" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="SequenceFlow_0000007_di" bpmnElement="SequenceFlow_0000007">
+        <omgdi:waypoint x="912" y="120" />
+        <omgdi:waypoint x="982" y="120" />
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds x="942" y="102" width="15" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="ExclusiveGateway_0000010_di" bpmnElement="ExclusiveGateway_0000010" isMarkerVisible="true">
+        <omgdc:Bounds x="1142" y="95" width="50" height="50" />
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds x="1122" y="65" width="90" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="SequenceFlow_0000009_di" bpmnElement="SequenceFlow_0000009">
+        <omgdi:waypoint x="1082" y="120" />
+        <omgdi:waypoint x="1142" y="120" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="SequenceFlow_0000011_di" bpmnElement="SequenceFlow_0000011">
+        <omgdi:waypoint x="1167" y="95" />
+        <omgdi:waypoint x="1167" y="50" />
+        <omgdi:waypoint x="1032" y="50" />
+        <omgdi:waypoint x="1032" y="80" />
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds x="1162" y="62" width="15" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="Task_0000013_di" bpmnElement="Task_0000013">
+        <omgdc:Bounds x="1262" y="80" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="SequenceFlow_0000012_di" bpmnElement="SequenceFlow_0000012">
+        <omgdi:waypoint x="1192" y="120" />
+        <omgdi:waypoint x="1262" y="120" />
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds x="1222" y="102" width="19" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="Task_0000015_di" bpmnElement="Task_0000015">
+        <omgdc:Bounds x="1422" y="80" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="SequenceFlow_0000014_di" bpmnElement="SequenceFlow_0000014">
+        <omgdi:waypoint x="1362" y="120" />
+        <omgdi:waypoint x="1422" y="120" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="ExclusiveGateway_0000017_di" bpmnElement="ExclusiveGateway_0000017" isMarkerVisible="true">
+        <omgdc:Bounds x="1582" y="95" width="50" height="50" />
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds x="1562" y="65" width="90" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="SequenceFlow_0000016_di" bpmnElement="SequenceFlow_0000016">
+        <omgdi:waypoint x="1522" y="120" />
+        <omgdi:waypoint x="1582" y="120" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="Task_0000021_di" bpmnElement="Task_0000021">
+        <omgdc:Bounds x="1702" y="80" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="SequenceFlow_0000018_di" bpmnElement="SequenceFlow_0000018">
+        <omgdi:waypoint x="1607" y="95" />
+        <omgdi:waypoint x="1607" y="50" />
+        <omgdi:waypoint x="1752" y="50" />
+        <omgdi:waypoint x="1752" y="80" />
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds x="1612" y="32" width="65" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="SequenceFlow_0000019_di" bpmnElement="SequenceFlow_0000019">
+        <omgdi:waypoint x="1632" y="120" />
+        <omgdi:waypoint x="1702" y="120" />
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds x="1642" y="102" width="54" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="SequenceFlow_0000020_di" bpmnElement="SequenceFlow_0000020">
+        <omgdi:waypoint x="1607" y="145" />
+        <omgdi:waypoint x="1607" y="190" />
+        <omgdi:waypoint x="1752" y="190" />
+        <omgdi:waypoint x="1752" y="160" />
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds x="1612" y="162" width="67" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="Task_0000023_di" bpmnElement="Task_0000023">
+        <omgdc:Bounds x="1862" y="80" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="SequenceFlow_0000022_di" bpmnElement="SequenceFlow_0000022">
+        <omgdi:waypoint x="1802" y="120" />
+        <omgdi:waypoint x="1862" y="120" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="EndEvent_0000025_di" bpmnElement="EndEvent_0000025">
+        <omgdc:Bounds x="2022" y="102" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds x="2002" y="145" width="76" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="SequenceFlow_0000024_di" bpmnElement="SequenceFlow_0000024">
+        <omgdi:waypoint x="1962" y="120" />
+        <omgdi:waypoint x="2022" y="120" />
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</semantic:definitions>
+```

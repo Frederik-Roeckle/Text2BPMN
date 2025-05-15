@@ -1,0 +1,910 @@
+<?xml version="1.0" standalone="yes"?>
+<semantic:definitions id="PunitiveMandateProcessDefs"
+    targetNamespace="http://example.com/bpmn/punitive-mandate"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:semantic="http://www.omg.org/spec/BPMN/20100524/MODEL"
+    xmlns:di="http://www.omg.org/spec/DD/20100524/DI"
+    xmlns:dc="http://www.omg.org/spec/DD/20100524/DC"
+    xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI">
+
+  <semantic:collaboration id="collab_punitiveMandate">
+    <semantic:participant id="pool_PunitiveMandate" name="Punitive Mandate Process Pool" processRef="process_PunitiveMandate"/>
+  </semantic:collaboration>
+
+  <semantic:process id="process_PunitiveMandate" isExecutable="true">
+    <semantic:laneSet id="laneSet_PunitiveMandate">
+      <semantic:lane id="lane_MA" name="Municipal Authority">
+        <semantic:flowNodeRef>startEvent_MA_PunishmentRealized</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_MA_IssueMandate</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_MA_SendMandateByPost</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_MA_CheckObjection</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_MA_ConcludeInitialInvestigation</semantic:flowNodeRef>
+        <semantic:flowNodeRef>gateway_MA_InvestigationSufficient</semantic:flowNodeRef>
+        <semantic:flowNodeRef>gateway_MA_DecisionAfterSufficientInv</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_MA_ImposeSentenceSufficient</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_MA_TerminateProceedingsSufficient</semantic:flowNodeRef>
+        <semantic:flowNodeRef>gateway_MA_MergeSufficientInvOutcome</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_MA_InvestigateFurther</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_MA_ConcludeFurtherInvestigation</semantic:flowNodeRef>
+        <semantic:flowNodeRef>gateway_MA_DecisionAfterFurtherInv</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_MA_ImposeSentenceFurther</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_MA_TerminateProceedingsFurther</semantic:flowNodeRef>
+        <semantic:flowNodeRef>gateway_MA_MergeFurtherInvOutcome</semantic:flowNodeRef>
+        <semantic:flowNodeRef>gateway_MA_ConvergeInvestigationPaths</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_MA_InformAccusedOfResults</semantic:flowNodeRef>
+      </semantic:lane>
+      <semantic:lane id="lane_Postman" name="Postman">
+        <semantic:flowNodeRef>task_PS_AttemptDelivery</semantic:flowNodeRef>
+        <semantic:flowNodeRef>gateway_PS_DeliverySuccessful</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_PS_DepositAtPostOffice</semantic:flowNodeRef>
+      </semantic:lane>
+      <semantic:lane id="lane_AP" name="Accused Person">
+        <semantic:flowNodeRef>task_AP_TakeOverMandateRSb</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_AP_TakeOverMandatePostOffice</semantic:flowNodeRef>
+        <semantic:flowNodeRef>gateway_AP_MergeMandateReceipt</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_AP_RaiseObjection</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_AP_ReceiveInvestigationResults</semantic:flowNodeRef>
+        <semantic:flowNodeRef>gateway_AP_WantToComplain</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_AP_PayPenaltyNoComplaint</semantic:flowNodeRef>
+        <semantic:flowNodeRef>endEvent_AP_MandateHandledNoComplaint</semantic:flowNodeRef>
+        <semantic:flowNodeRef>gateway_AP_PenaltyType</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_AP_RaiseComplaintAdminCourt</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_AP_RaiseComplaintFedFinCourt</semantic:flowNodeRef>
+        <semantic:flowNodeRef>gateway_AP_MergeDisregardedComplaints</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_AP_ReceiveDisregardedComplaint</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_AP_PayPenaltyAfterDisregard</semantic:flowNodeRef>
+        <semantic:flowNodeRef>endEvent_AP_MandateHandledAfterDisregard</semantic:flowNodeRef>
+      </semantic:lane>
+      <semantic:lane id="lane_AC" name="Administrative Court">
+        <semantic:flowNodeRef>task_AC_ReceiveComplaint</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_AC_CheckSubmissionTime</semantic:flowNodeRef>
+        <semantic:flowNodeRef>gateway_AC_SubmissionOnTime</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_AC_FinalizeDecisionNoTime</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_AC_DisregardComplaint</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_AC_SendDisregardedBack</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_AC_InvestigateComplaint</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_AC_ArrangeTrial</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_AC_SubmitDecision</semantic:flowNodeRef>
+        <semantic:flowNodeRef>endEvent_AC_DecisionSubmitted</semantic:flowNodeRef>
+      </semantic:lane>
+      <semantic:lane id="lane_FFC" name="Federal Finance Court">
+        <semantic:flowNodeRef>task_FFC_ReceiveComplaint</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_FFC_CheckSubmissionTime</semantic:flowNodeRef>
+        <semantic:flowNodeRef>gateway_FFC_SubmissionOnTime</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_FFC_FinalizeDecisionNoTime</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_FFC_DisregardComplaint</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_FFC_SendDisregardedBack</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_FFC_InvestigateComplaint</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_FFC_ArrangeTrial</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_FFC_SubmitDecision</semantic:flowNodeRef>
+        <semantic:flowNodeRef>endEvent_FFC_DecisionSubmitted</semantic:flowNodeRef>
+      </semantic:lane>
+    </semantic:laneSet>
+
+    <!-- Municipal Authority Lane Elements -->
+    <semantic:startEvent id="startEvent_MA_PunishmentRealized" name="Punishment Issuance Realized">
+      <semantic:outgoing>flow_Start_to_IssueMandate</semantic:outgoing>
+    </semantic:startEvent>
+    <semantic:task id="task_MA_IssueMandate" name="Issue Punitive Mandate">
+      <semantic:incoming>flow_Start_to_IssueMandate</semantic:incoming>
+      <semantic:outgoing>flow_IssueMandate_to_SendMandate</semantic:outgoing>
+    </semantic:task>
+    <semantic:task id="task_MA_SendMandateByPost" name="Send Punitive Mandate by Post">
+      <semantic:incoming>flow_IssueMandate_to_SendMandate</semantic:incoming>
+      <semantic:outgoing>flow_SendMandate_to_AttemptDelivery</semantic:outgoing>
+    </semantic:task>
+
+    <semantic:task id="task_MA_CheckObjection" name="Check Raised Objection">
+      <semantic:incoming>flow_RaiseObjection_to_CheckObjection</semantic:incoming>
+      <semantic:outgoing>flow_CheckObjection_to_ConcludeInitial</semantic:outgoing>
+    </semantic:task>
+    <semantic:task id="task_MA_ConcludeInitialInvestigation" name="Conclude Initial Investigation">
+      <semantic:incoming>flow_CheckObjection_to_ConcludeInitial</semantic:incoming>
+      <semantic:outgoing>flow_ConcludeInitial_to_GatewayInvSufficient</semantic:outgoing>
+    </semantic:task>
+    <semantic:exclusiveGateway id="gateway_MA_InvestigationSufficient" name="Initial Investigation Sufficient?">
+      <semantic:incoming>flow_ConcludeInitial_to_GatewayInvSufficient</semantic:incoming>
+      <semantic:outgoing>flow_InvSufficient_Yes</semantic:outgoing>
+      <semantic:outgoing>flow_InvSufficient_No</semantic:outgoing>
+    </semantic:exclusiveGateway>
+    
+    <!-- Path: Investigation Sufficient = Yes -->
+    <semantic:exclusiveGateway id="gateway_MA_DecisionAfterSufficientInv" name="Decision After Sufficient Investigation?">
+      <semantic:incoming>flow_InvSufficient_Yes</semantic:incoming>
+      <semantic:outgoing>flow_DecisionSufficient_Impose</semantic:outgoing>
+      <semantic:outgoing>flow_DecisionSufficient_Terminate</semantic:outgoing>
+    </semantic:exclusiveGateway>
+    <semantic:task id="task_MA_ImposeSentenceSufficient" name="Impose Punitive Sentence (Sufficient Inv.)">
+      <semantic:incoming>flow_DecisionSufficient_Impose</semantic:incoming>
+      <semantic:outgoing>flow_ImposeSufficient_to_MergeSufficient</semantic:outgoing>
+    </semantic:task>
+    <semantic:task id="task_MA_TerminateProceedingsSufficient" name="Terminate Proceedings (Sufficient Inv.)">
+      <semantic:incoming>flow_DecisionSufficient_Terminate</semantic:incoming>
+      <semantic:outgoing>flow_TerminateSufficient_to_MergeSufficient</semantic:outgoing>
+    </semantic:task>
+    <semantic:exclusiveGateway id="gateway_MA_MergeSufficientInvOutcome" name="Merge Sufficient Investigation Outcome">
+      <semantic:incoming>flow_ImposeSufficient_to_MergeSufficient</semantic:incoming>
+      <semantic:incoming>flow_TerminateSufficient_to_MergeSufficient</semantic:incoming>
+      <semantic:outgoing>flow_MergeSufficient_to_ConvergeInvPaths</semantic:outgoing>
+    </semantic:exclusiveGateway>
+
+    <!-- Path: Investigation Sufficient = No -->
+    <semantic:task id="task_MA_InvestigateFurther" name="Investigate Objection Further">
+      <semantic:incoming>flow_InvSufficient_No</semantic:incoming>
+      <semantic:outgoing>flow_InvestigateFurther_to_ConcludeFurther</semantic:outgoing>
+    </semantic:task>
+    <semantic:task id="task_MA_ConcludeFurtherInvestigation" name="Conclude Further Investigation">
+      <semantic:incoming>flow_InvestigateFurther_to_ConcludeFurther</semantic:incoming>
+      <semantic:outgoing>flow_ConcludeFurther_to_GatewayDecisionFurther</semantic:outgoing>
+    </semantic:task>
+    <semantic:exclusiveGateway id="gateway_MA_DecisionAfterFurtherInv" name="Decision After Further Investigation?">
+      <semantic:incoming>flow_ConcludeFurther_to_GatewayDecisionFurther</semantic:incoming>
+      <semantic:outgoing>flow_DecisionFurther_Impose</semantic:outgoing>
+      <semantic:outgoing>flow_DecisionFurther_Terminate</semantic:outgoing>
+    </semantic:exclusiveGateway>
+    <semantic:task id="task_MA_ImposeSentenceFurther" name="Impose Punitive Sentence (Further Inv.)">
+      <semantic:incoming>flow_DecisionFurther_Impose</semantic:incoming>
+      <semantic:outgoing>flow_ImposeFurther_to_MergeFurther</semantic:outgoing>
+    </semantic:task>
+    <semantic:task id="task_MA_TerminateProceedingsFurther" name="Terminate Proceedings (Further Inv.)">
+      <semantic:incoming>flow_DecisionFurther_Terminate</semantic:incoming>
+      <semantic:outgoing>flow_TerminateFurther_to_MergeFurther</semantic:outgoing>
+    </semantic:task>
+    <semantic:exclusiveGateway id="gateway_MA_MergeFurtherInvOutcome" name="Merge Further Investigation Outcome">
+      <semantic:incoming>flow_ImposeFurther_to_MergeFurther</semantic:incoming>
+      <semantic:incoming>flow_TerminateFurther_to_MergeFurther</semantic:incoming>
+      <semantic:outgoing>flow_MergeFurther_to_ConvergeInvPaths</semantic:outgoing>
+    </semantic:exclusiveGateway>
+
+    <semantic:exclusiveGateway id="gateway_MA_ConvergeInvestigationPaths" name="Converge Investigation Paths">
+      <semantic:incoming>flow_MergeSufficient_to_ConvergeInvPaths</semantic:incoming>
+      <semantic:incoming>flow_MergeFurther_to_ConvergeInvPaths</semantic:incoming>
+      <semantic:outgoing>flow_ConvergeInvPaths_to_InformAccused</semantic:outgoing>
+    </semantic:exclusiveGateway>
+    <semantic:task id="task_MA_InformAccusedOfResults" name="Inform Accused of Investigation Results">
+      <semantic:incoming>flow_ConvergeInvPaths_to_InformAccused</semantic:incoming>
+      <semantic:outgoing>flow_InformAccused_to_ReceiveResults</semantic:outgoing>
+    </semantic:task>
+
+    <!-- Postman Lane Elements -->
+    <semantic:task id="task_PS_AttemptDelivery" name="Attempt Punitive Mandate Delivery">
+      <semantic:incoming>flow_SendMandate_to_AttemptDelivery</semantic:incoming>
+      <semantic:outgoing>flow_AttemptDelivery_to_GatewayDeliverySuccessful</semantic:outgoing>
+    </semantic:task>
+    <semantic:exclusiveGateway id="gateway_PS_DeliverySuccessful" name="Delivery Successful?">
+      <semantic:incoming>flow_AttemptDelivery_to_GatewayDeliverySuccessful</semantic:incoming>
+      <semantic:outgoing>flow_DeliverySuccessful_Yes</semantic:outgoing>
+      <semantic:outgoing>flow_DeliverySuccessful_No</semantic:outgoing>
+    </semantic:exclusiveGateway>
+    <semantic:task id="task_PS_DepositAtPostOffice" name="Deposit Mandate at Post Office">
+      <semantic:incoming>flow_DeliverySuccessful_No</semantic:incoming>
+      <semantic:outgoing>flow_DepositPO_to_TakeOverPO</semantic:outgoing>
+    </semantic:task>
+
+    <!-- Accused Person Lane Elements -->
+    <semantic:task id="task_AP_TakeOverMandateRSb" name="Take Over Mandate (Proof of Delivery RSb)">
+      <semantic:incoming>flow_DeliverySuccessful_Yes</semantic:incoming>
+      <semantic:outgoing>flow_TakeOverRSb_to_MergeMandateReceipt</semantic:outgoing>
+    </semantic:task>
+    <semantic:task id="task_AP_TakeOverMandatePostOffice" name="Take Over Mandate from Post Office">
+      <semantic:incoming>flow_DepositPO_to_TakeOverPO</semantic:incoming>
+      <semantic:outgoing>flow_TakeOverPO_to_MergeMandateReceipt</semantic:outgoing>
+    </semantic:task>
+    <semantic:exclusiveGateway id="gateway_AP_MergeMandateReceipt" name="Merge Mandate Receipt Paths">
+      <semantic:incoming>flow_TakeOverRSb_to_MergeMandateReceipt</semantic:incoming>
+      <semantic:incoming>flow_TakeOverPO_to_MergeMandateReceipt</semantic:incoming>
+      <semantic:outgoing>flow_MergeMandateReceipt_to_RaiseObjection</semantic:outgoing>
+    </semantic:exclusiveGateway>
+    <semantic:task id="task_AP_RaiseObjection" name="Raise Objection Against Punitive Mandate">
+      <semantic:incoming>flow_MergeMandateReceipt_to_RaiseObjection</semantic:incoming>
+      <semantic:outgoing>flow_RaiseObjection_to_CheckObjection</semantic:outgoing>
+    </semantic:task>
+
+    <semantic:task id="task_AP_ReceiveInvestigationResults" name="Receive Investigation Results">
+      <semantic:incoming>flow_InformAccused_to_ReceiveResults</semantic:incoming>
+      <semantic:outgoing>flow_ReceiveResults_to_GatewayWantToComplain</semantic:outgoing>
+    </semantic:task>
+    <semantic:exclusiveGateway id="gateway_AP_WantToComplain" name="Want to Raise Complaint?">
+      <semantic:incoming>flow_ReceiveResults_to_GatewayWantToComplain</semantic:incoming>
+      <semantic:outgoing>flow_WantToComplain_No</semantic:outgoing>
+      <semantic:outgoing>flow_WantToComplain_Yes</semantic:outgoing>
+    </semantic:exclusiveGateway>
+    
+    <!-- Path: Want to Complain = No -->
+    <semantic:task id="task_AP_PayPenaltyNoComplaint" name="Pay Imposed Penalty">
+      <semantic:incoming>flow_WantToComplain_No</semantic:incoming>
+      <semantic:outgoing>flow_PayNoComplaint_to_EndNoComplaint</semantic:outgoing>
+    </semantic:task>
+    <semantic:endEvent id="endEvent_AP_MandateHandledNoComplaint" name="Punitive Mandate Finalized (Payment)">
+      <semantic:incoming>flow_PayNoComplaint_to_EndNoComplaint</semantic:incoming>
+    </semantic:endEvent>
+
+    <!-- Path: Want to Complain = Yes -->
+    <semantic:exclusiveGateway id="gateway_AP_PenaltyType" name="Complaint Type?">
+      <semantic:incoming>flow_WantToComplain_Yes</semantic:incoming>
+      <semantic:outgoing>flow_PenaltyType_Traffic</semantic:outgoing>
+      <semantic:outgoing>flow_PenaltyType_Parking</semantic:outgoing>
+    </semantic:exclusiveGateway>
+    <semantic:task id="task_AP_RaiseComplaintAdminCourt" name="Raise Complaint to Administrative Court">
+      <semantic:incoming>flow_PenaltyType_Traffic</semantic:incoming>
+      <semantic:outgoing>flow_RaiseComplaintAC_to_ReceiveAC</semantic:outgoing>
+    </semantic:task>
+    <semantic:task id="task_AP_RaiseComplaintFedFinCourt" name="Raise Complaint to Federal Finance Court">
+      <semantic:incoming>flow_PenaltyType_Parking</semantic:incoming>
+      <semantic:outgoing>flow_RaiseComplaintFFC_to_ReceiveFFC</semantic:outgoing>
+    </semantic:task>
+
+    <semantic:exclusiveGateway id="gateway_AP_MergeDisregardedComplaints" name="Merge Disregarded Complaint Paths">
+        <semantic:incoming>flow_SendBackAC_to_MergeDisregarded</semantic:incoming>
+        <semantic:incoming>flow_SendBackFFC_to_MergeDisregarded</semantic:incoming>
+        <semantic:outgoing>flow_MergeDisregarded_to_ReceiveDisregarded</semantic:outgoing>
+    </semantic:exclusiveGateway>
+    <semantic:task id="task_AP_ReceiveDisregardedComplaint" name="Receive Disregarded Complaint">
+      <semantic:incoming>flow_MergeDisregarded_to_ReceiveDisregarded</semantic:incoming>
+      <semantic:outgoing>flow_ReceiveDisregarded_to_PayAfterDisregard</semantic:outgoing>
+    </semantic:task>
+    <semantic:task id="task_AP_PayPenaltyAfterDisregard" name="Pay Imposed Penalty (After Disregard)">
+      <semantic:incoming>flow_ReceiveDisregarded_to_PayAfterDisregard</semantic:incoming>
+      <semantic:outgoing>flow_PayAfterDisregard_to_EndDisregard</semantic:outgoing>
+    </semantic:task>
+    <semantic:endEvent id="endEvent_AP_MandateHandledAfterDisregard" name="Punitive Mandate Finalized (Payment After Disregard)">
+      <semantic:incoming>flow_PayAfterDisregard_to_EndDisregard</semantic:incoming>
+    </semantic:endEvent>
+
+    <!-- Administrative Court Lane Elements -->
+    <semantic:task id="task_AC_ReceiveComplaint" name="Receive Complaint (Traffic)">
+      <semantic:incoming>flow_RaiseComplaintAC_to_ReceiveAC</semantic:incoming>
+      <semantic:outgoing>flow_ReceiveAC_to_CheckTimeAC</semantic:outgoing>
+    </semantic:task>
+    <semantic:task id="task_AC_CheckSubmissionTime" name="Check Complaint Submission Time (AC)">
+      <semantic:incoming>flow_ReceiveAC_to_CheckTimeAC</semantic:incoming>
+      <semantic:outgoing>flow_CheckTimeAC_to_GatewayOnTimeAC</semantic:outgoing>
+    </semantic:task>
+    <semantic:exclusiveGateway id="gateway_AC_SubmissionOnTime" name="Complaint Submitted On Time? (AC)">
+      <semantic:incoming>flow_CheckTimeAC_to_GatewayOnTimeAC</semantic:incoming>
+      <semantic:outgoing>flow_OnTimeAC_No</semantic:outgoing>
+      <semantic:outgoing>flow_OnTimeAC_Yes</semantic:outgoing>
+    </semantic:exclusiveGateway>
+    <!-- Path: On Time AC = No -->
+    <semantic:task id="task_AC_FinalizeDecisionNoTime" name="Consider Decision Final (AC)">
+      <semantic:incoming>flow_OnTimeAC_No</semantic:incoming>
+      <semantic:outgoing>flow_FinalizeAC_to_DisregardAC</semantic:outgoing>
+    </semantic:task>
+    <semantic:task id="task_AC_DisregardComplaint" name="Disregard Complaint (AC)">
+      <semantic:incoming>flow_FinalizeAC_to_DisregardAC</semantic:incoming>
+      <semantic:outgoing>flow_DisregardAC_to_SendBackAC</semantic:outgoing>
+    </semantic:task>
+    <semantic:task id="task_AC_SendDisregardedBack" name="Send Disregarded Complaint Back (AC)">
+      <semantic:incoming>flow_DisregardAC_to_SendBackAC</semantic:incoming>
+      <semantic:outgoing>flow_SendBackAC_to_MergeDisregarded</semantic:outgoing>
+    </semantic:task>
+    <!-- Path: On Time AC = Yes -->
+    <semantic:task id="task_AC_InvestigateComplaint" name="Investigate Complaint (AC)">
+      <semantic:incoming>flow_OnTimeAC_Yes</semantic:incoming>
+      <semantic:outgoing>flow_InvestigateAC_to_ArrangeTrialAC</semantic:outgoing>
+    </semantic:task>
+    <semantic:task id="task_AC_ArrangeTrial" name="Arrange Trial and Summon Persons (AC)">
+      <semantic:incoming>flow_InvestigateAC_to_ArrangeTrialAC</semantic:incoming>
+      <semantic:outgoing>flow_ArrangeTrialAC_to_SubmitDecisionAC</semantic:outgoing>
+    </semantic:task>
+    <semantic:task id="task_AC_SubmitDecision" name="Submit Court Decision (AC)">
+      <semantic:incoming>flow_ArrangeTrialAC_to_SubmitDecisionAC</semantic:incoming>
+      <semantic:outgoing>flow_SubmitDecisionAC_to_EndDecisionAC</semantic:outgoing>
+    </semantic:task>
+    <semantic:endEvent id="endEvent_AC_DecisionSubmitted" name="Court Decision Issued (AC)">
+      <semantic:incoming>flow_SubmitDecisionAC_to_EndDecisionAC</semantic:incoming>
+    </semantic:endEvent>
+
+    <!-- Federal Finance Court Lane Elements -->
+    <semantic:task id="task_FFC_ReceiveComplaint" name="Receive Complaint (Parking)">
+      <semantic:incoming>flow_RaiseComplaintFFC_to_ReceiveFFC</semantic:incoming>
+      <semantic:outgoing>flow_ReceiveFFC_to_CheckTimeFFC</semantic:outgoing>
+    </semantic:task>
+    <semantic:task id="task_FFC_CheckSubmissionTime" name="Check Complaint Submission Time (FFC)">
+      <semantic:incoming>flow_ReceiveFFC_to_CheckTimeFFC</semantic:incoming>
+      <semantic:outgoing>flow_CheckTimeFFC_to_GatewayOnTimeFFC</semantic:outgoing>
+    </semantic:task>
+    <semantic:exclusiveGateway id="gateway_FFC_SubmissionOnTime" name="Complaint Submitted On Time? (FFC)">
+      <semantic:incoming>flow_CheckTimeFFC_to_GatewayOnTimeFFC</semantic:incoming>
+      <semantic:outgoing>flow_OnTimeFFC_No</semantic:outgoing>
+      <semantic:outgoing>flow_OnTimeFFC_Yes</semantic:outgoing>
+    </semantic:exclusiveGateway>
+    <!-- Path: On Time FFC = No -->
+    <semantic:task id="task_FFC_FinalizeDecisionNoTime" name="Consider Decision Final (FFC)">
+      <semantic:incoming>flow_OnTimeFFC_No</semantic:incoming>
+      <semantic:outgoing>flow_FinalizeFFC_to_DisregardFFC</semantic:outgoing>
+    </semantic:task>
+    <semantic:task id="task_FFC_DisregardComplaint" name="Disregard Complaint (FFC)">
+      <semantic:incoming>flow_FinalizeFFC_to_DisregardFFC</semantic:incoming>
+      <semantic:outgoing>flow_DisregardFFC_to_SendBackFFC</semantic:outgoing>
+    </semantic:task>
+    <semantic:task id="task_FFC_SendDisregardedBack" name="Send Disregarded Complaint Back (FFC)">
+      <semantic:incoming>flow_DisregardFFC_to_SendBackFFC</semantic:incoming>
+      <semantic:outgoing>flow_SendBackFFC_to_MergeDisregarded</semantic:outgoing>
+    </semantic:task>
+    <!-- Path: On Time FFC = Yes -->
+    <semantic:task id="task_FFC_InvestigateComplaint" name="Investigate Complaint (FFC)">
+      <semantic:incoming>flow_OnTimeFFC_Yes</semantic:incoming>
+      <semantic:outgoing>flow_InvestigateFFC_to_ArrangeTrialFFC</semantic:outgoing>
+    </semantic:task>
+    <semantic:task id="task_FFC_ArrangeTrial" name="Arrange Trial and Summon Persons (FFC)">
+      <semantic:incoming>flow_InvestigateFFC_to_ArrangeTrialFFC</semantic:incoming>
+      <semantic:outgoing>flow_ArrangeTrialFFC_to_SubmitDecisionFFC</semantic:outgoing>
+    </semantic:task>
+    <semantic:task id="task_FFC_SubmitDecision" name="Submit Court Decision (FFC)">
+      <semantic:incoming>flow_ArrangeTrialFFC_to_SubmitDecisionFFC</semantic:incoming>
+      <semantic:outgoing>flow_SubmitDecisionFFC_to_EndDecisionFFC</semantic:outgoing>
+    </semantic:task>
+    <semantic:endEvent id="endEvent_FFC_DecisionSubmitted" name="Court Decision Issued (FFC)">
+      <semantic:incoming>flow_SubmitDecisionFFC_to_EndDecisionFFC</semantic:incoming>
+    </semantic:endEvent>
+
+    <!-- Sequence Flows -->
+    <semantic:sequenceFlow id="flow_Start_to_IssueMandate" sourceRef="startEvent_MA_PunishmentRealized" targetRef="task_MA_IssueMandate"/>
+    <semantic:sequenceFlow id="flow_IssueMandate_to_SendMandate" sourceRef="task_MA_IssueMandate" targetRef="task_MA_SendMandateByPost"/>
+    <semantic:sequenceFlow id="flow_SendMandate_to_AttemptDelivery" sourceRef="task_MA_SendMandateByPost" targetRef="task_PS_AttemptDelivery"/>
+    
+    <semantic:sequenceFlow id="flow_AttemptDelivery_to_GatewayDeliverySuccessful" sourceRef="task_PS_AttemptDelivery" targetRef="gateway_PS_DeliverySuccessful"/>
+    <semantic:sequenceFlow id="flow_DeliverySuccessful_Yes" name="Yes" sourceRef="gateway_PS_DeliverySuccessful" targetRef="task_AP_TakeOverMandateRSb"/>
+    <semantic:sequenceFlow id="flow_DeliverySuccessful_No" name="No" sourceRef="gateway_PS_DeliverySuccessful" targetRef="task_PS_DepositAtPostOffice"/>
+    <semantic:sequenceFlow id="flow_DepositPO_to_TakeOverPO" sourceRef="task_PS_DepositAtPostOffice" targetRef="task_AP_TakeOverMandatePostOffice"/>
+
+    <semantic:sequenceFlow id="flow_TakeOverRSb_to_MergeMandateReceipt" sourceRef="task_AP_TakeOverMandateRSb" targetRef="gateway_AP_MergeMandateReceipt"/>
+    <semantic:sequenceFlow id="flow_TakeOverPO_to_MergeMandateReceipt" sourceRef="task_AP_TakeOverMandatePostOffice" targetRef="gateway_AP_MergeMandateReceipt"/>
+    <semantic:sequenceFlow id="flow_MergeMandateReceipt_to_RaiseObjection" sourceRef="gateway_AP_MergeMandateReceipt" targetRef="task_AP_RaiseObjection"/>
+    <semantic:sequenceFlow id="flow_RaiseObjection_to_CheckObjection" sourceRef="task_AP_RaiseObjection" targetRef="task_MA_CheckObjection"/>
+
+    <semantic:sequenceFlow id="flow_CheckObjection_to_ConcludeInitial" sourceRef="task_MA_CheckObjection" targetRef="task_MA_ConcludeInitialInvestigation"/>
+    <semantic:sequenceFlow id="flow_ConcludeInitial_to_GatewayInvSufficient" sourceRef="task_MA_ConcludeInitialInvestigation" targetRef="gateway_MA_InvestigationSufficient"/>
+    <semantic:sequenceFlow id="flow_InvSufficient_Yes" name="Yes" sourceRef="gateway_MA_InvestigationSufficient" targetRef="gateway_MA_DecisionAfterSufficientInv"/>
+    <semantic:sequenceFlow id="flow_InvSufficient_No" name="No" sourceRef="gateway_MA_InvestigationSufficient" targetRef="task_MA_InvestigateFurther"/>
+    
+    <semantic:sequenceFlow id="flow_DecisionSufficient_Impose" name="Impose Sentence" sourceRef="gateway_MA_DecisionAfterSufficientInv" targetRef="task_MA_ImposeSentenceSufficient"/>
+    <semantic:sequenceFlow id="flow_DecisionSufficient_Terminate" name="Terminate Proceedings" sourceRef="gateway_MA_DecisionAfterSufficientInv" targetRef="task_MA_TerminateProceedingsSufficient"/>
+    <semantic:sequenceFlow id="flow_ImposeSufficient_to_MergeSufficient" sourceRef="task_MA_ImposeSentenceSufficient" targetRef="gateway_MA_MergeSufficientInvOutcome"/>
+    <semantic:sequenceFlow id="flow_TerminateSufficient_to_MergeSufficient" sourceRef="task_MA_TerminateProceedingsSufficient" targetRef="gateway_MA_MergeSufficientInvOutcome"/>
+    <semantic:sequenceFlow id="flow_MergeSufficient_to_ConvergeInvPaths" sourceRef="gateway_MA_MergeSufficientInvOutcome" targetRef="gateway_MA_ConvergeInvestigationPaths"/>
+
+    <semantic:sequenceFlow id="flow_InvestigateFurther_to_ConcludeFurther" sourceRef="task_MA_InvestigateFurther" targetRef="task_MA_ConcludeFurtherInvestigation"/>
+    <semantic:sequenceFlow id="flow_ConcludeFurther_to_GatewayDecisionFurther" sourceRef="task_MA_ConcludeFurtherInvestigation" targetRef="gateway_MA_DecisionAfterFurtherInv"/>
+    <semantic:sequenceFlow id="flow_DecisionFurther_Impose" name="Impose Sentence" sourceRef="gateway_MA_DecisionAfterFurtherInv" targetRef="task_MA_ImposeSentenceFurther"/>
+    <semantic:sequenceFlow id="flow_DecisionFurther_Terminate" name="Terminate Proceedings" sourceRef="gateway_MA_DecisionAfterFurtherInv" targetRef="task_MA_TerminateProceedingsFurther"/>
+    <semantic:sequenceFlow id="flow_ImposeFurther_to_MergeFurther" sourceRef="task_MA_ImposeSentenceFurther" targetRef="gateway_MA_MergeFurtherInvOutcome"/>
+    <semantic:sequenceFlow id="flow_TerminateFurther_to_MergeFurther" sourceRef="task_MA_TerminateProceedingsFurther" targetRef="gateway_MA_MergeFurtherInvOutcome"/>
+    <semantic:sequenceFlow id="flow_MergeFurther_to_ConvergeInvPaths" sourceRef="gateway_MA_MergeFurtherInvOutcome" targetRef="gateway_MA_ConvergeInvestigationPaths"/>
+    
+    <semantic:sequenceFlow id="flow_ConvergeInvPaths_to_InformAccused" sourceRef="gateway_MA_ConvergeInvestigationPaths" targetRef="task_MA_InformAccusedOfResults"/>
+    <semantic:sequenceFlow id="flow_InformAccused_to_ReceiveResults" sourceRef="task_MA_InformAccusedOfResults" targetRef="task_AP_ReceiveInvestigationResults"/>
+
+    <semantic:sequenceFlow id="flow_ReceiveResults_to_GatewayWantToComplain" sourceRef="task_AP_ReceiveInvestigationResults" targetRef="gateway_AP_WantToComplain"/>
+    <semantic:sequenceFlow id="flow_WantToComplain_No" name="No" sourceRef="gateway_AP_WantToComplain" targetRef="task_AP_PayPenaltyNoComplaint"/>
+    <semantic:sequenceFlow id="flow_PayNoComplaint_to_EndNoComplaint" sourceRef="task_AP_PayPenaltyNoComplaint" targetRef="endEvent_AP_MandateHandledNoComplaint"/>
+    <semantic:sequenceFlow id="flow_WantToComplain_Yes" name="Yes" sourceRef="gateway_AP_WantToComplain" targetRef="gateway_AP_PenaltyType"/>
+    
+    <semantic:sequenceFlow id="flow_PenaltyType_Traffic" name="Traffic Penalty" sourceRef="gateway_AP_PenaltyType" targetRef="task_AP_RaiseComplaintAdminCourt"/>
+    <semantic:sequenceFlow id="flow_PenaltyType_Parking" name="Parking Meter Penalty" sourceRef="gateway_AP_PenaltyType" targetRef="task_AP_RaiseComplaintFedFinCourt"/>
+    <semantic:sequenceFlow id="flow_RaiseComplaintAC_to_ReceiveAC" sourceRef="task_AP_RaiseComplaintAdminCourt" targetRef="task_AC_ReceiveComplaint"/>
+    <semantic:sequenceFlow id="flow_RaiseComplaintFFC_to_ReceiveFFC" sourceRef="task_AP_RaiseComplaintFedFinCourt" targetRef="task_FFC_ReceiveComplaint"/>
+
+    <semantic:sequenceFlow id="flow_ReceiveAC_to_CheckTimeAC" sourceRef="task_AC_ReceiveComplaint" targetRef="task_AC_CheckSubmissionTime"/>
+    <semantic:sequenceFlow id="flow_CheckTimeAC_to_GatewayOnTimeAC" sourceRef="task_AC_CheckSubmissionTime" targetRef="gateway_AC_SubmissionOnTime"/>
+    <semantic:sequenceFlow id="flow_OnTimeAC_No" name="No" sourceRef="gateway_AC_SubmissionOnTime" targetRef="task_AC_FinalizeDecisionNoTime"/>
+    <semantic:sequenceFlow id="flow_FinalizeAC_to_DisregardAC" sourceRef="task_AC_FinalizeDecisionNoTime" targetRef="task_AC_DisregardComplaint"/>
+    <semantic:sequenceFlow id="flow_DisregardAC_to_SendBackAC" sourceRef="task_AC_DisregardComplaint" targetRef="task_AC_SendDisregardedBack"/>
+    <semantic:sequenceFlow id="flow_SendBackAC_to_MergeDisregarded" sourceRef="task_AC_SendDisregardedBack" targetRef="gateway_AP_MergeDisregardedComplaints"/>
+    
+    <semantic:sequenceFlow id="flow_OnTimeAC_Yes" name="Yes" sourceRef="gateway_AC_SubmissionOnTime" targetRef="task_AC_InvestigateComplaint"/>
+    <semantic:sequenceFlow id="flow_InvestigateAC_to_ArrangeTrialAC" sourceRef="task_AC_InvestigateComplaint" targetRef="task_AC_ArrangeTrial"/>
+    <semantic:sequenceFlow id="flow_ArrangeTrialAC_to_SubmitDecisionAC" sourceRef="task_AC_ArrangeTrial" targetRef="task_AC_SubmitDecision"/>
+    <semantic:sequenceFlow id="flow_SubmitDecisionAC_to_EndDecisionAC" sourceRef="task_AC_SubmitDecision" targetRef="endEvent_AC_DecisionSubmitted"/>
+
+    <semantic:sequenceFlow id="flow_ReceiveFFC_to_CheckTimeFFC" sourceRef="task_FFC_ReceiveComplaint" targetRef="task_FFC_CheckSubmissionTime"/>
+    <semantic:sequenceFlow id="flow_CheckTimeFFC_to_GatewayOnTimeFFC" sourceRef="task_FFC_CheckSubmissionTime" targetRef="gateway_FFC_SubmissionOnTime"/>
+    <semantic:sequenceFlow id="flow_OnTimeFFC_No" name="No" sourceRef="gateway_FFC_SubmissionOnTime" targetRef="task_FFC_FinalizeDecisionNoTime"/>
+    <semantic:sequenceFlow id="flow_FinalizeFFC_to_DisregardFFC" sourceRef="task_FFC_FinalizeDecisionNoTime" targetRef="task_FFC_DisregardComplaint"/>
+    <semantic:sequenceFlow id="flow_DisregardFFC_to_SendBackFFC" sourceRef="task_FFC_DisregardComplaint" targetRef="task_FFC_SendDisregardedBack"/>
+    <semantic:sequenceFlow id="flow_SendBackFFC_to_MergeDisregarded" sourceRef="task_FFC_SendDisregardedBack" targetRef="gateway_AP_MergeDisregardedComplaints"/>
+
+    <semantic:sequenceFlow id="flow_OnTimeFFC_Yes" name="Yes" sourceRef="gateway_FFC_SubmissionOnTime" targetRef="task_FFC_InvestigateComplaint"/>
+    <semantic:sequenceFlow id="flow_InvestigateFFC_to_ArrangeTrialFFC" sourceRef="task_FFC_InvestigateComplaint" targetRef="task_FFC_ArrangeTrial"/>
+    <semantic:sequenceFlow id="flow_ArrangeTrialFFC_to_SubmitDecisionFFC" sourceRef="task_FFC_ArrangeTrial" targetRef="task_FFC_SubmitDecision"/>
+    <semantic:sequenceFlow id="flow_SubmitDecisionFFC_to_EndDecisionFFC" sourceRef="task_FFC_SubmitDecision" targetRef="endEvent_FFC_DecisionSubmitted"/>
+    
+    <semantic:sequenceFlow id="flow_MergeDisregarded_to_ReceiveDisregarded" sourceRef="gateway_AP_MergeDisregardedComplaints" targetRef="task_AP_ReceiveDisregardedComplaint"/>
+    <semantic:sequenceFlow id="flow_ReceiveDisregarded_to_PayAfterDisregard" sourceRef="task_AP_ReceiveDisregardedComplaint" targetRef="task_AP_PayPenaltyAfterDisregard"/>
+    <semantic:sequenceFlow id="flow_PayAfterDisregard_to_EndDisregard" sourceRef="task_AP_PayPenaltyAfterDisregard" targetRef="endEvent_AP_MandateHandledAfterDisregard"/>
+
+  </semantic:process>
+
+  <bpmndi:BPMNDiagram id="BPMNDiagram_PunitiveMandate" name="Punitive Mandate Diagram" resolution="96.0">
+    <bpmndi:BPMNPlane bpmnElement="collab_punitiveMandate">
+      <bpmndi:BPMNShape id="shape_pool_PunitiveMandate" bpmnElement="pool_PunitiveMandate" isHorizontal="true">
+        <dc:Bounds x="20" y="20" width="2400" height="2400"/>
+      </bpmndi:BPMNShape>
+
+      <!-- Lane Shapes -->
+      <bpmndi:BPMNShape id="shape_lane_MA" bpmnElement="lane_MA" isHorizontal="true">
+        <dc:Bounds x="50" y="20" width="2370" height="600"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_lane_Postman" bpmnElement="lane_Postman" isHorizontal="true">
+        <dc:Bounds x="50" y="620" width="2370" height="250"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_lane_AP" bpmnElement="lane_AP" isHorizontal="true">
+        <dc:Bounds x="50" y="870" width="2370" height="650"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_lane_AC" bpmnElement="lane_AC" isHorizontal="true">
+        <dc:Bounds x="50" y="1520" width="2370" height="450"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_lane_FFC" bpmnElement="lane_FFC" isHorizontal="true">
+        <dc:Bounds x="50" y="1970" width="2370" height="450"/>
+      </bpmndi:BPMNShape>
+
+      <!-- Municipal Authority Element Shapes -->
+      <bpmndi:BPMNShape id="shape_startEvent_MA_PunishmentRealized" bpmnElement="startEvent_MA_PunishmentRealized">
+        <dc:Bounds x="100" y="100" width="36" height="36"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_task_MA_IssueMandate" bpmnElement="task_MA_IssueMandate">
+        <dc:Bounds x="186" y="82" width="100" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_task_MA_SendMandateByPost" bpmnElement="task_MA_SendMandateByPost">
+        <dc:Bounds x="336" y="82" width="100" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_task_MA_CheckObjection" bpmnElement="task_MA_CheckObjection">
+        <dc:Bounds x="100" y="250" width="100" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_task_MA_ConcludeInitialInvestigation" bpmnElement="task_MA_ConcludeInitialInvestigation">
+        <dc:Bounds x="250" y="250" width="100" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_gateway_MA_InvestigationSufficient" bpmnElement="gateway_MA_InvestigationSufficient" isMarkerVisible="true">
+        <dc:Bounds x="400" y="265" width="50" height="50"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_gateway_MA_DecisionAfterSufficientInv" bpmnElement="gateway_MA_DecisionAfterSufficientInv" isMarkerVisible="true">
+        <dc:Bounds x="500" y="165" width="50" height="50"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_task_MA_ImposeSentenceSufficient" bpmnElement="task_MA_ImposeSentenceSufficient">
+        <dc:Bounds x="600" y="102" width="100" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_task_MA_TerminateProceedingsSufficient" bpmnElement="task_MA_TerminateProceedingsSufficient">
+        <dc:Bounds x="600" y="222" width="100" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_gateway_MA_MergeSufficientInvOutcome" bpmnElement="gateway_MA_MergeSufficientInvOutcome" isMarkerVisible="true">
+        <dc:Bounds x="750" y="165" width="50" height="50"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_task_MA_InvestigateFurther" bpmnElement="task_MA_InvestigateFurther">
+        <dc:Bounds x="500" y="352" width="100" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_task_MA_ConcludeFurtherInvestigation" bpmnElement="task_MA_ConcludeFurtherInvestigation">
+        <dc:Bounds x="650" y="352" width="100" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_gateway_MA_DecisionAfterFurtherInv" bpmnElement="gateway_MA_DecisionAfterFurtherInv" isMarkerVisible="true">
+        <dc:Bounds x="800" y="365" width="50" height="50"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_task_MA_ImposeSentenceFurther" bpmnElement="task_MA_ImposeSentenceFurther">
+        <dc:Bounds x="900" y="302" width="100" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_task_MA_TerminateProceedingsFurther" bpmnElement="task_MA_TerminateProceedingsFurther">
+        <dc:Bounds x="900" y="422" width="100" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_gateway_MA_MergeFurtherInvOutcome" bpmnElement="gateway_MA_MergeFurtherInvOutcome" isMarkerVisible="true">
+        <dc:Bounds x="1050" y="365" width="50" height="50"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_gateway_MA_ConvergeInvestigationPaths" bpmnElement="gateway_MA_ConvergeInvestigationPaths" isMarkerVisible="true">
+        <dc:Bounds x="900" y="265" width="50" height="50"/> <!-- Adjusted X to align better -->
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_task_MA_InformAccusedOfResults" bpmnElement="task_MA_InformAccusedOfResults">
+        <dc:Bounds x="1000" y="252" width="100" height="80"/>
+      </bpmndi:BPMNShape>
+
+      <!-- Postman Element Shapes -->
+      <bpmndi:BPMNShape id="shape_task_PS_AttemptDelivery" bpmnElement="task_PS_AttemptDelivery">
+        <dc:Bounds x="336" y="692" width="100" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_gateway_PS_DeliverySuccessful" bpmnElement="gateway_PS_DeliverySuccessful" isMarkerVisible="true">
+        <dc:Bounds x="486" y="705" width="50" height="50"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_task_PS_DepositAtPostOffice" bpmnElement="task_PS_DepositAtPostOffice">
+        <dc:Bounds x="461" y="782" width="100" height="80"/>
+      </bpmndi:BPMNShape>
+
+      <!-- Accused Person Element Shapes -->
+      <bpmndi:BPMNShape id="shape_task_AP_TakeOverMandateRSb" bpmnElement="task_AP_TakeOverMandateRSb">
+        <dc:Bounds x="600" y="942" width="100" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_task_AP_TakeOverMandatePostOffice" bpmnElement="task_AP_TakeOverMandatePostOffice">
+        <dc:Bounds x="600" y="1042" width="100" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_gateway_AP_MergeMandateReceipt" bpmnElement="gateway_AP_MergeMandateReceipt" isMarkerVisible="true">
+        <dc:Bounds x="750" y="995" width="50" height="50"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_task_AP_RaiseObjection" bpmnElement="task_AP_RaiseObjection">
+        <dc:Bounds x="100" y="1082" width="100" height="80"/> <!-- Moved to align with MA CheckObjection -->
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_task_AP_ReceiveInvestigationResults" bpmnElement="task_AP_ReceiveInvestigationResults">
+        <dc:Bounds x="1000" y="1082" width="100" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_gateway_AP_WantToComplain" bpmnElement="gateway_AP_WantToComplain" isMarkerVisible="true">
+        <dc:Bounds x="1150" y="1095" width="50" height="50"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_task_AP_PayPenaltyNoComplaint" bpmnElement="task_AP_PayPenaltyNoComplaint">
+        <dc:Bounds x="1250" y="1002" width="100" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_endEvent_AP_MandateHandledNoComplaint" bpmnElement="endEvent_AP_MandateHandledNoComplaint">
+        <dc:Bounds x="1400" y="1024" width="36" height="36"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_gateway_AP_PenaltyType" bpmnElement="gateway_AP_PenaltyType" isMarkerVisible="true">
+        <dc:Bounds x="1250" y="1185" width="50" height="50"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_task_AP_RaiseComplaintAdminCourt" bpmnElement="task_AP_RaiseComplaintAdminCourt">
+        <dc:Bounds x="1350" y="1102" width="100" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_task_AP_RaiseComplaintFedFinCourt" bpmnElement="task_AP_RaiseComplaintFedFinCourt">
+        <dc:Bounds x="1350" y="1262" width="100" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_gateway_AP_MergeDisregardedComplaints" bpmnElement="gateway_AP_MergeDisregardedComplaints" isMarkerVisible="true">
+        <dc:Bounds x="100" y="1355" width="50" height="50"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_task_AP_ReceiveDisregardedComplaint" bpmnElement="task_AP_ReceiveDisregardedComplaint">
+        <dc:Bounds x="200" y="1342" width="100" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_task_AP_PayPenaltyAfterDisregard" bpmnElement="task_AP_PayPenaltyAfterDisregard">
+        <dc:Bounds x="350" y="1342" width="100" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_endEvent_AP_MandateHandledAfterDisregard" bpmnElement="endEvent_AP_MandateHandledAfterDisregard">
+        <dc:Bounds x="500" y="1364" width="36" height="36"/>
+      </bpmndi:BPMNShape>
+
+      <!-- Administrative Court Element Shapes -->
+      <bpmndi:BPMNShape id="shape_task_AC_ReceiveComplaint" bpmnElement="task_AC_ReceiveComplaint">
+        <dc:Bounds x="1350" y="1592" width="100" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_task_AC_CheckSubmissionTime" bpmnElement="task_AC_CheckSubmissionTime">
+        <dc:Bounds x="1500" y="1592" width="100" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_gateway_AC_SubmissionOnTime" bpmnElement="gateway_AC_SubmissionOnTime" isMarkerVisible="true">
+        <dc:Bounds x="1650" y="1605" width="50" height="50"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_task_AC_FinalizeDecisionNoTime" bpmnElement="task_AC_FinalizeDecisionNoTime">
+        <dc:Bounds x="1625" y="1702" width="100" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_task_AC_DisregardComplaint" bpmnElement="task_AC_DisregardComplaint">
+        <dc:Bounds x="1625" y="1802" width="100" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_task_AC_SendDisregardedBack" bpmnElement="task_AC_SendDisregardedBack">
+        <dc:Bounds x="200" y="1592" width="100" height="80"/> <!-- Aligned with AP MergeDisregarded -->
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_task_AC_InvestigateComplaint" bpmnElement="task_AC_InvestigateComplaint">
+        <dc:Bounds x="1750" y="1592" width="100" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_task_AC_ArrangeTrial" bpmnElement="task_AC_ArrangeTrial">
+        <dc:Bounds x="1900" y="1592" width="100" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_task_AC_SubmitDecision" bpmnElement="task_AC_SubmitDecision">
+        <dc:Bounds x="2050" y="1592" width="100" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_endEvent_AC_DecisionSubmitted" bpmnElement="endEvent_AC_DecisionSubmitted">
+        <dc:Bounds x="2200" y="1614" width="36" height="36"/>
+      </bpmndi:BPMNShape>
+
+      <!-- Federal Finance Court Element Shapes -->
+      <bpmndi:BPMNShape id="shape_task_FFC_ReceiveComplaint" bpmnElement="task_FFC_ReceiveComplaint">
+        <dc:Bounds x="1350" y="2042" width="100" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_task_FFC_CheckSubmissionTime" bpmnElement="task_FFC_CheckSubmissionTime">
+        <dc:Bounds x="1500" y="2042" width="100" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_gateway_FFC_SubmissionOnTime" bpmnElement="gateway_FFC_SubmissionOnTime" isMarkerVisible="true">
+        <dc:Bounds x="1650" y="2055" width="50" height="50"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_task_FFC_FinalizeDecisionNoTime" bpmnElement="task_FFC_FinalizeDecisionNoTime">
+        <dc:Bounds x="1625" y="2152" width="100" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_task_FFC_DisregardComplaint" bpmnElement="task_FFC_DisregardComplaint">
+        <dc:Bounds x="1625" y="2252" width="100" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_task_FFC_SendDisregardedBack" bpmnElement="task_FFC_SendDisregardedBack">
+        <dc:Bounds x="200" y="2042" width="100" height="80"/> <!-- Aligned with AP MergeDisregarded -->
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_task_FFC_InvestigateComplaint" bpmnElement="task_FFC_InvestigateComplaint">
+        <dc:Bounds x="1750" y="2042" width="100" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_task_FFC_ArrangeTrial" bpmnElement="task_FFC_ArrangeTrial">
+        <dc:Bounds x="1900" y="2042" width="100" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_task_FFC_SubmitDecision" bpmnElement="task_FFC_SubmitDecision">
+        <dc:Bounds x="2050" y="2042" width="100" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_endEvent_FFC_DecisionSubmitted" bpmnElement="endEvent_FFC_DecisionSubmitted">
+        <dc:Bounds x="2200" y="2064" width="36" height="36"/>
+      </bpmndi:BPMNShape>
+      
+      <!-- Sequence Flow Edges -->
+      <bpmndi:BPMNEdge id="edge_flow_Start_to_IssueMandate" bpmnElement="flow_Start_to_IssueMandate">
+        <di:waypoint x="136" y="118"/>
+        <di:waypoint x="186" y="122"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_IssueMandate_to_SendMandate" bpmnElement="flow_IssueMandate_to_SendMandate">
+        <di:waypoint x="286" y="122"/>
+        <di:waypoint x="336" y="122"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_SendMandate_to_AttemptDelivery" bpmnElement="flow_SendMandate_to_AttemptDelivery">
+        <di:waypoint x="386" y="162"/>
+        <di:waypoint x="386" y="692"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_AttemptDelivery_to_GatewayDeliverySuccessful" bpmnElement="flow_AttemptDelivery_to_GatewayDeliverySuccessful">
+        <di:waypoint x="436" y="732"/>
+        <di:waypoint x="486" y="730"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_DeliverySuccessful_Yes" bpmnElement="flow_DeliverySuccessful_Yes">
+        <di:waypoint x="536" y="730"/>
+        <di:waypoint x="650" y="730"/>
+        <di:waypoint x="650" y="942"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_DeliverySuccessful_No" bpmnElement="flow_DeliverySuccessful_No">
+        <di:waypoint x="511" y="755"/>
+        <di:waypoint x="511" y="782"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_DepositPO_to_TakeOverPO" bpmnElement="flow_DepositPO_to_TakeOverPO">
+        <di:waypoint x="561" y="822"/>
+        <di:waypoint x="600" y="822"/>
+        <di:waypoint x="600" y="1042"/>
+         <bpmndi:BPMNLabel>
+          <dc:Bounds x="520" y="800" width="20" height="14"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_TakeOverRSb_to_MergeMandateReceipt" bpmnElement="flow_TakeOverRSb_to_MergeMandateReceipt">
+        <di:waypoint x="700" y="982"/>
+        <di:waypoint x="750" y="1020"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_TakeOverPO_to_MergeMandateReceipt" bpmnElement="flow_TakeOverPO_to_MergeMandateReceipt">
+        <di:waypoint x="700" y="1082"/>
+        <di:waypoint x="750" y="1020"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_MergeMandateReceipt_to_RaiseObjection" bpmnElement="flow_MergeMandateReceipt_to_RaiseObjection">
+        <di:waypoint x="775" y="1045"/>
+        <di:waypoint x="775" y="1122"/>
+        <di:waypoint x="200" y="1122"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_RaiseObjection_to_CheckObjection" bpmnElement="flow_RaiseObjection_to_CheckObjection">
+        <di:waypoint x="150" y="1082"/>
+        <di:waypoint x="150" y="330"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_CheckObjection_to_ConcludeInitial" bpmnElement="flow_CheckObjection_to_ConcludeInitial">
+        <di:waypoint x="200" y="290"/>
+        <di:waypoint x="250" y="290"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_ConcludeInitial_to_GatewayInvSufficient" bpmnElement="flow_ConcludeInitial_to_GatewayInvSufficient">
+        <di:waypoint x="350" y="290"/>
+        <di:waypoint x="400" y="290"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_InvSufficient_Yes" bpmnElement="flow_InvSufficient_Yes">
+        <di:waypoint x="425" y="265"/>
+        <di:waypoint x="425" y="190"/>
+        <di:waypoint x="500" y="190"/>
+         <bpmndi:BPMNLabel>
+          <dc:Bounds x="430" y="220" width="20" height="14"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_InvSufficient_No" bpmnElement="flow_InvSufficient_No">
+        <di:waypoint x="425" y="315"/>
+        <di:waypoint x="425" y="392"/>
+        <di:waypoint x="500" y="392"/>
+         <bpmndi:BPMNLabel>
+          <dc:Bounds x="430" y="345" width="20" height="14"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_DecisionSufficient_Impose" bpmnElement="flow_DecisionSufficient_Impose">
+        <di:waypoint x="525" y="165"/>
+        <di:waypoint x="525" y="142"/>
+        <di:waypoint x="600" y="142"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_DecisionSufficient_Terminate" bpmnElement="flow_DecisionSufficient_Terminate">
+        <di:waypoint x="525" y="215"/>
+        <di:waypoint x="525" y="262"/>
+        <di:waypoint x="600" y="262"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_ImposeSufficient_to_MergeSufficient" bpmnElement="flow_ImposeSufficient_to_MergeSufficient">
+        <di:waypoint x="700" y="142"/>
+        <di:waypoint x="750" y="190"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_TerminateSufficient_to_MergeSufficient" bpmnElement="flow_TerminateSufficient_to_MergeSufficient">
+        <di:waypoint x="700" y="262"/>
+        <di:waypoint x="750" y="190"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_MergeSufficient_to_ConvergeInvPaths" bpmnElement="flow_MergeSufficient_to_ConvergeInvPaths">
+        <di:waypoint x="800" y="190"/>
+        <di:waypoint x="925" y="190"/>
+        <di:waypoint x="925" y="265"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_InvestigateFurther_to_ConcludeFurther" bpmnElement="flow_InvestigateFurther_to_ConcludeFurther">
+        <di:waypoint x="600" y="392"/>
+        <di:waypoint x="650" y="392"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_ConcludeFurther_to_GatewayDecisionFurther" bpmnElement="flow_ConcludeFurther_to_GatewayDecisionFurther">
+        <di:waypoint x="750" y="392"/>
+        <di:waypoint x="800" y="390"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_DecisionFurther_Impose" bpmnElement="flow_DecisionFurther_Impose">
+        <di:waypoint x="825" y="365"/>
+        <di:waypoint x="825" y="342"/>
+        <di:waypoint x="900" y="342"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_DecisionFurther_Terminate" bpmnElement="flow_DecisionFurther_Terminate">
+        <di:waypoint x="825" y="415"/>
+        <di:waypoint x="825" y="462"/>
+        <di:waypoint x="900" y="462"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_ImposeFurther_to_MergeFurther" bpmnElement="flow_ImposeFurther_to_MergeFurther">
+        <di:waypoint x="1000" y="342"/>
+        <di:waypoint x="1050" y="390"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_TerminateFurther_to_MergeFurther" bpmnElement="flow_TerminateFurther_to_MergeFurther">
+        <di:waypoint x="1000" y="462"/>
+        <di:waypoint x="1050" y="390"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_MergeFurther_to_ConvergeInvPaths" bpmnElement="flow_MergeFurther_to_ConvergeInvPaths">
+        <di:waypoint x="1075" y="365"/>
+        <di:waypoint x="1075" y="290"/>
+        <di:waypoint x="950" y="290"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_ConvergeInvPaths_to_InformAccused" bpmnElement="flow_ConvergeInvPaths_to_InformAccused">
+        <di:waypoint x="950" y="290"/>
+        <di:waypoint x="1000" y="292"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_InformAccused_to_ReceiveResults" bpmnElement="flow_InformAccused_to_ReceiveResults">
+        <di:waypoint x="1050" y="332"/>
+        <di:waypoint x="1050" y="1082"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_ReceiveResults_to_GatewayWantToComplain" bpmnElement="flow_ReceiveResults_to_GatewayWantToComplain">
+        <di:waypoint x="1100" y="1122"/>
+        <di:waypoint x="1150" y="1120"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_WantToComplain_No" bpmnElement="flow_WantToComplain_No">
+        <di:waypoint x="1175" y="1095"/>
+        <di:waypoint x="1175" y="1042"/>
+        <di:waypoint x="1250" y="1042"/>
+         <bpmndi:BPMNLabel>
+          <dc:Bounds x="1180" y="1060" width="20" height="14"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_PayNoComplaint_to_EndNoComplaint" bpmnElement="flow_PayNoComplaint_to_EndNoComplaint">
+        <di:waypoint x="1350" y="1042"/>
+        <di:waypoint x="1400" y="1042"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_WantToComplain_Yes" bpmnElement="flow_WantToComplain_Yes">
+        <di:waypoint x="1175" y="1145"/>
+        <di:waypoint x="1175" y="1210"/>
+        <di:waypoint x="1250" y="1210"/>
+         <bpmndi:BPMNLabel>
+          <dc:Bounds x="1180" y="1170" width="20" height="14"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_PenaltyType_Traffic" bpmnElement="flow_PenaltyType_Traffic">
+        <di:waypoint x="1275" y="1185"/>
+        <di:waypoint x="1275" y="1142"/>
+        <di:waypoint x="1350" y="1142"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_PenaltyType_Parking" bpmnElement="flow_PenaltyType_Parking">
+        <di:waypoint x="1275" y="1235"/>
+        <di:waypoint x="1275" y="1302"/>
+        <di:waypoint x="1350" y="1302"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_RaiseComplaintAC_to_ReceiveAC" bpmnElement="flow_RaiseComplaintAC_to_ReceiveAC">
+        <di:waypoint x="1400" y="1182"/>
+        <di:waypoint x="1400" y="1592"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_RaiseComplaintFFC_to_ReceiveFFC" bpmnElement="flow_RaiseComplaintFFC_to_ReceiveFFC">
+        <di:waypoint x="1400" y="1342"/>
+        <di:waypoint x="1400" y="2042"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_ReceiveAC_to_CheckTimeAC" bpmnElement="flow_ReceiveAC_to_CheckTimeAC">
+        <di:waypoint x="1450" y="1632"/>
+        <di:waypoint x="1500" y="1632"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_CheckTimeAC_to_GatewayOnTimeAC" bpmnElement="flow_CheckTimeAC_to_GatewayOnTimeAC">
+        <di:waypoint x="1600" y="1632"/>
+        <di:waypoint x="1650" y="1630"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_OnTimeAC_No" bpmnElement="flow_OnTimeAC_No">
+        <di:waypoint x="1675" y="1655"/>
+        <di:waypoint x="1675" y="1702"/>
+         <bpmndi:BPMNLabel>
+          <dc:Bounds x="1680" y="1670" width="20" height="14"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_FinalizeAC_to_DisregardAC" bpmnElement="flow_FinalizeAC_to_DisregardAC">
+        <di:waypoint x="1675" y="1782"/>
+        <di:waypoint x="1675" y="1802"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_DisregardAC_to_SendBackAC" bpmnElement="flow_DisregardAC_to_SendBackAC">
+        <di:waypoint x="1675" y="1882"/>
+        <di:waypoint x="250" y="1882"/>
+        <di:waypoint x="250" y="1672"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_SendBackAC_to_MergeDisregarded" bpmnElement="flow_SendBackAC_to_MergeDisregarded">
+        <di:waypoint x="250" y="1592"/>
+        <di:waypoint x="125" y="1592"/>
+        <di:waypoint x="125" y="1405"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_OnTimeAC_Yes" bpmnElement="flow_OnTimeAC_Yes">
+        <di:waypoint x="1700" y="1630"/>
+        <di:waypoint x="1750" y="1632"/>
+         <bpmndi:BPMNLabel>
+          <dc:Bounds x="1705" y="1605" width="20" height="14"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_InvestigateAC_to_ArrangeTrialAC" bpmnElement="flow_InvestigateAC_to_ArrangeTrialAC">
+        <di:waypoint x="1850" y="1632"/>
+        <di:waypoint x="1900" y="1632"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_ArrangeTrialAC_to_SubmitDecisionAC" bpmnElement="flow_ArrangeTrialAC_to_SubmitDecisionAC">
+        <di:waypoint x="2000" y="1632"/>
+        <di:waypoint x="2050" y="1632"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_SubmitDecisionAC_to_EndDecisionAC" bpmnElement="flow_SubmitDecisionAC_to_EndDecisionAC">
+        <di:waypoint x="2150" y="1632"/>
+        <di:waypoint x="2200" y="1632"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_ReceiveFFC_to_CheckTimeFFC" bpmnElement="flow_ReceiveFFC_to_CheckTimeFFC">
+        <di:waypoint x="1450" y="2082"/>
+        <di:waypoint x="1500" y="2082"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_CheckTimeFFC_to_GatewayOnTimeFFC" bpmnElement="flow_CheckTimeFFC_to_GatewayOnTimeFFC">
+        <di:waypoint x="1600" y="2082"/>
+        <di:waypoint x="1650" y="2080"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_OnTimeFFC_No" bpmnElement="flow_OnTimeFFC_No">
+        <di:waypoint x="1675" y="2105"/>
+        <di:waypoint x="1675" y="2152"/>
+         <bpmndi:BPMNLabel>
+          <dc:Bounds x="1680" y="2120" width="20" height="14"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_FinalizeFFC_to_DisregardFFC" bpmnElement="flow_FinalizeFFC_to_DisregardFFC">
+        <di:waypoint x="1675" y="2232"/>
+        <di:waypoint x="1675" y="2252"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_DisregardFFC_to_SendBackFFC" bpmnElement="flow_DisregardFFC_to_SendBackFFC">
+        <di:waypoint x="1675" y="2332"/>
+        <di:waypoint x="250" y="2332"/>
+        <di:waypoint x="250" y="2122"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_SendBackFFC_to_MergeDisregarded" bpmnElement="flow_SendBackFFC_to_MergeDisregarded">
+        <di:waypoint x="250" y="2042"/>
+        <di:waypoint x="125" y="2042"/>
+        <di:waypoint x="125" y="1405"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_OnTimeFFC_Yes" bpmnElement="flow_OnTimeFFC_Yes">
+        <di:waypoint x="1700" y="2080"/>
+        <di:waypoint x="1750" y="2082"/>
+         <bpmndi:BPMNLabel>
+          <dc:Bounds x="1705" y="2055" width="20" height="14"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_InvestigateFFC_to_ArrangeTrialFFC" bpmnElement="flow_InvestigateFFC_to_ArrangeTrialFFC">
+        <di:waypoint x="1850" y="2082"/>
+        <di:waypoint x="1900" y="2082"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_ArrangeTrialFFC_to_SubmitDecisionFFC" bpmnElement="flow_ArrangeTrialFFC_to_SubmitDecisionFFC">
+        <di:waypoint x="2000" y="2082"/>
+        <di:waypoint x="2050" y="2082"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_SubmitDecisionFFC_to_EndDecisionFFC" bpmnElement="flow_SubmitDecisionFFC_to_EndDecisionFFC">
+        <di:waypoint x="2150" y="2082"/>
+        <di:waypoint x="2200" y="2082"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_MergeDisregarded_to_ReceiveDisregarded" bpmnElement="flow_MergeDisregarded_to_ReceiveDisregarded">
+        <di:waypoint x="150" y="1380"/>
+        <di:waypoint x="200" y="1382"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_ReceiveDisregarded_to_PayAfterDisregard" bpmnElement="flow_ReceiveDisregarded_to_PayAfterDisregard">
+        <di:waypoint x="300" y="1382"/>
+        <di:waypoint x="350" y="1382"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_PayAfterDisregard_to_EndDisregard" bpmnElement="flow_PayAfterDisregard_to_EndDisregard">
+        <di:waypoint x="450" y="1382"/>
+        <di:waypoint x="500" y="1382"/>
+      </bpmndi:BPMNEdge>
+
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</semantic:definitions>

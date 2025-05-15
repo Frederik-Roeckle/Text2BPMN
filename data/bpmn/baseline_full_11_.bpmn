@@ -1,0 +1,331 @@
+<?xml version="1.0" standalone="yes"?>
+<semantic:definitions id="InvoiceApprovalProcessDefs"
+    targetNamespace="http://example.com/bpmn/invoice-approval"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:semantic="http://www.omg.org/spec/BPMN/20100524/MODEL"
+    xmlns:di="http://www.omg.org/spec/DD/20100524/DI"
+    xmlns:dc="http://www.omg.org/spec/DD/20100524/DC"
+    xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI">
+
+  <semantic:message id="msg_1st_request_id" name="FirstStageApprovalRequestMessage"/>
+  <semantic:message id="msg_1st_decision_id" name="FirstStageDecisionMessage"/>
+  <semantic:message id="msg_2nd_request_id" name="SecondStageApprovalRequestMessage"/>
+  <semantic:message id="msg_2nd_decision_id" name="SecondStageDecisionMessage"/>
+
+  <semantic:collaboration id="collab_invoice_approval">
+    <semantic:participant id="participant_invoice_processor" name="Invoice Processing Department" processRef="process_invoice_processor"/>
+    <semantic:participant id="participant_first_approver" name="1st Approver" processRef="process_first_approver"/>
+    <semantic:participant id="participant_second_approver" name="2nd Approver" processRef="process_second_approver"/>
+
+    <semantic:messageFlow id="mf_req_1st" name="1st Stage Request" sourceRef="send_1st_approval" targetRef="start_1st_approver"/>
+    <semantic:messageFlow id="mf_dec_1st" name="1st Stage Decision" sourceRef="end_1st_approver" targetRef="catch_1st_decision"/>
+    <semantic:messageFlow id="mf_req_2nd" name="2nd Stage Request" sourceRef="send_2nd_approval" targetRef="start_2nd_approver"/>
+    <semantic:messageFlow id="mf_dec_2nd" name="2nd Stage Decision" sourceRef="end_2nd_approver" targetRef="catch_2nd_decision"/>
+  </semantic:collaboration>
+
+  <semantic:process id="process_invoice_processor" name="Invoice Main Process" isExecutable="true">
+    <semantic:startEvent id="start_main" name="Invoice Received for Processing">
+      <semantic:outgoing>flow_main_1</semantic:outgoing>
+    </semantic:startEvent>
+
+    <semantic:sendTask id="send_1st_approval" name="Request First-Stage Approval" messageRef="msg_1st_request_id">
+      <semantic:incoming>flow_main_1</semantic:incoming>
+      <semantic:outgoing>flow_main_2</semantic:outgoing>
+    </semantic:sendTask>
+
+    <semantic:intermediateCatchEvent id="catch_1st_decision" name="Receive First-Stage Decision">
+      <semantic:incoming>flow_main_2</semantic:incoming>
+      <semantic:outgoing>flow_main_3</semantic:outgoing>
+      <semantic:messageEventDefinition messageRef="msg_1st_decision_id"/>
+    </semantic:intermediateCatchEvent>
+
+    <semantic:exclusiveGateway id="gw_1st_decision" name="First-Stage Approval Granted?">
+      <semantic:incoming>flow_main_3</semantic:incoming>
+      <semantic:outgoing>flow_gw1_yes</semantic:outgoing>
+      <semantic:outgoing>flow_gw1_no</semantic:outgoing>
+    </semantic:exclusiveGateway>
+
+    <semantic:sequenceFlow id="flow_gw1_no" name="No (1st Stage)" sourceRef="gw_1st_decision" targetRef="end_1st_rejected"/>
+
+    <semantic:endEvent id="end_1st_rejected" name="First-Stage Rejection Processed">
+      <semantic:incoming>flow_gw1_no</semantic:incoming>
+    </semantic:endEvent>
+
+    <semantic:sequenceFlow id="flow_gw1_yes" name="Yes (1st Stage)" sourceRef="gw_1st_decision" targetRef="send_2nd_approval"/>
+
+    <semantic:sendTask id="send_2nd_approval" name="Request Second-Stage Approval" messageRef="msg_2nd_request_id">
+      <semantic:incoming>flow_gw1_yes</semantic:incoming>
+      <semantic:outgoing>flow_main_4</semantic:outgoing>
+    </semantic:sendTask>
+
+    <semantic:intermediateCatchEvent id="catch_2nd_decision" name="Receive Second-Stage Decision">
+      <semantic:incoming>flow_main_4</semantic:incoming>
+      <semantic:outgoing>flow_main_5</semantic:outgoing>
+      <semantic:messageEventDefinition messageRef="msg_2nd_decision_id"/>
+    </semantic:intermediateCatchEvent>
+
+    <semantic:exclusiveGateway id="gw_2nd_decision" name="Second-Stage Approval Granted?">
+      <semantic:incoming>flow_main_5</semantic:incoming>
+      <semantic:outgoing>flow_gw2_yes</semantic:outgoing>
+      <semantic:outgoing>flow_gw2_no</semantic:outgoing>
+    </semantic:exclusiveGateway>
+
+    <semantic:sequenceFlow id="flow_gw2_yes" name="Yes (2nd Stage)" sourceRef="gw_2nd_decision" targetRef="end_approved"/>
+
+    <semantic:endEvent id="end_approved" name="Signatures and Approvals Obtained">
+      <semantic:incoming>flow_gw2_yes</semantic:incoming>
+    </semantic:endEvent>
+
+    <semantic:sequenceFlow id="flow_gw2_no" name="No (2nd Stage)" sourceRef="gw_2nd_decision" targetRef="end_2nd_rejected"/>
+
+    <semantic:endEvent id="end_2nd_rejected" name="Second-Stage Rejection Processed">
+      <semantic:incoming>flow_gw2_no</semantic:incoming>
+    </semantic:endEvent>
+
+    <semantic:sequenceFlow id="flow_main_1" sourceRef="start_main" targetRef="send_1st_approval"/>
+    <semantic:sequenceFlow id="flow_main_2" sourceRef="send_1st_approval" targetRef="catch_1st_decision"/>
+    <semantic:sequenceFlow id="flow_main_3" sourceRef="catch_1st_decision" targetRef="gw_1st_decision"/>
+    <semantic:sequenceFlow id="flow_main_4" sourceRef="send_2nd_approval" targetRef="catch_2nd_decision"/>
+    <semantic:sequenceFlow id="flow_main_5" sourceRef="catch_2nd_decision" targetRef="gw_2nd_decision"/>
+  </semantic:process>
+
+  <semantic:process id="process_first_approver" name="1st Approver Process" isExecutable="true">
+    <semantic:startEvent id="start_1st_approver" name="Receive First-Stage Approval Request">
+      <semantic:outgoing>flow_1st_app_1</semantic:outgoing>
+      <semantic:messageEventDefinition messageRef="msg_1st_request_id"/>
+    </semantic:startEvent>
+
+    <semantic:task id="task_eval_1st" name="Evaluate First-Stage Invoice">
+      <semantic:incoming>flow_1st_app_1</semantic:incoming>
+      <semantic:outgoing>flow_1st_app_2</semantic:outgoing>
+    </semantic:task>
+
+    <semantic:task id="task_doc_1st" name="Document First-Stage Decision">
+      <semantic:incoming>flow_1st_app_2</semantic:incoming>
+      <semantic:outgoing>flow_1st_app_3</semantic:outgoing>
+    </semantic:task>
+
+    <semantic:endEvent id="end_1st_approver" name="Send First-Stage Decision">
+      <semantic:incoming>flow_1st_app_3</semantic:incoming>
+      <semantic:messageEventDefinition messageRef="msg_1st_decision_id"/>
+    </semantic:endEvent>
+
+    <semantic:sequenceFlow id="flow_1st_app_1" sourceRef="start_1st_approver" targetRef="task_eval_1st"/>
+    <semantic:sequenceFlow id="flow_1st_app_2" sourceRef="task_eval_1st" targetRef="task_doc_1st"/>
+    <semantic:sequenceFlow id="flow_1st_app_3" sourceRef="task_doc_1st" targetRef="end_1st_approver"/>
+  </semantic:process>
+
+  <semantic:process id="process_second_approver" name="2nd Approver Process" isExecutable="true">
+    <semantic:startEvent id="start_2nd_approver" name="Receive Second-Stage Approval Request">
+      <semantic:outgoing>flow_2nd_app_1</semantic:outgoing>
+      <semantic:messageEventDefinition messageRef="msg_2nd_request_id"/>
+    </semantic:startEvent>
+
+    <semantic:task id="task_eval_2nd" name="Evaluate Second-Stage Invoice">
+      <semantic:incoming>flow_2nd_app_1</semantic:incoming>
+      <semantic:outgoing>flow_2nd_app_2</semantic:outgoing>
+    </semantic:task>
+
+    <semantic:task id="task_doc_2nd" name="Document Second-Stage Decision">
+      <semantic:incoming>flow_2nd_app_2</semantic:incoming>
+      <semantic:outgoing>flow_2nd_app_3</semantic:outgoing>
+    </semantic:task>
+
+    <semantic:endEvent id="end_2nd_approver" name="Send Second-Stage Decision">
+      <semantic:incoming>flow_2nd_app_3</semantic:incoming>
+      <semantic:messageEventDefinition messageRef="msg_2nd_decision_id"/>
+    </semantic:endEvent>
+
+    <semantic:sequenceFlow id="flow_2nd_app_1" sourceRef="start_2nd_approver" targetRef="task_eval_2nd"/>
+    <semantic:sequenceFlow id="flow_2nd_app_2" sourceRef="task_eval_2nd" targetRef="task_doc_2nd"/>
+    <semantic:sequenceFlow id="flow_2nd_app_3" sourceRef="task_doc_2nd" targetRef="end_2nd_approver"/>
+  </semantic:process>
+
+  <bpmndi:BPMNDiagram id="BPMNDiagram_InvoiceApproval" name="Invoice Approval Diagram" resolution="96.0">
+    <bpmndi:BPMNPlane bpmnElement="collab_invoice_approval">
+      <bpmndi:BPMNShape id="shape_participant_invoice_processor" bpmnElement="participant_invoice_processor" isHorizontal="true">
+        <dc:Bounds x="20" y="20" width="1300" height="300"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_participant_first_approver" bpmnElement="participant_first_approver" isHorizontal="true">
+        <dc:Bounds x="20" y="370" width="1300" height="200"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_participant_second_approver" bpmnElement="participant_second_approver" isHorizontal="true">
+        <dc:Bounds x="20" y="620" width="1300" height="200"/>
+      </bpmndi:BPMNShape>
+
+      <!-- Invoice Processor Elements -->
+      <bpmndi:BPMNShape id="shape_start_main" bpmnElement="start_main">
+        <dc:Bounds x="80" y="152" width="36" height="36"/>
+        <bpmndi:BPMNLabel><dc:Bounds x="50" y="193" width="96" height="40"/></bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_send_1st_approval" bpmnElement="send_1st_approval">
+        <dc:Bounds x="180" y="130" width="130" height="80"/>
+         <bpmndi:BPMNLabel><dc:Bounds x="185" y="140" width="120" height="60"/></bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_catch_1st_decision" bpmnElement="catch_1st_decision">
+        <dc:Bounds x="380" y="152" width="36" height="36"/>
+         <bpmndi:BPMNLabel><dc:Bounds x="350" y="193" width="96" height="40"/></bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_gw_1st_decision" bpmnElement="gw_1st_decision" isMarkerVisible="true">
+        <dc:Bounds x="480" y="145" width="50" height="50"/>
+         <bpmndi:BPMNLabel><dc:Bounds x="455" y="200" width="100" height="40"/></bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_end_1st_rejected" bpmnElement="end_1st_rejected">
+        <dc:Bounds x="580" y="232" width="36" height="36"/>
+         <bpmndi:BPMNLabel><dc:Bounds x="550" y="273" width="96" height="40"/></bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_send_2nd_approval" bpmnElement="send_2nd_approval">
+        <dc:Bounds x="650" y="130" width="130" height="80"/>
+         <bpmndi:BPMNLabel><dc:Bounds x="655" y="140" width="120" height="60"/></bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_catch_2nd_decision" bpmnElement="catch_2nd_decision">
+        <dc:Bounds x="850" y="152" width="36" height="36"/>
+         <bpmndi:BPMNLabel><dc:Bounds x="820" y="193" width="96" height="40"/></bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_gw_2nd_decision" bpmnElement="gw_2nd_decision" isMarkerVisible="true">
+        <dc:Bounds x="950" y="145" width="50" height="50"/>
+         <bpmndi:BPMNLabel><dc:Bounds x="925" y="200" width="100" height="40"/></bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_end_approved" bpmnElement="end_approved">
+        <dc:Bounds x="1100" y="152" width="36" height="36"/>
+         <bpmndi:BPMNLabel><dc:Bounds x="1070" y="193" width="96" height="50"/></bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_end_2nd_rejected" bpmnElement="end_2nd_rejected">
+        <dc:Bounds x="1100" y="232" width="36" height="36"/>
+         <bpmndi:BPMNLabel><dc:Bounds x="1070" y="273" width="96" height="40"/></bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNEdge id="edge_flow_main_1" bpmnElement="flow_main_1">
+        <di:waypoint x="116" y="170"/>
+        <di:waypoint x="180" y="170"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_main_2" bpmnElement="flow_main_2">
+        <di:waypoint x="310" y="170"/>
+        <di:waypoint x="380" y="170"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_main_3" bpmnElement="flow_main_3">
+        <di:waypoint x="416" y="170"/>
+        <di:waypoint x="480" y="170"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_gw1_no" bpmnElement="flow_gw1_no">
+        <di:waypoint x="505" y="195"/>
+        <di:waypoint x="505" y="250"/>
+        <di:waypoint x="580" y="250"/>
+        <bpmndi:BPMNLabel><dc:Bounds x="510" y="220" width="75" height="25"/></bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_gw1_yes" bpmnElement="flow_gw1_yes">
+        <di:waypoint x="530" y="170"/>
+        <di:waypoint x="650" y="170"/>
+        <bpmndi:BPMNLabel><dc:Bounds x="570" y="145" width="75" height="25"/></bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_main_4" bpmnElement="flow_main_4">
+        <di:waypoint x="780" y="170"/>
+        <di:waypoint x="850" y="170"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_main_5" bpmnElement="flow_main_5">
+        <di:waypoint x="886" y="170"/>
+        <di:waypoint x="950" y="170"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_gw2_yes" bpmnElement="flow_gw2_yes">
+        <di:waypoint x="1000" y="170"/>
+        <di:waypoint x="1100" y="170"/>
+        <bpmndi:BPMNLabel><dc:Bounds x="1030" y="145" width="75" height="25"/></bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_gw2_no" bpmnElement="flow_gw2_no">
+        <di:waypoint x="975" y="195"/>
+        <di:waypoint x="975" y="250"/>
+        <di:waypoint x="1100" y="250"/>
+        <bpmndi:BPMNLabel><dc:Bounds x="980" y="220" width="75" height="25"/></bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+
+      <!-- 1st Approver Elements -->
+      <bpmndi:BPMNShape id="shape_start_1st_approver" bpmnElement="start_1st_approver">
+        <dc:Bounds x="242" y="452" width="36" height="36"/>
+        <bpmndi:BPMNLabel><dc:Bounds x="202" y="493" width="116" height="40"/></bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_task_eval_1st" bpmnElement="task_eval_1st">
+        <dc:Bounds x="340" y="430" width="130" height="80"/>
+        <bpmndi:BPMNLabel><dc:Bounds x="345" y="440" width="120" height="60"/></bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_task_doc_1st" bpmnElement="task_doc_1st">
+        <dc:Bounds x="530" y="430" width="130" height="80"/>
+        <bpmndi:BPMNLabel><dc:Bounds x="535" y="440" width="120" height="60"/></bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_end_1st_approver" bpmnElement="end_1st_approver">
+        <dc:Bounds x="722" y="452" width="36" height="36"/>
+        <bpmndi:BPMNLabel><dc:Bounds x="692" y="493" width="96" height="40"/></bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNEdge id="edge_flow_1st_app_1" bpmnElement="flow_1st_app_1">
+        <di:waypoint x="278" y="470"/>
+        <di:waypoint x="340" y="470"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_1st_app_2" bpmnElement="flow_1st_app_2">
+        <di:waypoint x="470" y="470"/>
+        <di:waypoint x="530" y="470"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_1st_app_3" bpmnElement="flow_1st_app_3">
+        <di:waypoint x="660" y="470"/>
+        <di:waypoint x="722" y="470"/>
+      </bpmndi:BPMNEdge>
+
+      <!-- 2nd Approver Elements -->
+      <bpmndi:BPMNShape id="shape_start_2nd_approver" bpmnElement="start_2nd_approver">
+        <dc:Bounds x="712" y="672" width="36" height="36"/>
+        <bpmndi:BPMNLabel><dc:Bounds x="672" y="713" width="116" height="40"/></bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_task_eval_2nd" bpmnElement="task_eval_2nd">
+        <dc:Bounds x="810" y="650" width="130" height="80"/>
+        <bpmndi:BPMNLabel><dc:Bounds x="815" y="660" width="120" height="60"/></bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_task_doc_2nd" bpmnElement="task_doc_2nd">
+        <dc:Bounds x="1000" y="650" width="130" height="80"/>
+        <bpmndi:BPMNLabel><dc:Bounds x="1005" y="660" width="120" height="60"/></bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_end_2nd_approver" bpmnElement="end_2nd_approver">
+        <dc:Bounds x="1192" y="672" width="36" height="36"/>
+        <bpmndi:BPMNLabel><dc:Bounds x="1162" y="713" width="96" height="40"/></bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNEdge id="edge_flow_2nd_app_1" bpmnElement="flow_2nd_app_1">
+        <di:waypoint x="748" y="690"/>
+        <di:waypoint x="810" y="690"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_2nd_app_2" bpmnElement="flow_2nd_app_2">
+        <di:waypoint x="940" y="690"/>
+        <di:waypoint x="1000" y="690"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_2nd_app_3" bpmnElement="flow_2nd_app_3">
+        <di:waypoint x="1130" y="690"/>
+        <di:waypoint x="1192" y="690"/>
+      </bpmndi:BPMNEdge>
+
+      <!-- Message Flows -->
+      <bpmndi:BPMNEdge id="edge_mf_req_1st" bpmnElement="mf_req_1st">
+        <di:waypoint x="245" y="210"/>
+        <di:waypoint x="245" y="340"/>
+        <di:waypoint x="260" y="340"/>
+        <di:waypoint x="260" y="452"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_mf_dec_1st" bpmnElement="mf_dec_1st">
+        <di:waypoint x="740" y="452"/>
+        <di:waypoint x="740" y="340"/>
+        <di:waypoint x="398" y="340"/>
+        <di:waypoint x="398" y="188"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_mf_req_2nd" bpmnElement="mf_req_2nd">
+        <di:waypoint x="715" y="210"/>
+        <di:waypoint x="715" y="470"/>
+        <di:waypoint x="730" y="470"/>
+        <di:waypoint x="730" y="672"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_mf_dec_2nd" bpmnElement="mf_dec_2nd">
+        <di:waypoint x="1210" y="672"/>
+        <di:waypoint x="1210" y="470"/>
+        <di:waypoint x="868" y="470"/>
+        <di:waypoint x="868" y="188"/>
+      </bpmndi:BPMNEdge>
+
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</semantic:definitions>

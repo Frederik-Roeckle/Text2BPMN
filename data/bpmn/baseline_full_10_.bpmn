@@ -1,0 +1,335 @@
+<?xml version="1.0" standalone="yes"?>
+<semantic:definitions id="VendorEvaluationProcessDefs"
+    targetNamespace="http://example.com/bpmn/vendor-evaluation"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:semantic="http://www.omg.org/spec/BPMN/20100524/MODEL"
+    xmlns:di="http://www.omg.org/spec/DD/20100524/DI"
+    xmlns:dc="http://www.omg.org/spec/DD/20100524/DC"
+    xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI">
+
+  <semantic:collaboration id="collab_vendor_evaluation">
+    <semantic:participant id="participant_purchasing" name="Purchasing Department" processRef="process_vendor_evaluation"/>
+  </semantic:collaboration>
+
+  <semantic:process id="process_vendor_evaluation" name="Vendor Evaluation Process" isExecutable="true">
+    <semantic:laneSet id="laneSet_purchasing">
+      <semantic:lane id="lane_mm_employee" name="MM Employee">
+        <semantic:flowNodeRef>start_event_request_received</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_evaluate_vendors</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_compare_performance</semantic:flowNodeRef>
+        <semantic:flowNodeRef>gateway_criteria_sufficient</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_maintain_criteria</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_assign_weights</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_define_subcriteria</semantic:flowNodeRef>
+        <semantic:flowNodeRef>gateway_select_scoring_method</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_enter_scores_manually</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_define_scores_info_record</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_compute_scores_automatically</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_save_evaluation</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_calculate_overall_scores</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_measure_vendor_performance</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_display_rank_list</semantic:flowNodeRef>
+        <semantic:flowNodeRef>end_event_evaluation_maintained</semantic:flowNodeRef>
+      </semantic:lane>
+    </semantic:laneSet>
+
+    <semantic:startEvent id="start_event_request_received" name="Vendor Evaluation Request Received">
+      <semantic:outgoing>flow_start_to_evaluate</semantic:outgoing>
+    </semantic:startEvent>
+
+    <semantic:task id="task_evaluate_vendors" name="Evaluate Vendors in SAP">
+      <semantic:incoming>flow_start_to_evaluate</semantic:incoming>
+      <semantic:outgoing>flow_evaluate_to_compare</semantic:outgoing>
+    </semantic:task>
+
+    <semantic:task id="task_compare_performance" name="Compare Vendor Performance based on Main Criteria">
+      <semantic:incoming>flow_evaluate_to_compare</semantic:incoming>
+      <semantic:outgoing>flow_compare_to_gateway_criteria</semantic:outgoing>
+    </semantic:task>
+
+    <semantic:exclusiveGateway id="gateway_criteria_sufficient" name="Main Criteria Sufficient?">
+      <semantic:incoming>flow_compare_to_gateway_criteria</semantic:incoming>
+      <semantic:outgoing>flow_gateway_criteria_to_maintain</semantic:outgoing>
+      <semantic:outgoing>flow_gateway_criteria_to_assign_weights</semantic:outgoing>
+    </semantic:exclusiveGateway>
+
+    <semantic:task id="task_maintain_criteria" name="Maintain Further Main Criteria">
+      <semantic:incoming>flow_gateway_criteria_to_maintain</semantic:incoming>
+      <semantic:outgoing>flow_maintain_to_assign_weights</semantic:outgoing>
+    </semantic:task>
+
+    <semantic:task id="task_assign_weights" name="Assign Weights to Criteria">
+      <semantic:incoming>flow_gateway_criteria_to_assign_weights</semantic:incoming>
+      <semantic:incoming>flow_maintain_to_assign_weights</semantic:incoming>
+      <semantic:outgoing>flow_assign_weights_to_define_subcriteria</semantic:outgoing>
+    </semantic:task>
+
+    <semantic:task id="task_define_subcriteria" name="Define Subcriteria">
+      <semantic:incoming>flow_assign_weights_to_define_subcriteria</semantic:incoming>
+      <semantic:outgoing>flow_define_subcriteria_to_gateway_scoring</semantic:outgoing>
+    </semantic:task>
+
+    <semantic:exclusiveGateway id="gateway_select_scoring_method" name="Select Subcriteria Scoring Method">
+      <semantic:incoming>flow_define_subcriteria_to_gateway_scoring</semantic:incoming>
+      <semantic:outgoing>flow_gateway_scoring_to_manual</semantic:outgoing>
+      <semantic:outgoing>flow_gateway_scoring_to_semi_auto</semantic:outgoing>
+      <semantic:outgoing>flow_gateway_scoring_to_full_auto</semantic:outgoing>
+    </semantic:exclusiveGateway>
+
+    <semantic:task id="task_enter_scores_manually" name="Enter Scores Manually per Subcriterion">
+      <semantic:incoming>flow_gateway_scoring_to_manual</semantic:incoming>
+      <semantic:outgoing>flow_manual_to_save</semantic:outgoing>
+    </semantic:task>
+
+    <semantic:task id="task_define_scores_info_record" name="Define Scores at Info Record Level">
+      <semantic:incoming>flow_gateway_scoring_to_semi_auto</semantic:incoming>
+      <semantic:outgoing>flow_semi_auto_to_save</semantic:outgoing>
+    </semantic:task>
+
+    <semantic:task id="task_compute_scores_automatically" name="Compute Scores Automatically">
+      <semantic:incoming>flow_gateway_scoring_to_full_auto</semantic:incoming>
+      <semantic:outgoing>flow_full_auto_to_save</semantic:outgoing>
+    </semantic:task>
+
+    <semantic:task id="task_save_evaluation" name="Save Evaluation">
+      <semantic:incoming>flow_manual_to_save</semantic:incoming>
+      <semantic:incoming>flow_semi_auto_to_save</semantic:incoming>
+      <semantic:incoming>flow_full_auto_to_save</semantic:incoming>
+      <semantic:outgoing>flow_save_to_calculate</semantic:outgoing>
+    </semantic:task>
+
+    <semantic:task id="task_calculate_overall_scores" name="Calculate Vendors' Overall Scores">
+      <semantic:incoming>flow_save_to_calculate</semantic:incoming>
+      <semantic:outgoing>flow_calculate_to_measure</semantic:outgoing>
+    </semantic:task>
+
+    <semantic:task id="task_measure_vendor_performance" name="Measure Vendor Performance">
+      <semantic:incoming>flow_calculate_to_measure</semantic:incoming>
+      <semantic:outgoing>flow_measure_to_display</semantic:outgoing>
+    </semantic:task>
+
+    <semantic:task id="task_display_rank_list" name="Display Vendor Rank List">
+      <semantic:incoming>flow_measure_to_display</semantic:incoming>
+      <semantic:outgoing>flow_display_to_end</semantic:outgoing>
+    </semantic:task>
+
+    <semantic:endEvent id="end_event_evaluation_maintained" name="Vendor Evaluation Maintained">
+      <semantic:incoming>flow_display_to_end</semantic:incoming>
+    </semantic:endEvent>
+
+    <semantic:sequenceFlow id="flow_start_to_evaluate" sourceRef="start_event_request_received" targetRef="task_evaluate_vendors"/>
+    <semantic:sequenceFlow id="flow_evaluate_to_compare" sourceRef="task_evaluate_vendors" targetRef="task_compare_performance"/>
+    <semantic:sequenceFlow id="flow_compare_to_gateway_criteria" sourceRef="task_compare_performance" targetRef="gateway_criteria_sufficient"/>
+    <semantic:sequenceFlow id="flow_gateway_criteria_to_maintain" name="No" sourceRef="gateway_criteria_sufficient" targetRef="task_maintain_criteria"/>
+    <semantic:sequenceFlow id="flow_gateway_criteria_to_assign_weights" name="Yes" sourceRef="gateway_criteria_sufficient" targetRef="task_assign_weights"/>
+    <semantic:sequenceFlow id="flow_maintain_to_assign_weights" sourceRef="task_maintain_criteria" targetRef="task_assign_weights"/>
+    <semantic:sequenceFlow id="flow_assign_weights_to_define_subcriteria" sourceRef="task_assign_weights" targetRef="task_define_subcriteria"/>
+    <semantic:sequenceFlow id="flow_define_subcriteria_to_gateway_scoring" sourceRef="task_define_subcriteria" targetRef="gateway_select_scoring_method"/>
+    <semantic:sequenceFlow id="flow_gateway_scoring_to_manual" name="Manual" sourceRef="gateway_select_scoring_method" targetRef="task_enter_scores_manually"/>
+    <semantic:sequenceFlow id="flow_gateway_scoring_to_semi_auto" name="Semi-Automatic" sourceRef="gateway_select_scoring_method" targetRef="task_define_scores_info_record"/>
+    <semantic:sequenceFlow id="flow_gateway_scoring_to_full_auto" name="Fully-Automatic" sourceRef="gateway_select_scoring_method" targetRef="task_compute_scores_automatically"/>
+    <semantic:sequenceFlow id="flow_manual_to_save" sourceRef="task_enter_scores_manually" targetRef="task_save_evaluation"/>
+    <semantic:sequenceFlow id="flow_semi_auto_to_save" sourceRef="task_define_scores_info_record" targetRef="task_save_evaluation"/>
+    <semantic:sequenceFlow id="flow_full_auto_to_save" sourceRef="task_compute_scores_automatically" targetRef="task_save_evaluation"/>
+    <semantic:sequenceFlow id="flow_save_to_calculate" sourceRef="task_save_evaluation" targetRef="task_calculate_overall_scores"/>
+    <semantic:sequenceFlow id="flow_calculate_to_measure" sourceRef="task_calculate_overall_scores" targetRef="task_measure_vendor_performance"/>
+    <semantic:sequenceFlow id="flow_measure_to_display" sourceRef="task_measure_vendor_performance" targetRef="task_display_rank_list"/>
+    <semantic:sequenceFlow id="flow_display_to_end" sourceRef="task_display_rank_list" targetRef="end_event_evaluation_maintained"/>
+  </semantic:process>
+
+  <bpmndi:BPMNDiagram id="BPMNDiagram_VendorEvaluation" name="Vendor Evaluation Diagram" resolution="96.0">
+    <bpmndi:BPMNPlane bpmnElement="collab_vendor_evaluation">
+      <bpmndi:BPMNShape id="participant_purchasing_shape" bpmnElement="participant_purchasing" isHorizontal="true">
+        <dc:Bounds x="10" y="10" width="1950" height="600"/>
+      </bpmndi:BPMNShape>
+      <!-- Lane shape is not explicitly drawn here, it's represented by the pool and flowNodeRefs -->
+
+      <bpmndi:BPMNShape id="start_event_request_received_shape" bpmnElement="start_event_request_received">
+        <dc:Bounds x="50" y="282" width="36" height="36"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="30" y="323" width="76" height="40" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="task_evaluate_vendors_shape" bpmnElement="task_evaluate_vendors">
+        <dc:Bounds x="150" y="260" width="100" height="80"/>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="task_compare_performance_shape" bpmnElement="task_compare_performance">
+        <dc:Bounds x="300" y="260" width="100" height="80"/>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="gateway_criteria_sufficient_shape" bpmnElement="gateway_criteria_sufficient" isMarkerVisible="true">
+        <dc:Bounds x="450" y="275" width="50" height="50"/>
+         <bpmndi:BPMNLabel>
+          <dc:Bounds x="430" y="330" width="90" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="task_maintain_criteria_shape" bpmnElement="task_maintain_criteria">
+        <dc:Bounds x="425" y="400" width="100" height="80"/>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="task_assign_weights_shape" bpmnElement="task_assign_weights">
+        <dc:Bounds x="600" y="260" width="100" height="80"/>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="task_define_subcriteria_shape" bpmnElement="task_define_subcriteria">
+        <dc:Bounds x="750" y="260" width="100" height="80"/>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="gateway_select_scoring_method_shape" bpmnElement="gateway_select_scoring_method" isMarkerVisible="true">
+        <dc:Bounds x="900" y="275" width="50" height="50"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="880" y="330" width="90" height="40" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="task_enter_scores_manually_shape" bpmnElement="task_enter_scores_manually">
+        <dc:Bounds x="1050" y="100" width="100" height="80"/>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="task_define_scores_info_record_shape" bpmnElement="task_define_scores_info_record">
+        <dc:Bounds x="1050" y="260" width="100" height="80"/>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="task_compute_scores_automatically_shape" bpmnElement="task_compute_scores_automatically">
+        <dc:Bounds x="1050" y="420" width="100" height="80"/>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="task_save_evaluation_shape" bpmnElement="task_save_evaluation">
+        <dc:Bounds x="1250" y="260" width="100" height="80"/>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="task_calculate_overall_scores_shape" bpmnElement="task_calculate_overall_scores">
+        <dc:Bounds x="1400" y="260" width="100" height="80"/>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="task_measure_vendor_performance_shape" bpmnElement="task_measure_vendor_performance">
+        <dc:Bounds x="1550" y="260" width="100" height="80"/>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="task_display_rank_list_shape" bpmnElement="task_display_rank_list">
+        <dc:Bounds x="1700" y="260" width="100" height="80"/>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="end_event_evaluation_maintained_shape" bpmnElement="end_event_evaluation_maintained">
+        <dc:Bounds x="1850" y="282" width="36" height="36"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1825" y="323" width="86" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNEdge id="flow_start_to_evaluate_edge" bpmnElement="flow_start_to_evaluate">
+        <di:waypoint x="86" y="300"/>
+        <di:waypoint x="150" y="300"/>
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="flow_evaluate_to_compare_edge" bpmnElement="flow_evaluate_to_compare">
+        <di:waypoint x="250" y="300"/>
+        <di:waypoint x="300" y="300"/>
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="flow_compare_to_gateway_criteria_edge" bpmnElement="flow_compare_to_gateway_criteria">
+        <di:waypoint x="400" y="300"/>
+        <di:waypoint x="450" y="300"/>
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="flow_gateway_criteria_to_maintain_edge" bpmnElement="flow_gateway_criteria_to_maintain">
+        <di:waypoint x="475" y="325"/>
+        <di:waypoint x="475" y="400"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="480" y="355" width="20" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="flow_gateway_criteria_to_assign_weights_edge" bpmnElement="flow_gateway_criteria_to_assign_weights">
+        <di:waypoint x="500" y="300"/>
+        <di:waypoint x="600" y="300"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="540" y="282" width="23" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="flow_maintain_to_assign_weights_edge" bpmnElement="flow_maintain_to_assign_weights">
+        <di:waypoint x="525" y="440"/>
+        <di:waypoint x="525" y="300"/>
+        <di:waypoint x="600" y="300"/>
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="flow_assign_weights_to_define_subcriteria_edge" bpmnElement="flow_assign_weights_to_define_subcriteria">
+        <di:waypoint x="700" y="300"/>
+        <di:waypoint x="750" y="300"/>
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="flow_define_subcriteria_to_gateway_scoring_edge" bpmnElement="flow_define_subcriteria_to_gateway_scoring">
+        <di:waypoint x="850" y="300"/>
+        <di:waypoint x="900" y="300"/>
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="flow_gateway_scoring_to_manual_edge" bpmnElement="flow_gateway_scoring_to_manual">
+        <di:waypoint x="925" y="275"/>
+        <di:waypoint x="925" y="140"/>
+        <di:waypoint x="1050" y="140"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="930" y="200" width="40" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="flow_gateway_scoring_to_semi_auto_edge" bpmnElement="flow_gateway_scoring_to_semi_auto">
+        <di:waypoint x="950" y="300"/>
+        <di:waypoint x="1050" y="300"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="965" y="282" width="78" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="flow_gateway_scoring_to_full_auto_edge" bpmnElement="flow_gateway_scoring_to_full_auto">
+        <di:waypoint x="925" y="325"/>
+        <di:waypoint x="925" y="460"/>
+        <di:waypoint x="1050" y="460"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="930" y="385" width="85" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="flow_manual_to_save_edge" bpmnElement="flow_manual_to_save">
+        <di:waypoint x="1150" y="140"/>
+        <di:waypoint x="1150" y="300"/>
+        <di:waypoint x="1250" y="300"/>
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="flow_semi_auto_to_save_edge" bpmnElement="flow_semi_auto_to_save">
+        <di:waypoint x="1150" y="300"/>
+        <di:waypoint x="1250" y="300"/>
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="flow_full_auto_to_save_edge" bpmnElement="flow_full_auto_to_save">
+        <di:waypoint x="1150" y="460"/>
+        <di:waypoint x="1150" y="300"/>
+        <di:waypoint x="1250" y="300"/>
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="flow_save_to_calculate_edge" bpmnElement="flow_save_to_calculate">
+        <di:waypoint x="1350" y="300"/>
+        <di:waypoint x="1400" y="300"/>
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="flow_calculate_to_measure_edge" bpmnElement="flow_calculate_to_measure">
+        <di:waypoint x="1500" y="300"/>
+        <di:waypoint x="1550" y="300"/>
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="flow_measure_to_display_edge" bpmnElement="flow_measure_to_display">
+        <di:waypoint x="1650" y="300"/>
+        <di:waypoint x="1700" y="300"/>
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="flow_display_to_end_edge" bpmnElement="flow_display_to_end">
+        <di:waypoint x="1800" y="300"/>
+        <di:waypoint x="1850" y="300"/>
+      </bpmndi:BPMNEdge>
+
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</semantic:definitions>

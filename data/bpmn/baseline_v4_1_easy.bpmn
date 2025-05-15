@@ -1,6 +1,6 @@
 <?xml version="1.0" standalone="yes"?>
-<semantic:definitions id="HiringProcessDefs"
-    targetNamespace="http://example.com/bpmn/hiring-process"
+<semantic:definitions id="definitions_HiringProcess"
+    targetNamespace="http://example.com/bpmn/HiringProcess"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xmlns:semantic="http://www.omg.org/spec/BPMN/20100524/MODEL"
     xmlns:di="http://www.omg.org/spec/DD/20100524/DI"
@@ -8,217 +8,281 @@
     xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI">
 
   <semantic:collaboration id="collab_HiringProcess">
-    <semantic:participant id="participant_HiringPool" name="Hiring Process Pool" processRef="hiringProcess"/>
+    <semantic:participant id="participant_Company" name="Company Hiring Process" processRef="process_CompanyHiring"/>
+    <semantic:participant id="participant_PotentialEmployee" name="Potential Employee" processRef="process_CandidateInteraction"/>
+    <semantic:messageFlow id="messageFlow_OfferSent" name="Job Offer Sent" sourceRef="task_SendOfferToCandidate" targetRef="startEvent_OfferReceived"/>
+    <semantic:messageFlow id="messageFlow_ContractReturned" name="Signed Contract Returned" sourceRef="task_ReturnSignedContract" targetRef="intermediateCatchEvent_ContractReceived"/>
   </semantic:collaboration>
 
-  <semantic:process id="hiringProcess" isExecutable="true">
-    <semantic:laneSet id="laneSet_Hiring">
+  <semantic:process id="process_CompanyHiring" isExecutable="true">
+    <semantic:laneSet id="laneSet_Company">
       <semantic:lane id="lane_HiringManager" name="Hiring Manager">
         <semantic:flowNodeRef>startEvent_HiringNeed</semantic:flowNodeRef>
-        <semantic:flowNodeRef>task_CreateJobRequisition</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_CreateRequisition</semantic:flowNodeRef>
       </semantic:lane>
-      <semantic:lane id="lane_HR" name="Human Resources">
+      <semantic:lane id="lane_HumanResources" name="Human Resources">
         <semantic:flowNodeRef>task_FindCandidates</semantic:flowNodeRef>
-        <semantic:flowNodeRef>task_SelectInterviewPanel</semantic:flowNodeRef>
-        <semantic:flowNodeRef>task_ScheduleInterviews</semantic:flowNodeRef>
-        <semantic:flowNodeRef>task_SetUpPayroll</semantic:flowNodeRef>
-        <semantic:flowNodeRef>task_PrepareSendOffer</semantic:flowNodeRef>
-        <semantic:flowNodeRef>task_ReceiveContract</semantic:flowNodeRef>
-        <semantic:flowNodeRef>endEvent_EmployeeHired</semantic:flowNodeRef>
-      </semantic:lane>
-      <semantic:lane id="lane_HRManager" name="HR Manager">
+        <semantic:flowNodeRef>task_SelectInterviewCandidates</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_InviteCandidates</semantic:flowNodeRef>
         <semantic:flowNodeRef>task_ConductInterviews</semantic:flowNodeRef>
-        <semantic:flowNodeRef>gw_CandidateSuitable</semantic:flowNodeRef>
-        <semantic:flowNodeRef>task_InstructHR</semantic:flowNodeRef>
+        <semantic:flowNodeRef>gateway_SuitableCandidate</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_SetUpPayroll</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_PrepareOffer</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_SendOfferToCandidate</semantic:flowNodeRef>
+        <semantic:flowNodeRef>intermediateCatchEvent_ContractReceived</semantic:flowNodeRef>
+        <semantic:flowNodeRef>endEvent_EmployeeHired</semantic:flowNodeRef>
       </semantic:lane>
     </semantic:laneSet>
 
-    <!-- Hiring Manager Lane Elements -->
     <semantic:startEvent id="startEvent_HiringNeed" name="Hiring Need Identified">
-      <semantic:outgoing>flow_StartToCreateReq</semantic:outgoing>
+      <semantic:outgoing>flow_NeedToRequisition</semantic:outgoing>
     </semantic:startEvent>
-    <semantic:task id="task_CreateJobRequisition" name="Create Job Requisition">
-      <semantic:incoming>flow_StartToCreateReq</semantic:incoming>
-      <semantic:outgoing>flow_CreateReqToFindCand</semantic:outgoing>
+    <semantic:task id="task_CreateRequisition" name="Create Job Requisition">
+      <semantic:incoming>flow_NeedToRequisition</semantic:incoming>
+      <semantic:outgoing>flow_RequisitionToFindCandidates</semantic:outgoing>
     </semantic:task>
+    <semantic:sequenceFlow id="flow_NeedToRequisition" sourceRef="startEvent_HiringNeed" targetRef="task_CreateRequisition"/>
 
-    <!-- Human Resources Lane Elements -->
     <semantic:task id="task_FindCandidates" name="Find Best Candidates">
-      <semantic:incoming>flow_CreateReqToFindCand</semantic:incoming>
-      <semantic:incoming>flow_GwToFindCand_Loop</semantic:incoming>
-      <semantic:outgoing>flow_FindCandToSelectPanel</semantic:outgoing>
+      <semantic:incoming>flow_RequisitionToFindCandidates</semantic:incoming>
+      <semantic:incoming>flow_DecisionNo_ToFindCandidates</semantic:incoming>
+      <semantic:outgoing>flow_FindToSelectCandidates</semantic:outgoing>
     </semantic:task>
-    <semantic:task id="task_SelectInterviewPanel" name="Select Interview Panel">
-      <semantic:incoming>flow_FindCandToSelectPanel</semantic:incoming>
-      <semantic:outgoing>flow_SelectPanelToScheduleInt</semantic:outgoing>
+    <semantic:sequenceFlow id="flow_RequisitionToFindCandidates" sourceRef="task_CreateRequisition" targetRef="task_FindCandidates"/>
+    <semantic:task id="task_SelectInterviewCandidates" name="Select Candidates for Interview">
+      <semantic:incoming>flow_FindToSelectCandidates</semantic:incoming>
+      <semantic:outgoing>flow_SelectToInviteCandidates</semantic:outgoing>
     </semantic:task>
-    <semantic:task id="task_ScheduleInterviews" name="Schedule Interviews with Candidates">
-      <semantic:incoming>flow_SelectPanelToScheduleInt</semantic:incoming>
-      <semantic:outgoing>flow_ScheduleIntToConductInt</semantic:outgoing>
+    <semantic:sequenceFlow id="flow_FindToSelectCandidates" sourceRef="task_FindCandidates" targetRef="task_SelectInterviewCandidates"/>
+    <semantic:task id="task_InviteCandidates" name="Invite Candidates for Interview">
+      <semantic:incoming>flow_SelectToInviteCandidates</semantic:incoming>
+      <semantic:outgoing>flow_InviteToConductInterviews</semantic:outgoing>
     </semantic:task>
-    <semantic:task id="task_SetUpPayroll" name="Set Up Payroll">
-      <semantic:incoming>flow_InstructHRToSetUpPayroll</semantic:incoming>
-      <semantic:outgoing>flow_SetUpPayrollToPrepareOffer</semantic:outgoing>
-    </semantic:task>
-    <semantic:task id="task_PrepareSendOffer" name="Prepare and Send Offer/Contract">
-      <semantic:incoming>flow_SetUpPayrollToPrepareOffer</semantic:incoming>
-      <semantic:outgoing>flow_PrepareOfferToReceiveContract</semantic:outgoing>
-    </semantic:task>
-    <semantic:task id="task_ReceiveContract" name="Receive Signed Contract">
-      <semantic:incoming>flow_PrepareOfferToReceiveContract</semantic:incoming>
-      <semantic:outgoing>flow_ReceiveContractToEnd</semantic:outgoing>
-    </semantic:task>
-    <semantic:endEvent id="endEvent_EmployeeHired" name="Employee Hired">
-      <semantic:incoming>flow_ReceiveContractToEnd</semantic:incoming>
-    </semantic:endEvent>
-
-    <!-- HR Manager Lane Elements -->
+    <semantic:sequenceFlow id="flow_SelectToInviteCandidates" sourceRef="task_SelectInterviewCandidates" targetRef="task_InviteCandidates"/>
     <semantic:task id="task_ConductInterviews" name="Conduct Interviews">
-      <semantic:incoming>flow_ScheduleIntToConductInt</semantic:incoming>
-      <semantic:outgoing>flow_ConductIntToGw</semantic:outgoing>
+      <semantic:incoming>flow_InviteToConductInterviews</semantic:incoming>
+      <semantic:outgoing>flow_ConductToDecision</semantic:outgoing>
     </semantic:task>
-    <semantic:exclusiveGateway id="gw_CandidateSuitable" name="Suitable Candidate Found?">
-      <semantic:incoming>flow_ConductIntToGw</semantic:incoming>
-      <semantic:outgoing>flow_GwToInstructHR</semantic:outgoing>
-      <semantic:outgoing>flow_GwToFindCand_Loop</semantic:outgoing>
+    <semantic:sequenceFlow id="flow_InviteToConductInterviews" sourceRef="task_InviteCandidates" targetRef="task_ConductInterviews"/>
+    <semantic:exclusiveGateway id="gateway_SuitableCandidate" name="Suitable Candidate Found?">
+      <semantic:incoming>flow_ConductToDecision</semantic:incoming>
+      <semantic:outgoing>flow_DecisionYes_ToPayroll</semantic:outgoing>
+      <semantic:outgoing>flow_DecisionNo_ToFindCandidates</semantic:outgoing>
     </semantic:exclusiveGateway>
-    <semantic:task id="task_InstructHR" name="Instruct HR for Next Steps">
-      <semantic:incoming>flow_GwToInstructHR</semantic:incoming>
-      <semantic:outgoing>flow_InstructHRToSetUpPayroll</semantic:outgoing>
+    <semantic:sequenceFlow id="flow_ConductToDecision" sourceRef="task_ConductInterviews" targetRef="gateway_SuitableCandidate"/>
+    <semantic:task id="task_SetUpPayroll" name="Set Up Payroll">
+      <semantic:incoming>flow_DecisionYes_ToPayroll</semantic:incoming>
+      <semantic:outgoing>flow_PayrollToPrepareOffer</semantic:outgoing>
     </semantic:task>
-
-    <!-- Sequence Flows -->
-    <semantic:sequenceFlow id="flow_StartToCreateReq" sourceRef="startEvent_HiringNeed" targetRef="task_CreateJobRequisition"/>
-    <semantic:sequenceFlow id="flow_CreateReqToFindCand" sourceRef="task_CreateJobRequisition" targetRef="task_FindCandidates"/>
-    <semantic:sequenceFlow id="flow_FindCandToSelectPanel" sourceRef="task_FindCandidates" targetRef="task_SelectInterviewPanel"/>
-    <semantic:sequenceFlow id="flow_SelectPanelToScheduleInt" sourceRef="task_SelectInterviewPanel" targetRef="task_ScheduleInterviews"/>
-    <semantic:sequenceFlow id="flow_ScheduleIntToConductInt" sourceRef="task_ScheduleInterviews" targetRef="task_ConductInterviews"/>
-    <semantic:sequenceFlow id="flow_ConductIntToGw" sourceRef="task_ConductInterviews" targetRef="gw_CandidateSuitable"/>
-    <semantic:sequenceFlow id="flow_GwToInstructHR" name="Yes" sourceRef="gw_CandidateSuitable" targetRef="task_InstructHR"/>
-    <semantic:sequenceFlow id="flow_GwToFindCand_Loop" name="No" sourceRef="gw_CandidateSuitable" targetRef="task_FindCandidates"/>
-    <semantic:sequenceFlow id="flow_InstructHRToSetUpPayroll" sourceRef="task_InstructHR" targetRef="task_SetUpPayroll"/>
-    <semantic:sequenceFlow id="flow_SetUpPayrollToPrepareOffer" sourceRef="task_SetUpPayroll" targetRef="task_PrepareSendOffer"/>
-    <semantic:sequenceFlow id="flow_PrepareOfferToReceiveContract" sourceRef="task_PrepareSendOffer" targetRef="task_ReceiveContract"/>
-    <semantic:sequenceFlow id="flow_ReceiveContractToEnd" sourceRef="task_ReceiveContract" targetRef="endEvent_EmployeeHired"/>
+    <semantic:sequenceFlow id="flow_DecisionYes_ToPayroll" name="Yes, Suitable" sourceRef="gateway_SuitableCandidate" targetRef="task_SetUpPayroll"/>
+    <semantic:task id="task_PrepareOffer" name="Prepare Offer/Contract">
+      <semantic:incoming>flow_PayrollToPrepareOffer</semantic:incoming>
+      <semantic:outgoing>flow_PrepareOfferToSendOffer</semantic:outgoing>
+    </semantic:task>
+    <semantic:sequenceFlow id="flow_PayrollToPrepareOffer" sourceRef="task_SetUpPayroll" targetRef="task_PrepareOffer"/>
+    <semantic:sendTask id="task_SendOfferToCandidate" name="Send Offer to Candidate" messageRef="message_JobOffer">
+      <semantic:incoming>flow_PrepareOfferToSendOffer</semantic:incoming>
+      <semantic:outgoing>flow_SendOfferToWaitForContract</semantic:outgoing>
+    </semantic:sendTask>
+    <semantic:sequenceFlow id="flow_PrepareOfferToSendOffer" sourceRef="task_PrepareOffer" targetRef="task_SendOfferToCandidate"/>
+    <semantic:intermediateCatchEvent id="intermediateCatchEvent_ContractReceived" name="Signed Contract Received">
+      <semantic:incoming>flow_SendOfferToWaitForContract</semantic:incoming>
+      <semantic:outgoing>flow_ContractReceivedToHired</semantic:outgoing>
+      <semantic:messageEventDefinition messageRef="message_SignedContract"/>
+    </semantic:intermediateCatchEvent>
+    <semantic:sequenceFlow id="flow_SendOfferToWaitForContract" sourceRef="task_SendOfferToCandidate" targetRef="intermediateCatchEvent_ContractReceived"/>
+    <semantic:endEvent id="endEvent_EmployeeHired" name="Employee Hired">
+      <semantic:incoming>flow_ContractReceivedToHired</semantic:incoming>
+    </semantic:endEvent>
+    <semantic:sequenceFlow id="flow_ContractReceivedToHired" sourceRef="intermediateCatchEvent_ContractReceived" targetRef="endEvent_EmployeeHired"/>
+    <semantic:sequenceFlow id="flow_DecisionNo_ToFindCandidates" name="No, Re-evaluate" sourceRef="gateway_SuitableCandidate" targetRef="task_FindCandidates"/>
   </semantic:process>
 
-  <bpmndi:BPMNDiagram id="BPMNDiagram_HiringProcess" name="Hiring Process Diagram" resolution="96.0">
+  <semantic:process id="process_CandidateInteraction" isExecutable="false">
+    <semantic:laneSet id="laneSet_Employee">
+        <semantic:lane id="lane_Candidate" name="Potential Employee">
+            <semantic:flowNodeRef>startEvent_OfferReceived</semantic:flowNodeRef>
+            <semantic:flowNodeRef>task_ReviewSignOffer</semantic:flowNodeRef>
+            <semantic:flowNodeRef>task_ReturnSignedContract</semantic:flowNodeRef>
+            <semantic:flowNodeRef>endEvent_ContractSubmitted</semantic:flowNodeRef>
+        </semantic:lane>
+    </semantic:laneSet>
+    <semantic:startEvent id="startEvent_OfferReceived" name="Offer Received">
+      <semantic:outgoing>flow_OfferReceivedToReview</semantic:outgoing>
+      <semantic:messageEventDefinition messageRef="message_JobOffer"/>
+    </semantic:startEvent>
+    <semantic:task id="task_ReviewSignOffer" name="Review and Sign Offer">
+      <semantic:incoming>flow_OfferReceivedToReview</semantic:incoming>
+      <semantic:outgoing>flow_ReviewToReturnContract</semantic:outgoing>
+    </semantic:task>
+    <semantic:sequenceFlow id="flow_OfferReceivedToReview" sourceRef="startEvent_OfferReceived" targetRef="task_ReviewSignOffer"/>
+    <semantic:sendTask id="task_ReturnSignedContract" name="Return Signed Contract" messageRef="message_SignedContract">
+      <semantic:incoming>flow_ReviewToReturnContract</semantic:incoming>
+      <semantic:outgoing>flow_ReturnContractToEnd</semantic:outgoing>
+    </semantic:sendTask>
+    <semantic:sequenceFlow id="flow_ReviewToReturnContract" sourceRef="task_ReviewSignOffer" targetRef="task_ReturnSignedContract"/>
+    <semantic:endEvent id="endEvent_ContractSubmitted" name="Contract Submitted">
+      <semantic:incoming>flow_ReturnContractToEnd</semantic:incoming>
+    </semantic:endEvent>
+    <semantic:sequenceFlow id="flow_ReturnContractToEnd" sourceRef="task_ReturnSignedContract" targetRef="endEvent_ContractSubmitted"/>
+  </semantic:process>
+
+  <semantic:message id="message_JobOffer" name="Job Offer"/>
+  <semantic:message id="message_SignedContract" name="Signed Contract"/>
+
+  <bpmndi:BPMNDiagram id="BPMNDiagram_HiringProcess">
     <bpmndi:BPMNPlane bpmnElement="collab_HiringProcess">
-      <bpmndi:BPMNShape id="participant_HiringPool_shape" bpmnElement="participant_HiringPool" isHorizontal="true">
-        <dc:Bounds x="10" y="10" width="1500" height="700"/>
+      <bpmndi:BPMNShape id="shape_participant_Company" bpmnElement="participant_Company" isHorizontal="true">
+        <dc:Bounds x="30" y="30" width="1700" height="500"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_lane_HiringManager" bpmnElement="lane_HiringManager" isHorizontal="true">
+        <dc:Bounds x="60" y="30" width="1670" height="150"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_startEvent_HiringNeed" bpmnElement="startEvent_HiringNeed">
+        <dc:Bounds x="100" y="87" width="36" height="36"/>
+        <bpmndi:BPMNLabel><dc:Bounds x="80" y="128" width="76" height="28"/></bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_task_CreateRequisition" bpmnElement="task_CreateRequisition">
+        <dc:Bounds x="200" y="65" width="120" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_lane_HumanResources" bpmnElement="lane_HumanResources" isHorizontal="true">
+        <dc:Bounds x="60" y="180" width="1670" height="350"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_task_FindCandidates" bpmnElement="task_FindCandidates">
+        <dc:Bounds x="200" y="310" width="120" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_task_SelectInterviewCandidates" bpmnElement="task_SelectInterviewCandidates">
+        <dc:Bounds x="370" y="310" width="120" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_task_InviteCandidates" bpmnElement="task_InviteCandidates">
+        <dc:Bounds x="540" y="310" width="120" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_task_ConductInterviews" bpmnElement="task_ConductInterviews">
+        <dc:Bounds x="710" y="310" width="120" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_gateway_SuitableCandidate" bpmnElement="gateway_SuitableCandidate" isMarkerVisible="true">
+        <dc:Bounds x="880" y="325" width="50" height="50"/>
+        <bpmndi:BPMNLabel><dc:Bounds x="860" y="380" width="90" height="28"/></bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_task_SetUpPayroll" bpmnElement="task_SetUpPayroll">
+        <dc:Bounds x="980" y="310" width="120" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_task_PrepareOffer" bpmnElement="task_PrepareOffer">
+        <dc:Bounds x="1150" y="310" width="120" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_task_SendOfferToCandidate" bpmnElement="task_SendOfferToCandidate">
+        <dc:Bounds x="1320" y="310" width="120" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_intermediateCatchEvent_ContractReceived" bpmnElement="intermediateCatchEvent_ContractReceived">
+        <dc:Bounds x="1490" y="332" width="36" height="36"/>
+        <bpmndi:BPMNLabel><dc:Bounds x="1470" y="373" width="76" height="28"/></bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_endEvent_EmployeeHired" bpmnElement="endEvent_EmployeeHired">
+        <dc:Bounds x="1590" y="332" width="36" height="36"/>
+        <bpmndi:BPMNLabel><dc:Bounds x="1570" y="373" width="76" height="14"/></bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
 
-      <bpmndi:BPMNShape id="lane_HiringManager_shape" bpmnElement="lane_HiringManager" isHorizontal="true">
-        <dc:Bounds x="40" y="10" width="1470" height="180"/>
+      <bpmndi:BPMNEdge id="edge_flow_NeedToRequisition" bpmnElement="flow_NeedToRequisition">
+        <di:waypoint x="136" y="105"/>
+        <di:waypoint x="200" y="105"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_RequisitionToFindCandidates" bpmnElement="flow_RequisitionToFindCandidates">
+        <di:waypoint x="260" y="145"/>
+        <di:waypoint x="260" y="310"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_FindToSelectCandidates" bpmnElement="flow_FindToSelectCandidates">
+        <di:waypoint x="320" y="350"/>
+        <di:waypoint x="370" y="350"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_SelectToInviteCandidates" bpmnElement="flow_SelectToInviteCandidates">
+        <di:waypoint x="490" y="350"/>
+        <di:waypoint x="540" y="350"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_InviteToConductInterviews" bpmnElement="flow_InviteToConductInterviews">
+        <di:waypoint x="660" y="350"/>
+        <di:waypoint x="710" y="350"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_ConductToDecision" bpmnElement="flow_ConductToDecision">
+        <di:waypoint x="830" y="350"/>
+        <di:waypoint x="880" y="350"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_DecisionYes_ToPayroll" bpmnElement="flow_DecisionYes_ToPayroll">
+        <di:waypoint x="930" y="350"/>
+        <di:waypoint x="980" y="350"/>
+        <bpmndi:BPMNLabel><dc:Bounds x="935" y="330" width="60" height="14"/></bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_PayrollToPrepareOffer" bpmnElement="flow_PayrollToPrepareOffer">
+        <di:waypoint x="1100" y="350"/>
+        <di:waypoint x="1150" y="350"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_PrepareOfferToSendOffer" bpmnElement="flow_PrepareOfferToSendOffer">
+        <di:waypoint x="1270" y="350"/>
+        <di:waypoint x="1320" y="350"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_SendOfferToWaitForContract" bpmnElement="flow_SendOfferToWaitForContract">
+        <di:waypoint x="1440" y="350"/>
+        <di:waypoint x="1490" y="350"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_ContractReceivedToHired" bpmnElement="flow_ContractReceivedToHired">
+        <di:waypoint x="1526" y="350"/>
+        <di:waypoint x="1590" y="350"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_DecisionNo_ToFindCandidates" bpmnElement="flow_DecisionNo_ToFindCandidates">
+        <di:waypoint x="905" y="375"/>
+        <di:waypoint x="905" y="450"/>
+        <di:waypoint x="170" y="450"/>
+        <di:waypoint x="170" y="350"/>
+        <di:waypoint x="200" y="350"/>
+        <bpmndi:BPMNLabel><dc:Bounds x="500" y="455" width="80" height="14"/></bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNShape id="shape_participant_PotentialEmployee" bpmnElement="participant_PotentialEmployee" isHorizontal="true">
+        <dc:Bounds x="30" y="550" width="1700" height="200"/>
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="lane_HR_shape" bpmnElement="lane_HR" isHorizontal="true">
-        <dc:Bounds x="40" y="190" width="1470" height="250"/>
+      <bpmndi:BPMNShape id="shape_lane_Candidate" bpmnElement="lane_Candidate" isHorizontal="true">
+        <dc:Bounds x="60" y="550" width="1670" height="200"/>
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="lane_HRManager_shape" bpmnElement="lane_HRManager" isHorizontal="true">
-        <dc:Bounds x="40" y="440" width="1470" height="250"/>
+      <bpmndi:BPMNShape id="shape_startEvent_OfferReceived" bpmnElement="startEvent_OfferReceived">
+        <dc:Bounds x="100" y="632" width="36" height="36"/>
+        <bpmndi:BPMNLabel><dc:Bounds x="80" y="673" width="76" height="14"/></bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_task_ReviewSignOffer" bpmnElement="task_ReviewSignOffer">
+        <dc:Bounds x="200" y="610" width="120" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_task_ReturnSignedContract" bpmnElement="task_ReturnSignedContract">
+        <dc:Bounds x="370" y="610" width="120" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_endEvent_ContractSubmitted" bpmnElement="endEvent_ContractSubmitted">
+        <dc:Bounds x="540" y="632" width="36" height="36"/>
+        <bpmndi:BPMNLabel><dc:Bounds x="520" y="673" width="76" height="28"/></bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
 
-      <!-- Hiring Manager Lane Shapes -->
-      <bpmndi:BPMNShape id="startEvent_HiringNeed_shape" bpmnElement="startEvent_HiringNeed">
-        <dc:Bounds x="60" y="82" width="36" height="36"/>
-         <bpmndi:BPMNLabel><dc:Bounds x="40" y="123" width="76" height="28" /></bpmndi:BPMNLabel>
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="task_CreateJobRequisition_shape" bpmnElement="task_CreateJobRequisition">
-        <dc:Bounds x="160" y="60" width="120" height="80"/>
-      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="edge_flow_OfferReceivedToReview" bpmnElement="flow_OfferReceivedToReview">
+        <di:waypoint x="136" y="650"/>
+        <di:waypoint x="200" y="650"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_ReviewToReturnContract" bpmnElement="flow_ReviewToReturnContract">
+        <di:waypoint x="320" y="650"/>
+        <di:waypoint x="370" y="650"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_ReturnContractToEnd" bpmnElement="flow_ReturnContractToEnd">
+        <di:waypoint x="490" y="650"/>
+        <di:waypoint x="540" y="650"/>
+      </bpmndi:BPMNEdge>
 
-      <!-- Human Resources Lane Shapes -->
-      <bpmndi:BPMNShape id="task_FindCandidates_shape" bpmnElement="task_FindCandidates">
-        <dc:Bounds x="320" y="275" width="120" height="80"/>
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="task_SelectInterviewPanel_shape" bpmnElement="task_SelectInterviewPanel">
-        <dc:Bounds x="500" y="275" width="120" height="80"/>
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="task_ScheduleInterviews_shape" bpmnElement="task_ScheduleInterviews">
-        <dc:Bounds x="680" y="275" width="120" height="80"/>
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="task_SetUpPayroll_shape" bpmnElement="task_SetUpPayroll">
-        <dc:Bounds x="950" y="275" width="100" height="80"/>
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="task_PrepareSendOffer_shape" bpmnElement="task_PrepareSendOffer">
-        <dc:Bounds x="1110" y="275" width="100" height="80"/>
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="task_ReceiveContract_shape" bpmnElement="task_ReceiveContract">
-        <dc:Bounds x="1270" y="275" width="100" height="80"/>
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="endEvent_EmployeeHired_shape" bpmnElement="endEvent_EmployeeHired">
-        <dc:Bounds x="1430" y="297" width="36" height="36"/>
-        <bpmndi:BPMNLabel><dc:Bounds x="1410" y="338" width="76" height="28" /></bpmndi:BPMNLabel>
-      </bpmndi:BPMNShape>
-
-      <!-- HR Manager Lane Shapes -->
-      <bpmndi:BPMNShape id="task_ConductInterviews_shape" bpmnElement="task_ConductInterviews">
-        <dc:Bounds x="680" y="525" width="120" height="80"/>
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="gw_CandidateSuitable_shape" bpmnElement="gw_CandidateSuitable" isMarkerVisible="true">
-        <dc:Bounds x="860" y="540" width="50" height="50"/>
-         <bpmndi:BPMNLabel><dc:Bounds x="835" y="595" width="100" height="28" /></bpmndi:BPMNLabel>
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="task_InstructHR_shape" bpmnElement="task_InstructHR">
-        <dc:Bounds x="990" y="525" width="120" height="80"/>
-      </bpmndi:BPMNShape>
-
-      <!-- Sequence Flow Edges -->
-      <bpmndi:BPMNEdge id="flow_StartToCreateReq_edge" bpmnElement="flow_StartToCreateReq">
-        <di:waypoint x="96" y="100"/>
-        <di:waypoint x="160" y="100"/>
+      <bpmndi:BPMNEdge id="edge_messageFlow_OfferSent" bpmnElement="messageFlow_OfferSent">
+        <di:waypoint x="1380" y="390"/>
+        <di:waypoint x="1380" y="470"/>
+        <di:waypoint x="118" y="470"/>
+        <di:waypoint x="118" y="632"/>
+        <bpmndi:BPMNLabel><dc:Bounds x="700" y="445" width="80" height="14"/></bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="flow_CreateReqToFindCand_edge" bpmnElement="flow_CreateReqToFindCand">
-        <di:waypoint x="280" y="100"/> <!-- task_CreateJobRequisition right-center -->
-        <di:waypoint x="300" y="100"/>
-        <di:waypoint x="300" y="315"/>
-        <di:waypoint x="320" y="315"/> <!-- task_FindCandidates left-center -->
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="flow_FindCandToSelectPanel_edge" bpmnElement="flow_FindCandToSelectPanel">
-        <di:waypoint x="440" y="315"/>
-        <di:waypoint x="500" y="315"/>
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="flow_SelectPanelToScheduleInt_edge" bpmnElement="flow_SelectPanelToScheduleInt">
-        <di:waypoint x="620" y="315"/>
-        <di:waypoint x="680" y="315"/>
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="flow_ScheduleIntToConductInt_edge" bpmnElement="flow_ScheduleIntToConductInt">
-        <di:waypoint x="740" y="355"/> <!-- task_ScheduleInterviews bottom-center -->
-        <di:waypoint x="740" y="525"/> <!-- task_ConductInterviews top-center -->
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="flow_ConductIntToGw_edge" bpmnElement="flow_ConductIntToGw">
-        <di:waypoint x="800" y="565"/>
-        <di:waypoint x="860" y="565"/>
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="flow_GwToInstructHR_edge" bpmnElement="flow_GwToInstructHR">
-        <di:waypoint x="910" y="565"/>
-        <di:waypoint x="990" y="565"/>
-        <bpmndi:BPMNLabel><dc:Bounds x="940" y="545" width="30" height="14" /></bpmndi:BPMNLabel>
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="flow_GwToFindCand_Loop_edge" bpmnElement="flow_GwToFindCand_Loop">
-        <di:waypoint x="885" y="540"/> <!-- gw_CandidateSuitable top-center -->
-        <di:waypoint x="885" y="235"/>
-        <di:waypoint x="380" y="235"/>
-        <di:waypoint x="380" y="275"/> <!-- task_FindCandidates top-center -->
-        <bpmndi:BPMNLabel><dc:Bounds x="620" y="215" width="30" height="14" /></bpmndi:BPMNLabel>
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="flow_InstructHRToSetUpPayroll_edge" bpmnElement="flow_InstructHRToSetUpPayroll">
-        <di:waypoint x="1050" y="525"/> <!-- task_InstructHR top-center -->
-        <di:waypoint x="1050" y="400"/>
-        <di:waypoint x="1000" y="400"/>
-        <di:waypoint x="1000" y="355"/> <!-- task_SetUpPayroll bottom-center -->
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="flow_SetUpPayrollToPrepareOffer_edge" bpmnElement="flow_SetUpPayrollToPrepareOffer">
-        <di:waypoint x="1050" y="315"/>
-        <di:waypoint x="1110" y="315"/>
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="flow_PrepareOfferToReceiveContract_edge" bpmnElement="flow_PrepareOfferToReceiveContract">
-        <di:waypoint x="1210" y="315"/>
-        <di:waypoint x="1270" y="315"/>
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="flow_ReceiveContractToEnd_edge" bpmnElement="flow_ReceiveContractToEnd">
-        <di:waypoint x="1370" y="315"/>
-        <di:waypoint x="1430" y="315"/>
+      <bpmndi:BPMNEdge id="edge_messageFlow_ContractReturned" bpmnElement="messageFlow_ContractReturned">
+        <di:waypoint x="430" y="610"/>
+        <di:waypoint x="430" y="470"/>
+        <di:waypoint x="1508" y="470"/>
+        <di:waypoint x="1508" y="368"/>
+        <bpmndi:BPMNLabel><dc:Bounds x="920" y="445" width="130" height="14"/></bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
     </bpmndi:BPMNPlane>
   </bpmndi:BPMNDiagram>
