@@ -38,9 +38,9 @@ class BaseAgent(ABC):
 
     def add_few_shot_examples(self):
         if self.few_shot_examples:
-            examples = load_data(self.few_shot_examples)
-            # Ensure examples are objects, not strings
-            self.start_messages.append(SystemMessage(content=examples))
+            for ex in load_data(self.few_shot_examples):
+                self.start_messages.append(HumanMessage(content=ex["human"]))
+                self.start_messages.append(AIMessage(content=ex["ai"]))
 
 
     def add_invoke_message(self):

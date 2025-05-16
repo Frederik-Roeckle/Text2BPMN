@@ -60,6 +60,7 @@ def build_graph():
     
     prompt_extract = read_txt_file("data/promts/extraction_prompt.txt")
     prompt_xml = read_txt_file("data/promts/create_xml_prompt.txt")
+    prompt_xml_few = read_txt_file("data/promts/create_xml_prompt_few.txt")
     prompt_validate = read_txt_file("data/promts/validate_prompt.txt")
     prompt_supervisor = read_txt_file("data/promts/supervisor_prompt.txt")
 
@@ -72,8 +73,8 @@ def build_graph():
 
     xml_Agent = NormalAgent(
         model=get_model(),
-        system_message=prompt_xml,
-        #few_shot_examples="data/examples/xml_example.txt",
+        system_message=prompt_xml_few,
+        few_shot_examples="data/examples/one_shot_examples.json",
         step="xml_Agent"
     )
 
