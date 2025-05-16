@@ -1,0 +1,202 @@
+<?xml version="1.0" standalone="yes"?>
+<semantic:definitions id="definitions_invoice_process"
+    targetNamespace="http://example.com/bpmn/invoice_process"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:semantic="http://www.omg.org/spec/BPMN/20100524/MODEL"
+    xmlns:di="http://www.omg.org/spec/DD/20100524/DI"
+    xmlns:dc="http://www.omg.org/spec/DD/20100524/DC"
+    xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI">
+
+  <semantic:collaboration id="collab_invoice_process">
+    <semantic:participant id="participant_ap_dept" name="Accounts Payable Department" processRef="invoiceProcess"/>
+  </semantic:collaboration>
+
+  <semantic:process id="invoiceProcess" isExecutable="true">
+    <semantic:laneSet id="laneSet_ap">
+      <semantic:lane id="lane_ap_processor" name="AP Processor">
+        <semantic:flowNodeRef>startEvent</semantic:flowNodeRef>
+        <semantic:flowNodeRef>pgFork</semantic:flowNodeRef>
+        <semantic:flowNodeRef>taskGenerateDoc</semantic:flowNodeRef>
+        <semantic:flowNodeRef>taskVerifyOrder</semantic:flowNodeRef>
+        <semantic:flowNodeRef>pgJoin</semantic:flowNodeRef>
+        <semantic:flowNodeRef>taskPostInvoice</semantic:flowNodeRef>
+        <semantic:flowNodeRef>xgFinalReview</semantic:flowNodeRef>
+        <semantic:flowNodeRef>taskReviewChain</semantic:flowNodeRef>
+        <semantic:flowNodeRef>endEvent</semantic:flowNodeRef>
+      </semantic:lane>
+    </semantic:laneSet>
+
+    <semantic:startEvent id="startEvent" name="Invoice Creation Process Started">
+      <semantic:outgoing>flow_start_pgFork</semantic:outgoing>
+    </semantic:startEvent>
+
+    <semantic:parallelGateway id="pgFork" name="Initiate Invoice Preparation">
+      <semantic:incoming>flow_start_pgFork</semantic:incoming>
+      <semantic:outgoing>flow_pgFork_taskGenerateDoc</semantic:outgoing>
+      <semantic:outgoing>flow_pgFork_taskVerifyOrder</semantic:outgoing>
+    </semantic:parallelGateway>
+
+    <semantic:task id="taskGenerateDoc" name="Generate Billing Document">
+      <semantic:incoming>flow_pgFork_taskGenerateDoc</semantic:incoming>
+      <semantic:outgoing>flow_taskGenerateDoc_pgJoin</semantic:outgoing>
+    </semantic:task>
+
+    <semantic:task id="taskVerifyOrder" name="Verify Order with Invoice">
+      <semantic:incoming>flow_pgFork_taskVerifyOrder</semantic:incoming>
+      <semantic:outgoing>flow_taskVerifyOrder_pgJoin</semantic:outgoing>
+    </semantic:task>
+
+    <semantic:parallelGateway id="pgJoin" name="Invoice Data Finalized">
+      <semantic:incoming>flow_taskGenerateDoc_pgJoin</semantic:incoming>
+      <semantic:incoming>flow_taskVerifyOrder_pgJoin</semantic:incoming>
+      <semantic:outgoing>flow_pgJoin_taskPostInvoice</semantic:outgoing>
+    </semantic:parallelGateway>
+
+    <semantic:task id="taskPostInvoice" name="Post Invoice in System">
+      <semantic:incoming>flow_pgJoin_taskPostInvoice</semantic:incoming>
+      <semantic:outgoing>flow_taskPostInvoice_xgFinalReview</semantic:outgoing>
+    </semantic:task>
+
+    <semantic:exclusiveGateway id="xgFinalReview" name="Final Review Required?">
+      <semantic:incoming>flow_taskPostInvoice_xgFinalReview</semantic:incoming>
+      <semantic:outgoing>flow_xgFinalReview_taskReviewChain</semantic:outgoing>
+      <semantic:outgoing>flow_xgFinalReview_endEvent</semantic:outgoing>
+    </semantic:exclusiveGateway>
+
+    <semantic:task id="taskReviewChain" name="Review Process Chain and Quotation">
+      <semantic:incoming>flow_xgFinalReview_taskReviewChain</semantic:incoming>
+      <semantic:outgoing>flow_taskReviewChain_endEvent</semantic:outgoing>
+    </semantic:task>
+
+    <semantic:endEvent id="endEvent" name="Order Fulfilment Completed">
+      <semantic:incoming>flow_xgFinalReview_endEvent</semantic:incoming>
+      <semantic:incoming>flow_taskReviewChain_endEvent</semantic:incoming>
+    </semantic:endEvent>
+
+    <semantic:sequenceFlow id="flow_start_pgFork" sourceRef="startEvent" targetRef="pgFork"/>
+    <semantic:sequenceFlow id="flow_pgFork_taskGenerateDoc" sourceRef="pgFork" targetRef="taskGenerateDoc"/>
+    <semantic:sequenceFlow id="flow_pgFork_taskVerifyOrder" sourceRef="pgFork" targetRef="taskVerifyOrder"/>
+    <semantic:sequenceFlow id="flow_taskGenerateDoc_pgJoin" sourceRef="taskGenerateDoc" targetRef="pgJoin"/>
+    <semantic:sequenceFlow id="flow_taskVerifyOrder_pgJoin" sourceRef="taskVerifyOrder" targetRef="pgJoin"/>
+    <semantic:sequenceFlow id="flow_pgJoin_taskPostInvoice" sourceRef="pgJoin" targetRef="taskPostInvoice"/>
+    <semantic:sequenceFlow id="flow_taskPostInvoice_xgFinalReview" sourceRef="taskPostInvoice" targetRef="xgFinalReview"/>
+    <semantic:sequenceFlow id="flow_xgFinalReview_taskReviewChain" name="Yes" sourceRef="xgFinalReview" targetRef="taskReviewChain"/>
+    <semantic:sequenceFlow id="flow_xgFinalReview_endEvent" name="No" sourceRef="xgFinalReview" targetRef="endEvent"/>
+    <semantic:sequenceFlow id="flow_taskReviewChain_endEvent" sourceRef="taskReviewChain" targetRef="endEvent"/>
+  </semantic:process>
+
+  <bpmndi:BPMNDiagram id="BPMNDiagram_invoice_process">
+    <bpmndi:BPMNPlane bpmnElement="collab_invoice_process">
+      <bpmndi:BPMNShape id="participant_ap_dept_shape" bpmnElement="participant_ap_dept" isHorizontal="true">
+        <dc:Bounds x="50" y="50" width="1050" height="380"/>
+        <bpmndi:BPMNLabel/>
+      </bpmndi:BPMNShape>
+      <!-- Lane shape is implicitly defined by the participant shape when there's one lane -->
+      
+      <bpmndi:BPMNShape id="startEvent_shape" bpmnElement="startEvent">
+        <dc:Bounds x="100" y="222" width="36" height="36"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="80" y="263" width="76" height="40"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="pgFork_shape" bpmnElement="pgFork" isMarkerVisible="true">
+        <dc:Bounds x="200" y="215" width="50" height="50"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="180" y="270" width="90" height="27"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="taskGenerateDoc_shape" bpmnElement="taskGenerateDoc">
+        <dc:Bounds x="300" y="120" width="100" height="80"/>
+        <bpmndi:BPMNLabel/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="taskVerifyOrder_shape" bpmnElement="taskVerifyOrder">
+        <dc:Bounds x="300" y="280" width="100" height="80"/>
+        <bpmndi:BPMNLabel/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="pgJoin_shape" bpmnElement="pgJoin" isMarkerVisible="true">
+        <dc:Bounds x="450" y="215" width="50" height="50"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="430" y="270" width="90" height="27"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="taskPostInvoice_shape" bpmnElement="taskPostInvoice">
+        <dc:Bounds x="550" y="200" width="100" height="80"/>
+        <bpmndi:BPMNLabel/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="xgFinalReview_shape" bpmnElement="xgFinalReview" isMarkerVisible="true">
+        <dc:Bounds x="700" y="215" width="50" height="50"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="680" y="270" width="90" height="27"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="taskReviewChain_shape" bpmnElement="taskReviewChain">
+        <dc:Bounds x="800" y="120" width="100" height="80"/>
+        <bpmndi:BPMNLabel/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="endEvent_shape" bpmnElement="endEvent">
+        <dc:Bounds x="950" y="222" width="36" height="36"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="930" y="263" width="76" height="40"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNEdge id="flow_start_pgFork_edge" bpmnElement="flow_start_pgFork">
+        <di:waypoint x="136" y="240"/>
+        <di:waypoint x="200" y="240"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_pgFork_taskGenerateDoc_edge" bpmnElement="flow_pgFork_taskGenerateDoc">
+        <di:waypoint x="225" y="215"/>
+        <di:waypoint x="225" y="160"/>
+        <di:waypoint x="300" y="160"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_pgFork_taskVerifyOrder_edge" bpmnElement="flow_pgFork_taskVerifyOrder">
+        <di:waypoint x="225" y="265"/>
+        <di:waypoint x="225" y="320"/>
+        <di:waypoint x="300" y="320"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_taskGenerateDoc_pgJoin_edge" bpmnElement="flow_taskGenerateDoc_pgJoin">
+        <di:waypoint x="400" y="160"/>
+        <di:waypoint x="425" y="160"/>
+        <di:waypoint x="425" y="240"/>
+        <di:waypoint x="450" y="240"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_taskVerifyOrder_pgJoin_edge" bpmnElement="flow_taskVerifyOrder_pgJoin">
+        <di:waypoint x="400" y="320"/>
+        <di:waypoint x="425" y="320"/>
+        <di:waypoint x="425" y="240"/>
+        <di:waypoint x="450" y="240"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_pgJoin_taskPostInvoice_edge" bpmnElement="flow_pgJoin_taskPostInvoice">
+        <di:waypoint x="500" y="240"/>
+        <di:waypoint x="550" y="240"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_taskPostInvoice_xgFinalReview_edge" bpmnElement="flow_taskPostInvoice_xgFinalReview">
+        <di:waypoint x="650" y="240"/>
+        <di:waypoint x="700" y="240"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_xgFinalReview_taskReviewChain_edge" bpmnElement="flow_xgFinalReview_taskReviewChain">
+        <di:waypoint x="725" y="215"/>
+        <di:waypoint x="725" y="160"/>
+        <di:waypoint x="800" y="160"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="730" y="180" width="20" height="14"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_xgFinalReview_endEvent_edge" bpmnElement="flow_xgFinalReview_endEvent">
+        <di:waypoint x="725" y="265"/>
+        <di:waypoint x="725" y="340"/>
+        <di:waypoint x="950" y="340"/>
+        <di:waypoint x="950" y="258"/>
+         <bpmndi:BPMNLabel>
+          <dc:Bounds x="730" y="290" width="20" height="14"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_taskReviewChain_endEvent_edge" bpmnElement="flow_taskReviewChain_endEvent">
+        <di:waypoint x="900" y="160"/>
+        <di:waypoint x="925" y="160"/>
+        <di:waypoint x="925" y="240"/>
+        <di:waypoint x="950" y="240"/>
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</semantic:definitions>

@@ -1,0 +1,228 @@
+<?xml version="1.0" standalone="yes"?>
+<semantic:definitions id="definitions_1"
+    targetNamespace="http://example.com/bpmn/productionProcess"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:semantic="http://www.omg.org/spec/BPMN/20100524/MODEL"
+    xmlns:di="http://www.omg.org/spec/DD/20100524/DI"
+    xmlns:dc="http://www.omg.org/spec/DD/20100524/DC"
+    xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI">
+
+  <semantic:collaboration id="collab_1">
+    <semantic:participant id="participant_productionDept" name="Production Department Process" processRef="process_production"/>
+  </semantic:collaboration>
+
+  <semantic:process id="process_production" isExecutable="true">
+    <semantic:laneSet id="laneSet_1">
+      <semantic:lane id="lane_employee" name="Employee">
+        <semantic:flowNodeRef>startEvent_1</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_determineGoods</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_selectInvComponent</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_enterHeaderFirstItem</semantic:flowNodeRef>
+        <semantic:flowNodeRef>parallelGw_forkDataEntry</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_enterGoodsDetails</semantic:flowNodeRef>
+        <semantic:flowNodeRef>exclusiveGw_additionalItems</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_createAdditionalItems</semantic:flowNodeRef>
+        <semantic:flowNodeRef>parallelGw_joinDataEntry</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_saveGoodsIssue</semantic:flowNodeRef>
+        <semantic:flowNodeRef>endEvent_1</semantic:flowNodeRef>
+      </semantic:lane>
+    </semantic:laneSet>
+
+    <semantic:startEvent id="startEvent_1" name="Realize Stock Withdrawal Posting Need">
+      <semantic:outgoing>flow_1</semantic:outgoing>
+    </semantic:startEvent>
+
+    <semantic:task id="task_determineGoods" name="Determine Goods from Warehouse">
+      <semantic:incoming>flow_1</semantic:incoming>
+      <semantic:outgoing>flow_2</semantic:outgoing>
+    </semantic:task>
+
+    <semantic:task id="task_selectInvComponent" name="Select Inventory Management Component">
+      <semantic:incoming>flow_2</semantic:incoming>
+      <semantic:outgoing>flow_3</semantic:outgoing>
+    </semantic:task>
+
+    <semantic:task id="task_enterHeaderFirstItem" name="Enter Header Data and First Line Item">
+      <semantic:incoming>flow_3</semantic:incoming>
+      <semantic:outgoing>flow_4</semantic:outgoing>
+    </semantic:task>
+
+    <semantic:parallelGateway id="parallelGw_forkDataEntry" name="Fork for Concurrent Data Entry" gatewayDirection="Diverging">
+      <semantic:incoming>flow_4</semantic:incoming>
+      <semantic:outgoing>flow_5</semantic:outgoing>
+      <semantic:outgoing>flow_6</semantic:outgoing>
+    </semantic:parallelGateway>
+
+    <semantic:task id="task_enterGoodsDetails" name="Enter Goods Details">
+      <semantic:incoming>flow_5</semantic:incoming>
+      <semantic:outgoing>flow_7</semantic:outgoing>
+    </semantic:task>
+
+    <semantic:exclusiveGateway id="exclusiveGw_additionalItems" name="Are Additional Items Required?" gatewayDirection="Diverging">
+      <semantic:incoming>flow_6</semantic:incoming>
+      <semantic:outgoing>flow_8</semantic:outgoing> <!-- Yes -->
+      <semantic:outgoing>flow_10</semantic:outgoing> <!-- No -->
+    </semantic:exclusiveGateway>
+
+    <semantic:task id="task_createAdditionalItems" name="Create Additional Item Entries">
+      <semantic:incoming>flow_8</semantic:incoming>
+      <semantic:outgoing>flow_9</semantic:outgoing>
+    </semantic:task>
+
+    <semantic:parallelGateway id="parallelGw_joinDataEntry" name="Synchronize Data Entry" gatewayDirection="Converging">
+      <semantic:incoming>flow_7</semantic:incoming>
+      <semantic:incoming>flow_9</semantic:incoming>
+      <semantic:incoming>flow_10</semantic:incoming>
+      <semantic:outgoing>flow_11</semantic:outgoing>
+    </semantic:parallelGateway>
+
+    <semantic:task id="task_saveGoodsIssue" name="Save Goods Issue Posting">
+      <semantic:incoming>flow_11</semantic:incoming>
+      <semantic:outgoing>flow_12</semantic:outgoing>
+    </semantic:task>
+
+    <semantic:endEvent id="endEvent_1" name="Goods Issue Posting Completed">
+      <semantic:incoming>flow_12</semantic:incoming>
+    </semantic:endEvent>
+
+    <semantic:sequenceFlow id="flow_1" sourceRef="startEvent_1" targetRef="task_determineGoods"/>
+    <semantic:sequenceFlow id="flow_2" sourceRef="task_determineGoods" targetRef="task_selectInvComponent"/>
+    <semantic:sequenceFlow id="flow_3" sourceRef="task_selectInvComponent" targetRef="task_enterHeaderFirstItem"/>
+    <semantic:sequenceFlow id="flow_4" sourceRef="task_enterHeaderFirstItem" targetRef="parallelGw_forkDataEntry"/>
+    <semantic:sequenceFlow id="flow_5" sourceRef="parallelGw_forkDataEntry" targetRef="task_enterGoodsDetails"/>
+    <semantic:sequenceFlow id="flow_6" sourceRef="parallelGw_forkDataEntry" targetRef="exclusiveGw_additionalItems"/>
+    <semantic:sequenceFlow id="flow_7" sourceRef="task_enterGoodsDetails" targetRef="parallelGw_joinDataEntry"/>
+    <semantic:sequenceFlow id="flow_8" name="Yes" sourceRef="exclusiveGw_additionalItems" targetRef="task_createAdditionalItems"/>
+    <semantic:sequenceFlow id="flow_9" sourceRef="task_createAdditionalItems" targetRef="parallelGw_joinDataEntry"/>
+    <semantic:sequenceFlow id="flow_10" name="No" sourceRef="exclusiveGw_additionalItems" targetRef="parallelGw_joinDataEntry"/>
+    <semantic:sequenceFlow id="flow_11" sourceRef="parallelGw_joinDataEntry" targetRef="task_saveGoodsIssue"/>
+    <semantic:sequenceFlow id="flow_12" sourceRef="task_saveGoodsIssue" targetRef="endEvent_1"/>
+  </semantic:process>
+
+  <bpmndi:BPMNDiagram id="BPMNDiagram_1" name="Production Department Goods Issue Process" resolution="96.0">
+    <bpmndi:BPMNPlane bpmnElement="collab_1">
+      <bpmndi:BPMNShape id="shape_participant_productionDept" bpmnElement="participant_productionDept" isHorizontal="true">
+        <dc:Bounds x="10" y="10" width="1500" height="450"/>
+        <bpmndi:BPMNLabel/>
+      </bpmndi:BPMNShape>
+      <!-- Lane shape is implicitly defined by its elements within the pool -->
+      <bpmndi:BPMNShape id="shape_startEvent_1" bpmnElement="startEvent_1">
+        <dc:Bounds x="100" y="217" width="36" height="36"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="70" y="260" width="96" height="40"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_task_determineGoods" bpmnElement="task_determineGoods">
+        <dc:Bounds x="200" y="205" width="100" height="60"/>
+        <bpmndi:BPMNLabel/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_task_selectInvComponent" bpmnElement="task_selectInvComponent">
+        <dc:Bounds x="370" y="205" width="100" height="60"/>
+        <bpmndi:BPMNLabel/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_task_enterHeaderFirstItem" bpmnElement="task_enterHeaderFirstItem">
+        <dc:Bounds x="540" y="205" width="100" height="60"/>
+        <bpmndi:BPMNLabel/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_parallelGw_forkDataEntry" bpmnElement="parallelGw_forkDataEntry" isMarkerVisible="true">
+        <dc:Bounds x="710" y="210" width="50" height="50"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="690" y="265" width="90" height="40"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_task_enterGoodsDetails" bpmnElement="task_enterGoodsDetails">
+        <dc:Bounds x="830" y="130" width="100" height="60"/>
+        <bpmndi:BPMNLabel/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_exclusiveGw_additionalItems" bpmnElement="exclusiveGw_additionalItems" isMarkerVisible="true">
+        <dc:Bounds x="830" y="285" width="50" height="50"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="800" y="340" width="110" height="28"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_task_createAdditionalItems" bpmnElement="task_createAdditionalItems">
+        <dc:Bounds x="950" y="280" width="100" height="60"/>
+        <bpmndi:BPMNLabel/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_parallelGw_joinDataEntry" bpmnElement="parallelGw_joinDataEntry" isMarkerVisible="true">
+        <dc:Bounds x="1120" y="210" width="50" height="50"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1100" y="265" width="90" height="40"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_task_saveGoodsIssue" bpmnElement="task_saveGoodsIssue">
+        <dc:Bounds x="1240" y="205" width="100" height="60"/>
+        <bpmndi:BPMNLabel/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_endEvent_1" bpmnElement="endEvent_1">
+        <dc:Bounds x="1410" y="217" width="36" height="36"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1385" y="260" width="86" height="40"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNEdge id="edge_flow_1" bpmnElement="flow_1">
+        <di:waypoint x="136" y="235"/>
+        <di:waypoint x="200" y="235"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_2" bpmnElement="flow_2">
+        <di:waypoint x="300" y="235"/>
+        <di:waypoint x="370" y="235"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_3" bpmnElement="flow_3">
+        <di:waypoint x="470" y="235"/>
+        <di:waypoint x="540" y="235"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_4" bpmnElement="flow_4">
+        <di:waypoint x="640" y="235"/>
+        <di:waypoint x="710" y="235"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_5" bpmnElement="flow_5">
+        <di:waypoint x="735" y="210"/>
+        <di:waypoint x="735" y="160"/>
+        <di:waypoint x="830" y="160"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_6" bpmnElement="flow_6">
+        <di:waypoint x="735" y="260"/>
+        <di:waypoint x="735" y="310"/>
+        <di:waypoint x="830" y="310"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_7" bpmnElement="flow_7">
+        <di:waypoint x="930" y="160"/>
+        <di:waypoint x="1025" y="160"/>
+        <di:waypoint x="1025" y="235"/>
+        <di:waypoint x="1120" y="235"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_8" bpmnElement="flow_8">
+        <di:waypoint x="880" y="310"/>
+        <di:waypoint x="950" y="310"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="905" y="290" width="20" height="14"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_9" bpmnElement="flow_9">
+        <di:waypoint x="1050" y="310"/>
+        <di:waypoint x="1085" y="310"/>
+        <di:waypoint x="1085" y="235"/>
+        <di:waypoint x="1120" y="235"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_10" bpmnElement="flow_10">
+        <di:waypoint x="880" y="310"/> <!-- Exit R of ExclGW1 -->
+        <di:waypoint x="1000" y="310"/> <!-- Straight R, adjusted for space -->
+        <di:waypoint x="1000" y="235"/> <!-- Turn Up -->
+        <di:waypoint x="1120" y="235"/> <!-- Into L of ParallelGW2 -->
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="930" y="315" width="18" height="14"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_11" bpmnElement="flow_11">
+        <di:waypoint x="1170" y="235"/>
+        <di:waypoint x="1240" y="235"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_12" bpmnElement="flow_12">
+        <di:waypoint x="1340" y="235"/>
+        <di:waypoint x="1410" y="235"/>
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</semantic:definitions>

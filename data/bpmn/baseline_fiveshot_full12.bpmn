@@ -1,0 +1,394 @@
+<?xml version="1.0" standalone="yes"?>
+<semantic:definitions id="definitions_sop"
+    targetNamespace="http://example.com/bpmn/sop_maintenance"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:semantic="http://www.omg.org/spec/BPMN/20100524/MODEL"
+    xmlns:di="http://www.omg.org/spec/DD/20100524/DI"
+    xmlns:dc="http://www.omg.org/spec/DD/20100524/DC"
+    xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI">
+
+  <semantic:collaboration id="collab_sop_maintenance">
+    <semantic:participant id="participant_production_dept" name="Production Department" processRef="process_sop_maintenance"/>
+  </semantic:collaboration>
+
+  <semantic:process id="process_sop_maintenance" isExecutable="true">
+    <semantic:laneSet id="laneSet_sop">
+      <semantic:lane id="lane_production_assistant" name="Production Assistant">
+        <semantic:flowNodeRef>start_sop_maintenance</semantic:flowNodeRef>
+        <semantic:flowNodeRef>sp_create_independent_demand</semantic:flowNodeRef>
+        <semantic:flowNodeRef>sp_derive_dependent_demand</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_combine_demands</semantic:flowNodeRef>
+        <semantic:flowNodeRef>end_sop_maintained</semantic:flowNodeRef>
+      </semantic:lane>
+    </semantic:laneSet>
+
+    <semantic:startEvent id="start_sop_maintenance" name="SOP Maintenance Process Started">
+      <semantic:outgoing>flow_to_sp_create_indep</semantic:outgoing>
+    </semantic:startEvent>
+
+    <semantic:subProcess id="sp_create_independent_demand" name="Create Independent Demand">
+      <semantic:incoming>flow_to_sp_create_indep</semantic:incoming>
+      <semantic:outgoing>flow_from_sp_create_indep</semantic:outgoing>
+      <semantic:startEvent id="start_indep_demand_creation" name="Begin Independent Demand Creation">
+        <semantic:outgoing>flow_to_transfer_planning_data</semantic:outgoing>
+      </semantic:startEvent>
+      <semantic:task id="task_transfer_planning_data" name="Transfer Planning Data to Demand Management">
+        <semantic:incoming>flow_to_transfer_planning_data</semantic:incoming>
+        <semantic:outgoing>flow_to_pg_split_demand_params</semantic:outgoing>
+      </semantic:task>
+      <semantic:parallelGateway id="pg_split_demand_params" name="Define Demand Transfer Parameters" gatewayDirection="Diverging">
+        <semantic:incoming>flow_to_pg_split_demand_params</semantic:incoming>
+        <semantic:outgoing>flow_param_material</semantic:outgoing>
+        <semantic:outgoing>flow_param_plant_demand</semantic:outgoing>
+        <semantic:outgoing>flow_param_timeframe</semantic:outgoing>
+        <semantic:outgoing>flow_param_insert_planning_data</semantic:outgoing>
+        <semantic:outgoing>flow_param_req_type</semantic:outgoing>
+      </semantic:parallelGateway>
+      <semantic:task id="task_spec_material" name="Specify Material">
+        <semantic:incoming>flow_param_material</semantic:incoming>
+        <semantic:outgoing>flow_to_pg_join_demand_params_1</semantic:outgoing>
+      </semantic:task>
+      <semantic:task id="task_spec_plant_demand" name="Specify Plant (Demand)">
+        <semantic:incoming>flow_param_plant_demand</semantic:incoming>
+        <semantic:outgoing>flow_to_pg_join_demand_params_2</semantic:outgoing>
+      </semantic:task>
+      <semantic:task id="task_select_timeframe" name="Select Time Frame">
+        <semantic:incoming>flow_param_timeframe</semantic:incoming>
+        <semantic:outgoing>flow_to_pg_join_demand_params_3</semantic:outgoing>
+      </semantic:task>
+      <semantic:task id="task_insert_planning_data" name="Insert Planning Data">
+        <semantic:incoming>flow_param_insert_planning_data</semantic:incoming>
+        <semantic:outgoing>flow_to_pg_join_demand_params_4</semantic:outgoing>
+      </semantic:task>
+      <semantic:task id="task_define_req_type" name="Define Requirements Type">
+        <semantic:incoming>flow_param_req_type</semantic:incoming>
+        <semantic:outgoing>flow_to_pg_join_demand_params_5</semantic:outgoing>
+      </semantic:task>
+      <semantic:parallelGateway id="pg_join_demand_params" name="Parameters Defined" gatewayDirection="Converging">
+        <semantic:incoming>flow_to_pg_join_demand_params_1</semantic:incoming>
+        <semantic:incoming>flow_to_pg_join_demand_params_2</semantic:incoming>
+        <semantic:incoming>flow_to_pg_join_demand_params_3</semantic:incoming>
+        <semantic:incoming>flow_to_pg_join_demand_params_4</semantic:incoming>
+        <semantic:incoming>flow_to_pg_join_demand_params_5</semantic:incoming>
+        <semantic:outgoing>flow_to_confirm_demand_transfer</semantic:outgoing>
+      </semantic:parallelGateway>
+      <semantic:task id="task_confirm_demand_transfer" name="Confirm Demand Transfer Entries">
+        <semantic:incoming>flow_to_confirm_demand_transfer</semantic:incoming>
+        <semantic:outgoing>flow_to_execute_demand_transfer</semantic:outgoing>
+      </semantic:task>
+      <semantic:task id="task_execute_demand_transfer" name="Execute Demand Transfer (Select 'Transfer Now')">
+        <semantic:incoming>flow_to_execute_demand_transfer</semantic:incoming>
+        <semantic:outgoing>flow_to_end_indep_demand</semantic:outgoing>
+      </semantic:task>
+      <semantic:endEvent id="end_indep_demand_created" name="Independent Demand Creation Complete">
+        <semantic:incoming>flow_to_end_indep_demand</semantic:incoming>
+      </semantic:endEvent>
+      <semantic:sequenceFlow id="flow_to_transfer_planning_data" sourceRef="start_indep_demand_creation" targetRef="task_transfer_planning_data"/>
+      <semantic:sequenceFlow id="flow_to_pg_split_demand_params" sourceRef="task_transfer_planning_data" targetRef="pg_split_demand_params"/>
+      <semantic:sequenceFlow id="flow_param_material" sourceRef="pg_split_demand_params" targetRef="task_spec_material"/>
+      <semantic:sequenceFlow id="flow_param_plant_demand" sourceRef="pg_split_demand_params" targetRef="task_spec_plant_demand"/>
+      <semantic:sequenceFlow id="flow_param_timeframe" sourceRef="pg_split_demand_params" targetRef="task_select_timeframe"/>
+      <semantic:sequenceFlow id="flow_param_insert_planning_data" sourceRef="pg_split_demand_params" targetRef="task_insert_planning_data"/>
+      <semantic:sequenceFlow id="flow_param_req_type" sourceRef="pg_split_demand_params" targetRef="task_define_req_type"/>
+      <semantic:sequenceFlow id="flow_to_pg_join_demand_params_1" sourceRef="task_spec_material" targetRef="pg_join_demand_params"/>
+      <semantic:sequenceFlow id="flow_to_pg_join_demand_params_2" sourceRef="task_spec_plant_demand" targetRef="pg_join_demand_params"/>
+      <semantic:sequenceFlow id="flow_to_pg_join_demand_params_3" sourceRef="task_select_timeframe" targetRef="pg_join_demand_params"/>
+      <semantic:sequenceFlow id="flow_to_pg_join_demand_params_4" sourceRef="task_insert_planning_data" targetRef="pg_join_demand_params"/>
+      <semantic:sequenceFlow id="flow_to_pg_join_demand_params_5" sourceRef="task_define_req_type" targetRef="pg_join_demand_params"/>
+      <semantic:sequenceFlow id="flow_to_confirm_demand_transfer" sourceRef="pg_join_demand_params" targetRef="task_confirm_demand_transfer"/>
+      <semantic:sequenceFlow id="flow_to_execute_demand_transfer" sourceRef="task_confirm_demand_transfer" targetRef="task_execute_demand_transfer"/>
+      <semantic:sequenceFlow id="flow_to_end_indep_demand" sourceRef="task_execute_demand_transfer" targetRef="end_indep_demand_created"/>
+    </semantic:subProcess>
+
+    <semantic:subProcess id="sp_derive_dependent_demand" name="Derive Dependent Demand">
+      <semantic:incoming>flow_from_sp_create_indep</semantic:incoming>
+      <semantic:outgoing>flow_from_sp_derive_dep</semantic:outgoing>
+      <semantic:startEvent id="start_dep_demand_derivation" name="Begin Dependent Demand Derivation">
+        <semantic:outgoing>flow_to_define_mrp_params_overall</semantic:outgoing>
+      </semantic:startEvent>
+      <semantic:task id="task_define_mrp_params_overall" name="Define MRP Parameters">
+        <semantic:incoming>flow_to_define_mrp_params_overall</semantic:incoming>
+        <semantic:outgoing>flow_to_pg_split_mrp_params</semantic:outgoing>
+      </semantic:task>
+      <semantic:parallelGateway id="pg_split_mrp_params" name="Set MRP Parameters" gatewayDirection="Diverging">
+        <semantic:incoming>flow_to_pg_split_mrp_params</semantic:incoming>
+        <semantic:outgoing>flow_param_plant_mrp</semantic:outgoing>
+        <semantic:outgoing>flow_param_proc_key</semantic:outgoing>
+        <semantic:outgoing>flow_param_pr_cat</semantic:outgoing>
+        <semantic:outgoing>flow_param_del_sched_cat</semantic:outgoing>
+        <semantic:outgoing>flow_param_mrp_list_cat</semantic:outgoing>
+        <semantic:outgoing>flow_param_plan_mode_mrp</semantic:outgoing>
+        <semantic:outgoing>flow_param_sched_mrp</semantic:outgoing>
+      </semantic:parallelGateway>
+      <semantic:task id="task_spec_plant_mrp" name="Specify Plant (MRP)">
+        <semantic:incoming>flow_param_plant_mrp</semantic:incoming>
+        <semantic:outgoing>flow_to_pg_join_mrp_params_1</semantic:outgoing>
+      </semantic:task>
+      <semantic:task id="task_spec_proc_key" name="Specify Processing Key (NEUPL)">
+        <semantic:incoming>flow_param_proc_key</semantic:incoming>
+        <semantic:outgoing>flow_to_pg_join_mrp_params_2</semantic:outgoing>
+      </semantic:task>
+      <semantic:task id="task_spec_pr_category" name="Specify PR Category">
+        <semantic:incoming>flow_param_pr_cat</semantic:incoming>
+        <semantic:outgoing>flow_to_pg_join_mrp_params_3</semantic:outgoing>
+      </semantic:task>
+      <semantic:task id="task_spec_del_sched_cat" name="Specify Delivery Schedule Lines Category">
+        <semantic:incoming>flow_param_del_sched_cat</semantic:incoming>
+        <semantic:outgoing>flow_to_pg_join_mrp_params_4</semantic:outgoing>
+      </semantic:task>
+      <semantic:task id="task_spec_mrp_list_cat" name="Specify MRP List Category">
+        <semantic:incoming>flow_param_mrp_list_cat</semantic:incoming>
+        <semantic:outgoing>flow_to_pg_join_mrp_params_5</semantic:outgoing>
+      </semantic:task>
+      <semantic:task id="task_define_planning_mode_mrp" name="Define Planning Mode (MRP)">
+        <semantic:incoming>flow_param_plan_mode_mrp</semantic:incoming>
+        <semantic:outgoing>flow_to_pg_join_mrp_params_6</semantic:outgoing>
+      </semantic:task>
+      <semantic:task id="task_define_scheduling_mrp" name="Define Scheduling (MRP)">
+        <semantic:incoming>flow_param_sched_mrp</semantic:incoming>
+        <semantic:outgoing>flow_to_pg_join_mrp_params_7</semantic:outgoing>
+      </semantic:task>
+      <semantic:parallelGateway id="pg_join_mrp_params" name="MRP Parameters Set" gatewayDirection="Converging">
+        <semantic:incoming>flow_to_pg_join_mrp_params_1</semantic:incoming>
+        <semantic:incoming>flow_to_pg_join_mrp_params_2</semantic:incoming>
+        <semantic:incoming>flow_to_pg_join_mrp_params_3</semantic:incoming>
+        <semantic:incoming>flow_to_pg_join_mrp_params_4</semantic:incoming>
+        <semantic:incoming>flow_to_pg_join_mrp_params_5</semantic:incoming>
+        <semantic:incoming>flow_to_pg_join_mrp_params_6</semantic:incoming>
+        <semantic:incoming>flow_to_pg_join_mrp_params_7</semantic:incoming>
+        <semantic:outgoing>flow_to_confirm_initial_mrp</semantic:outgoing>
+      </semantic:parallelGateway>
+      <semantic:task id="task_confirm_initial_mrp_params" name="Confirm Initial MRP Parameters">
+        <semantic:incoming>flow_to_confirm_initial_mrp</semantic:incoming>
+        <semantic:outgoing>flow_to_review_execute_mrp</semantic:outgoing>
+      </semantic:task>
+      <semantic:task id="task_review_execute_mrp" name="Review Parameters and Execute MRP">
+        <semantic:incoming>flow_to_review_execute_mrp</semantic:incoming>
+        <semantic:outgoing>flow_to_eg_sourcing_decision</semantic:outgoing>
+      </semantic:task>
+      <semantic:exclusiveGateway id="eg_sourcing_decision" name="Sourcing Decision" gatewayDirection="Diverging">
+        <semantic:incoming>flow_to_eg_sourcing_decision</semantic:incoming>
+        <semantic:outgoing>flow_to_create_prs</semantic:outgoing>
+        <semantic:outgoing>flow_to_create_planned_orders</semantic:outgoing>
+      </semantic:exclusiveGateway>
+      <semantic:task id="task_create_prs" name="Create Purchase Requisitions (External)">
+        <semantic:incoming>flow_to_create_prs</semantic:incoming>
+        <semantic:outgoing>flow_to_eg_join_sourcing_1</semantic:outgoing>
+      </semantic:task>
+      <semantic:task id="task_create_planned_orders" name="Create Planned Production Orders (In-house)">
+        <semantic:incoming>flow_to_create_planned_orders</semantic:incoming>
+        <semantic:outgoing>flow_to_eg_join_sourcing_2</semantic:outgoing>
+      </semantic:task>
+      <semantic:exclusiveGateway id="eg_join_sourcing" name="Sourcing Complete" gatewayDirection="Converging">
+        <semantic:incoming>flow_to_eg_join_sourcing_1</semantic:incoming>
+        <semantic:incoming>flow_to_eg_join_sourcing_2</semantic:incoming>
+        <semantic:outgoing>flow_to_end_dep_demand</semantic:outgoing>
+      </semantic:exclusiveGateway>
+      <semantic:endEvent id="end_dep_demand_derived" name="Dependent Demand Derivation Complete">
+        <semantic:incoming>flow_to_end_dep_demand</semantic:incoming>
+      </semantic:endEvent>
+      <semantic:sequenceFlow id="flow_to_define_mrp_params_overall" sourceRef="start_dep_demand_derivation" targetRef="task_define_mrp_params_overall"/>
+      <semantic:sequenceFlow id="flow_to_pg_split_mrp_params" sourceRef="task_define_mrp_params_overall" targetRef="pg_split_mrp_params"/>
+      <semantic:sequenceFlow id="flow_param_plant_mrp" sourceRef="pg_split_mrp_params" targetRef="task_spec_plant_mrp"/>
+      <semantic:sequenceFlow id="flow_param_proc_key" sourceRef="pg_split_mrp_params" targetRef="task_spec_proc_key"/>
+      <semantic:sequenceFlow id="flow_param_pr_cat" sourceRef="pg_split_mrp_params" targetRef="task_spec_pr_category"/>
+      <semantic:sequenceFlow id="flow_param_del_sched_cat" sourceRef="pg_split_mrp_params" targetRef="task_spec_del_sched_cat"/>
+      <semantic:sequenceFlow id="flow_param_mrp_list_cat" sourceRef="pg_split_mrp_params" targetRef="task_spec_mrp_list_cat"/>
+      <semantic:sequenceFlow id="flow_param_plan_mode_mrp" sourceRef="pg_split_mrp_params" targetRef="task_define_planning_mode_mrp"/>
+      <semantic:sequenceFlow id="flow_param_sched_mrp" sourceRef="pg_split_mrp_params" targetRef="task_define_scheduling_mrp"/>
+      <semantic:sequenceFlow id="flow_to_pg_join_mrp_params_1" sourceRef="task_spec_plant_mrp" targetRef="pg_join_mrp_params"/>
+      <semantic:sequenceFlow id="flow_to_pg_join_mrp_params_2" sourceRef="task_spec_proc_key" targetRef="pg_join_mrp_params"/>
+      <semantic:sequenceFlow id="flow_to_pg_join_mrp_params_3" sourceRef="task_spec_pr_category" targetRef="pg_join_mrp_params"/>
+      <semantic:sequenceFlow id="flow_to_pg_join_mrp_params_4" sourceRef="task_spec_del_sched_cat" targetRef="pg_join_mrp_params"/>
+      <semantic:sequenceFlow id="flow_to_pg_join_mrp_params_5" sourceRef="task_spec_mrp_list_cat" targetRef="pg_join_mrp_params"/>
+      <semantic:sequenceFlow id="flow_to_pg_join_mrp_params_6" sourceRef="task_define_planning_mode_mrp" targetRef="pg_join_mrp_params"/>
+      <semantic:sequenceFlow id="flow_to_pg_join_mrp_params_7" sourceRef="task_define_scheduling_mrp" targetRef="pg_join_mrp_params"/>
+      <semantic:sequenceFlow id="flow_to_confirm_initial_mrp" sourceRef="pg_join_mrp_params" targetRef="task_confirm_initial_mrp_params"/>
+      <semantic:sequenceFlow id="flow_to_review_execute_mrp" sourceRef="task_confirm_initial_mrp_params" targetRef="task_review_execute_mrp"/>
+      <semantic:sequenceFlow id="flow_to_eg_sourcing_decision" sourceRef="task_review_execute_mrp" targetRef="eg_sourcing_decision"/>
+      <semantic:sequenceFlow id="flow_to_create_prs" name="Purchase" sourceRef="eg_sourcing_decision" targetRef="task_create_prs"/>
+      <semantic:sequenceFlow id="flow_to_create_planned_orders" name="Produce In-house" sourceRef="eg_sourcing_decision" targetRef="task_create_planned_orders"/>
+      <semantic:sequenceFlow id="flow_to_eg_join_sourcing_1" sourceRef="task_create_prs" targetRef="eg_join_sourcing"/>
+      <semantic:sequenceFlow id="flow_to_eg_join_sourcing_2" sourceRef="task_create_planned_orders" targetRef="eg_join_sourcing"/>
+      <semantic:sequenceFlow id="flow_to_end_dep_demand" sourceRef="eg_join_sourcing" targetRef="end_dep_demand_derived"/>
+    </semantic:subProcess>
+
+    <semantic:task id="task_combine_demands" name="Combine Independent &amp; Dependent Demand">
+      <semantic:incoming>flow_from_sp_derive_dep</semantic:incoming>
+      <semantic:outgoing>flow_to_end_sop</semantic:outgoing>
+    </semantic:task>
+
+    <semantic:endEvent id="end_sop_maintained" name="SOP Maintained Successfully">
+      <semantic:incoming>flow_to_end_sop</semantic:incoming>
+    </semantic:endEvent>
+
+    <semantic:sequenceFlow id="flow_to_sp_create_indep" sourceRef="start_sop_maintenance" targetRef="sp_create_independent_demand"/>
+    <semantic:sequenceFlow id="flow_from_sp_create_indep" sourceRef="sp_create_independent_demand" targetRef="sp_derive_dependent_demand"/>
+    <semantic:sequenceFlow id="flow_from_sp_derive_dep" sourceRef="sp_derive_dependent_demand" targetRef="task_combine_demands"/>
+    <semantic:sequenceFlow id="flow_to_end_sop" sourceRef="task_combine_demands" targetRef="end_sop_maintained"/>
+
+  </semantic:process>
+
+  <bpmndi:BPMNDiagram id="BPMNDiagram_sop_maintenance">
+    <bpmndi:BPMNPlane bpmnElement="collab_sop_maintenance">
+      <bpmndi:BPMNShape id="shape_participant_production_dept" bpmnElement="participant_production_dept" isHorizontal="true">
+        <dc:Bounds x="20" y="20" width="1800" height="1150"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_lane_production_assistant" bpmnElement="lane_production_assistant" isHorizontal="true">
+        <dc:Bounds x="50" y="20" width="1770" height="1150"/>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="shape_start_sop_maintenance" bpmnElement="start_sop_maintenance">
+        <dc:Bounds x="100" y="572" width="36" height="36"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_sp_create_independent_demand" bpmnElement="sp_create_independent_demand" isExpanded="true">
+        <dc:Bounds x="200" y="70" width="1400" height="350"/>
+      </bpmndi:BPMNShape>
+        <bpmndi:BPMNShape id="shape_start_indep_demand_creation" bpmnElement="start_indep_demand_creation">
+          <dc:Bounds x="230" y="222" width="36" height="36"/>
+        </bpmndi:BPMNShape>
+        <bpmndi:BPMNShape id="shape_task_transfer_planning_data" bpmnElement="task_transfer_planning_data">
+          <dc:Bounds x="300" y="200" width="200" height="80"/>
+        </bpmndi:BPMNShape>
+        <bpmndi:BPMNShape id="shape_pg_split_demand_params" bpmnElement="pg_split_demand_params">
+          <dc:Bounds x="530" y="210" width="50" height="50"/>
+        </bpmndi:BPMNShape>
+        <bpmndi:BPMNShape id="shape_task_spec_material" bpmnElement="task_spec_material">
+          <dc:Bounds x="610" y="90" width="150" height="60"/>
+        </bpmndi:BPMNShape>
+        <bpmndi:BPMNShape id="shape_task_spec_plant_demand" bpmnElement="task_spec_plant_demand">
+          <dc:Bounds x="610" y="160" width="150" height="60"/>
+        </bpmndi:BPMNShape>
+        <bpmndi:BPMNShape id="shape_task_select_timeframe" bpmnElement="task_select_timeframe">
+          <dc:Bounds x="610" y="230" width="150" height="60"/>
+        </bpmndi:BPMNShape>
+        <bpmndi:BPMNShape id="shape_task_insert_planning_data" bpmnElement="task_insert_planning_data">
+          <dc:Bounds x="610" y="300" width="150" height="60"/>
+        </bpmndi:BPMNShape>
+        <bpmndi:BPMNShape id="shape_task_define_req_type" bpmnElement="task_define_req_type">
+          <dc:Bounds x="790" y="160" width="150" height="60"/> <!-- Adjusted Y for better layout -->
+        </bpmndi:BPMNShape>
+        <bpmndi:BPMNShape id="shape_pg_join_demand_params" bpmnElement="pg_join_demand_params">
+          <dc:Bounds x="970" y="210" width="50" height="50"/>
+        </bpmndi:BPMNShape>
+        <bpmndi:BPMNShape id="shape_task_confirm_demand_transfer" bpmnElement="task_confirm_demand_transfer">
+          <dc:Bounds x="1050" y="200" width="180" height="80"/>
+        </bpmndi:BPMNShape>
+        <bpmndi:BPMNShape id="shape_task_execute_demand_transfer" bpmnElement="task_execute_demand_transfer">
+          <dc:Bounds x="1260" y="200" width="200" height="80"/>
+        </bpmndi:BPMNShape>
+        <bpmndi:BPMNShape id="shape_end_indep_demand_created" bpmnElement="end_indep_demand_created">
+          <dc:Bounds x="1490" y="222" width="36" height="36"/>
+        </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="shape_sp_derive_dependent_demand" bpmnElement="sp_derive_dependent_demand" isExpanded="true">
+        <dc:Bounds x="200" y="450" width="1400" height="650"/>
+      </bpmndi:BPMNShape>
+        <bpmndi:BPMNShape id="shape_start_dep_demand_derivation" bpmnElement="start_dep_demand_derivation">
+          <dc:Bounds x="230" y="752" width="36" height="36"/>
+        </bpmndi:BPMNShape>
+        <bpmndi:BPMNShape id="shape_task_define_mrp_params_overall" bpmnElement="task_define_mrp_params_overall">
+          <dc:Bounds x="300" y="730" width="180" height="80"/>
+        </bpmndi:BPMNShape>
+        <bpmndi:BPMNShape id="shape_pg_split_mrp_params" bpmnElement="pg_split_mrp_params">
+          <dc:Bounds x="510" y="740" width="50" height="50"/>
+        </bpmndi:BPMNShape>
+          <bpmndi:BPMNShape id="shape_task_spec_plant_mrp" bpmnElement="task_spec_plant_mrp"> <dc:Bounds x="590" y="470" width="150" height="60"/> </bpmndi:BPMNShape>
+          <bpmndi:BPMNShape id="shape_task_spec_proc_key" bpmnElement="task_spec_proc_key"> <dc:Bounds x="590" y="540" width="150" height="60"/> </bpmndi:BPMNShape>
+          <bpmndi:BPMNShape id="shape_task_spec_pr_category" bpmnElement="task_spec_pr_category"> <dc:Bounds x="590" y="610" width="150" height="60"/> </bpmndi:BPMNShape>
+          <bpmndi:BPMNShape id="shape_task_spec_del_sched_cat" bpmnElement="task_spec_del_sched_cat"> <dc:Bounds x="590" y="680" width="150" height="80"/> </bpmndi:BPMNShape>
+          <bpmndi:BPMNShape id="shape_task_spec_mrp_list_cat" bpmnElement="task_spec_mrp_list_cat"> <dc:Bounds x="590" y="770" width="150" height="60"/> </bpmndi:BPMNShape>
+          <bpmndi:BPMNShape id="shape_task_define_planning_mode_mrp" bpmnElement="task_define_planning_mode_mrp"> <dc:Bounds x="590" y="840" width="150" height="60"/> </bpmndi:BPMNShape>
+          <bpmndi:BPMNShape id="shape_task_define_scheduling_mrp" bpmnElement="task_define_scheduling_mrp"> <dc:Bounds x="590" y="910" width="150" height="60"/> </bpmndi:BPMNShape>
+        <bpmndi:BPMNShape id="shape_pg_join_mrp_params" bpmnElement="pg_join_mrp_params">
+          <dc:Bounds x="770" y="740" width="50" height="50"/>
+        </bpmndi:BPMNShape>
+        <bpmndi:BPMNShape id="shape_task_confirm_initial_mrp_params" bpmnElement="task_confirm_initial_mrp_params">
+          <dc:Bounds x="850" y="730" width="180" height="80"/>
+        </bpmndi:BPMNShape>
+        <bpmndi:BPMNShape id="shape_task_review_execute_mrp" bpmnElement="task_review_execute_mrp">
+          <dc:Bounds x="1060" y="730" width="200" height="80"/>
+        </bpmndi:BPMNShape>
+        <bpmndi:BPMNShape id="shape_eg_sourcing_decision" bpmnElement="eg_sourcing_decision">
+          <dc:Bounds x="1290" y="740" width="50" height="50"/>
+        </bpmndi:BPMNShape>
+        <bpmndi:BPMNShape id="shape_task_create_prs" bpmnElement="task_create_prs">
+          <dc:Bounds x="1370" y="670" width="180" height="80"/>
+        </bpmndi:BPMNShape>
+        <bpmndi:BPMNShape id="shape_task_create_planned_orders" bpmnElement="task_create_planned_orders">
+          <dc:Bounds x="1370" y="790" width="180" height="80"/>
+        </bpmndi:BPMNShape>
+        <bpmndi:BPMNShape id="shape_eg_join_sourcing" bpmnElement="eg_join_sourcing">
+          <dc:Bounds x="1580" y="740" width="50" height="50"/>
+        </bpmndi:BPMNShape>
+        <bpmndi:BPMNShape id="shape_end_dep_demand_derived" bpmnElement="end_dep_demand_derived">
+          <dc:Bounds x="1660" y="752" width="36" height="36"/>
+        </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="shape_task_combine_demands" bpmnElement="task_combine_demands">
+        <dc:Bounds x="1630" y="560" width="180" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_end_sop_maintained" bpmnElement="end_sop_maintained">
+        <dc:Bounds x="1840" y="582" width="36" height="36"/>
+      </bpmndi:BPMNShape>
+
+      <!-- Main Process Flows -->
+      <bpmndi:BPMNEdge id="edge_flow_to_sp_create_indep" bpmnElement="flow_to_sp_create_indep">
+        <di:waypoint x="136" y="590"/> <di:waypoint x="200" y="245"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_from_sp_create_indep" bpmnElement="flow_from_sp_create_indep">
+        <di:waypoint x="900" y="420"/> <di:waypoint x="900" y="450"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_from_sp_derive_dep" bpmnElement="flow_from_sp_derive_dep">
+        <di:waypoint x="900" y="1100"/> <di:waypoint x="900" y="1130"/> <di:waypoint x="1720" y="1130"/> <di:waypoint x="1720" y="640"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_to_end_sop" bpmnElement="flow_to_end_sop">
+        <di:waypoint x="1810" y="600"/> <di:waypoint x="1840" y="600"/>
+      </bpmndi:BPMNEdge>
+
+      <!-- Flows within sp_create_independent_demand -->
+      <bpmndi:BPMNEdge id="edge_flow_to_transfer_planning_data" bpmnElement="flow_to_transfer_planning_data"> <di:waypoint x="266" y="240"/> <di:waypoint x="300" y="240"/> </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_to_pg_split_demand_params" bpmnElement="flow_to_pg_split_demand_params"> <di:waypoint x="500" y="240"/> <di:waypoint x="530" y="235"/> </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_param_material" bpmnElement="flow_param_material"> <di:waypoint x="555" y="210"/> <di:waypoint x="555" y="120"/> <di:waypoint x="610" y="120"/> </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_param_plant_demand" bpmnElement="flow_param_plant_demand"> <di:waypoint x="555" y="210"/> <di:waypoint x="555" y="190"/> <di:waypoint x="610" y="190"/> </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_param_timeframe" bpmnElement="flow_param_timeframe"> <di:waypoint x="580" y="235"/> <di:waypoint x="610" y="260"/> </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_param_insert_planning_data" bpmnElement="flow_param_insert_planning_data"> <di:waypoint x="555" y="260"/> <di:waypoint x="555" y="330"/> <di:waypoint x="610" y="330"/> </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_param_req_type" bpmnElement="flow_param_req_type"> <di:waypoint x="580" y="235"/> <di:waypoint x="790" y="190"/> </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_to_pg_join_demand_params_1" bpmnElement="flow_to_pg_join_demand_params_1"> <di:waypoint x="760" y="120"/> <di:waypoint x="995" y="120"/> <di:waypoint x="995" y="210"/> </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_to_pg_join_demand_params_2" bpmnElement="flow_to_pg_join_demand_params_2"> <di:waypoint x="760" y="190"/> <di:waypoint x="970" y="190"/> <di:waypoint x="970" y="220"/> </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_to_pg_join_demand_params_3" bpmnElement="flow_to_pg_join_demand_params_3"> <di:waypoint x="760" y="260"/> <di:waypoint x="970" y="260"/> <di:waypoint x="970" y="250"/> </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_to_pg_join_demand_params_4" bpmnElement="flow_to_pg_join_demand_params_4"> <di:waypoint x="760" y="330"/> <di:waypoint x="995" y="330"/> <di:waypoint x="995" y="260"/> </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_to_pg_join_demand_params_5" bpmnElement="flow_to_pg_join_demand_params_5"> <di:waypoint x="940" y="190"/> <di:waypoint x="1000" y="190"/> <di:waypoint x="1000" y="210"/> </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_to_confirm_demand_transfer" bpmnElement="flow_to_confirm_demand_transfer"> <di:waypoint x="1020" y="235"/> <di:waypoint x="1050" y="240"/> </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_to_execute_demand_transfer" bpmnElement="flow_to_execute_demand_transfer"> <di:waypoint x="1230" y="240"/> <di:waypoint x="1260" y="240"/> </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_to_end_indep_demand" bpmnElement="flow_to_end_indep_demand"> <di:waypoint x="1460" y="240"/> <di:waypoint x="1490" y="240"/> </bpmndi:BPMNEdge>
+
+      <!-- Flows within sp_derive_dependent_demand -->
+      <bpmndi:BPMNEdge id="edge_flow_to_define_mrp_params_overall" bpmnElement="flow_to_define_mrp_params_overall"> <di:waypoint x="266" y="770"/> <di:waypoint x="300" y="770"/> </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_to_pg_split_mrp_params" bpmnElement="flow_to_pg_split_mrp_params"> <di:waypoint x="480" y="770"/> <di:waypoint x="510" y="765"/> </bpmndi:BPMNEdge>
+        <bpmndi:BPMNEdge id="edge_flow_param_plant_mrp" bpmnElement="flow_param_plant_mrp"> <di:waypoint x="535" y="740"/> <di:waypoint x="535" y="500"/> <di:waypoint x="590" y="500"/> </bpmndi:BPMNEdge>
+        <bpmndi:BPMNEdge id="edge_flow_param_proc_key" bpmnElement="flow_param_proc_key"> <di:waypoint x="535" y="740"/> <di:waypoint x="535" y="570"/> <di:waypoint x="590" y="570"/> </bpmndi:BPMNEdge>
+        <bpmndi:BPMNEdge id="edge_flow_param_pr_cat" bpmnElement="flow_param_pr_cat"> <di:waypoint x="535" y="740"/> <di:waypoint x="535" y="640"/> <di:waypoint x="590" y="640"/> </bpmndi:BPMNEdge>
+        <bpmndi:BPMNEdge id="edge_flow_param_del_sched_cat" bpmnElement="flow_param_del_sched_cat"> <di:waypoint x="560" y="765"/> <di:waypoint x="590" y="720"/> </bpmndi:BPMNEdge>
+        <bpmndi:BPMNEdge id="edge_flow_param_mrp_list_cat" bpmnElement="flow_param_mrp_list_cat"> <di:waypoint x="560" y="765"/> <di:waypoint x="590" y="800"/> </bpmndi:BPMNEdge>
+        <bpmndi:BPMNEdge id="edge_flow_param_plan_mode_mrp" bpmnElement="flow_param_plan_mode_mrp"> <di:waypoint x="535" y="790"/> <di:waypoint x="535" y="870"/> <di:waypoint x="590" y="870"/> </bpmndi:BPMNEdge>
+        <bpmndi:BPMNEdge id="edge_flow_param_sched_mrp" bpmnElement="flow_param_sched_mrp"> <di:waypoint x="535" y="790"/> <di:waypoint x="535" y="940"/> <di:waypoint x="590" y="940"/> </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_to_pg_join_mrp_params_1" bpmnElement="flow_to_pg_join_mrp_params_1"> <di:waypoint x="740" y="500"/> <di:waypoint x="795" y="500"/> <di:waypoint x="795" y="740"/> </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_to_pg_join_mrp_params_2" bpmnElement="flow_to_pg_join_mrp_params_2"> <di:waypoint x="740" y="570"/> <di:waypoint x="770" y="570"/> <di:waypoint x="770" y="750"/> </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_to_pg_join_mrp_params_3" bpmnElement="flow_to_pg_join_mrp_params_3"> <di:waypoint x="740" y="640"/> <di:waypoint x="770" y="640"/> <di:waypoint x="770" y="750"/> </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_to_pg_join_mrp_params_4" bpmnElement="flow_to_pg_join_mrp_params_4"> <di:waypoint x="740" y="720"/> <di:waypoint x="795" y="720"/> <di:waypoint x="795" y="740"/> </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_to_pg_join_mrp_params_5" bpmnElement="flow_to_pg_join_mrp_params_5"> <di:waypoint x="740" y="800"/> <di:waypoint x="795" y="800"/> <di:waypoint x="795" y="790"/> </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_to_pg_join_mrp_params_6" bpmnElement="flow_to_pg_join_mrp_params_6"> <di:waypoint x="740" y="870"/> <di:waypoint x="770" y="870"/> <di:waypoint x="770" y="780"/> </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_to_pg_join_mrp_params_7" bpmnElement="flow_to_pg_join_mrp_params_7"> <di:waypoint x="740" y="940"/> <di:waypoint x="795" y="940"/> <di:waypoint x="795" y="790"/> </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_to_confirm_initial_mrp" bpmnElement="flow_to_confirm_initial_mrp"> <di:waypoint x="820" y="765"/> <di:waypoint x="850" y="770"/> </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_to_review_execute_mrp" bpmnElement="flow_to_review_execute_mrp"> <di:waypoint x="1030" y="770"/> <di:waypoint x="1060" y="770"/> </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_to_eg_sourcing_decision" bpmnElement="flow_to_eg_sourcing_decision"> <di:waypoint x="1260" y="770"/> <di:waypoint x="1290" y="765"/> </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_to_create_prs" bpmnElement="flow_to_create_prs"> <di:waypoint x="1315" y="740"/> <di:waypoint x="1315" y="710"/> <di:waypoint x="1370" y="710"/> </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_to_create_planned_orders" bpmnElement="flow_to_create_planned_orders"> <di:waypoint x="1315" y="790"/> <di:waypoint x="1315" y="830"/> <di:waypoint x="1370" y="830"/> </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_to_eg_join_sourcing_1" bpmnElement="flow_to_eg_join_sourcing_1"> <di:waypoint x="1550" y="710"/> <di:waypoint x="1605" y="710"/> <di:waypoint x="1605" y="740"/> </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_to_eg_join_sourcing_2" bpmnElement="flow_to_eg_join_sourcing_2"> <di:waypoint x="1550" y="830"/> <di:waypoint x="1605" y="830"/> <di:waypoint x="1605" y="790"/> </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_to_end_dep_demand" bpmnElement="flow_to_end_dep_demand"> <di:waypoint x="1630" y="765"/> <di:waypoint x="1660" y="770"/> </bpmndi:BPMNEdge>
+
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</semantic:definitions>

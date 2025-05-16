@@ -1,0 +1,265 @@
+<?xml version="1.0" standalone="yes"?>
+<semantic:definitions id="definitions_order_modification"
+    targetNamespace="http://example.com/bpmn/order_modification"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:semantic="http://www.omg.org/spec/BPMN/20100524/MODEL"
+    xmlns:di="http://www.omg.org/spec/DD/20100524/DI"
+    xmlns:dc="http://www.omg.org/spec/DD/20100524/DC"
+    xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI">
+
+  <semantic:collaboration id="collab_order_modification">
+    <semantic:participant id="participant_planning_process" name="Order Modification Process" processRef="process_order_modification"/>
+  </semantic:collaboration>
+
+  <semantic:process id="process_order_modification" isExecutable="true">
+    <semantic:laneSet id="laneSet_order_modification">
+      <semantic:lane id="lane_planning_department" name="Planning Department">
+        <semantic:flowNodeRef>start_event</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_modify_order_data</semantic:flowNodeRef>
+      </semantic:lane>
+      <semantic:lane id="lane_planning_manager" name="Planning Manager">
+        <semantic:flowNodeRef>task_evaluate_order</semantic:flowNodeRef>
+        <semantic:flowNodeRef>gateway_order_nature</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_divide_tasks</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_select_work_schedule</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_select_plant</semantic:flowNodeRef>
+        <semantic:flowNodeRef>gateway_parallel_split</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_decide_ops_sequence</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_define_work_process</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_define_workplace_group</semantic:flowNodeRef>
+        <semantic:flowNodeRef>gateway_parallel_join</semantic:flowNodeRef>
+        <semantic:flowNodeRef>end_event</semantic:flowNodeRef>
+      </semantic:lane>
+      <semantic:lane id="lane_planning_employees" name="Planning Employees">
+        <semantic:flowNodeRef>task_redesign_order</semantic:flowNodeRef>
+      </semantic:lane>
+    </semantic:laneSet>
+
+    <semantic:startEvent id="start_event" name="Modification Trigger Received">
+      <semantic:outgoing>flow_start_to_modify</semantic:outgoing>
+    </semantic:startEvent>
+
+    <semantic:task id="task_modify_order_data" name="Modify Order Data">
+      <semantic:incoming>flow_start_to_modify</semantic:incoming>
+      <semantic:outgoing>flow_modify_to_evaluate</semantic:outgoing>
+    </semantic:task>
+
+    <semantic:task id="task_evaluate_order" name="Evaluate Order">
+      <semantic:incoming>flow_modify_to_evaluate</semantic:incoming>
+      <semantic:outgoing>flow_evaluate_to_gateway</semantic:outgoing>
+    </semantic:task>
+
+    <semantic:exclusiveGateway id="gateway_order_nature" name="Order Nature Evaluation">
+      <semantic:incoming>flow_evaluate_to_gateway</semantic:incoming>
+      <semantic:outgoing>flow_gateway_to_divide</semantic:outgoing>
+      <semantic:outgoing>flow_gateway_to_redesign</semantic:outgoing>
+    </semantic:exclusiveGateway>
+
+    <semantic:task id="task_divide_tasks" name="Divide Tasks for Clerks">
+      <semantic:incoming>flow_gateway_to_divide</semantic:incoming>
+      <semantic:outgoing>flow_divide_to_select_schedule</semantic:outgoing>
+    </semantic:task>
+
+    <semantic:task id="task_redesign_order" name="Redesign Complete Order">
+      <semantic:incoming>flow_gateway_to_redesign</semantic:incoming>
+      <semantic:outgoing>flow_redesign_to_select_schedule</semantic:outgoing>
+    </semantic:task>
+
+    <semantic:task id="task_select_work_schedule" name="Select Work Schedule">
+      <semantic:incoming>flow_divide_to_select_schedule</semantic:incoming>
+      <semantic:incoming>flow_redesign_to_select_schedule</semantic:incoming>
+      <semantic:outgoing>flow_select_schedule_to_select_plant</semantic:outgoing>
+    </semantic:task>
+
+    <semantic:task id="task_select_plant" name="Select Plant">
+      <semantic:incoming>flow_select_schedule_to_select_plant</semantic:incoming>
+      <semantic:outgoing>flow_select_plant_to_parallel_split</semantic:outgoing>
+    </semantic:task>
+
+    <semantic:parallelGateway id="gateway_parallel_split" name="Initiate Detailed Planning">
+      <semantic:incoming>flow_select_plant_to_parallel_split</semantic:incoming>
+      <semantic:outgoing>flow_split_to_ops_sequence</semantic:outgoing>
+      <semantic:outgoing>flow_split_to_work_process</semantic:outgoing>
+      <semantic:outgoing>flow_split_to_workplace_group</semantic:outgoing>
+    </semantic:parallelGateway>
+
+    <semantic:task id="task_decide_ops_sequence" name="Decide Operations Sequence">
+      <semantic:incoming>flow_split_to_ops_sequence</semantic:incoming>
+      <semantic:outgoing>flow_ops_sequence_to_join</semantic:outgoing>
+    </semantic:task>
+
+    <semantic:task id="task_define_work_process" name="Define Work Process">
+      <semantic:incoming>flow_split_to_work_process</semantic:incoming>
+      <semantic:outgoing>flow_work_process_to_join</semantic:outgoing>
+    </semantic:task>
+
+    <semantic:task id="task_define_workplace_group" name="Define Workplace Group">
+      <semantic:incoming>flow_split_to_workplace_group</semantic:incoming>
+      <semantic:outgoing>flow_workplace_group_to_join</semantic:outgoing>
+    </semantic:task>
+
+    <semantic:parallelGateway id="gateway_parallel_join" name="Finalize Detailed Planning">
+      <semantic:incoming>flow_ops_sequence_to_join</semantic:incoming>
+      <semantic:incoming>flow_work_process_to_join</semantic:incoming>
+      <semantic:incoming>flow_workplace_group_to_join</semantic:incoming>
+      <semantic:outgoing>flow_join_to_end</semantic:outgoing>
+    </semantic:parallelGateway>
+
+    <semantic:endEvent id="end_event" name="Order Data Modification Complete">
+      <semantic:incoming>flow_join_to_end</semantic:incoming>
+    </semantic:endEvent>
+
+    <semantic:sequenceFlow id="flow_start_to_modify" sourceRef="start_event" targetRef="task_modify_order_data"/>
+    <semantic:sequenceFlow id="flow_modify_to_evaluate" sourceRef="task_modify_order_data" targetRef="task_evaluate_order"/>
+    <semantic:sequenceFlow id="flow_evaluate_to_gateway" sourceRef="task_evaluate_order" targetRef="gateway_order_nature"/>
+    <semantic:sequenceFlow id="flow_gateway_to_divide" name="Order Change" sourceRef="gateway_order_nature" targetRef="task_divide_tasks"/>
+    <semantic:sequenceFlow id="flow_gateway_to_redesign" name="New Design" sourceRef="gateway_order_nature" targetRef="task_redesign_order"/>
+    <semantic:sequenceFlow id="flow_divide_to_select_schedule" sourceRef="task_divide_tasks" targetRef="task_select_work_schedule"/>
+    <semantic:sequenceFlow id="flow_redesign_to_select_schedule" sourceRef="task_redesign_order" targetRef="task_select_work_schedule"/>
+    <semantic:sequenceFlow id="flow_select_schedule_to_select_plant" sourceRef="task_select_work_schedule" targetRef="task_select_plant"/>
+    <semantic:sequenceFlow id="flow_select_plant_to_parallel_split" sourceRef="task_select_plant" targetRef="gateway_parallel_split"/>
+    <semantic:sequenceFlow id="flow_split_to_ops_sequence" sourceRef="gateway_parallel_split" targetRef="task_decide_ops_sequence"/>
+    <semantic:sequenceFlow id="flow_split_to_work_process" sourceRef="gateway_parallel_split" targetRef="task_define_work_process"/>
+    <semantic:sequenceFlow id="flow_split_to_workplace_group" sourceRef="gateway_parallel_split" targetRef="task_define_workplace_group"/>
+    <semantic:sequenceFlow id="flow_ops_sequence_to_join" sourceRef="task_decide_ops_sequence" targetRef="gateway_parallel_join"/>
+    <semantic:sequenceFlow id="flow_work_process_to_join" sourceRef="task_define_work_process" targetRef="gateway_parallel_join"/>
+    <semantic:sequenceFlow id="flow_workplace_group_to_join" sourceRef="task_define_workplace_group" targetRef="gateway_parallel_join"/>
+    <semantic:sequenceFlow id="flow_join_to_end" sourceRef="gateway_parallel_join" targetRef="end_event"/>
+  </semantic:process>
+
+  <bpmndi:BPMNDiagram id="BPMNDiagram_order_modification">
+    <bpmndi:BPMNPlane bpmnElement="collab_order_modification">
+      <bpmndi:BPMNShape id="shape_participant_planning_process" bpmnElement="participant_planning_process" isHorizontal="true">
+        <dc:Bounds x="20" y="20" width="1500" height="700"/>
+      </bpmndi:BPMNShape>
+
+      <!-- Lane Shapes (Visual representation of lanes, content placed based on lane assignment) -->
+      <bpmndi:BPMNShape id="shape_lane_planning_department" bpmnElement="lane_planning_department" isHorizontal="true">
+         <dc:Bounds x="50" y="20" width="1450" height="150"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_lane_planning_manager" bpmnElement="lane_planning_manager" isHorizontal="true">
+         <dc:Bounds x="50" y="170" width="1450" height="350"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_lane_planning_employees" bpmnElement="lane_planning_employees" isHorizontal="true">
+         <dc:Bounds x="50" y="520" width="1450" height="150"/>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="shape_start_event" bpmnElement="start_event">
+        <dc:Bounds x="60" y="77" width="36" height="36"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_task_modify_order_data" bpmnElement="task_modify_order_data">
+        <dc:Bounds x="140" y="55" width="100" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_task_evaluate_order" bpmnElement="task_evaluate_order">
+        <dc:Bounds x="290" y="305" width="100" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_gateway_order_nature" bpmnElement="gateway_order_nature" isMarkerVisible="true">
+        <dc:Bounds x="440" y="320" width="50" height="50"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_task_divide_tasks" bpmnElement="task_divide_tasks">
+        <dc:Bounds x="540" y="235" width="100" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_task_redesign_order" bpmnElement="task_redesign_order">
+        <dc:Bounds x="540" y="555" width="100" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_task_select_work_schedule" bpmnElement="task_select_work_schedule">
+        <dc:Bounds x="740" y="305" width="100" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_task_select_plant" bpmnElement="task_select_plant">
+        <dc:Bounds x="890" y="305" width="100" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_gateway_parallel_split" bpmnElement="gateway_parallel_split">
+        <dc:Bounds x="1040" y="320" width="50" height="50"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_task_decide_ops_sequence" bpmnElement="task_decide_ops_sequence">
+        <dc:Bounds x="1140" y="225" width="100" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_task_define_work_process" bpmnElement="task_define_work_process">
+        <dc:Bounds x="1140" y="305" width="100" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_task_define_workplace_group" bpmnElement="task_define_workplace_group">
+        <dc:Bounds x="1140" y="385" width="100" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_gateway_parallel_join" bpmnElement="gateway_parallel_join">
+        <dc:Bounds x="1290" y="320" width="50" height="50"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_end_event" bpmnElement="end_event">
+        <dc:Bounds x="1390" y="327" width="36" height="36"/>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNEdge id="edge_flow_start_to_modify" bpmnElement="flow_start_to_modify">
+        <di:waypoint x="96" y="95"/>
+        <di:waypoint x="140" y="95"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_modify_to_evaluate" bpmnElement="flow_modify_to_evaluate">
+        <di:waypoint x="240" y="95"/>
+        <di:waypoint x="240" y="345"/>
+        <di:waypoint x="290" y="345"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_evaluate_to_gateway" bpmnElement="flow_evaluate_to_gateway">
+        <di:waypoint x="390" y="345"/>
+        <di:waypoint x="440" y="345"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_gateway_to_divide" bpmnElement="flow_gateway_to_divide">
+        <di:waypoint x="490" y="345"/>
+        <di:waypoint x="490" y="275"/>
+        <di:waypoint x="540" y="275"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_gateway_to_redesign" bpmnElement="flow_gateway_to_redesign">
+        <di:waypoint x="490" y="345"/>
+        <di:waypoint x="490" y="595"/>
+        <di:waypoint x="540" y="595"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_divide_to_select_schedule" bpmnElement="flow_divide_to_select_schedule">
+        <di:waypoint x="640" y="275"/>
+        <di:waypoint x="640" y="345"/>
+        <di:waypoint x="740" y="345"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_redesign_to_select_schedule" bpmnElement="flow_redesign_to_select_schedule">
+        <di:waypoint x="640" y="595"/>
+        <di:waypoint x="640" y="345"/>
+        <di:waypoint x="740" y="345"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_select_schedule_to_select_plant" bpmnElement="flow_select_schedule_to_select_plant">
+        <di:waypoint x="840" y="345"/>
+        <di:waypoint x="890" y="345"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_select_plant_to_parallel_split" bpmnElement="flow_select_plant_to_parallel_split">
+        <di:waypoint x="990" y="345"/>
+        <di:waypoint x="1040" y="345"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_split_to_ops_sequence" bpmnElement="flow_split_to_ops_sequence">
+        <di:waypoint x="1090" y="345"/>
+        <di:waypoint x="1090" y="265"/>
+        <di:waypoint x="1140" y="265"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_split_to_work_process" bpmnElement="flow_split_to_work_process">
+        <di:waypoint x="1090" y="345"/>
+        <di:waypoint x="1140" y="345"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_split_to_workplace_group" bpmnElement="flow_split_to_workplace_group">
+        <di:waypoint x="1090" y="345"/>
+        <di:waypoint x="1090" y="425"/>
+        <di:waypoint x="1140" y="425"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_ops_sequence_to_join" bpmnElement="flow_ops_sequence_to_join">
+        <di:waypoint x="1240" y="265"/>
+        <di:waypoint x="1240" y="345"/>
+        <di:waypoint x="1290" y="345"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_work_process_to_join" bpmnElement="flow_work_process_to_join">
+        <di:waypoint x="1240" y="345"/>
+        <di:waypoint x="1290" y="345"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_workplace_group_to_join" bpmnElement="flow_workplace_group_to_join">
+        <di:waypoint x="1240" y="425"/>
+        <di:waypoint x="1240" y="345"/>
+        <di:waypoint x="1290" y="345"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_join_to_end" bpmnElement="flow_join_to_end">
+        <di:waypoint x="1340" y="345"/>
+        <di:waypoint x="1390" y="345"/>
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</semantic:definitions>

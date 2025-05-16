@@ -1,0 +1,356 @@
+<?xml version="1.0" standalone="yes"?>
+<semantic:definitions id="definitions_renewable_heating_funding"
+    targetNamespace="http://example.com/bpmn/renewable-heating-funding"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:semantic="http://www.omg.org/spec/BPMN/20100524/MODEL"
+    xmlns:di="http://www.omg.org/spec/DD/20100524/DI"
+    xmlns:dc="http://www.omg.org/spec/DD/20100524/DC"
+    xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI">
+
+  <semantic:collaboration id="collab_heating_funding">
+    <semantic:participant id="participant_applicant" name="Applicant" processRef="process_applicant"/>
+  </semantic:collaboration>
+
+  <semantic:process id="process_applicant" isExecutable="false">
+    <semantic:laneSet id="laneSet_applicant">
+      <semantic:lane id="lane_nlp" name="Natural/Legal Person">
+        <semantic:flowNodeRef>start_event</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_nlp_decide_heating_method</semantic:flowNodeRef>
+        <semantic:flowNodeRef>gw_nlp_heating_category</semantic:flowNodeRef>
+        <semantic:flowNodeRef>gw_nlp_option_a_system</semantic:flowNodeRef>
+        <semantic:flowNodeRef>sub_process_biomass_funding</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_nlp_decide_heat_pump_details</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_nlp_decide_solar_thermal_details</semantic:flowNodeRef>
+        <semantic:flowNodeRef>gw_nlp_merge_hp_solar_for_funding</semantic:flowNodeRef>
+        <semantic:flowNodeRef>sub_process_hp_solar_funding</semantic:flowNodeRef>
+        <semantic:flowNodeRef>gw_nlp_merge_all_funding_outcomes</semantic:flowNodeRef>
+        <semantic:flowNodeRef>end_event_nlp_funding_determined</semantic:flowNodeRef> <!-- Placeholder if NLP part ends before contractor -->
+      </semantic:lane>
+      <semantic:lane id="lane_contractor" name="Contractor">
+        <semantic:flowNodeRef>sub_process_con_enter_application_data</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_con_check_entered_data</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_con_upload_required_files</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_con_confirm_data</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_con_submit_application</semantic:flowNodeRef>
+        <semantic:flowNodeRef>end_event_con_application_submitted</semantic:flowNodeRef>
+      </semantic:lane>
+    </semantic:laneSet>
+
+    <!-- Main Process Flow Elements -->
+    <semantic:startEvent id="start_event" name="Realize Renewable Heating Required">
+      <semantic:outgoing>flow_start_to_decide_method</semantic:outgoing>
+    </semantic:startEvent>
+
+    <semantic:task id="task_nlp_decide_heating_method" name="Decide on Heating Method">
+      <semantic:incoming>flow_start_to_decide_method</semantic:incoming>
+      <semantic:outgoing>flow_decide_method_to_gw_category</semantic:outgoing>
+    </semantic:task>
+
+    <semantic:exclusiveGateway id="gw_nlp_heating_category" name="Heating Requirement Type?">
+      <semantic:incoming>flow_decide_method_to_gw_category</semantic:incoming>
+      <semantic:outgoing>flow_gw_category_to_option_a</semantic:outgoing>
+      <semantic:outgoing>flow_gw_category_to_option_b</semantic:outgoing>
+    </semantic:exclusiveGateway>
+
+    <!-- Option A Path -->
+    <semantic:exclusiveGateway id="gw_nlp_option_a_system" name="Choose Option A Heating System">
+      <semantic:incoming>flow_gw_category_to_option_a</semantic:incoming>
+      <semantic:outgoing>flow_option_a_to_biomass</semantic:outgoing>
+      <semantic:outgoing>flow_option_a_to_heat_pump</semantic:outgoing>
+    </semantic:exclusiveGateway>
+
+    <semantic:callActivity id="sub_process_biomass_funding" name="Determine Biomass Funding" calledElement="process_biomass_funding">
+      <semantic:incoming>flow_option_a_to_biomass</semantic:incoming>
+      <semantic:outgoing>flow_biomass_funding_to_merge_all</semantic:outgoing>
+    </semantic:callActivity>
+
+    <semantic:task id="task_nlp_decide_heat_pump_details" name="Decide Heat Pump System Details">
+      <semantic:incoming>flow_option_a_to_heat_pump</semantic:incoming>
+      <semantic:outgoing>flow_heat_pump_to_merge_hp_solar</semantic:outgoing>
+    </semantic:task>
+
+    <!-- Option B Path -->
+    <semantic:task id="task_nlp_decide_solar_thermal_details" name="Decide Solar Thermal System Details">
+      <semantic:incoming>flow_gw_category_to_option_b</semantic:incoming>
+      <semantic:outgoing>flow_solar_thermal_to_merge_hp_solar</semantic:outgoing>
+    </semantic:task>
+
+    <!-- Merge HP and Solar for common funding logic -->
+    <semantic:exclusiveGateway id="gw_nlp_merge_hp_solar_for_funding" name="Merge HP/Solar for Funding">
+      <semantic:incoming>flow_heat_pump_to_merge_hp_solar</semantic:incoming>
+      <semantic:incoming>flow_solar_thermal_to_merge_hp_solar</semantic:incoming>
+      <semantic:outgoing>flow_merge_hp_solar_to_hp_solar_funding_sub</semantic:outgoing>
+    </semantic:exclusiveGateway>
+
+    <semantic:callActivity id="sub_process_hp_solar_funding" name="Determine HP/Solar Funding" calledElement="process_hp_solar_funding">
+      <semantic:incoming>flow_merge_hp_solar_to_hp_solar_funding_sub</semantic:incoming>
+      <semantic:outgoing>flow_hp_solar_funding_to_merge_all</semantic:outgoing>
+    </semantic:callActivity>
+
+    <!-- Merge all funding outcomes before application -->
+    <semantic:exclusiveGateway id="gw_nlp_merge_all_funding_outcomes" name="Merge All Funding Outcomes">
+      <semantic:incoming>flow_biomass_funding_to_merge_all</semantic:incoming>
+      <semantic:incoming>flow_hp_solar_funding_to_merge_all</semantic:incoming>
+      <semantic:outgoing>flow_merge_all_to_enter_app_data</semantic:outgoing> <!-- Connects to Contractor lane -->
+    </semantic:exclusiveGateway>
+    
+    <!-- This end event is a conceptual placeholder if NLP tasks are done before contractor starts -->
+    <semantic:intermediateThrowEvent id="end_event_nlp_funding_determined" name="Funding Path Determined">
+        <semantic:incoming>flow_merge_all_to_enter_app_data</semantic:incoming> <!-- This flow will cross lanes -->
+    </semantic:intermediateThrowEvent>
+
+
+    <!-- Contractor Lane Tasks -->
+    <semantic:callActivity id="sub_process_con_enter_application_data" name="Enter Application Data" calledElement="process_online_application_data_entry">
+      <!-- <semantic:incoming>flow_merge_all_to_enter_app_data</semantic:incoming> This is now from the intermediate event -->
+      <semantic:outgoing>flow_enter_data_to_check_data</semantic:outgoing>
+    </semantic:callActivity>
+
+    <semantic:task id="task_con_check_entered_data" name="Check Entered Data">
+      <semantic:incoming>flow_enter_data_to_check_data</semantic:incoming>
+      <semantic:outgoing>flow_check_data_to_upload_files</semantic:outgoing>
+    </semantic:task>
+
+    <semantic:task id="task_con_upload_required_files" name="Upload Required Files">
+      <semantic:incoming>flow_check_data_to_upload_files</semantic:incoming>
+      <semantic:outgoing>flow_upload_files_to_confirm_data</semantic:outgoing>
+    </semantic:task>
+
+    <semantic:task id="task_con_confirm_data" name="Confirm Data">
+      <semantic:incoming>flow_upload_files_to_confirm_data</semantic:incoming>
+      <semantic:outgoing>flow_confirm_data_to_submit_app</semantic:outgoing>
+    </semantic:task>
+
+    <semantic:task id="task_con_submit_application" name="Submit Application">
+      <semantic:incoming>flow_confirm_data_to_submit_app</semantic:incoming>
+      <semantic:outgoing>flow_submit_app_to_end</semantic:outgoing>
+    </semantic:task>
+
+    <semantic:endEvent id="end_event_con_application_submitted" name="Application Successfully Submitted">
+      <semantic:incoming>flow_submit_app_to_end</semantic:incoming>
+    </semantic:endEvent>
+
+    <!-- Sequence Flows for Main Process -->
+    <semantic:sequenceFlow id="flow_start_to_decide_method" sourceRef="start_event" targetRef="task_nlp_decide_heating_method"/>
+    <semantic:sequenceFlow id="flow_decide_method_to_gw_category" sourceRef="task_nlp_decide_heating_method" targetRef="gw_nlp_heating_category"/>
+    <semantic:sequenceFlow id="flow_gw_category_to_option_a" name="&lt;=100kW Output (A)" sourceRef="gw_nlp_heating_category" targetRef="gw_nlp_option_a_system"/>
+    <semantic:sequenceFlow id="flow_gw_category_to_option_b" name="&lt;=100m² Collector (B)" sourceRef="gw_nlp_heating_category" targetRef="task_nlp_decide_solar_thermal_details"/>
+    <semantic:sequenceFlow id="flow_option_a_to_biomass" name="Biomass Plants" sourceRef="gw_nlp_option_a_system" targetRef="sub_process_biomass_funding"/>
+    <semantic:sequenceFlow id="flow_option_a_to_heat_pump" name="Heat Pump Systems" sourceRef="gw_nlp_option_a_system" targetRef="task_nlp_decide_heat_pump_details"/>
+    <semantic:sequenceFlow id="flow_heat_pump_to_merge_hp_solar" sourceRef="task_nlp_decide_heat_pump_details" targetRef="gw_nlp_merge_hp_solar_for_funding"/>
+    <semantic:sequenceFlow id="flow_solar_thermal_to_merge_hp_solar" sourceRef="task_nlp_decide_solar_thermal_details" targetRef="gw_nlp_merge_hp_solar_for_funding"/>
+    <semantic:sequenceFlow id="flow_merge_hp_solar_to_hp_solar_funding_sub" sourceRef="gw_nlp_merge_hp_solar_for_funding" targetRef="sub_process_hp_solar_funding"/>
+    <semantic:sequenceFlow id="flow_biomass_funding_to_merge_all" sourceRef="sub_process_biomass_funding" targetRef="gw_nlp_merge_all_funding_outcomes"/>
+    <semantic:sequenceFlow id="flow_hp_solar_funding_to_merge_all" sourceRef="sub_process_hp_solar_funding" targetRef="gw_nlp_merge_all_funding_outcomes"/>
+    
+    <semantic:sequenceFlow id="flow_merge_all_to_enter_app_data" sourceRef="gw_nlp_merge_all_funding_outcomes" targetRef="sub_process_con_enter_application_data"/>
+    <!-- This flow above now directly connects to the contractor's task, removing the intermediate event for simplicity -->
+
+
+    <semantic:sequenceFlow id="flow_enter_data_to_check_data" sourceRef="sub_process_con_enter_application_data" targetRef="task_con_check_entered_data"/>
+    <semantic:sequenceFlow id="flow_check_data_to_upload_files" sourceRef="task_con_check_entered_data" targetRef="task_con_upload_required_files"/>
+    <semantic:sequenceFlow id="flow_upload_files_to_confirm_data" sourceRef="task_con_upload_required_files" targetRef="task_con_confirm_data"/>
+    <semantic:sequenceFlow id="flow_confirm_data_to_submit_app" sourceRef="task_con_confirm_data" targetRef="task_con_submit_application"/>
+    <semantic:sequenceFlow id="flow_submit_app_to_end" sourceRef="task_con_submit_application" targetRef="end_event_con_application_submitted"/>
+
+  </semantic:process>
+
+  <!-- Sub-Process: Determine Biomass Funding -->
+  <semantic:process id="process_biomass_funding" isExecutable="false">
+    <semantic:startEvent id="start_biomass_funding" name="Start Biomass Funding Determination"/>
+    <semantic:task id="task_bf_decide_plant_type" name="Decide Biomass Plant Type (d)"/>
+    <semantic:exclusiveGateway id="gw_bf_building_type" name="Building Type for Biomass?"/>
+    <semantic:task id="task_bf_existing_determine" name="Determine Funding for Existing Building (Biomass)"/>
+      <!-- This task would internally handle Basic (g) vs Additional (h) -->
+    <semantic:task id="task_bf_new_determine" name="Determine Funding for New Building (Biomass) (j,k)"/>
+    <semantic:exclusiveGateway id="gw_bf_merge_funding_type" name="Merge Biomass Funding"/>
+    <semantic:endEvent id="end_biomass_funding" name="Biomass Funding Determined"/>
+
+    <semantic:sequenceFlow id="flow_sbf_to_decide_plant" sourceRef="start_biomass_funding" targetRef="task_bf_decide_plant_type"/>
+    <semantic:sequenceFlow id="flow_decide_plant_to_gw_build_type" sourceRef="task_bf_decide_plant_type" targetRef="gw_bf_building_type"/>
+    <semantic:sequenceFlow id="flow_gw_build_type_to_existing" name="Existing Building" sourceRef="gw_bf_building_type" targetRef="task_bf_existing_determine"/>
+    <semantic:sequenceFlow id="flow_gw_build_type_to_new" name="New Building" sourceRef="gw_bf_building_type" targetRef="task_bf_new_determine"/>
+    <semantic:sequenceFlow id="flow_existing_to_merge" sourceRef="task_bf_existing_determine" targetRef="gw_bf_merge_funding_type"/>
+    <semantic:sequenceFlow id="flow_new_to_merge" sourceRef="task_bf_new_determine" targetRef="gw_bf_merge_funding_type"/>
+    <semantic:sequenceFlow id="flow_merge_to_ebf" sourceRef="gw_bf_merge_funding_type" targetRef="end_biomass_funding"/>
+  </semantic:process>
+
+  <!-- Sub-Process: Determine HP/Solar Funding -->
+  <semantic:process id="process_hp_solar_funding" isExecutable="false">
+    <semantic:startEvent id="start_hp_solar_funding" name="Start HP/Solar Funding Determination"/>
+    <semantic:exclusiveGateway id="gw_hpsf_building_type" name="Building Type for HP/Solar?"/>
+    <semantic:task id="task_hpsf_existing_determine" name="Determine Funding for Existing Building (HP/Solar)"/>
+      <!-- This task would internally handle Basic+Add (q,s) vs Innov+Add (r,s) -->
+    <semantic:task id="task_hpsf_new_determine" name="Determine Funding for New Building (HP/Solar)"/>
+    <semantic:exclusiveGateway id="gw_hpsf_merge_funding_type" name="Merge HP/Solar Funding"/>
+    <semantic:endEvent id="end_hp_solar_funding" name="HP/Solar Funding Determined"/>
+
+    <semantic:sequenceFlow id="flow_shpsf_to_gw_build_type" sourceRef="start_hp_solar_funding" targetRef="gw_hpsf_building_type"/>
+    <semantic:sequenceFlow id="flow_gw_hpsf_build_type_to_existing" name="Existing Building" sourceRef="gw_hpsf_building_type" targetRef="task_hpsf_existing_determine"/>
+    <semantic:sequenceFlow id="flow_gw_hpsf_build_type_to_new" name="New Building" sourceRef="gw_hpsf_building_type" targetRef="task_hpsf_new_determine"/>
+    <semantic:sequenceFlow id="flow_hpsf_existing_to_merge" sourceRef="task_hpsf_existing_determine" targetRef="gw_hpsf_merge_funding_type"/>
+    <semantic:sequenceFlow id="flow_hpsf_new_to_merge" sourceRef="task_hpsf_new_determine" targetRef="gw_hpsf_merge_funding_type"/>
+    <semantic:sequenceFlow id="flow_hpsf_merge_to_ehpsf" sourceRef="gw_hpsf_merge_funding_type" targetRef="end_hp_solar_funding"/>
+  </semantic:process>
+
+  <!-- Sub-Process: Online Application Data Entry -->
+  <semantic:process id="process_online_application_data_entry" isExecutable="false">
+    <semantic:startEvent id="start_app_data_entry" name="Start Application Data Entry"/>
+    <semantic:parallelGateway id="gw_ade_split" name="Split Data Entry Tasks"/>
+    <semantic:task id="task_ade_data_protection" name="Specify Data Protection Info (u)"/>
+    <semantic:task id="task_ade_project_start" name="Specify Project Start Info (u)"/>
+    <semantic:task id="task_ade_applicant_details" name="Define Applicant Details (u,v)"/>
+    <semantic:task id="task_ade_location_plant" name="Specify Location, Plant &amp; Building Info (u,w,x)"/>
+    <semantic:task id="task_ade_heating_measure" name="Specify Planned Heating Measure Info (u)"/>
+    <semantic:task id="task_ade_funding_type" name="Specify Funding Type Info (u)"/>
+    <semantic:task id="task_ade_explanations" name="Enter Personal Explanations (u)"/>
+    <semantic:task id="task_ade_consent" name="Submit Electronic Communication Consent (u)"/>
+    <semantic:parallelGateway id="gw_ade_join" name="Join Data Entry Tasks"/>
+    <semantic:endEvent id="end_app_data_entry" name="Application Data Entered"/>
+
+    <semantic:sequenceFlow id="flow_sade_to_split" sourceRef="start_app_data_entry" targetRef="gw_ade_split"/>
+    <semantic:sequenceFlow id="flow_split_to_dp" sourceRef="gw_ade_split" targetRef="task_ade_data_protection"/>
+    <semantic:sequenceFlow id="flow_split_to_ps" sourceRef="gw_ade_split" targetRef="task_ade_project_start"/>
+    <semantic:sequenceFlow id="flow_split_to_ad" sourceRef="gw_ade_split" targetRef="task_ade_applicant_details"/>
+    <semantic:sequenceFlow id="flow_split_to_lp" sourceRef="gw_ade_split" targetRef="task_ade_location_plant"/>
+    <semantic:sequenceFlow id="flow_split_to_hm" sourceRef="gw_ade_split" targetRef="task_ade_heating_measure"/>
+    <semantic:sequenceFlow id="flow_split_to_ft" sourceRef="gw_ade_split" targetRef="task_ade_funding_type"/>
+    <semantic:sequenceFlow id="flow_split_to_ex" sourceRef="gw_ade_split" targetRef="task_ade_explanations"/>
+    <semantic:sequenceFlow id="flow_split_to_co" sourceRef="gw_ade_split" targetRef="task_ade_consent"/>
+    <semantic:sequenceFlow id="flow_dp_to_join" sourceRef="task_ade_data_protection" targetRef="gw_ade_join"/>
+    <semantic:sequenceFlow id="flow_ps_to_join" sourceRef="task_ade_project_start" targetRef="gw_ade_join"/>
+    <semantic:sequenceFlow id="flow_ad_to_join" sourceRef="task_ade_applicant_details" targetRef="gw_ade_join"/>
+    <semantic:sequenceFlow id="flow_lp_to_join" sourceRef="task_ade_location_plant" targetRef="gw_ade_join"/>
+    <semantic:sequenceFlow id="flow_hm_to_join" sourceRef="task_ade_heating_measure" targetRef="gw_ade_join"/>
+    <semantic:sequenceFlow id="flow_ft_to_join" sourceRef="task_ade_funding_type" targetRef="gw_ade_join"/>
+    <semantic:sequenceFlow id="flow_ex_to_join" sourceRef="task_ade_explanations" targetRef="gw_ade_join"/>
+    <semantic:sequenceFlow id="flow_co_to_join" sourceRef="task_ade_consent" targetRef="gw_ade_join"/>
+    <semantic:sequenceFlow id="flow_join_to_eade" sourceRef="gw_ade_join" targetRef="end_app_data_entry"/>
+  </semantic:process>
+
+  <bpmndi:BPMNDiagram id="diagram_renewable_heating_funding">
+    <bpmndi:BPMNPlane bpmnElement="collab_heating_funding">
+      <bpmndi:BPMNShape id="shape_participant_applicant" bpmnElement="participant_applicant" isHorizontal="true">
+        <dc:Bounds x="50" y="50" width="1800" height="1000"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_lane_nlp" bpmnElement="lane_nlp" isHorizontal="true">
+        <dc:Bounds x="80" y="50" width="1770" height="500"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_lane_contractor" bpmnElement="lane_contractor" isHorizontal="true">
+        <dc:Bounds x="80" y="550" width="1770" height="500"/>
+      </bpmndi:BPMNShape>
+
+      <!-- Main Process Shapes -->
+      <bpmndi:BPMNShape id="shape_start_event" bpmnElement="start_event">
+        <dc:Bounds x="120" y="100" width="36" height="36"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_task_nlp_decide_heating_method" bpmnElement="task_nlp_decide_heating_method">
+        <dc:Bounds x="200" y="88" width="160" height="60"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_gw_nlp_heating_category" bpmnElement="gw_nlp_heating_category" isMarkerVisible="true">
+        <dc:Bounds x="400" y="95" width="50" height="50"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_gw_nlp_option_a_system" bpmnElement="gw_nlp_option_a_system" isMarkerVisible="true">
+        <dc:Bounds x="500" y="175" width="50" height="50"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_sub_process_biomass_funding" bpmnElement="sub_process_biomass_funding" isExpanded="false">
+        <dc:Bounds x="600" y="88" width="180" height="70"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_task_nlp_decide_heat_pump_details" bpmnElement="task_nlp_decide_heat_pump_details">
+        <dc:Bounds x="600" y="250" width="180" height="60"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_task_nlp_decide_solar_thermal_details" bpmnElement="task_nlp_decide_solar_thermal_details">
+        <dc:Bounds x="500" y="30" width="180" height="60"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_gw_nlp_merge_hp_solar_for_funding" bpmnElement="gw_nlp_merge_hp_solar_for_funding" isMarkerVisible="true">
+        <dc:Bounds x="830" y="175" width="50" height="50"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_sub_process_hp_solar_funding" bpmnElement="sub_process_hp_solar_funding" isExpanded="false">
+        <dc:Bounds x="930" y="170" width="180" height="70"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_gw_nlp_merge_all_funding_outcomes" bpmnElement="gw_nlp_merge_all_funding_outcomes" isMarkerVisible="true">
+        <dc:Bounds x="1160" y="130" width="50" height="50"/>
+      </bpmndi:BPMNShape>
+       <bpmndi:BPMNShape id="shape_end_event_nlp_funding_determined" bpmnElement="end_event_nlp_funding_determined">
+        <dc:Bounds x="1250" y="137" width="36" height="36"/> <!-- Adjusted position -->
+      </bpmndi:BPMNShape>
+
+
+      <!-- Contractor Shapes -->
+      <bpmndi:BPMNShape id="shape_sub_process_con_enter_application_data" bpmnElement="sub_process_con_enter_application_data" isExpanded="false">
+        <dc:Bounds x="1130" y="600" width="180" height="70"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_task_con_check_entered_data" bpmnElement="task_con_check_entered_data">
+        <dc:Bounds x="1350" y="605" width="160" height="60"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_task_con_upload_required_files" bpmnElement="task_con_upload_required_files">
+        <dc:Bounds x="1550" y="605" width="160" height="60"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_task_con_confirm_data" bpmnElement="task_con_confirm_data">
+        <dc:Bounds x="1350" y="705" width="160" height="60"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_task_con_submit_application" bpmnElement="task_con_submit_application">
+        <dc:Bounds x="1550" y="705" width="160" height="60"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_end_event_con_application_submitted" bpmnElement="end_event_con_application_submitted">
+        <dc:Bounds x="1750" y="717" width="36" height="36"/>
+      </bpmndi:BPMNShape>
+
+      <!-- Main Process Edges -->
+      <bpmndi:BPMNEdge id="edge_flow_start_to_decide_method" bpmnElement="flow_start_to_decide_method">
+        <di:waypoint x="156" y="118"/> <di:waypoint x="200" y="118"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_decide_method_to_gw_category" bpmnElement="flow_decide_method_to_gw_category">
+        <di:waypoint x="360" y="118"/> <di:waypoint x="400" y="120"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_gw_category_to_option_a" bpmnElement="flow_gw_category_to_option_a">
+        <di:waypoint x="425" y="145"/> <di:waypoint x="425" y="200"/> <di:waypoint x="500" y="200"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_gw_category_to_option_b" bpmnElement="flow_gw_category_to_option_b">
+        <di:waypoint x="450" y="120"/> <di:waypoint x="590" y="120"/> <di:waypoint x="590" y="60"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_option_a_to_biomass" bpmnElement="flow_option_a_to_biomass">
+        <di:waypoint x="525" y="175"/> <di:waypoint x="525" y="123"/> <di:waypoint x="600" y="123"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_option_a_to_heat_pump" bpmnElement="flow_option_a_to_heat_pump">
+        <di:waypoint x="525" y="225"/> <di:waypoint x="525" y="280"/> <di:waypoint x="600" y="280"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_heat_pump_to_merge_hp_solar" bpmnElement="flow_heat_pump_to_merge_hp_solar">
+        <di:waypoint x="780" y="280"/> <di:waypoint x="855" y="280"/> <di:waypoint x="855" y="225"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_solar_thermal_to_merge_hp_solar" bpmnElement="flow_solar_thermal_to_merge_hp_solar">
+        <di:waypoint x="680" y="60"/> <di:waypoint x="855" y="60"/> <di:waypoint x="855" y="175"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_merge_hp_solar_to_hp_solar_funding_sub" bpmnElement="flow_merge_hp_solar_to_hp_solar_funding_sub">
+        <di:waypoint x="880" y="200"/> <di:waypoint x="930" y="205"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_biomass_funding_to_merge_all" bpmnElement="flow_biomass_funding_to_merge_all">
+        <di:waypoint x="780" y="123"/> <di:waypoint x="1185" y="123"/> <di:waypoint x="1185" y="130"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_hp_solar_funding_to_merge_all" bpmnElement="flow_hp_solar_funding_to_merge_all">
+        <di:waypoint x="1110" y="205"/> <di:waypoint x="1185" y="205"/> <di:waypoint x="1185" y="180"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_merge_all_to_enter_app_data" bpmnElement="flow_merge_all_to_enter_app_data">
+        <di:waypoint x="1185" y="180"/> <di:waypoint x="1185" y="600"/>
+      </bpmndi:BPMNEdge>
+
+      <!-- Contractor Edges -->
+      <bpmndi:BPMNEdge id="edge_flow_enter_data_to_check_data" bpmnElement="flow_enter_data_to_check_data">
+        <di:waypoint x="1310" y="635"/> <di:waypoint x="1350" y="635"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_check_data_to_upload_files" bpmnElement="flow_check_data_to_upload_files">
+        <di:waypoint x="1510" y="635"/> <di:waypoint x="1550" y="635"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_upload_files_to_confirm_data" bpmnElement="flow_upload_files_to_confirm_data">
+        <di:waypoint x="1630" y="665"/> <di:waypoint x="1630" y="735"/> <di:waypoint x="1510" y="735"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_confirm_data_to_submit_app" bpmnElement="flow_confirm_data_to_submit_app">
+        <di:waypoint x="1510" y="735"/> <di:waypoint x="1550" y="735"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_submit_app_to_end" bpmnElement="flow_submit_app_to_end">
+        <di:waypoint x="1710" y="735"/> <di:waypoint x="1750" y="733"/>
+      </bpmndi:BPMNEdge>
+
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</semantic:definitions>

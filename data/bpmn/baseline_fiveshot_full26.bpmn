@@ -1,0 +1,468 @@
+<?xml version="1.0" standalone="yes"?>
+<semantic:definitions id="definitions_finance_process"
+    targetNamespace="http://example.com/bpmn/finance_process"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:semantic="http://www.omg.org/spec/BPMN/20100524/MODEL"
+    xmlns:di="http://www.omg.org/spec/DD/20100524/DI"
+    xmlns:dc="http://www.omg.org/spec/DD/20100524/DC"
+    xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI">
+
+  <semantic:collaboration id="collab_finance">
+    <semantic:participant id="participant_finance_dept" name="Finance Department" processRef="financeProcess"/>
+  </semantic:collaboration>
+
+  <semantic:process id="financeProcess" isExecutable="true">
+    <semantic:laneSet id="laneSet_finance">
+      <semantic:lane id="lane_monetary_dept" name="Monetary Department">
+        <semantic:flowNodeRef>start_event_receipt</semantic:flowNodeRef>
+        <semantic:flowNodeRef>pg_split_1</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_select_doc_type</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_define_comp_code_currency</semantic:flowNodeRef>
+        <semantic:flowNodeRef>pg_join_1</semantic:flowNodeRef>
+        <semantic:flowNodeRef>pg_split_2</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_define_commitment_item</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_define_funds_centre</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_define_fund</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_define_functional_area</semantic:flowNodeRef>
+        <semantic:flowNodeRef>pg_join_2</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_post_funds_commitment</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_save_funds_document</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_view_posting_report</semantic:flowNodeRef>
+      </semantic:lane>
+      <semantic:lane id="lane_ap_dept" name="Accounts Payable Department">
+        <semantic:flowNodeRef>task_receive_invoice_ap</semantic:flowNodeRef>
+        <semantic:flowNodeRef>pg_split_3</semantic:flowNodeRef>
+        <semantic:flowNodeRef>subprocess_maintain_vendor</semantic:flowNodeRef>
+        <semantic:flowNodeRef>subprocess_create_cc</semantic:flowNodeRef>
+        <semantic:flowNodeRef>pg_join_3</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_create_payment_req</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_save_invoice_posting_ap</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_display_invoice_doc_ap</semantic:flowNodeRef>
+        <semantic:flowNodeRef>eg_doc_parked</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_assign_req_cat_to_fidoc</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_control_proc_req_cat</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_define_final_post_details</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_execute_final_entries_list</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_select_final_doc_checkbox</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_post_final_document_ap</semantic:flowNodeRef>
+        <semantic:flowNodeRef>end_event_process_maintained</semantic:flowNodeRef>
+      </semantic:lane>
+    </semantic:laneSet>
+
+    <!-- Monetary Department Elements -->
+    <semantic:startEvent id="start_event_receipt" name="Receipt of Commitment &amp; Invoice">
+      <semantic:outgoing>flow_start_to_pg_split_1</semantic:outgoing>
+    </semantic:startEvent>
+
+    <semantic:parallelGateway id="pg_split_1" gatewayDirection="Diverging"/>
+    <semantic:sequenceFlow id="flow_start_to_pg_split_1" sourceRef="start_event_receipt" targetRef="pg_split_1"/>
+    
+    <semantic:task id="task_select_doc_type" name="Select Document Type 11">
+      <semantic:incoming>flow_pg_split_1_to_task_select_doc_type</semantic:incoming>
+      <semantic:outgoing>flow_task_select_doc_type_to_pg_join_1</semantic:outgoing>
+    </semantic:task>
+    <semantic:sequenceFlow id="flow_pg_split_1_to_task_select_doc_type" sourceRef="pg_split_1" targetRef="task_select_doc_type"/>
+
+    <semantic:task id="task_define_comp_code_currency" name="Define Company Code and Currency">
+      <semantic:incoming>flow_pg_split_1_to_task_define_comp_code</semantic:incoming>
+      <semantic:outgoing>flow_task_define_comp_code_to_pg_join_1</semantic:outgoing>
+    </semantic:task>
+    <semantic:sequenceFlow id="flow_pg_split_1_to_task_define_comp_code" sourceRef="pg_split_1" targetRef="task_define_comp_code_currency"/>
+
+    <semantic:parallelGateway id="pg_join_1" gatewayDirection="Converging"/>
+    <semantic:sequenceFlow id="flow_task_select_doc_type_to_pg_join_1" sourceRef="task_select_doc_type" targetRef="pg_join_1"/>
+    <semantic:sequenceFlow id="flow_task_define_comp_code_to_pg_join_1" sourceRef="task_define_comp_code_currency" targetRef="pg_join_1"/>
+
+    <semantic:parallelGateway id="pg_split_2" gatewayDirection="Diverging"/>
+    <semantic:sequenceFlow id="flow_pg_join_1_to_pg_split_2" sourceRef="pg_join_1" targetRef="pg_split_2"/>
+
+    <semantic:task id="task_define_commitment_item" name="Define Commitment Item">
+      <semantic:incoming>flow_pg_split_2_to_task_def_commit_item</semantic:incoming>
+      <semantic:outgoing>flow_task_def_commit_item_to_pg_join_2</semantic:outgoing>
+    </semantic:task>
+    <semantic:sequenceFlow id="flow_pg_split_2_to_task_def_commit_item" sourceRef="pg_split_2" targetRef="task_define_commitment_item"/>
+
+    <semantic:task id="task_define_funds_centre" name="Define Funds Centre">
+      <semantic:incoming>flow_pg_split_2_to_task_def_funds_centre</semantic:incoming>
+      <semantic:outgoing>flow_task_def_funds_centre_to_pg_join_2</semantic:outgoing>
+    </semantic:task>
+    <semantic:sequenceFlow id="flow_pg_split_2_to_task_def_funds_centre" sourceRef="pg_split_2" targetRef="task_define_funds_centre"/>
+    
+    <semantic:task id="task_define_fund" name="Define Fund">
+      <semantic:incoming>flow_pg_split_2_to_task_def_fund</semantic:incoming>
+      <semantic:outgoing>flow_task_def_fund_to_pg_join_2</semantic:outgoing>
+    </semantic:task>
+    <semantic:sequenceFlow id="flow_pg_split_2_to_task_def_fund" sourceRef="pg_split_2" targetRef="task_define_fund"/>
+
+    <semantic:task id="task_define_functional_area" name="Define Functional Area">
+      <semantic:incoming>flow_pg_split_2_to_task_def_func_area</semantic:incoming>
+      <semantic:outgoing>flow_task_def_func_area_to_pg_join_2</semantic:outgoing>
+    </semantic:task>
+    <semantic:sequenceFlow id="flow_pg_split_2_to_task_def_func_area" sourceRef="pg_split_2" targetRef="task_define_functional_area"/>
+
+    <semantic:parallelGateway id="pg_join_2" gatewayDirection="Converging"/>
+    <semantic:sequenceFlow id="flow_task_def_commit_item_to_pg_join_2" sourceRef="task_define_commitment_item" targetRef="pg_join_2"/>
+    <semantic:sequenceFlow id="flow_task_def_funds_centre_to_pg_join_2" sourceRef="task_define_funds_centre" targetRef="pg_join_2"/>
+    <semantic:sequenceFlow id="flow_task_def_fund_to_pg_join_2" sourceRef="task_define_fund" targetRef="pg_join_2"/>
+    <semantic:sequenceFlow id="flow_task_def_func_area_to_pg_join_2" sourceRef="task_define_functional_area" targetRef="pg_join_2"/>
+
+    <semantic:task id="task_post_funds_commitment" name="Post Funds Commitment in SAP ECC">
+      <semantic:incoming>flow_pg_join_2_to_task_post_funds</semantic:incoming>
+      <semantic:outgoing>flow_task_post_funds_to_task_save_doc</semantic:outgoing>
+    </semantic:task>
+    <semantic:sequenceFlow id="flow_pg_join_2_to_task_post_funds" sourceRef="pg_join_2" targetRef="task_post_funds_commitment"/>
+
+    <semantic:task id="task_save_funds_document" name="Save Funds Commitment Document">
+      <semantic:incoming>flow_task_post_funds_to_task_save_doc</semantic:incoming>
+      <semantic:outgoing>flow_task_save_doc_to_task_view_report</semantic:outgoing>
+    </semantic:task>
+    <semantic:sequenceFlow id="flow_task_post_funds_to_task_save_doc" sourceRef="task_post_funds_commitment" targetRef="task_save_funds_document"/>
+
+    <semantic:task id="task_view_posting_report" name="View Posting Report">
+      <semantic:incoming>flow_task_save_doc_to_task_view_report</semantic:incoming>
+      <semantic:outgoing>flow_task_view_report_to_task_receive_invoice</semantic:outgoing>
+    </semantic:task>
+    <semantic:sequenceFlow id="flow_task_save_doc_to_task_view_report" sourceRef="task_save_funds_document" targetRef="task_view_posting_report"/>
+
+    <!-- Accounts Payable Department Elements -->
+    <semantic:task id="task_receive_invoice_ap" name="Receive Invoice from Provider">
+      <semantic:incoming>flow_task_view_report_to_task_receive_invoice</semantic:incoming>
+      <semantic:outgoing>flow_task_receive_invoice_to_pg_split_3</semantic:outgoing>
+    </semantic:task>
+    <semantic:sequenceFlow id="flow_task_view_report_to_task_receive_invoice" sourceRef="task_view_posting_report" targetRef="task_receive_invoice_ap"/>
+
+    <semantic:parallelGateway id="pg_split_3" gatewayDirection="Diverging"/>
+    <semantic:sequenceFlow id="flow_task_receive_invoice_to_pg_split_3" sourceRef="task_receive_invoice_ap" targetRef="pg_split_3"/>
+
+    <semantic:subProcess id="subprocess_maintain_vendor" name="Maintain Vendor Master Data">
+      <semantic:incoming>flow_pg_split_3_to_subprocess_vendor</semantic:incoming>
+      <semantic:outgoing>flow_subprocess_vendor_to_pg_join_3</semantic:outgoing>
+      <!-- Internal elements of subprocess_maintain_vendor would be defined here if not black-boxed -->
+      <!-- For simplicity in this example, internal details are omitted but would include tasks like: -->
+      <!-- Specify Vendor, Specify Company Code, Specify Address, Save New Vendor etc. with their own start/end -->
+       <semantic:startEvent id="start_sub_vendor" name="Start Vendor Maintenance"/>
+       <semantic:task id="task_specify_vendor_details_initial" name="Specify Vendor, CompCode, PurchOrg, AccGroup"/>
+       <semantic:task id="task_specify_vendor_address" name="Specify Vendor Address Data"/>
+       <semantic:task id="task_maintain_vat_tax" name="Maintain VAT ID and Tax File Number"/>
+       <semantic:task id="task_define_bank_details_vendor" name="Define Bank Details"/>
+       <semantic:task id="task_specify_recon_account" name="Specify Reconciliation Account"/>
+       <semantic:task id="task_define_payment_terms_incoterms" name="Define Payment Terms and Incoterms"/>
+       <semantic:task id="task_save_new_vendor" name="Save New Vendor"/>
+       <semantic:endEvent id="end_sub_vendor" name="Vendor Master Data Maintained"/>
+       <semantic:sequenceFlow id="flow_sub_vendor_1" sourceRef="start_sub_vendor" targetRef="task_specify_vendor_details_initial"/>
+       <semantic:sequenceFlow id="flow_sub_vendor_2" sourceRef="task_specify_vendor_details_initial" targetRef="task_specify_vendor_address"/>
+       <semantic:sequenceFlow id="flow_sub_vendor_3" sourceRef="task_specify_vendor_address" targetRef="task_maintain_vat_tax"/>
+       <semantic:sequenceFlow id="flow_sub_vendor_4" sourceRef="task_maintain_vat_tax" targetRef="task_define_bank_details_vendor"/>
+       <semantic:sequenceFlow id="flow_sub_vendor_5" sourceRef="task_define_bank_details_vendor" targetRef="task_specify_recon_account"/>
+       <semantic:sequenceFlow id="flow_sub_vendor_6" sourceRef="task_specify_recon_account" targetRef="task_define_payment_terms_incoterms"/>
+       <semantic:sequenceFlow id="flow_sub_vendor_7" sourceRef="task_define_payment_terms_incoterms" targetRef="task_save_new_vendor"/>
+       <semantic:sequenceFlow id="flow_sub_vendor_8" sourceRef="task_save_new_vendor" targetRef="end_sub_vendor"/>
+    </semantic:subProcess>
+    <semantic:sequenceFlow id="flow_pg_split_3_to_subprocess_vendor" sourceRef="pg_split_3" targetRef="subprocess_maintain_vendor"/>
+
+    <semantic:subProcess id="subprocess_create_cc" name="Create Cost Centre (CC)">
+      <semantic:incoming>flow_pg_split_3_to_subprocess_cc</semantic:incoming>
+      <semantic:outgoing>flow_subprocess_cc_to_pg_join_3</semantic:outgoing>
+      <!-- Internal elements of subprocess_create_cc -->
+       <semantic:startEvent id="start_sub_cc" name="Start CC Creation"/>
+       <semantic:task id="task_define_cc_name_validity" name="Define CC Name and Validity Period"/>
+       <semantic:task id="task_confirm_cc_entries" name="Confirm CC Entries &amp; Display Master Data"/>
+       <semantic:task id="task_define_cc_master_data" name="Define CC Master Data (Name, Resp, Cat, Area, Curr, Group)"/>
+       <semantic:task id="task_save_cc_entries" name="Save CC Entries"/>
+       <semantic:endEvent id="end_sub_cc" name="Cost Centre Assignment Maintained"/>
+       <semantic:sequenceFlow id="flow_sub_cc_1" sourceRef="start_sub_cc" targetRef="task_define_cc_name_validity"/>
+       <semantic:sequenceFlow id="flow_sub_cc_2" sourceRef="task_define_cc_name_validity" targetRef="task_confirm_cc_entries"/>
+       <semantic:sequenceFlow id="flow_sub_cc_3" sourceRef="task_confirm_cc_entries" targetRef="task_define_cc_master_data"/>
+       <semantic:sequenceFlow id="flow_sub_cc_4" sourceRef="task_define_cc_master_data" targetRef="task_save_cc_entries"/>
+       <semantic:sequenceFlow id="flow_sub_cc_5" sourceRef="task_save_cc_entries" targetRef="end_sub_cc"/>
+    </semantic:subProcess>
+    <semantic:sequenceFlow id="flow_pg_split_3_to_subprocess_cc" sourceRef="pg_split_3" targetRef="subprocess_create_cc"/>
+
+    <semantic:parallelGateway id="pg_join_3" gatewayDirection="Converging"/>
+    <semantic:sequenceFlow id="flow_subprocess_vendor_to_pg_join_3" sourceRef="subprocess_maintain_vendor" targetRef="pg_join_3"/>
+    <semantic:sequenceFlow id="flow_subprocess_cc_to_pg_join_3" sourceRef="subprocess_create_cc" targetRef="pg_join_3"/>
+
+    <semantic:task id="task_create_payment_req" name="Create Payment Request (Post Invoice)">
+      <semantic:incoming>flow_pg_join_3_to_task_create_payment_req</semantic:incoming>
+      <semantic:outgoing>flow_task_create_payment_req_to_task_save_invoice</semantic:outgoing>
+    </semantic:task>
+    <semantic:sequenceFlow id="flow_pg_join_3_to_task_create_payment_req" sourceRef="pg_join_3" targetRef="task_create_payment_req"/>
+
+    <semantic:task id="task_save_invoice_posting_ap" name="Save Invoice Posting">
+      <semantic:incoming>flow_task_create_payment_req_to_task_save_invoice</semantic:incoming>
+      <semantic:outgoing>flow_task_save_invoice_to_task_display_doc</semantic:outgoing>
+    </semantic:task>
+    <semantic:sequenceFlow id="flow_task_create_payment_req_to_task_save_invoice" sourceRef="task_create_payment_req" targetRef="task_save_invoice_posting_ap"/>
+
+    <semantic:task id="task_display_invoice_doc_ap" name="Display Invoice Document">
+      <semantic:incoming>flow_task_save_invoice_to_task_display_doc</semantic:incoming>
+      <semantic:outgoing>flow_task_display_doc_to_eg_doc_parked</semantic:outgoing>
+    </semantic:task>
+    <semantic:sequenceFlow id="flow_task_save_invoice_to_task_display_doc" sourceRef="task_save_invoice_posting_ap" targetRef="task_display_invoice_doc_ap"/>
+
+    <semantic:exclusiveGateway id="eg_doc_parked" name="Document Parked?" gatewayDirection="Diverging"/>
+    <semantic:sequenceFlow id="flow_task_display_doc_to_eg_doc_parked" sourceRef="task_display_invoice_doc_ap" targetRef="eg_doc_parked"/>
+
+    <semantic:task id="task_assign_req_cat_to_fidoc" name="Assign Request Category to FI Document Type">
+      <semantic:incoming>flow_eg_doc_parked_yes</semantic:incoming>
+      <semantic:outgoing>flow_task_assign_req_to_task_control_proc</semantic:outgoing>
+    </semantic:task>
+    <semantic:sequenceFlow id="flow_eg_doc_parked_yes" name="Yes" sourceRef="eg_doc_parked" targetRef="task_assign_req_cat_to_fidoc"/>
+
+    <semantic:task id="task_control_proc_req_cat" name="Control Processing of Request Categories">
+      <semantic:incoming>flow_task_assign_req_to_task_control_proc</semantic:incoming>
+      <semantic:outgoing>flow_task_control_proc_to_task_define_final_post</semantic:outgoing>
+    </semantic:task>
+    <semantic:sequenceFlow id="flow_task_assign_req_to_task_control_proc" sourceRef="task_assign_req_cat_to_fidoc" targetRef="task_control_proc_req_cat"/>
+
+    <semantic:task id="task_define_final_post_details" name="Define Final Posting Details">
+      <semantic:incoming>flow_task_control_proc_to_task_define_final_post</semantic:incoming>
+      <semantic:outgoing>flow_task_define_final_post_to_task_execute_final</semantic:outgoing>
+    </semantic:task>
+    <semantic:sequenceFlow id="flow_task_control_proc_to_task_define_final_post" sourceRef="task_control_proc_req_cat" targetRef="task_define_final_post_details"/>
+
+    <semantic:task id="task_execute_final_entries_list" name="Execute Final Entries &amp; Display List">
+      <semantic:incoming>flow_task_define_final_post_to_task_execute_final</semantic:incoming>
+      <semantic:outgoing>flow_task_execute_final_to_task_select_final_doc</semantic:outgoing>
+    </semantic:task>
+    <semantic:sequenceFlow id="flow_task_define_final_post_to_task_execute_final" sourceRef="task_define_final_post_details" targetRef="task_execute_final_entries_list"/>
+
+    <semantic:task id="task_select_final_doc_checkbox" name="Select Corresponding Document via Checkbox">
+      <semantic:incoming>flow_task_execute_final_to_task_select_final_doc</semantic:incoming>
+      <semantic:outgoing>flow_task_select_final_doc_to_task_post_final_doc</semantic:outgoing>
+    </semantic:task>
+    <semantic:sequenceFlow id="flow_task_execute_final_to_task_select_final_doc" sourceRef="task_execute_final_entries_list" targetRef="task_select_final_doc_checkbox"/>
+
+    <semantic:task id="task_post_final_document_ap" name="Post Document">
+      <semantic:incoming>flow_task_select_final_doc_to_task_post_final_doc</semantic:incoming>
+      <semantic:outgoing>flow_task_post_final_doc_to_end_event</semantic:outgoing>
+    </semantic:task>
+    <semantic:sequenceFlow id="flow_task_select_final_doc_to_task_post_final_doc" sourceRef="task_select_final_doc_checkbox" targetRef="task_post_final_document_ap"/>
+
+    <semantic:endEvent id="end_event_process_maintained" name="Commitment and Invoice Process Maintained">
+      <semantic:incoming>flow_task_post_final_doc_to_end_event</semantic:incoming>
+      <semantic:incoming>flow_eg_doc_parked_no</semantic:incoming> 
+    </semantic:endEvent>
+    <semantic:sequenceFlow id="flow_task_post_final_doc_to_end_event" sourceRef="task_post_final_document_ap" targetRef="end_event_process_maintained"/>
+    <semantic:sequenceFlow id="flow_eg_doc_parked_no" name="No" sourceRef="eg_doc_parked" targetRef="end_event_process_maintained"/>
+
+  </semantic:process>
+
+  <bpmndi:BPMNDiagram id="BPMNDiagram_finance_process">
+    <bpmndi:BPMNPlane bpmnElement="collab_finance">
+      <bpmndi:BPMNShape id="shape_participant_finance_dept" bpmnElement="participant_finance_dept" isHorizontal="true">
+        <dc:Bounds x="20" y="20" width="3000" height="1100"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_lane_monetary_dept" bpmnElement="lane_monetary_dept" isHorizontal="true">
+        <dc:Bounds x="50" y="20" width="2970" height="350"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_lane_ap_dept" bpmnElement="lane_ap_dept" isHorizontal="true">
+        <dc:Bounds x="50" y="370" width="2970" height="750"/>
+      </bpmndi:BPMNShape>
+
+      <!-- Monetary Department Shapes -->
+      <bpmndi:BPMNShape id="shape_start_event_receipt" bpmnElement="start_event_receipt">
+        <dc:Bounds x="100" y="150" width="36" height="36"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_pg_split_1" bpmnElement="pg_split_1">
+        <dc:Bounds x="186" y="143" width="50" height="50"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_task_select_doc_type" bpmnElement="task_select_doc_type">
+        <dc:Bounds x="286" y="80" width="180" height="56"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_task_define_comp_code_currency" bpmnElement="task_define_comp_code_currency">
+        <dc:Bounds x="286" y="180" width="180" height="56"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_pg_join_1" bpmnElement="pg_join_1">
+        <dc:Bounds x="516" y="143" width="50" height="50"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_pg_split_2" bpmnElement="pg_split_2">
+        <dc:Bounds x="616" y="143" width="50" height="50"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_task_define_commitment_item" bpmnElement="task_define_commitment_item">
+        <dc:Bounds x="716" y="40" width="150" height="56"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_task_define_funds_centre" bpmnElement="task_define_funds_centre">
+        <dc:Bounds x="716" y="100" width="150" height="56"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_task_define_fund" bpmnElement="task_define_fund">
+        <dc:Bounds x="716" y="160" width="150" height="56"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_task_define_functional_area" bpmnElement="task_define_functional_area">
+        <dc:Bounds x="716" y="220" width="150" height="56"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_pg_join_2" bpmnElement="pg_join_2">
+        <dc:Bounds x="916" y="143" width="50" height="50"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_task_post_funds_commitment" bpmnElement="task_post_funds_commitment">
+        <dc:Bounds x="1016" y="140" width="180" height="56"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_task_save_funds_document" bpmnElement="task_save_funds_document">
+        <dc:Bounds x="1246" y="140" width="180" height="56"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_task_view_posting_report" bpmnElement="task_view_posting_report">
+        <dc:Bounds x="1476" y="140" width="150" height="56"/>
+      </bpmndi:BPMNShape>
+
+      <!-- Accounts Payable Department Shapes -->
+      <bpmndi:BPMNShape id="shape_task_receive_invoice_ap" bpmnElement="task_receive_invoice_ap">
+        <dc:Bounds x="100" y="550" width="180" height="56"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_pg_split_3" bpmnElement="pg_split_3">
+        <dc:Bounds x="330" y="543" width="50" height="50"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_subprocess_maintain_vendor" bpmnElement="subprocess_maintain_vendor" isExpanded="false"> <!-- Set isExpanded to true to show internal details -->
+        <dc:Bounds x="430" y="450" width="200" height="120"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_subprocess_create_cc" bpmnElement="subprocess_create_cc" isExpanded="false">
+        <dc:Bounds x="430" y="620" width="200" height="120"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_pg_join_3" bpmnElement="pg_join_3">
+        <dc:Bounds x="680" y="543" width="50" height="50"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_task_create_payment_req" bpmnElement="task_create_payment_req">
+        <dc:Bounds x="780" y="540" width="200" height="56"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_task_save_invoice_posting_ap" bpmnElement="task_save_invoice_posting_ap">
+        <dc:Bounds x="1030" y="540" width="150" height="56"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_task_display_invoice_doc_ap" bpmnElement="task_display_invoice_doc_ap">
+        <dc:Bounds x="1230" y="540" width="180" height="56"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_eg_doc_parked" bpmnElement="eg_doc_parked">
+        <dc:Bounds x="1460" y="543" width="50" height="50"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_task_assign_req_cat_to_fidoc" bpmnElement="task_assign_req_cat_to_fidoc">
+        <dc:Bounds x="1560" y="540" width="220" height="56"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_task_control_proc_req_cat" bpmnElement="task_control_proc_req_cat">
+        <dc:Bounds x="1830" y="540" width="220" height="56"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_task_define_final_post_details" bpmnElement="task_define_final_post_details">
+        <dc:Bounds x="2100" y="540" width="180" height="56"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_task_execute_final_entries_list" bpmnElement="task_execute_final_entries_list">
+        <dc:Bounds x="2330" y="540" width="200" height="56"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_task_select_final_doc_checkbox" bpmnElement="task_select_final_doc_checkbox">
+        <dc:Bounds x="2580" y="540" width="220" height="56"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_task_post_final_document_ap" bpmnElement="task_post_final_document_ap">
+        <dc:Bounds x="2850" y="540" width="100" height="56"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_end_event_process_maintained" bpmnElement="end_event_process_maintained">
+        <dc:Bounds x="2882" y="650" width="36" height="36"/>
+      </bpmndi:BPMNShape>
+
+      <!-- Monetary Department Edges -->
+      <bpmndi:BPMNEdge id="edge_flow_start_to_pg_split_1" bpmnElement="flow_start_to_pg_split_1">
+        <di:waypoint x="136" y="168"/> <di:waypoint x="186" y="168"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_pg_split_1_to_task_select_doc_type" bpmnElement="flow_pg_split_1_to_task_select_doc_type">
+        <di:waypoint x="211" y="143"/> <di:waypoint x="211" y="108"/> <di:waypoint x="286" y="108"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_pg_split_1_to_task_define_comp_code" bpmnElement="flow_pg_split_1_to_task_define_comp_code">
+        <di:waypoint x="211" y="193"/> <di:waypoint x="211" y="208"/> <di:waypoint x="286" y="208"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_task_select_doc_type_to_pg_join_1" bpmnElement="flow_task_select_doc_type_to_pg_join_1">
+        <di:waypoint x="466" y="108"/> <di:waypoint x="541" y="108"/> <di:waypoint x="541" y="143"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_task_define_comp_code_to_pg_join_1" bpmnElement="flow_task_define_comp_code_to_pg_join_1">
+        <di:waypoint x="466" y="208"/> <di:waypoint x="541" y="208"/> <di:waypoint x="541" y="193"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_pg_join_1_to_pg_split_2" bpmnElement="flow_pg_join_1_to_pg_split_2">
+        <di:waypoint x="566" y="168"/> <di:waypoint x="616" y="168"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_pg_split_2_to_task_def_commit_item" bpmnElement="flow_pg_split_2_to_task_def_commit_item">
+        <di:waypoint x="641" y="143"/> <di:waypoint x="641" y="68"/> <di:waypoint x="716" y="68"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_pg_split_2_to_task_def_funds_centre" bpmnElement="flow_pg_split_2_to_task_def_funds_centre">
+        <di:waypoint x="641" y="143"/> <di:waypoint x="641" y="128"/> <di:waypoint x="716" y="128"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_pg_split_2_to_task_def_fund" bpmnElement="flow_pg_split_2_to_task_def_fund">
+        <di:waypoint x="641" y="193"/> <di:waypoint x="641" y="188"/> <di:waypoint x="716" y="188"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_pg_split_2_to_task_def_func_area" bpmnElement="flow_pg_split_2_to_task_def_func_area">
+        <di:waypoint x="641" y="193"/> <di:waypoint x="641" y="248"/> <di:waypoint x="716" y="248"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_task_def_commit_item_to_pg_join_2" bpmnElement="flow_task_def_commit_item_to_pg_join_2">
+        <di:waypoint x="866" y="68"/> <di:waypoint x="941" y="68"/> <di:waypoint x="941" y="143"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_task_def_funds_centre_to_pg_join_2" bpmnElement="flow_task_def_funds_centre_to_pg_join_2">
+        <di:waypoint x="866" y="128"/> <di:waypoint x="941" y="128"/> <di:waypoint x="941" y="143"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_task_def_fund_to_pg_join_2" bpmnElement="flow_task_def_fund_to_pg_join_2">
+        <di:waypoint x="866" y="188"/> <di:waypoint x="941" y="188"/> <di:waypoint x="941" y="193"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_task_def_func_area_to_pg_join_2" bpmnElement="flow_task_def_func_area_to_pg_join_2">
+        <di:waypoint x="866" y="248"/> <di:waypoint x="941" y="248"/> <di:waypoint x="941" y="193"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_pg_join_2_to_task_post_funds" bpmnElement="flow_pg_join_2_to_task_post_funds">
+        <di:waypoint x="966" y="168"/> <di:waypoint x="1016" y="168"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_task_post_funds_to_task_save_doc" bpmnElement="flow_task_post_funds_to_task_save_doc">
+        <di:waypoint x="1196" y="168"/> <di:waypoint x="1246" y="168"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_task_save_doc_to_task_view_report" bpmnElement="flow_task_save_doc_to_task_view_report">
+        <di:waypoint x="1426" y="168"/> <di:waypoint x="1476" y="168"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_task_view_report_to_task_receive_invoice" bpmnElement="flow_task_view_report_to_task_receive_invoice">
+        <di:waypoint x="1551" y="196"/> <di:waypoint x="1551" y="300"/> <di:waypoint x="190" y="300"/> <di:waypoint x="190" y="550"/>
+      </bpmndi:BPMNEdge>
+
+      <!-- Accounts Payable Department Edges -->
+      <bpmndi:BPMNEdge id="edge_flow_task_receive_invoice_to_pg_split_3" bpmnElement="flow_task_receive_invoice_to_pg_split_3">
+        <di:waypoint x="280" y="578"/> <di:waypoint x="330" y="568"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_pg_split_3_to_subprocess_vendor" bpmnElement="flow_pg_split_3_to_subprocess_vendor">
+        <di:waypoint x="355" y="543"/> <di:waypoint x="355" y="510"/> <di:waypoint x="430" y="510"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_pg_split_3_to_subprocess_cc" bpmnElement="flow_pg_split_3_to_subprocess_cc">
+        <di:waypoint x="355" y="593"/> <di:waypoint x="355" y="680"/> <di:waypoint x="430" y="680"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_subprocess_vendor_to_pg_join_3" bpmnElement="flow_subprocess_vendor_to_pg_join_3">
+        <di:waypoint x="630" y="510"/> <di:waypoint x="705" y="510"/> <di:waypoint x="705" y="543"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_subprocess_cc_to_pg_join_3" bpmnElement="flow_subprocess_cc_to_pg_join_3">
+        <di:waypoint x="630" y="680"/> <di:waypoint x="705" y="680"/> <di:waypoint x="705" y="593"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_pg_join_3_to_task_create_payment_req" bpmnElement="flow_pg_join_3_to_task_create_payment_req">
+        <di:waypoint x="730" y="568"/> <di:waypoint x="780" y="568"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_task_create_payment_req_to_task_save_invoice" bpmnElement="flow_task_create_payment_req_to_task_save_invoice">
+        <di:waypoint x="980" y="568"/> <di:waypoint x="1030" y="568"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_task_save_invoice_to_task_display_doc" bpmnElement="flow_task_save_invoice_to_task_display_doc">
+        <di:waypoint x="1180" y="568"/> <di:waypoint x="1230" y="568"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_task_display_doc_to_eg_doc_parked" bpmnElement="flow_task_display_doc_to_eg_doc_parked">
+        <di:waypoint x="1410" y="568"/> <di:waypoint x="1460" y="568"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_eg_doc_parked_yes" bpmnElement="flow_eg_doc_parked_yes">
+        <di:waypoint x="1510" y="568"/> <di:waypoint x="1560" y="568"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_task_assign_req_to_task_control_proc" bpmnElement="flow_task_assign_req_to_task_control_proc">
+        <di:waypoint x="1780" y="568"/> <di:waypoint x="1830" y="568"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_task_control_proc_to_task_define_final_post" bpmnElement="flow_task_control_proc_to_task_define_final_post">
+        <di:waypoint x="2050" y="568"/> <di:waypoint x="2100" y="568"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_task_define_final_post_to_task_execute_final" bpmnElement="flow_task_define_final_post_to_task_execute_final">
+        <di:waypoint x="2280" y="568"/> <di:waypoint x="2330" y="568"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_task_execute_final_to_task_select_final_doc" bpmnElement="flow_task_execute_final_to_task_select_final_doc">
+        <di:waypoint x="2530" y="568"/> <di:waypoint x="2580" y="568"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_task_select_final_doc_to_task_post_final_doc" bpmnElement="flow_task_select_final_doc_to_task_post_final_doc">
+        <di:waypoint x="2800" y="568"/> <di:waypoint x="2850" y="568"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_task_post_final_doc_to_end_event" bpmnElement="flow_task_post_final_doc_to_end_event">
+        <di:waypoint x="2900" y="596"/> <di:waypoint x="2900" y="650"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_eg_doc_parked_no" bpmnElement="flow_eg_doc_parked_no">
+        <di:waypoint x="1485" y="593"/> <di:waypoint x="1485" y="668"/> <di:waypoint x="2882" y="668"/>
+      </bpmndi:BPMNEdge>
+
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</semantic:definitions>

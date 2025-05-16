@@ -1,0 +1,780 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<semantic:definitions xmlns:semantic="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" id="definitions_production_order" targetNamespace="http://example.com/bpmn/production_order">
+  <semantic:process id="process_production_order" name="Production Order Processing" isExecutable="false">
+    <semantic:laneSet id="laneSet_production">
+      <semantic:lane id="lane_production_manager" name="Production Manager">
+        <semantic:flowNodeRef>start_event_request_received</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_pm_release_order</semantic:flowNodeRef>
+        <semantic:flowNodeRef>gwy_pm_order_released</semantic:flowNodeRef>
+        <semantic:flowNodeRef>call_activity_pm_check_logs</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_pm_save_release_process</semantic:flowNodeRef>
+        <semantic:flowNodeRef>gwy_pm_confirmation_method</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_pm_confirm_pdc</semantic:flowNodeRef>
+        <semantic:flowNodeRef>gwy_pm_manual_confirmation_type</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_pm_enter_time_ticket</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_pm_enter_time_event</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_pm_enter_collective_entry</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_pm_enter_order_progress</semantic:flowNodeRef>
+        <semantic:flowNodeRef>gwy_pm_progress_confirmation_type</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_pm_select_partial_confirmation</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_pm_select_final_confirmation</semantic:flowNodeRef>
+        <semantic:flowNodeRef>gwy_pm_merge_progress_type</semantic:flowNodeRef>
+        <semantic:flowNodeRef>gwy_pm_merge_manual_type</semantic:flowNodeRef>
+        <semantic:flowNodeRef>gwy_pm_merge_confirmation_method</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_pm_save_confirmation</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_pm_post_confirmation</semantic:flowNodeRef>
+        <semantic:flowNodeRef>gwy_pm_settle_params_start</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_pm_define_settle_order_no</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_pm_define_settle_period</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_pm_deselect_settle_test_run</semantic:flowNodeRef>
+        <semantic:flowNodeRef>gwy_pm_settle_params_end</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_pm_post_settlement</semantic:flowNodeRef>
+        <semantic:flowNodeRef>call_activity_pm_check_costs_settlement</semantic:flowNodeRef>
+      </semantic:lane>
+      <semantic:lane id="lane_production_assistant" name="Production Assistant">
+        <semantic:flowNodeRef>task_pa_withdraw_materials</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_pa_define_gi_params</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_pa_post_goods_issue</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_pa_save_gi_process</semantic:flowNodeRef>
+        <semantic:flowNodeRef>call_activity_pa_check_costs_confirmation</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_pa_define_gr_params</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_pa_post_goods_receipt</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_pa_save_gr_process</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_pa_compute_overheads</semantic:flowNodeRef>
+        <semantic:flowNodeRef>gwy_pa_overhead_processing_type</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_pa_select_individual_processing</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_pa_select_collective_processing</semantic:flowNodeRef>
+        <semantic:flowNodeRef>gwy_pa_merge_overhead_processing_type</semantic:flowNodeRef>
+        <semantic:flowNodeRef>gwy_pa_overhead_params_start</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_pa_specify_overhead_order_no</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_pa_specify_overhead_period</semantic:flowNodeRef>
+        <semantic:flowNodeRef>gwy_pa_overhead_params_end</semantic:flowNodeRef>
+        <semantic:flowNodeRef>gwy_pa_post_overhead_results</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_pa_deselect_overhead_test_run</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_pa_select_overhead_test_run</semantic:flowNodeRef>
+        <semantic:flowNodeRef>gwy_pa_merge_overhead_test_run</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_pa_execute_overhead_calculation</semantic:flowNodeRef>
+        <semantic:flowNodeRef>call_activity_pa_check_costs_overheads</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_pa_check_quantity_availability</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_pa_check_quantity_evaluation</semantic:flowNodeRef>
+        <semantic:flowNodeRef>end_event_order_processed</semantic:flowNodeRef>
+      </semantic:lane>
+    </semantic:laneSet>
+
+    <!-- Production Manager Lane Elements -->
+    <semantic:startEvent id="start_event_request_received" name="Production Order Request Received">
+      <semantic:outgoing>flow_start_to_release_order</semantic:outgoing>
+    </semantic:startEvent>
+    <semantic:task id="task_pm_release_order" name="Release Production Order in SAP">
+      <semantic:incoming>flow_start_to_release_order</semantic:incoming>
+      <semantic:outgoing>flow_release_order_to_gwy</semantic:outgoing>
+    </semantic:task>
+    <semantic:exclusiveGateway id="gwy_pm_order_released" name="Production Order Released?">
+      <semantic:incoming>flow_release_order_to_gwy</semantic:incoming>
+      <semantic:outgoing>flow_gwy_released_yes</semantic:outgoing>
+      <semantic:outgoing>flow_gwy_released_no</semantic:outgoing>
+    </semantic:exclusiveGateway>
+    <semantic:callActivity id="call_activity_pm_check_logs" name="Check Production Order Logs" calledElement="process_check_production_order">
+      <semantic:incoming>flow_gwy_released_no</semantic:incoming>
+      <semantic:outgoing>flow_check_logs_to_save_release</semantic:outgoing>
+    </semantic:callActivity>
+    <semantic:task id="task_pm_save_release_process" name="Save Releasing Process">
+      <semantic:incoming>flow_gwy_released_yes</semantic:incoming>
+      <semantic:incoming>flow_check_logs_to_save_release</semantic:incoming>
+      <semantic:outgoing>flow_save_release_to_withdraw_materials</semantic:outgoing>
+    </semantic:task>
+
+    <!-- Production Assistant Lane Elements (Part 1) -->
+    <semantic:task id="task_pa_withdraw_materials" name="Withdraw Materials from Stock">
+      <semantic:incoming>flow_save_release_to_withdraw_materials</semantic:incoming>
+      <semantic:outgoing>flow_withdraw_to_define_gi</semantic:outgoing>
+    </semantic:task>
+    <semantic:task id="task_pa_define_gi_params" name="Define Goods Issue Parameters">
+      <semantic:incoming>flow_withdraw_to_define_gi</semantic:incoming>
+      <semantic:outgoing>flow_define_gi_to_post_gi</semantic:outgoing>
+    </semantic:task>
+    <semantic:task id="task_pa_post_goods_issue" name="Post Goods Issue (MIGO) in System">
+      <semantic:incoming>flow_define_gi_to_post_gi</semantic:incoming>
+      <semantic:outgoing>flow_post_gi_to_save_gi</semantic:outgoing>
+    </semantic:task>
+    <semantic:task id="task_pa_save_gi_process" name="Save Goods Issue Process">
+      <semantic:incoming>flow_post_gi_to_save_gi</semantic:incoming>
+      <semantic:outgoing>flow_save_gi_to_confirmation_method</semantic:outgoing>
+    </semantic:task>
+
+    <!-- Production Manager Lane Elements (Confirmation) -->
+    <semantic:exclusiveGateway id="gwy_pm_confirmation_method" name="Confirmation Method?">
+      <semantic:incoming>flow_save_gi_to_confirmation_method</semantic:incoming>
+      <semantic:outgoing>flow_conf_method_pdc</semantic:outgoing>
+      <semantic:outgoing>flow_conf_method_manual</semantic:outgoing>
+    </semantic:exclusiveGateway>
+    <semantic:task id="task_pm_confirm_pdc" name="Confirm via External PDC Interface">
+      <semantic:incoming>flow_conf_method_pdc</semantic:incoming>
+      <semantic:outgoing>flow_pdc_to_merge_method</semantic:outgoing>
+    </semantic:task>
+    <semantic:exclusiveGateway id="gwy_pm_manual_confirmation_type" name="Manual Confirmation Type?">
+      <semantic:incoming>flow_conf_method_manual</semantic:incoming>
+      <semantic:outgoing>flow_manual_type_ticket</semantic:outgoing>
+      <semantic:outgoing>flow_manual_type_event</semantic:outgoing>
+      <semantic:outgoing>flow_manual_type_collective</semantic:outgoing>
+      <semantic:outgoing>flow_manual_type_progress</semantic:outgoing>
+    </semantic:exclusiveGateway>
+    <semantic:task id="task_pm_enter_time_ticket" name="Enter Confirmation via Time Ticket">
+      <semantic:incoming>flow_manual_type_ticket</semantic:incoming>
+      <semantic:outgoing>flow_ticket_to_merge_manual</semantic:outgoing>
+    </semantic:task>
+    <semantic:task id="task_pm_enter_time_event" name="Enter Confirmation via Time Event">
+      <semantic:incoming>flow_manual_type_event</semantic:incoming>
+      <semantic:outgoing>flow_event_to_merge_manual</semantic:outgoing>
+    </semantic:task>
+    <semantic:task id="task_pm_enter_collective_entry" name="Enter Confirmation via Collective Entry">
+      <semantic:incoming>flow_manual_type_collective</semantic:incoming>
+      <semantic:outgoing>flow_collective_to_merge_manual</semantic:outgoing>
+    </semantic:task>
+    <semantic:task id="task_pm_enter_order_progress" name="Enter Order No. for Progress Confirmation">
+      <semantic:incoming>flow_manual_type_progress</semantic:incoming>
+      <semantic:outgoing>flow_enter_order_to_gwy_progress_type</semantic:outgoing>
+    </semantic:task>
+    <semantic:exclusiveGateway id="gwy_pm_progress_confirmation_type" name="Progress Confirmation Type?">
+      <semantic:incoming>flow_enter_order_to_gwy_progress_type</semantic:incoming>
+      <semantic:outgoing>flow_progress_type_partial</semantic:outgoing>
+      <semantic:outgoing>flow_progress_type_final</semantic:outgoing>
+    </semantic:exclusiveGateway>
+    <semantic:task id="task_pm_select_partial_confirmation" name="Select Partial Confirmation">
+      <semantic:incoming>flow_progress_type_partial</semantic:incoming>
+      <semantic:outgoing>flow_partial_to_merge_progress</semantic:outgoing>
+    </semantic:task>
+    <semantic:task id="task_pm_select_final_confirmation" name="Select Final Confirmation">
+      <semantic:incoming>flow_progress_type_final</semantic:incoming>
+      <semantic:outgoing>flow_final_to_merge_progress</semantic:outgoing>
+    </semantic:task>
+    <semantic:exclusiveGateway id="gwy_pm_merge_progress_type">
+      <semantic:incoming>flow_partial_to_merge_progress</semantic:incoming>
+      <semantic:incoming>flow_final_to_merge_progress</semantic:incoming>
+      <semantic:outgoing>flow_merge_progress_to_merge_manual</semantic:outgoing>
+    </semantic:exclusiveGateway>
+    <semantic:exclusiveGateway id="gwy_pm_merge_manual_type">
+      <semantic:incoming>flow_ticket_to_merge_manual</semantic:incoming>
+      <semantic:incoming>flow_event_to_merge_manual</semantic:incoming>
+      <semantic:incoming>flow_collective_to_merge_manual</semantic:incoming>
+      <semantic:incoming>flow_merge_progress_to_merge_manual</semantic:incoming>
+      <semantic:outgoing>flow_merge_manual_to_merge_method</semantic:outgoing>
+    </semantic:exclusiveGateway>
+    <semantic:exclusiveGateway id="gwy_pm_merge_confirmation_method">
+      <semantic:incoming>flow_pdc_to_merge_method</semantic:incoming>
+      <semantic:incoming>flow_merge_manual_to_merge_method</semantic:incoming>
+      <semantic:outgoing>flow_merge_method_to_save_conf</semantic:outgoing>
+    </semantic:exclusiveGateway>
+    <semantic:task id="task_pm_save_confirmation" name="Save Confirmation Process">
+      <semantic:incoming>flow_merge_method_to_save_conf</semantic:incoming>
+      <semantic:outgoing>flow_save_conf_to_post_conf</semantic:outgoing>
+    </semantic:task>
+    <semantic:task id="task_pm_post_confirmation" name="Post Production Order Confirmation">
+      <semantic:incoming>flow_save_conf_to_post_conf</semantic:incoming>
+      <semantic:outgoing>flow_post_conf_to_pa_check_costs1</semantic:outgoing>
+    </semantic:task>
+
+    <!-- Production Assistant Lane Elements (Part 2) -->
+    <semantic:callActivity id="call_activity_pa_check_costs_confirmation" name="Check Costs (Post-Confirmation)" calledElement="process_check_production_order">
+      <semantic:incoming>flow_post_conf_to_pa_check_costs1</semantic:incoming>
+      <semantic:outgoing>flow_pa_check_costs1_to_define_gr</semantic:outgoing>
+    </semantic:callActivity>
+    <semantic:task id="task_pa_define_gr_params" name="Define Goods Receipt Parameters">
+      <semantic:incoming>flow_pa_check_costs1_to_define_gr</semantic:incoming>
+      <semantic:outgoing>flow_define_gr_to_post_gr</semantic:outgoing>
+    </semantic:task>
+    <semantic:task id="task_pa_post_goods_receipt" name="Post Goods Receipt (GR) in System">
+      <semantic:incoming>flow_define_gr_to_post_gr</semantic:incoming>
+      <semantic:outgoing>flow_post_gr_to_save_gr</semantic:outgoing>
+    </semantic:task>
+    <semantic:task id="task_pa_save_gr_process" name="Save Goods Receipt Process">
+      <semantic:incoming>flow_post_gr_to_save_gr</semantic:incoming>
+      <semantic:outgoing>flow_save_gr_to_compute_overheads</semantic:outgoing>
+    </semantic:task>
+    <semantic:task id="task_pa_compute_overheads" name="Compute Overheads in Actual Costs">
+      <semantic:incoming>flow_save_gr_to_compute_overheads</semantic:incoming>
+      <semantic:outgoing>flow_compute_overheads_to_gwy_proc_type</semantic:outgoing>
+    </semantic:task>
+    <semantic:exclusiveGateway id="gwy_pa_overhead_processing_type" name="Overhead Processing Type?">
+      <semantic:incoming>flow_compute_overheads_to_gwy_proc_type</semantic:incoming>
+      <semantic:outgoing>flow_proc_type_individual</semantic:outgoing>
+      <semantic:outgoing>flow_proc_type_collective</semantic:outgoing>
+    </semantic:exclusiveGateway>
+    <semantic:task id="task_pa_select_individual_processing" name="Select Individual Processing">
+      <semantic:incoming>flow_proc_type_individual</semantic:incoming>
+      <semantic:outgoing>flow_individual_to_merge_proc_type</semantic:outgoing>
+    </semantic:task>
+    <semantic:task id="task_pa_select_collective_processing" name="Select Collective Processing">
+      <semantic:incoming>flow_proc_type_collective</semantic:incoming>
+      <semantic:outgoing>flow_collective_to_merge_proc_type</semantic:outgoing>
+    </semantic:task>
+    <semantic:exclusiveGateway id="gwy_pa_merge_overhead_processing_type">
+      <semantic:incoming>flow_individual_to_merge_proc_type</semantic:incoming>
+      <semantic:incoming>flow_collective_to_merge_proc_type</semantic:incoming>
+      <semantic:outgoing>flow_merge_proc_type_to_gwy_oh_params_start</semantic:outgoing>
+    </semantic:exclusiveGateway>
+    <semantic:parallelGateway id="gwy_pa_overhead_params_start">
+      <semantic:incoming>flow_merge_proc_type_to_gwy_oh_params_start</semantic:incoming>
+      <semantic:outgoing>flow_gwy_oh_params_to_spec_order</semantic:outgoing>
+      <semantic:outgoing>flow_gwy_oh_params_to_spec_period</semantic:outgoing>
+    </semantic:parallelGateway>
+    <semantic:task id="task_pa_specify_overhead_order_no" name="Specify Order Number (Overheads)">
+      <semantic:incoming>flow_gwy_oh_params_to_spec_order</semantic:incoming>
+      <semantic:outgoing>flow_spec_oh_order_to_gwy_oh_params_end</semantic:outgoing>
+    </semantic:task>
+    <semantic:task id="task_pa_specify_overhead_period" name="Specify Period (Overheads)">
+      <semantic:incoming>flow_gwy_oh_params_to_spec_period</semantic:incoming>
+      <semantic:outgoing>flow_spec_oh_period_to_gwy_oh_params_end</semantic:outgoing>
+    </semantic:task>
+    <semantic:parallelGateway id="gwy_pa_overhead_params_end">
+      <semantic:incoming>flow_spec_oh_order_to_gwy_oh_params_end</semantic:incoming>
+      <semantic:incoming>flow_spec_oh_period_to_gwy_oh_params_end</semantic:incoming>
+      <semantic:outgoing>flow_gwy_oh_params_end_to_gwy_post_results</semantic:outgoing>
+    </semantic:parallelGateway>
+    <semantic:exclusiveGateway id="gwy_pa_post_overhead_results" name="Post Overhead Results?">
+      <semantic:incoming>flow_gwy_oh_params_end_to_gwy_post_results</semantic:incoming>
+      <semantic:outgoing>flow_post_results_yes</semantic:outgoing>
+      <semantic:outgoing>flow_post_results_no</semantic:outgoing>
+    </semantic:exclusiveGateway>
+    <semantic:task id="task_pa_deselect_overhead_test_run" name="Deselect 'Test Run' Field (Overheads)">
+      <semantic:incoming>flow_post_results_yes</semantic:incoming>
+      <semantic:outgoing>flow_deselect_test_run_to_merge</semantic:outgoing>
+    </semantic:task>
+    <semantic:task id="task_pa_select_overhead_test_run" name="Select/Keep 'Test Run' Field (Overheads)">
+      <semantic:incoming>flow_post_results_no</semantic:incoming>
+      <semantic:outgoing>flow_select_test_run_to_merge</semantic:outgoing>
+    </semantic:task>
+    <semantic:exclusiveGateway id="gwy_pa_merge_overhead_test_run">
+      <semantic:incoming>flow_deselect_test_run_to_merge</semantic:incoming>
+      <semantic:incoming>flow_select_test_run_to_merge</semantic:incoming>
+      <semantic:outgoing>flow_merge_test_run_to_execute_oh</semantic:outgoing>
+    </semantic:exclusiveGateway>
+    <semantic:task id="task_pa_execute_overhead_calculation" name="Execute Overhead Calculation">
+      <semantic:incoming>flow_merge_test_run_to_execute_oh</semantic:incoming>
+      <semantic:outgoing>flow_execute_oh_to_pa_check_costs2</semantic:outgoing>
+    </semantic:task>
+    <semantic:callActivity id="call_activity_pa_check_costs_overheads" name="Check Costs (Post-Overheads)" calledElement="process_check_production_order">
+      <semantic:incoming>flow_execute_oh_to_pa_check_costs2</semantic:incoming>
+      <semantic:outgoing>flow_pa_check_costs2_to_pm_settle_params_start</semantic:outgoing>
+    </semantic:callActivity>
+
+    <!-- Production Manager Lane Elements (Settlement) -->
+    <semantic:parallelGateway id="gwy_pm_settle_params_start">
+      <semantic:incoming>flow_pa_check_costs2_to_pm_settle_params_start</semantic:incoming>
+      <semantic:outgoing>flow_gwy_settle_params_to_def_order</semantic:outgoing>
+      <semantic:outgoing>flow_gwy_settle_params_to_def_period</semantic:outgoing>
+      <semantic:outgoing>flow_gwy_settle_params_to_des_test_run</semantic:outgoing>
+    </semantic:parallelGateway>
+    <semantic:task id="task_pm_define_settle_order_no" name="Define Order Number (Settlement)">
+      <semantic:incoming>flow_gwy_settle_params_to_def_order</semantic:incoming>
+      <semantic:outgoing>flow_def_settle_order_to_gwy_settle_params_end</semantic:outgoing>
+    </semantic:task>
+    <semantic:task id="task_pm_define_settle_period" name="Define Period (Settlement)">
+      <semantic:incoming>flow_gwy_settle_params_to_def_period</semantic:incoming>
+      <semantic:outgoing>flow_def_settle_period_to_gwy_settle_params_end</semantic:outgoing>
+    </semantic:task>
+    <semantic:task id="task_pm_deselect_settle_test_run" name="Deselect 'Test Run' Field (Settlement)">
+      <semantic:incoming>flow_gwy_settle_params_to_des_test_run</semantic:incoming>
+      <semantic:outgoing>flow_des_settle_test_run_to_gwy_settle_params_end</semantic:outgoing>
+    </semantic:task>
+    <semantic:parallelGateway id="gwy_pm_settle_params_end">
+      <semantic:incoming>flow_def_settle_order_to_gwy_settle_params_end</semantic:incoming>
+      <semantic:incoming>flow_def_settle_period_to_gwy_settle_params_end</semantic:incoming>
+      <semantic:incoming>flow_des_settle_test_run_to_gwy_settle_params_end</semantic:incoming>
+      <semantic:outgoing>flow_gwy_settle_params_end_to_post_settle</semantic:outgoing>
+    </semantic:parallelGateway>
+    <semantic:task id="task_pm_post_settlement" name="Post Settlement">
+      <semantic:incoming>flow_gwy_settle_params_end_to_post_settle</semantic:incoming>
+      <semantic:outgoing>flow_post_settle_to_pm_check_costs3</semantic:outgoing>
+    </semantic:task>
+    <semantic:callActivity id="call_activity_pm_check_costs_settlement" name="Check Costs (Post-Settlement)" calledElement="process_check_production_order">
+      <semantic:incoming>flow_post_settle_to_pm_check_costs3</semantic:incoming>
+      <semantic:outgoing>flow_pm_check_costs3_to_pa_check_qty</semantic:outgoing>
+    </semantic:callActivity>
+
+    <!-- Production Assistant Lane Elements (Final Checks) -->
+    <semantic:task id="task_pa_check_quantity_availability" name="Check Quantity Produced Availability">
+      <semantic:incoming>flow_pm_check_costs3_to_pa_check_qty</semantic:incoming>
+      <semantic:outgoing>flow_check_qty_to_check_eval</semantic:outgoing>
+    </semantic:task>
+    <semantic:task id="task_pa_check_quantity_evaluation" name="Check Correct Evaluation of Quantity">
+      <semantic:incoming>flow_check_qty_to_check_eval</semantic:incoming>
+      <semantic:outgoing>flow_check_eval_to_end</semantic:outgoing>
+    </semantic:task>
+    <semantic:endEvent id="end_event_order_processed" name="Production Order Processed">
+      <semantic:incoming>flow_check_eval_to_end</semantic:incoming>
+    </semantic:endEvent>
+
+    <!-- Sequence Flows -->
+    <semantic:sequenceFlow id="flow_start_to_release_order" sourceRef="start_event_request_received" targetRef="task_pm_release_order"/>
+    <semantic:sequenceFlow id="flow_release_order_to_gwy" sourceRef="task_pm_release_order" targetRef="gwy_pm_order_released"/>
+    <semantic:sequenceFlow id="flow_gwy_released_yes" name="Yes" sourceRef="gwy_pm_order_released" targetRef="task_pm_save_release_process"/>
+    <semantic:sequenceFlow id="flow_gwy_released_no" name="No" sourceRef="gwy_pm_order_released" targetRef="call_activity_pm_check_logs"/>
+    <semantic:sequenceFlow id="flow_check_logs_to_save_release" sourceRef="call_activity_pm_check_logs" targetRef="task_pm_save_release_process"/>
+    <semantic:sequenceFlow id="flow_save_release_to_withdraw_materials" sourceRef="task_pm_save_release_process" targetRef="task_pa_withdraw_materials"/>
+    <semantic:sequenceFlow id="flow_withdraw_to_define_gi" sourceRef="task_pa_withdraw_materials" targetRef="task_pa_define_gi_params"/>
+    <semantic:sequenceFlow id="flow_define_gi_to_post_gi" sourceRef="task_pa_define_gi_params" targetRef="task_pa_post_goods_issue"/>
+    <semantic:sequenceFlow id="flow_post_gi_to_save_gi" sourceRef="task_pa_post_goods_issue" targetRef="task_pa_save_gi_process"/>
+    <semantic:sequenceFlow id="flow_save_gi_to_confirmation_method" sourceRef="task_pa_save_gi_process" targetRef="gwy_pm_confirmation_method"/>
+    <semantic:sequenceFlow id="flow_conf_method_pdc" name="External PDC" sourceRef="gwy_pm_confirmation_method" targetRef="task_pm_confirm_pdc"/>
+    <semantic:sequenceFlow id="flow_conf_method_manual" name="Manual" sourceRef="gwy_pm_confirmation_method" targetRef="gwy_pm_manual_confirmation_type"/>
+    <semantic:sequenceFlow id="flow_pdc_to_merge_method" sourceRef="task_pm_confirm_pdc" targetRef="gwy_pm_merge_confirmation_method"/>
+    <semantic:sequenceFlow id="flow_manual_type_ticket" name="Time Ticket" sourceRef="gwy_pm_manual_confirmation_type" targetRef="task_pm_enter_time_ticket"/>
+    <semantic:sequenceFlow id="flow_manual_type_event" name="Time Event" sourceRef="gwy_pm_manual_confirmation_type" targetRef="task_pm_enter_time_event"/>
+    <semantic:sequenceFlow id="flow_manual_type_collective" name="Collective" sourceRef="gwy_pm_manual_confirmation_type" targetRef="task_pm_enter_collective_entry"/>
+    <semantic:sequenceFlow id="flow_manual_type_progress" name="Progress" sourceRef="gwy_pm_manual_confirmation_type" targetRef="task_pm_enter_order_progress"/>
+    <semantic:sequenceFlow id="flow_ticket_to_merge_manual" sourceRef="task_pm_enter_time_ticket" targetRef="gwy_pm_merge_manual_type"/>
+    <semantic:sequenceFlow id="flow_event_to_merge_manual" sourceRef="task_pm_enter_time_event" targetRef="gwy_pm_merge_manual_type"/>
+    <semantic:sequenceFlow id="flow_collective_to_merge_manual" sourceRef="task_pm_enter_collective_entry" targetRef="gwy_pm_merge_manual_type"/>
+    <semantic:sequenceFlow id="flow_enter_order_to_gwy_progress_type" sourceRef="task_pm_enter_order_progress" targetRef="gwy_pm_progress_confirmation_type"/>
+    <semantic:sequenceFlow id="flow_progress_type_partial" name="Partial" sourceRef="gwy_pm_progress_confirmation_type" targetRef="task_pm_select_partial_confirmation"/>
+    <semantic:sequenceFlow id="flow_progress_type_final" name="Final" sourceRef="gwy_pm_progress_confirmation_type" targetRef="task_pm_select_final_confirmation"/>
+    <semantic:sequenceFlow id="flow_partial_to_merge_progress" sourceRef="task_pm_select_partial_confirmation" targetRef="gwy_pm_merge_progress_type"/>
+    <semantic:sequenceFlow id="flow_final_to_merge_progress" sourceRef="task_pm_select_final_confirmation" targetRef="gwy_pm_merge_progress_type"/>
+    <semantic:sequenceFlow id="flow_merge_progress_to_merge_manual" sourceRef="gwy_pm_merge_progress_type" targetRef="gwy_pm_merge_manual_type"/>
+    <semantic:sequenceFlow id="flow_merge_manual_to_merge_method" sourceRef="gwy_pm_merge_manual_type" targetRef="gwy_pm_merge_confirmation_method"/>
+    <semantic:sequenceFlow id="flow_merge_method_to_save_conf" sourceRef="gwy_pm_merge_confirmation_method" targetRef="task_pm_save_confirmation"/>
+    <semantic:sequenceFlow id="flow_save_conf_to_post_conf" sourceRef="task_pm_save_confirmation" targetRef="task_pm_post_confirmation"/>
+    <semantic:sequenceFlow id="flow_post_conf_to_pa_check_costs1" sourceRef="task_pm_post_confirmation" targetRef="call_activity_pa_check_costs_confirmation"/>
+    <semantic:sequenceFlow id="flow_pa_check_costs1_to_define_gr" sourceRef="call_activity_pa_check_costs_confirmation" targetRef="task_pa_define_gr_params"/>
+    <semantic:sequenceFlow id="flow_define_gr_to_post_gr" sourceRef="task_pa_define_gr_params" targetRef="task_pa_post_goods_receipt"/>
+    <semantic:sequenceFlow id="flow_post_gr_to_save_gr" sourceRef="task_pa_post_goods_receipt" targetRef="task_pa_save_gr_process"/>
+    <semantic:sequenceFlow id="flow_save_gr_to_compute_overheads" sourceRef="task_pa_save_gr_process" targetRef="task_pa_compute_overheads"/>
+    <semantic:sequenceFlow id="flow_compute_overheads_to_gwy_proc_type" sourceRef="task_pa_compute_overheads" targetRef="gwy_pa_overhead_processing_type"/>
+    <semantic:sequenceFlow id="flow_proc_type_individual" name="Individual" sourceRef="gwy_pa_overhead_processing_type" targetRef="task_pa_select_individual_processing"/>
+    <semantic:sequenceFlow id="flow_proc_type_collective" name="Collective" sourceRef="gwy_pa_overhead_processing_type" targetRef="task_pa_select_collective_processing"/>
+    <semantic:sequenceFlow id="flow_individual_to_merge_proc_type" sourceRef="task_pa_select_individual_processing" targetRef="gwy_pa_merge_overhead_processing_type"/>
+    <semantic:sequenceFlow id="flow_collective_to_merge_proc_type" sourceRef="task_pa_select_collective_processing" targetRef="gwy_pa_merge_overhead_processing_type"/>
+    <semantic:sequenceFlow id="flow_merge_proc_type_to_gwy_oh_params_start" sourceRef="gwy_pa_merge_overhead_processing_type" targetRef="gwy_pa_overhead_params_start"/>
+    <semantic:sequenceFlow id="flow_gwy_oh_params_to_spec_order" sourceRef="gwy_pa_overhead_params_start" targetRef="task_pa_specify_overhead_order_no"/>
+    <semantic:sequenceFlow id="flow_gwy_oh_params_to_spec_period" sourceRef="gwy_pa_overhead_params_start" targetRef="task_pa_specify_overhead_period"/>
+    <semantic:sequenceFlow id="flow_spec_oh_order_to_gwy_oh_params_end" sourceRef="task_pa_specify_overhead_order_no" targetRef="gwy_pa_overhead_params_end"/>
+    <semantic:sequenceFlow id="flow_spec_oh_period_to_gwy_oh_params_end" sourceRef="task_pa_specify_overhead_period" targetRef="gwy_pa_overhead_params_end"/>
+    <semantic:sequenceFlow id="flow_gwy_oh_params_end_to_gwy_post_results" sourceRef="gwy_pa_overhead_params_end" targetRef="gwy_pa_post_overhead_results"/>
+    <semantic:sequenceFlow id="flow_post_results_yes" name="Yes" sourceRef="gwy_pa_post_overhead_results" targetRef="task_pa_deselect_overhead_test_run"/>
+    <semantic:sequenceFlow id="flow_post_results_no" name="No" sourceRef="gwy_pa_post_overhead_results" targetRef="task_pa_select_overhead_test_run"/>
+    <semantic:sequenceFlow id="flow_deselect_test_run_to_merge" sourceRef="task_pa_deselect_overhead_test_run" targetRef="gwy_pa_merge_overhead_test_run"/>
+    <semantic:sequenceFlow id="flow_select_test_run_to_merge" sourceRef="task_pa_select_overhead_test_run" targetRef="gwy_pa_merge_overhead_test_run"/>
+    <semantic:sequenceFlow id="flow_merge_test_run_to_execute_oh" sourceRef="gwy_pa_merge_overhead_test_run" targetRef="task_pa_execute_overhead_calculation"/>
+    <semantic:sequenceFlow id="flow_execute_oh_to_pa_check_costs2" sourceRef="task_pa_execute_overhead_calculation" targetRef="call_activity_pa_check_costs_overheads"/>
+    <semantic:sequenceFlow id="flow_pa_check_costs2_to_pm_settle_params_start" sourceRef="call_activity_pa_check_costs_overheads" targetRef="gwy_pm_settle_params_start"/>
+    <semantic:sequenceFlow id="flow_gwy_settle_params_to_def_order" sourceRef="gwy_pm_settle_params_start" targetRef="task_pm_define_settle_order_no"/>
+    <semantic:sequenceFlow id="flow_gwy_settle_params_to_def_period" sourceRef="gwy_pm_settle_params_start" targetRef="task_pm_define_settle_period"/>
+    <semantic:sequenceFlow id="flow_gwy_settle_params_to_des_test_run" sourceRef="gwy_pm_settle_params_start" targetRef="task_pm_deselect_settle_test_run"/>
+    <semantic:sequenceFlow id="flow_def_settle_order_to_gwy_settle_params_end" sourceRef="task_pm_define_settle_order_no" targetRef="gwy_pm_settle_params_end"/>
+    <semantic:sequenceFlow id="flow_def_settle_period_to_gwy_settle_params_end" sourceRef="task_pm_define_settle_period" targetRef="gwy_pm_settle_params_end"/>
+    <semantic:sequenceFlow id="flow_des_settle_test_run_to_gwy_settle_params_end" sourceRef="task_pm_deselect_settle_test_run" targetRef="gwy_pm_settle_params_end"/>
+    <semantic:sequenceFlow id="flow_gwy_settle_params_end_to_post_settle" sourceRef="gwy_pm_settle_params_end" targetRef="task_pm_post_settlement"/>
+    <semantic:sequenceFlow id="flow_post_settle_to_pm_check_costs3" sourceRef="task_pm_post_settlement" targetRef="call_activity_pm_check_costs_settlement"/>
+    <semantic:sequenceFlow id="flow_pm_check_costs3_to_pa_check_qty" sourceRef="call_activity_pm_check_costs_settlement" targetRef="task_pa_check_quantity_availability"/>
+    <semantic:sequenceFlow id="flow_check_qty_to_check_eval" sourceRef="task_pa_check_quantity_availability" targetRef="task_pa_check_quantity_evaluation"/>
+    <semantic:sequenceFlow id="flow_check_eval_to_end" sourceRef="task_pa_check_quantity_evaluation" targetRef="end_event_order_processed"/>
+
+  </semantic:process>
+
+  <semantic:process id="process_check_production_order" name="Check Production Order Status and Costs" isExecutable="false">
+    <semantic:startEvent id="sub_start_check" name="Start Checking">
+      <semantic:outgoing>flow_sub_start_to_task</semantic:outgoing>
+    </semantic:startEvent>
+    <semantic:task id="sub_task_perform_check" name="Perform Production Order Check">
+      <semantic:incoming>flow_sub_start_to_task</semantic:incoming>
+      <semantic:outgoing>flow_sub_task_to_end</semantic:outgoing>
+    </semantic:task>
+    <semantic:endEvent id="sub_end_check" name="Checking Complete">
+      <semantic:incoming>flow_sub_task_to_end</semantic:incoming>
+    </semantic:endEvent>
+    <semantic:sequenceFlow id="flow_sub_start_to_task" sourceRef="sub_start_check" targetRef="sub_task_perform_check"/>
+    <semantic:sequenceFlow id="flow_sub_task_to_end" sourceRef="sub_task_perform_check" targetRef="sub_end_check"/>
+  </semantic:process>
+
+  <bpmndi:BPMNDiagram id="diagram_production_order">
+    <bpmndi:BPMNPlane id="plane_production_order" bpmnElement="process_production_order">
+      <bpmndi:BPMNShape id="shape_lane_production_manager" bpmnElement="lane_production_manager" isHorizontal="true">
+        <dc:Bounds x="30" y="30" width="3800" height="350"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_lane_production_assistant" bpmnElement="lane_production_assistant" isHorizontal="true">
+        <dc:Bounds x="30" y="380" width="3800" height="450"/>
+      </bpmndi:BPMNShape>
+
+      <!-- PM Lane Shapes -->
+      <bpmndi:BPMNShape id="shape_start_event_request_received" bpmnElement="start_event_request_received">
+        <dc:Bounds x="80" y="180" width="36" height="36"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_task_pm_release_order" bpmnElement="task_pm_release_order">
+        <dc:Bounds x="160" y="162" width="130" height="72"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_gwy_pm_order_released" bpmnElement="gwy_pm_order_released" isMarkerVisible="true">
+        <dc:Bounds x="330" y="171" width="50" height="50"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_call_activity_pm_check_logs" bpmnElement="call_activity_pm_check_logs">
+        <dc:Bounds x="420" y="250" width="130" height="72"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_task_pm_save_release_process" bpmnElement="task_pm_save_release_process">
+        <dc:Bounds x="420" y="162" width="130" height="72"/>
+      </bpmndi:BPMNShape>
+
+      <!-- PA Lane Shapes (Part 1) -->
+      <bpmndi:BPMNShape id="shape_task_pa_withdraw_materials" bpmnElement="task_pa_withdraw_materials">
+        <dc:Bounds x="420" y="450" width="130" height="72"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_task_pa_define_gi_params" bpmnElement="task_pa_define_gi_params">
+        <dc:Bounds x="590" y="450" width="130" height="72"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_task_pa_post_goods_issue" bpmnElement="task_pa_post_goods_issue">
+        <dc:Bounds x="760" y="450" width="130" height="72"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_task_pa_save_gi_process" bpmnElement="task_pa_save_gi_process">
+        <dc:Bounds x="930" y="450" width="130" height="72"/>
+      </bpmndi:BPMNShape>
+
+      <!-- PM Lane Shapes (Confirmation) -->
+      <bpmndi:BPMNShape id="shape_gwy_pm_confirmation_method" bpmnElement="gwy_pm_confirmation_method" isMarkerVisible="true">
+        <dc:Bounds x="1100" y="171" width="50" height="50"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_task_pm_confirm_pdc" bpmnElement="task_pm_confirm_pdc">
+        <dc:Bounds x="1190" y="80" width="130" height="72"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_gwy_pm_manual_confirmation_type" bpmnElement="gwy_pm_manual_confirmation_type" isMarkerVisible="true">
+        <dc:Bounds x="1190" y="250" width="50" height="50"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_task_pm_enter_time_ticket" bpmnElement="task_pm_enter_time_ticket">
+        <dc:Bounds x="1280" y="50" width="130" height="72"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_task_pm_enter_time_event" bpmnElement="task_pm_enter_time_event">
+        <dc:Bounds x="1280" y="140" width="130" height="72"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_task_pm_enter_collective_entry" bpmnElement="task_pm_enter_collective_entry">
+        <dc:Bounds x="1280" y="230" width="130" height="72"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_task_pm_enter_order_progress" bpmnElement="task_pm_enter_order_progress">
+        <dc:Bounds x="1280" y="320" width="130" height="72"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_gwy_pm_progress_confirmation_type" bpmnElement="gwy_pm_progress_confirmation_type" isMarkerVisible="true">
+        <dc:Bounds x="1450" y="331" width="50" height="50"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_task_pm_select_partial_confirmation" bpmnElement="task_pm_select_partial_confirmation">
+        <dc:Bounds x="1540" y="280" width="130" height="72"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_task_pm_select_final_confirmation" bpmnElement="task_pm_select_final_confirmation">
+        <dc:Bounds x="1540" y="370" width="130" height="72"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_gwy_pm_merge_progress_type" bpmnElement="gwy_pm_merge_progress_type" isMarkerVisible="true">
+        <dc:Bounds x="1710" y="331" width="50" height="50"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_gwy_pm_merge_manual_type" bpmnElement="gwy_pm_merge_manual_type" isMarkerVisible="true">
+        <dc:Bounds x="1710" y="171" width="50" height="50"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_gwy_pm_merge_confirmation_method" bpmnElement="gwy_pm_merge_confirmation_method" isMarkerVisible="true">
+        <dc:Bounds x="1800" y="171" width="50" height="50"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_task_pm_save_confirmation" bpmnElement="task_pm_save_confirmation">
+        <dc:Bounds x="1890" y="162" width="130" height="72"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_task_pm_post_confirmation" bpmnElement="task_pm_post_confirmation">
+        <dc:Bounds x="2060" y="162" width="130" height="72"/>
+      </bpmndi:BPMNShape>
+
+      <!-- PA Lane Shapes (Part 2) -->
+      <bpmndi:BPMNShape id="shape_call_activity_pa_check_costs_confirmation" bpmnElement="call_activity_pa_check_costs_confirmation">
+        <dc:Bounds x="2060" y="450" width="130" height="72"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_task_pa_define_gr_params" bpmnElement="task_pa_define_gr_params">
+        <dc:Bounds x="2230" y="450" width="130" height="72"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_task_pa_post_goods_receipt" bpmnElement="task_pa_post_goods_receipt">
+        <dc:Bounds x="2400" y="450" width="130" height="72"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_task_pa_save_gr_process" bpmnElement="task_pa_save_gr_process">
+        <dc:Bounds x="2570" y="450" width="130" height="72"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_task_pa_compute_overheads" bpmnElement="task_pa_compute_overheads">
+        <dc:Bounds x="2740" y="450" width="130" height="72"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_gwy_pa_overhead_processing_type" bpmnElement="gwy_pa_overhead_processing_type" isMarkerVisible="true">
+        <dc:Bounds x="2910" y="460" width="50" height="50"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_task_pa_select_individual_processing" bpmnElement="task_pa_select_individual_processing">
+        <dc:Bounds x="3000" y="400" width="130" height="72"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_task_pa_select_collective_processing" bpmnElement="task_pa_select_collective_processing">
+        <dc:Bounds x="3000" y="500" width="130" height="72"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_gwy_pa_merge_overhead_processing_type" bpmnElement="gwy_pa_merge_overhead_processing_type" isMarkerVisible="true">
+        <dc:Bounds x="3170" y="460" width="50" height="50"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_gwy_pa_overhead_params_start" bpmnElement="gwy_pa_overhead_params_start">
+        <dc:Bounds x="2910" y="590" width="50" height="50"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_task_pa_specify_overhead_order_no" bpmnElement="task_pa_specify_overhead_order_no">
+        <dc:Bounds x="3000" y="550" width="130" height="72"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_task_pa_specify_overhead_period" bpmnElement="task_pa_specify_overhead_period">
+        <dc:Bounds x="3000" y="640" width="130" height="72"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_gwy_pa_overhead_params_end" bpmnElement="gwy_pa_overhead_params_end">
+        <dc:Bounds x="3170" y="590" width="50" height="50"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_gwy_pa_post_overhead_results" bpmnElement="gwy_pa_post_overhead_results" isMarkerVisible="true">
+        <dc:Bounds x="3260" y="590" width="50" height="50"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_task_pa_deselect_overhead_test_run" bpmnElement="task_pa_deselect_overhead_test_run">
+        <dc:Bounds x="3350" y="550" width="130" height="72"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_task_pa_select_overhead_test_run" bpmnElement="task_pa_select_overhead_test_run">
+        <dc:Bounds x="3350" y="640" width="130" height="72"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_gwy_pa_merge_overhead_test_run" bpmnElement="gwy_pa_merge_overhead_test_run" isMarkerVisible="true">
+        <dc:Bounds x="3520" y="590" width="50" height="50"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_task_pa_execute_overhead_calculation" bpmnElement="task_pa_execute_overhead_calculation">
+        <dc:Bounds x="3260" y="450" width="130" height="72"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_call_activity_pa_check_costs_overheads" bpmnElement="call_activity_pa_check_costs_overheads">
+        <dc:Bounds x="3430" y="450" width="130" height="72"/>
+      </bpmndi:BPMNShape>
+
+      <!-- PM Lane Shapes (Settlement) -->
+      <bpmndi:BPMNShape id="shape_gwy_pm_settle_params_start" bpmnElement="gwy_pm_settle_params_start">
+        <dc:Bounds x="3430" y="171" width="50" height="50"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_task_pm_define_settle_order_no" bpmnElement="task_pm_define_settle_order_no">
+        <dc:Bounds x="3520" y="50" width="130" height="72"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_task_pm_define_settle_period" bpmnElement="task_pm_define_settle_period">
+        <dc:Bounds x="3520" y="140" width="130" height="72"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_task_pm_deselect_settle_test_run" bpmnElement="task_pm_deselect_settle_test_run">
+        <dc:Bounds x="3520" y="230" width="130" height="72"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_gwy_pm_settle_params_end" bpmnElement="gwy_pm_settle_params_end">
+        <dc:Bounds x="3690" y="171" width="50" height="50"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_task_pm_post_settlement" bpmnElement="task_pm_post_settlement">
+        <dc:Bounds x="3600" y="450" width="130" height="72"/> <!-- Moved to PA lane for layout, but logically PM -->
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_call_activity_pm_check_costs_settlement" bpmnElement="call_activity_pm_check_costs_settlement">
+        <dc:Bounds x="3770" y="162" width="130" height="72"/>
+      </bpmndi:BPMNShape>
+
+      <!-- PA Lane Shapes (Final Checks) -->
+      <bpmndi:BPMNShape id="shape_task_pa_check_quantity_availability" bpmnElement="task_pa_check_quantity_availability">
+        <dc:Bounds x="3600" y="550" width="130" height="72"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_task_pa_check_quantity_evaluation" bpmnElement="task_pa_check_quantity_evaluation">
+        <dc:Bounds x="3600" y="650" width="130" height="72"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_end_event_order_processed" bpmnElement="end_event_order_processed">
+        <dc:Bounds x="3770" y="600" width="36" height="36"/>
+      </bpmndi:BPMNShape>
+
+      <!-- Sequence Flow Edges (Simplified for brevity, ensure all connections) -->
+      <bpmndi:BPMNEdge id="edge_flow_start_to_release_order" bpmnElement="flow_start_to_release_order">
+        <di:waypoint x="116" y="198"/> <di:waypoint x="160" y="198"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_release_order_to_gwy" bpmnElement="flow_release_order_to_gwy">
+        <di:waypoint x="290" y="198"/> <di:waypoint x="330" y="196"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_gwy_released_yes" bpmnElement="flow_gwy_released_yes">
+        <di:waypoint x="380" y="196"/> <di:waypoint x="420" y="198"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_gwy_released_no" bpmnElement="flow_gwy_released_no">
+        <di:waypoint x="355" y="221"/> <di:waypoint x="355" y="286"/> <di:waypoint x="420" y="286"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_check_logs_to_save_release" bpmnElement="flow_check_logs_to_save_release">
+        <di:waypoint x="485" y="250"/> <di:waypoint x="485" y="234"/> <di:waypoint x="420" y="234"/> <!-- Incorrect, should converge -->
+         <di:waypoint x="485" y="250"/> <di:waypoint x="485" y="234"/> <di:waypoint x="485" y="198"/>
+      </bpmndi:BPMNEdge>
+       <bpmndi:BPMNEdge id="edge_flow_save_release_to_withdraw_materials" bpmnElement="flow_save_release_to_withdraw_materials">
+        <di:waypoint x="485" y="234"/> <di:waypoint x="485" y="450"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_withdraw_to_define_gi" bpmnElement="flow_withdraw_to_define_gi">
+        <di:waypoint x="550" y="486"/> <di:waypoint x="590" y="486"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_define_gi_to_post_gi" bpmnElement="flow_define_gi_to_post_gi">
+        <di:waypoint x="720" y="486"/> <di:waypoint x="760" y="486"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_post_gi_to_save_gi" bpmnElement="flow_post_gi_to_save_gi">
+        <di:waypoint x="890" y="486"/> <di:waypoint x="930" y="486"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_save_gi_to_confirmation_method" bpmnElement="flow_save_gi_to_confirmation_method">
+        <di:waypoint x="1000" y="450"/> <di:waypoint x="1000" y="196"/> <di:waypoint x="1100" y="196"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_conf_method_pdc" bpmnElement="flow_conf_method_pdc">
+        <di:waypoint x="1125" y="171"/> <di:waypoint x="1125" y="116"/> <di:waypoint x="1190" y="116"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_conf_method_manual" bpmnElement="flow_conf_method_manual">
+        <di:waypoint x="1125" y="221"/> <di:waypoint x="1125" y="275"/> <di:waypoint x="1190" y="275"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_pdc_to_merge_method" bpmnElement="flow_pdc_to_merge_method">
+        <di:waypoint x="1320" y="116"/> <di:waypoint x="1750" y="116"/> <di:waypoint x="1750" y="171"/> <di:waypoint x="1800" y="196"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_manual_type_ticket" bpmnElement="flow_manual_type_ticket">
+        <di:waypoint x="1240" y="275"/> <di:waypoint x="1280" y="86"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_manual_type_event" bpmnElement="flow_manual_type_event">
+        <di:waypoint x="1240" y="275"/> <di:waypoint x="1280" y="176"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_manual_type_collective" bpmnElement="flow_manual_type_collective">
+        <di:waypoint x="1240" y="275"/> <di:waypoint x="1280" y="266"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_manual_type_progress" bpmnElement="flow_manual_type_progress">
+        <di:waypoint x="1215" y="300"/> <di:waypoint x="1215" y="356"/> <di:waypoint x="1280" y="356"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_ticket_to_merge_manual" bpmnElement="flow_ticket_to_merge_manual">
+        <di:waypoint x="1410" y="86"/> <di:waypoint x="1650" y="86"/> <di:waypoint x="1650" y="171"/> <di:waypoint x="1710" y="196"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_event_to_merge_manual" bpmnElement="flow_event_to_merge_manual">
+        <di:waypoint x="1410" y="176"/> <di:waypoint x="1710" y="196"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_collective_to_merge_manual" bpmnElement="flow_collective_to_merge_manual">
+        <di:waypoint x="1410" y="266"/> <di:waypoint x="1650" y="266"/> <di:waypoint x="1650" y="221"/> <di:waypoint x="1710" y="196"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_enter_order_to_gwy_progress_type" bpmnElement="flow_enter_order_to_gwy_progress_type">
+        <di:waypoint x="1410" y="356"/> <di:waypoint x="1450" y="356"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_progress_type_partial" bpmnElement="flow_progress_type_partial">
+        <di:waypoint x="1475" y="331"/> <di:waypoint x="1475" y="316"/> <di:waypoint x="1540" y="316"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_progress_type_final" bpmnElement="flow_progress_type_final">
+        <di:waypoint x="1475" y="381"/> <di:waypoint x="1475" y="406"/> <di:waypoint x="1540" y="406"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_partial_to_merge_progress" bpmnElement="flow_partial_to_merge_progress">
+        <di:waypoint x="1670" y="316"/> <di:waypoint x="1735" y="316"/> <di:waypoint x="1735" y="331"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_final_to_merge_progress" bpmnElement="flow_final_to_merge_progress">
+        <di:waypoint x="1670" y="406"/> <di:waypoint x="1735" y="406"/> <di:waypoint x="1735" y="381"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_merge_progress_to_merge_manual" bpmnElement="flow_merge_progress_to_merge_manual">
+        <di:waypoint x="1735" y="331"/> <di:waypoint x="1735" y="221"/> <di:waypoint x="1710" y="196"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_merge_manual_to_merge_method" bpmnElement="flow_merge_manual_to_merge_method">
+        <di:waypoint x="1760" y="196"/> <di:waypoint x="1800" y="196"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_merge_method_to_save_conf" bpmnElement="flow_merge_method_to_save_conf">
+        <di:waypoint x="1850" y="198"/> <di:waypoint x="1890" y="198"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_save_conf_to_post_conf" bpmnElement="flow_save_conf_to_post_conf">
+        <di:waypoint x="2020" y="198"/> <di:waypoint x="2060" y="198"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_post_conf_to_pa_check_costs1" bpmnElement="flow_post_conf_to_pa_check_costs1">
+        <di:waypoint x="2125" y="234"/> <di:waypoint x="2125" y="450"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_pa_check_costs1_to_define_gr" bpmnElement="flow_pa_check_costs1_to_define_gr">
+        <di:waypoint x="2190" y="486"/> <di:waypoint x="2230" y="486"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_define_gr_to_post_gr" bpmnElement="flow_define_gr_to_post_gr">
+        <di:waypoint x="2360" y="486"/> <di:waypoint x="2400" y="486"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_post_gr_to_save_gr" bpmnElement="flow_post_gr_to_save_gr">
+        <di:waypoint x="2530" y="486"/> <di:waypoint x="2570" y="486"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_save_gr_to_compute_overheads" bpmnElement="flow_save_gr_to_compute_overheads">
+        <di:waypoint x="2700" y="486"/> <di:waypoint x="2740" y="486"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_compute_overheads_to_gwy_proc_type" bpmnElement="flow_compute_overheads_to_gwy_proc_type">
+        <di:waypoint x="2870" y="486"/> <di:waypoint x="2910" y="485"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_proc_type_individual" bpmnElement="flow_proc_type_individual">
+        <di:waypoint x="2935" y="460"/> <di:waypoint x="2935" y="436"/> <di:waypoint x="3000" y="436"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_proc_type_collective" bpmnElement="flow_proc_type_collective">
+        <di:waypoint x="2935" y="510"/> <di:waypoint x="2935" y="536"/> <di:waypoint x="3000" y="536"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_individual_to_merge_proc_type" bpmnElement="flow_individual_to_merge_proc_type">
+        <di:waypoint x="3130" y="436"/> <di:waypoint x="3195" y="436"/> <di:waypoint x="3195" y="460"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_collective_to_merge_proc_type" bpmnElement="flow_collective_to_merge_proc_type">
+        <di:waypoint x="3130" y="536"/> <di:waypoint x="3195" y="536"/> <di:waypoint x="3195" y="510"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_merge_proc_type_to_gwy_oh_params_start" bpmnElement="flow_merge_proc_type_to_gwy_oh_params_start">
+        <di:waypoint x="3195" y="510"/> <di:waypoint x="3195" y="615"/> <di:waypoint x="2960" y="615"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_gwy_oh_params_to_spec_order" bpmnElement="flow_gwy_oh_params_to_spec_order">
+        <di:waypoint x="2935" y="590"/> <di:waypoint x="2935" y="586"/> <di:waypoint x="3000" y="586"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_gwy_oh_params_to_spec_period" bpmnElement="flow_gwy_oh_params_to_spec_period">
+        <di:waypoint x="2935" y="640"/> <di:waypoint x="2935" y="676"/> <di:waypoint x="3000" y="676"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_spec_oh_order_to_gwy_oh_params_end" bpmnElement="flow_spec_oh_order_to_gwy_oh_params_end">
+        <di:waypoint x="3130" y="586"/> <di:waypoint x="3170" y="615"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_spec_oh_period_to_gwy_oh_params_end" bpmnElement="flow_spec_oh_period_to_gwy_oh_params_end">
+        <di:waypoint x="3130" y="676"/> <di:waypoint x="3170" y="615"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_gwy_oh_params_end_to_gwy_post_results" bpmnElement="flow_gwy_oh_params_end_to_gwy_post_results">
+        <di:waypoint x="3220" y="615"/> <di:waypoint x="3260" y="615"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_post_results_yes" bpmnElement="flow_post_results_yes">
+        <di:waypoint x="3285" y="590"/> <di:waypoint x="3285" y="586"/> <di:waypoint x="3350" y="586"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_post_results_no" bpmnElement="flow_post_results_no">
+        <di:waypoint x="3285" y="640"/> <di:waypoint x="3285" y="676"/> <di:waypoint x="3350" y="676"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_deselect_test_run_to_merge" bpmnElement="flow_deselect_test_run_to_merge">
+        <di:waypoint x="3480" y="586"/> <di:waypoint x="3545" y="586"/> <di:waypoint x="3545" y="590"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_select_test_run_to_merge" bpmnElement="flow_select_test_run_to_merge">
+        <di:waypoint x="3480" y="676"/> <di:waypoint x="3545" y="676"/> <di:waypoint x="3545" y="640"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_merge_test_run_to_execute_oh" bpmnElement="flow_merge_test_run_to_execute_oh">
+        <di:waypoint x="3545" y="590"/> <di:waypoint x="3545" y="486"/> <di:waypoint x="3390" y="486"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_execute_oh_to_pa_check_costs2" bpmnElement="flow_execute_oh_to_pa_check_costs2">
+        <di:waypoint x="3390" y="486"/> <di:waypoint x="3430" y="486"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_pa_check_costs2_to_pm_settle_params_start" bpmnElement="flow_pa_check_costs2_to_pm_settle_params_start">
+        <di:waypoint x="3495" y="450"/> <di:waypoint x="3495" y="221"/> <di:waypoint x="3430" y="196"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_gwy_settle_params_to_def_order" bpmnElement="flow_gwy_settle_params_to_def_order">
+        <di:waypoint x="3455" y="171"/> <di:waypoint x="3455" y="86"/> <di:waypoint x="3520" y="86"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_gwy_settle_params_to_def_period" bpmnElement="flow_gwy_settle_params_to_def_period">
+        <di:waypoint x="3455" y="196"/> <di:waypoint x="3520" y="176"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_gwy_settle_params_to_des_test_run" bpmnElement="flow_gwy_settle_params_to_des_test_run">
+        <di:waypoint x="3455" y="221"/> <di:waypoint x="3455" y="266"/> <di:waypoint x="3520" y="266"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_def_settle_order_to_gwy_settle_params_end" bpmnElement="flow_def_settle_order_to_gwy_settle_params_end">
+        <di:waypoint x="3650" y="86"/> <di:waypoint x="3715" y="86"/> <di:waypoint x="3715" y="171"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_def_settle_period_to_gwy_settle_params_end" bpmnElement="flow_def_settle_period_to_gwy_settle_params_end">
+        <di:waypoint x="3650" y="176"/> <di:waypoint x="3690" y="196"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_des_settle_test_run_to_gwy_settle_params_end" bpmnElement="flow_des_settle_test_run_to_gwy_settle_params_end">
+        <di:waypoint x="3650" y="266"/> <di:waypoint x="3715" y="266"/> <di:waypoint x="3715" y="221"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_gwy_settle_params_end_to_post_settle" bpmnElement="flow_gwy_settle_params_end_to_post_settle">
+        <di:waypoint x="3715" y="221"/> <di:waypoint x="3715" y="450"/> <di:waypoint x="3600" y="486"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_post_settle_to_pm_check_costs3" bpmnElement="flow_post_settle_to_pm_check_costs3">
+        <di:waypoint x="3730" y="486"/> <di:waypoint x="3835" y="486"/> <di:waypoint x="3835" y="234"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_pm_check_costs3_to_pa_check_qty" bpmnElement="flow_pm_check_costs3_to_pa_check_qty">
+        <di:waypoint x="3835" y="234"/> <di:waypoint x="3835" y="586"/> <di:waypoint x="3730" y="586"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_check_qty_to_check_eval" bpmnElement="flow_check_qty_to_check_eval">
+        <di:waypoint x="3665" y="622"/> <di:waypoint x="3665" y="650"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_check_eval_to_end" bpmnElement="flow_check_eval_to_end">
+        <di:waypoint x="3730" y="686"/> <di:waypoint x="3788" y="686"/> <di:waypoint x="3788" y="636"/>
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+    <bpmndi:BPMNPlane id="plane_subprocess_check" bpmnElement="process_check_production_order">
+        <bpmndi:BPMNShape id="shape_sub_start_check" bpmnElement="sub_start_check">
+            <dc:Bounds x="50" y="50" width="36" height="36"/>
+        </bpmndi:BPMNShape>
+        <bpmndi:BPMNShape id="shape_sub_task_perform_check" bpmnElement="sub_task_perform_check">
+            <dc:Bounds x="120" y="32" width="130" height="72"/>
+        </bpmndi:BPMNShape>
+        <bpmndi:BPMNShape id="shape_sub_end_check" bpmnElement="sub_end_check">
+            <dc:Bounds x="280" y="50" width="36" height="36"/>
+        </bpmndi:BPMNShape>
+        <bpmndi:BPMNEdge id="edge_flow_sub_start_to_task" bpmnElement="flow_sub_start_to_task">
+            <di:waypoint x="86" y="68"/> <di:waypoint x="120" y="68"/>
+        </bpmndi:BPMNEdge>
+        <bpmndi:BPMNEdge id="edge_flow_sub_task_to_end" bpmnElement="flow_sub_task_to_end">
+            <di:waypoint x="250" y="68"/> <di:waypoint x="280" y="68"/>
+        </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</semantic:definitions>
