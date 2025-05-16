@@ -10,6 +10,9 @@ from langchain.prompts import PromptTemplate
 from text2bpmn.formats import EvaluatorResult
 
 
+global global_int
+global_int = 0
+
 logging.basicConfig(level=logging.INFO)
 
 class BaseAgent(ABC):
@@ -87,35 +90,54 @@ class FeedbackAgent(BaseAgent):
         
 
 class EvaluatorAgent(BaseAgent):
-    def __init__(self, model, system_message=None, few_shot_examples=None, invoke_message=None, tools=None, step=None):
+    def __init__(self, model, system_message=None, few_shot_examples=None,
+                 invoke_message=None, tools=None, step=None, max_runs: int = 2):
         super().__init__(model, system_message, few_shot_examples, invoke_message, tools, step)
         self.parser = PydanticOutputParser(pydantic_object=EvaluatorResult)
+        self.max_runs = max_runs
 
         # Load prompt template and inject parser instructions
         if self.system_message:
-            if system_message.endswith(".txt") or self.system_message.endswith(".json"):  # file path
+            if system_message.endswith(".txt") or system_message.endswith(".json"):
                 raw_prompt = load_data(system_message)
             else:
-                raw_prompt = system_message  # use directly
-         
+                raw_prompt = system_message
         self.prompt = PromptTemplate.from_template(raw_prompt).partial(
             format_instructions=self.parser.get_format_instructions()
         )
 
     def invoke(self, state) -> Command[Literal["xml_Agent", "__end__"]]:
-        latest_message = state["messages"][-1]
+        # 1) bump our own run count in state
+        global global_int
+        global_int += 1
+       
+        print(f"🔁 Supervisor run #{global_int}")
 
+        # 2) if we exceed max, terminate
+        if global_int > self.max_runs:
+            print("🛑 Max supervisor runs exceeded → ending process.")
+            last_msg = state["messages"][-2]
+            global_int = 0
+            return Command(
+                update={"messages": [last_msg]},
+                goto="__end__"
+            )
+
+        # 3) convert AIMessage to HumanMessage if needed
+        latest_message = state["messages"][-1]
+        if isinstance(latest_message, AIMessage):
+            logging.warning("Latest message is an AIMessage. Converting to HumanMessage to satisfy Gemini format.")
+            latest_message = HumanMessage(content=latest_message.content)
+
+        # 4) prepare messages and invoke model
         formatted_prompt = self.prompt.format()
-        messages = [SystemMessage(content=formatted_prompt), latest_message]  # Only include these two
+        messages = [SystemMessage(content=formatted_prompt), latest_message]
 
         response = self.model.invoke(messages)
-
         parsed = self.parser.parse(response.content)
 
+        # 5) return Command with updated state
         return Command(
-            update={"messages": [latest_message]},  # Keep message state lean
+            update={"messages": [latest_message]},
             goto="__end__" if parsed.next_node == "end" else parsed.next_node
         )
-
-    
-   

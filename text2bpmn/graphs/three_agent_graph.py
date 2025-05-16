@@ -28,24 +28,26 @@ def only_last_message(agent):
         if not last_ai_msg:
             raise ValueError("No AIMessage found in state['messages'].")
 
-        # Construct new messages list:
-        # 1. Agent's system prompt (assuming it is accessible)
-        # 2. Last AI message content as HumanMessage
+        # Construct new minimal message list
         system_msg_content = getattr(agent, "system_message", None)
         if system_msg_content is None:
             raise ValueError("Agent has no system_message attribute")
 
-        new_messages = [
+        # ⚠️ Modify state in-place to preserve other keys like supervisor_runs
+        state["messages"] = [
             SystemMessage(content=system_msg_content),
             HumanMessage(content=last_ai_msg.content)
         ]
 
-        # Replace the state's messages with this minimal set
-        state["messages"] = new_messages
-
-        # Now invoke the agent with this reduced state
         return agent.invoke(state)
+    
+    # Optional: preserve metadata for graph visualization/debugging
+    wrapper.system_message = getattr(agent, "system_message", None)
+    wrapper.step = getattr(agent, "step", None)
+
     return wrapper
+
+
 
 
 
@@ -89,34 +91,13 @@ def build_graph():
     supervisor = EvaluatorAgent(
         model=get_model(),
         system_message=prompt_supervisor,
-        step="supervisor"
+        step="supervisor",
+         max_runs=2
     )
 
-    def supervisor_with_limit(agent_fn, max_runs: int = 2):
-        def wrapper(state):
-            # count how many times we've hit supervisor
-            runs = state.get("supervisor_runs", 0) + 1
-            state["supervisor_runs"] = runs
-            print(f"🔁 Supervisor run #{runs}")
+   
 
-            if runs > max_runs:
-                print("🛑 Max supervisor runs exceeded → ending process.")
-                last_msg = state["messages"][-1]
-                return Command(
-                    update={"messages": [last_msg]},
-                    goto=END
-                )
-
-            # already invoked in agent_fn, just pass through
-            return agent_fn(state)
-
-        # propagate metadata
-        wrapper.system_message = getattr(agent_fn, "system_message", None)
-        wrapper.step = getattr(agent_fn, "step", None)
-        return wrapper
-
-    only_super = only_last_message(supervisor)
-    limited_supervisor = supervisor_with_limit(only_super, max_runs=2)
+    
 
     # Build the full graph
     graph = (
@@ -124,13 +105,13 @@ def build_graph():
     .add_node("extractAgent", extractAgent.invoke)
     .add_node("xml_Agent", only_last_message(xml_Agent))
     .add_node("validate_Agent", only_last_message(validate_Agent))
-    .add_node("supervisor",    limited_supervisor)
+    .add_node("supervisor",    supervisor.invoke)
 
     .add_edge(START, "extractAgent")
     .add_edge("extractAgent", "xml_Agent")
     .add_edge("xml_Agent", "validate_Agent")
     .add_edge("validate_Agent", "supervisor")
-    .add_edge("validate_Agent", END)
+    .add_edge("supervisor", END)
     .compile()
     )
 

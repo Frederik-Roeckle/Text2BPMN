@@ -109,29 +109,32 @@ def main():
 
         input_message = {"role": "user", "content": item["text"]}
         print(f"Input message: {input_message}")
-        graph = GRAPH_MAP["supervisor"]()
 
-        final_chunk = None
-        with get_openai_callback() as cb:
-            for chunk in graph.stream({"messages": [input_message]}):
-                pretty_print_messages(chunk, last_message=True)
-                final_chunk = chunk
+        try:
+            graph = GRAPH_MAP["supervisor"]()
 
-        print(f"[TOKENS] Prompt: {cb.prompt_tokens}, Completion: {cb.completion_tokens}, Total: {cb.total_tokens}")
-       
-        final_messages = final_chunk["supervisor"]["messages"]
-        modified_lines.append(final_messages[-1].content)
-    
-        final_message = final_messages[-1].content
-        # Write the modified lines back as plain text
-        output_path = f"data/bpmn/three_agent_{data[i]['id']}.bpmn"
-        with open(output_path, "w") as f:
-            f.write(final_message + "\n")
-    
-        print(f"Results written to {output_path}")
-        render_BPMN(f"ata/bpmn/three_agent_{data[i]['id']}.bpmn", f"data/img/three_agent_{data[i]['id']}.png")
-    
+            final_chunk = None
+            with get_openai_callback() as cb:
+                for chunk in graph.stream({"messages": [input_message]}):
+                    pretty_print_messages(chunk, last_message=True)
+                    final_chunk = chunk
 
+            print(f"[TOKENS] Prompt: {cb.prompt_tokens}, Completion: {cb.completion_tokens}, Total: {cb.total_tokens}")
+        
+            final_messages = final_chunk["supervisor"]["messages"]
+            modified_lines.append(final_messages[-1].content)
+        
+            final_message = final_messages[-1].content
+            # Write the modified lines back as plain text
+            output_path = f"data/bpmn/three_agent_{data[i]['id']}.bpmn"
+            with open(output_path, "w") as f:
+                f.write(final_message + "\n")
+        
+            print(f"Results written to {output_path}")
+            render_BPMN(f"data/bpmn/three_agent_{data[i]['id']}.bpmn", f"data/img/three_agent_{data[i]['id']}.png")
+        except Exception as e:    
+            print(f"❌ Exception occurred while processing item {i+1} (ID: {item.get('id', 'unknown')}): {e}")
+            continue
     # # # Process the input file with the base_line graph
     # print("Processing graph: base_line")    
 
