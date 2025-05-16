@@ -58,15 +58,15 @@ def main():
     #    file_content = f.read().strip()
     for i in range(len(data)):
         print(f"Processing process description {i+1} of {len(data)}")
-        result = GRAPH_MAP["base_line"]().invoke({"messages": data[i]['text']})
+        result = GRAPH_MAP["two_agent_graph"]().invoke({"messages": data[i]['text']})
         final_message = result["messages"][-1].content
     # Write the modified lines back as plain text
-        output_path = f"data/bpmn/baseline_fiveshot{i}_{data[i]['level']}.bpmn"
+        output_path = f"data/bpmn/twoa_fiveshot{i}_{data[i]['level']}.bpmn"
         with open(output_path, "w") as f:
             f.write(final_message + "\n")
     
         print(f"Results written to {output_path}")
-        render_BPMN(f"data/bpmn/baseline_fiveshot{i}_{data[i]['level']}.bpmn",f"data/img/baseline_fiveshot{i}_{data[i]['level']}.png")
+        render_BPMN(f"data/bpmn/twoa_fiveshot{i}_{data[i]['level']}.bpmn",f"data/img/twoa_fiveshot{i}_{data[i]['level']}.png")
 
 
 if __name__ == "__main__":

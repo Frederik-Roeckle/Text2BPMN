@@ -29,7 +29,8 @@ def build_graph():
 
     create_xml = NormalAgent(
         model=get_model(),
-        system_message="data/promts/create_xml_prompt.txt",
+        system_message="data/promts/create_xml_prompt_few.txt",
+        few_shot_examples="data/examples/five_shot_examples.json",
         step="xml"
     )
 

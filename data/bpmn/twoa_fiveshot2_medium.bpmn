@@ -1,0 +1,205 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<semantic:definitions xmlns:semantic="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" id="definitions_invoice_approval" targetNamespace="http://example.com/bpmn/invoice-approval">
+  <semantic:collaboration id="collab_invoice_approval">
+    <semantic:participant id="participant_invoice_management" name="Invoice Approval Management" processRef="invoiceApprovalProcess"/>
+  </semantic:collaboration>
+  <semantic:process id="invoiceApprovalProcess" isExecutable="false">
+    <semantic:laneSet id="laneSet_invoice_approval">
+      <semantic:lane id="lane_proc_team" name="Processing Team">
+        <semantic:flowNodeRef>id_start_invoice_received</semantic:flowNodeRef>
+        <semantic:flowNodeRef>id_task_send_1st_approval</semantic:flowNodeRef>
+        <semantic:flowNodeRef>id_gw_1st_approval_outcome</semantic:flowNodeRef>
+        <semantic:flowNodeRef>id_task_send_2nd_approval</semantic:flowNodeRef>
+        <semantic:flowNodeRef>id_end_rejected_1st_stage</semantic:flowNodeRef>
+        <semantic:flowNodeRef>id_gw_2nd_approval_outcome</semantic:flowNodeRef>
+        <semantic:flowNodeRef>id_end_approval_obtained</semantic:flowNodeRef>
+        <semantic:flowNodeRef>id_end_rejected_2nd_stage</semantic:flowNodeRef>
+      </semantic:lane>
+      <semantic:lane id="lane_1st_approver" name="1st Approver">
+        <semantic:flowNodeRef>id_task_perform_1st_approval</semantic:flowNodeRef>
+      </semantic:lane>
+      <semantic:lane id="lane_2nd_approver" name="2nd Approver">
+        <semantic:flowNodeRef>id_task_perform_2nd_approval</semantic:flowNodeRef>
+      </semantic:lane>
+    </semantic:laneSet>
+    <semantic:startEvent id="id_start_invoice_received" name="Invoice Received">
+      <semantic:outgoing>flow_start_to_task1</semantic:outgoing>
+    </semantic:startEvent>
+    <semantic:task id="id_task_send_1st_approval" name="Send for 1st Approval">
+      <semantic:incoming>flow_start_to_task1</semantic:incoming>
+      <semantic:outgoing>flow_task1_to_task2</semantic:outgoing>
+    </semantic:task>
+    <semantic:task id="id_task_perform_1st_approval" name="Perform 1st Approval">
+      <semantic:incoming>flow_task1_to_task2</semantic:incoming>
+      <semantic:outgoing>flow_task2_to_gw1</semantic:outgoing>
+    </semantic:task>
+    <semantic:exclusiveGateway id="id_gw_1st_approval_outcome" name="1st Approval Outcome?">
+      <semantic:incoming>flow_task2_to_gw1</semantic:incoming>
+      <semantic:outgoing>flow_gw1_to_task3</semantic:outgoing>
+      <semantic:outgoing>flow_gw1_to_end1</semantic:outgoing>
+    </semantic:exclusiveGateway>
+    <semantic:task id="id_task_send_2nd_approval" name="Send for 2nd Approval">
+      <semantic:incoming>flow_gw1_to_task3</semantic:incoming>
+      <semantic:outgoing>flow_task3_to_task4</semantic:outgoing>
+    </semantic:task>
+    <semantic:endEvent id="id_end_rejected_1st_stage" name="Request Rejected (1st Stage)">
+      <semantic:incoming>flow_gw1_to_end1</semantic:incoming>
+    </semantic:endEvent>
+    <semantic:task id="id_task_perform_2nd_approval" name="Perform 2nd Approval">
+      <semantic:incoming>flow_task3_to_task4</semantic:incoming>
+      <semantic:outgoing>flow_task4_to_gw2</semantic:outgoing>
+    </semantic:task>
+    <semantic:exclusiveGateway id="id_gw_2nd_approval_outcome" name="2nd Approval Outcome?">
+      <semantic:incoming>flow_task4_to_gw2</semantic:incoming>
+      <semantic:outgoing>flow_gw2_to_end2</semantic:outgoing>
+      <semantic:outgoing>flow_gw2_to_end3</semantic:outgoing>
+    </semantic:exclusiveGateway>
+    <semantic:endEvent id="id_end_approval_obtained" name="Signature/Approval Obtained">
+      <semantic:incoming>flow_gw2_to_end2</semantic:incoming>
+    </semantic:endEvent>
+    <semantic:endEvent id="id_end_rejected_2nd_stage" name="Request Rejected (2nd Stage)">
+      <semantic:incoming>flow_gw2_to_end3</semantic:incoming>
+    </semantic:endEvent>
+    <semantic:sequenceFlow id="flow_start_to_task1" sourceRef="id_start_invoice_received" targetRef="id_task_send_1st_approval"/>
+    <semantic:sequenceFlow id="flow_task1_to_task2" sourceRef="id_task_send_1st_approval" targetRef="id_task_perform_1st_approval"/>
+    <semantic:sequenceFlow id="flow_task2_to_gw1" sourceRef="id_task_perform_1st_approval" targetRef="id_gw_1st_approval_outcome"/>
+    <semantic:sequenceFlow id="flow_gw1_to_task3" name="Approved" sourceRef="id_gw_1st_approval_outcome" targetRef="id_task_send_2nd_approval"/>
+    <semantic:sequenceFlow id="flow_gw1_to_end1" name="Rejected" sourceRef="id_gw_1st_approval_outcome" targetRef="id_end_rejected_1st_stage"/>
+    <semantic:sequenceFlow id="flow_task3_to_task4" sourceRef="id_task_send_2nd_approval" targetRef="id_task_perform_2nd_approval"/>
+    <semantic:sequenceFlow id="flow_task4_to_gw2" sourceRef="id_task_perform_2nd_approval" targetRef="id_gw_2nd_approval_outcome"/>
+    <semantic:sequenceFlow id="flow_gw2_to_end2" name="Approved" sourceRef="id_gw_2nd_approval_outcome" targetRef="id_end_approval_obtained"/>
+    <semantic:sequenceFlow id="flow_gw2_to_end3" name="Denied" sourceRef="id_gw_2nd_approval_outcome" targetRef="id_end_rejected_2nd_stage"/>
+  </semantic:process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_invoice_approval" name="Invoice Approval Diagram">
+    <bpmndi:BPMNPlane id="BPMNPlane_invoice_approval" bpmnElement="collab_invoice_approval">
+      <bpmndi:BPMNShape id="shape_participant_invoice_management" bpmnElement="participant_invoice_management" isHorizontal="true">
+        <dc:Bounds x="20" y="20" width="1100" height="550"/>
+        <bpmndi:BPMNLabel/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_lane_proc_team" bpmnElement="lane_proc_team" isHorizontal="true">
+        <dc:Bounds x="50" y="20" width="1070" height="200"/>
+        <bpmndi:BPMNLabel/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_lane_1st_approver" bpmnElement="lane_1st_approver" isHorizontal="true">
+        <dc:Bounds x="50" y="220" width="1070" height="150"/>
+        <bpmndi:BPMNLabel/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_lane_2nd_approver" bpmnElement="lane_2nd_approver" isHorizontal="true">
+        <dc:Bounds x="50" y="370" width="1070" height="150"/>
+        <bpmndi:BPMNLabel/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_id_start_invoice_received" bpmnElement="id_start_invoice_received">
+        <dc:Bounds x="100" y="102" width="36" height="36"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="82" y="143" width="73" height="14"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_id_task_send_1st_approval" bpmnElement="id_task_send_1st_approval">
+        <dc:Bounds x="200" y="92" width="100" height="56"/>
+        <bpmndi:BPMNLabel/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_id_task_perform_1st_approval" bpmnElement="id_task_perform_1st_approval">
+        <dc:Bounds x="350" y="267" width="100" height="56"/>
+        <bpmndi:BPMNLabel/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_id_gw_1st_approval_outcome" bpmnElement="id_gw_1st_approval_outcome" isMarkerVisible="true">
+        <dc:Bounds x="500" y="95" width="50" height="50"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="480" y="150" width="90" height="27"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_id_task_send_2nd_approval" bpmnElement="id_task_send_2nd_approval">
+        <dc:Bounds x="620" y="57" width="100" height="56"/>
+        <bpmndi:BPMNLabel/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_id_end_rejected_1st_stage" bpmnElement="id_end_rejected_1st_stage">
+        <dc:Bounds x="620" y="130" width="36" height="36"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="593" y="171" width="90" height="27"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_id_task_perform_2nd_approval" bpmnElement="id_task_perform_2nd_approval">
+        <dc:Bounds x="750" y="417" width="100" height="56"/>
+        <bpmndi:BPMNLabel/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_id_gw_2nd_approval_outcome" bpmnElement="id_gw_2nd_approval_outcome" isMarkerVisible="true">
+        <dc:Bounds x="900" y="95" width="50" height="50"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="880" y="150" width="90" height="27"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_id_end_approval_obtained" bpmnElement="id_end_approval_obtained">
+        <dc:Bounds x="1020" y="49" width="36" height="36"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="993" y="90" width="90" height="27"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_id_end_rejected_2nd_stage" bpmnElement="id_end_rejected_2nd_stage">
+        <dc:Bounds x="1020" y="130" width="36" height="36"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="993" y="171" width="90" height="27"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="edge_flow_start_to_task1" bpmnElement="flow_start_to_task1">
+        <di:waypoint x="136" y="120"/>
+        <di:waypoint x="200" y="120"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_task1_to_task2" bpmnElement="flow_task1_to_task2">
+        <di:waypoint x="300" y="120"/>
+        <di:waypoint x="325" y="120"/>
+        <di:waypoint x="325" y="295"/>
+        <di:waypoint x="350" y="295"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_task2_to_gw1" bpmnElement="flow_task2_to_gw1">
+        <di:waypoint x="450" y="295"/>
+        <di:waypoint x="475" y="295"/>
+        <di:waypoint x="475" y="120"/>
+        <di:waypoint x="500" y="120"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_gw1_to_task3" bpmnElement="flow_gw1_to_task3">
+        <di:waypoint x="525" y="95"/>
+        <di:waypoint x="525" y="85"/>
+        <di:waypoint x="620" y="85"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="530" y="65" width="50" height="14"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_gw1_to_end1" bpmnElement="flow_gw1_to_end1">
+        <di:waypoint x="525" y="145"/>
+        <di:waypoint x="525" y="148"/>
+        <di:waypoint x="620" y="148"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="530" y="153" width="47" height="14"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_task3_to_task4" bpmnElement="flow_task3_to_task4">
+        <di:waypoint x="720" y="85"/>
+        <di:waypoint x="735" y="85"/>
+        <di:waypoint x="735" y="445"/>
+        <di:waypoint x="750" y="445"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_task4_to_gw2" bpmnElement="flow_task4_to_gw2">
+        <di:waypoint x="850" y="445"/>
+        <di:waypoint x="875" y="445"/>
+        <di:waypoint x="875" y="120"/>
+        <di:waypoint x="900" y="120"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_gw2_to_end2" bpmnElement="flow_gw2_to_end2">
+        <di:waypoint x="925" y="95"/>
+        <di:waypoint x="925" y="67"/>
+        <di:waypoint x="1020" y="67"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="930" y="47" width="50" height="14"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_gw2_to_end3" bpmnElement="flow_gw2_to_end3">
+        <di:waypoint x="925" y="145"/>
+        <di:waypoint x="925" y="148"/>
+        <di:waypoint x="1020" y="148"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="930" y="153" width="37" height="14"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</semantic:definitions>

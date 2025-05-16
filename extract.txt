@@ -1,240 +1,143 @@
 ```json
 {
-  "process_name": "Revenue Forecast and Revenue Process in SAP ECC",
+  "process_name": "Purchase to Pay Process (P2P)",
   "pools": [
     {
-      "name": "Accounts Receivable Department",
+      "name": "Company P2P Operations",
       "lanes": [
         {
-          "name": "AR Processor",
+          "name": "Requestor",
           "elements": [
-            "se_start_1",
-            "task_post_forecast_rev",
-            "task_define_forecast_details",
-            "task_save_forecast_doc",
-            "task_display_forecast_post",
-            "task_create_customer_define_params",
-            "task_save_customer",
-            "task_define_account_group",
-            "task_assign_customer_sales_org",
-            "task_check_cost_centre_status",
-            "gw_cost_centre_blocked",
-            "task_create_new_cost_centre",
-            "task_create_payment_req",
-            "task_save_payment_req_doc",
-            "task_display_parked_payment_doc",
-            "sub_release_posting",
-            "task_assign_req_cat_fi",
-            "task_link_req_cat_doc_type",
-            "task_control_proc_req_cat",
-            "task_assign_workflow",
-            "task_post_acceptance_req",
-            "ee_end_1"
+            "start_event_1", "task_1", "task_2", "gateway_1", "task_3",
+            "task_6", "task_7", "task_10", "task_15", "task_16",
+            "gateway_5", "task_17", "task_18", "join_1", "task_19",
+            "parallel_join_1", "task_20", "gateway_6", "task_21", "task_24",
+            "task_25", "task_26"
+          ]
+        },
+        {
+          "name": "Heads of Departments",
+          "elements": ["task_4", "task_5", "gateway_2"]
+        },
+        {
+          "name": "PO Approvers",
+          "elements": ["task_8", "task_9", "gateway_3"]
+        },
+        {
+          "name": "Accounts Payable Team",
+          "elements": ["task_27", "gateway_7", "task_28", "end_event_main"]
+        }
+      ]
+    },
+    {
+      "name": "Vendor",
+      "lanes": [
+        {
+          "name": "Vendor Operations",
+          "elements": [
+            "task_11", "task_12", "gateway_4", "task_13", "task_14",
+            "end_event_vendor_reject", "task_22", "task_23",
+            "end_event_vendor_invoice_correction"
           ]
         }
       ]
     }
   ],
   "elements": [
-    {
-      "id": "se_start_1",
-      "type": "StartEvent",
-      "name": "Revenue Forecast Request Received"
-    },
-    {
-      "id": "task_post_forecast_rev",
-      "type": "Task",
-      "name": "Post Forecast Revenue in SAP ECC"
-    },
-    {
-      "id": "task_define_forecast_details",
-      "type": "Task",
-      "name": "Define Forecast Posting Details"
-    },
-    {
-      "id": "task_save_forecast_doc",
-      "type": "Task",
-      "name": "Save Forecast Document"
-    },
-    {
-      "id": "task_display_forecast_post",
-      "type": "Task",
-      "name": "Display Forecast Posting"
-    },
-    {
-      "id": "task_create_customer_define_params",
-      "type": "Task",
-      "name": "Create Customer and Define Parameters (SAP ECC & CRM)"
-    },
-    {
-      "id": "task_save_customer",
-      "type": "Task",
-      "name": "Save Customer"
-    },
-    {
-      "id": "task_define_account_group",
-      "type": "Task",
-      "name": "Define Account Group (Customer General)"
-    },
-    {
-      "id": "task_assign_customer_sales_org",
-      "type": "Task",
-      "name": "Assign Customer to Sales Org & Company Code"
-    },
-    {
-      "id": "task_check_cost_centre_status",
-      "type": "Task",
-      "name": "Check Cost Centre Blocking Status"
-    },
-    {
-      "id": "gw_cost_centre_blocked",
-      "type": "ExclusiveGateway",
-      "name": "Cost Centre Blocked?"
-    },
-    {
-      "id": "task_create_new_cost_centre",
-      "type": "Task",
-      "name": "Create New Cost Centre"
-    },
-    {
-      "id": "task_create_payment_req",
-      "type": "Task",
-      "name": "Create Payment Request (Acceptance Request)"
-    },
-    {
-      "id": "task_save_payment_req_doc",
-      "type": "Task",
-      "name": "Save Payment Request Document"
-    },
-    {
-      "id": "task_display_parked_payment_doc",
-      "type": "Task",
-      "name": "Display Parked Payment Request Document"
-    },
-    {
-      "id": "sub_release_posting",
-      "type": "SubProcess",
-      "name": "Release Parked Posting and Customize Document"
-    },
-    {
-      "id": "task_assign_req_cat_fi",
-      "type": "Task",
-      "name": "Assign Request Category to FI Document Type"
-    },
-    {
-      "id": "task_link_req_cat_doc_type",
-      "type": "Task",
-      "name": "Link 'Acceptance Request' Category to Document Type"
-    },
-    {
-      "id": "task_control_proc_req_cat",
-      "type": "Task",
-      "name": "Control Processing of Request Categories"
-    },
-    {
-      "id": "task_assign_workflow",
-      "type": "Task",
-      "name": "Assign Workflow to Request Type"
-    },
-    {
-      "id": "task_post_acceptance_req",
-      "type": "Task",
-      "name": "Post Acceptance Request"
-    },
-    {
-      "id": "ee_end_1",
-      "type": "EndEvent",
-      "name": "Revenue Forecast Process Completed"
-    }
+    { "id": "start_event_1", "type": "StartEvent", "name": "Process Start" },
+    { "id": "task_1", "type": "Task", "name": "Determine Business Requirements & Needs" },
+    { "id": "task_2", "type": "Task", "name": "Request to Issue Purchase Requisition (PR)" },
+    { "id": "gateway_1", "type": "ExclusiveGateway", "name": "PR Issuance Approved by Requestor?" },
+    { "id": "task_3", "type": "Task", "name": "Issue Purchase Requisition (PR)" },
+    { "id": "task_4", "type": "Task", "name": "Review PR (Needs, Budget, Form)" },
+    { "id": "task_5", "type": "Task", "name": "Document & Submit PR Decision" },
+    { "id": "gateway_2", "type": "ExclusiveGateway", "name": "PR Decision by HoD" },
+    { "id": "task_6", "type": "Task", "name": "Create Purchase Order (PO)" },
+    { "id": "task_7", "type": "Task", "name": "Submit PO for Approval" },
+    { "id": "task_8", "type": "Task", "name": "Review PO Specifications" },
+    { "id": "task_9", "type": "Task", "name": "Document & Submit PO Decision" },
+    { "id": "gateway_3", "type": "ExclusiveGateway", "name": "PO Decision by PO Approvers" },
+    { "id": "task_10", "type": "Task", "name": "Dispatch Approved PO to Vendor" },
+    { "id": "task_11", "type": "Task", "name": "Evaluate PO" },
+    { "id": "task_12", "type": "Task", "name": "Document PO Decision to Requestor" },
+    { "id": "gateway_4", "type": "ExclusiveGateway", "name": "Vendor PO Decision" },
+    { "id": "task_13", "type": "Task", "name": "Deliver Agreed Goods/Services" },
+    { "id": "task_14", "type": "Task", "name": "Send Invoice for Delivery" },
+    { "id": "end_event_vendor_reject", "type": "EndEvent", "name": "Vendor Process Ends (PO Rejected)" },
+    { "id": "task_15", "type": "Task", "name": "Search for a New Vendor" },
+    { "id": "task_16", "type": "Task", "name": "Receive Agreed Goods/Services" },
+    { "id": "gateway_5", "type": "ExclusiveGateway", "name": "Receipt Type?" },
+    { "id": "task_17", "type": "Task", "name": "Issue Goods Receipt (GR)" },
+    { "id": "task_18", "type": "Task", "name": "Issue Service Entry Sheet (SES)" },
+    { "id": "join_1", "type": "ExclusiveGateway", "name": "Merge GR/SES Path" },
+    { "id": "task_19", "type": "Task", "name": "Receive Invoice from Vendor" },
+    { "id": "parallel_join_1", "type": "ParallelGateway", "name": "Synchronize GR/SES and Invoice" },
+    { "id": "task_20", "type": "Task", "name": "Perform Three-Way Match" },
+    { "id": "gateway_6", "type": "ExclusiveGateway", "name": "Invoice Correct?" },
+    { "id": "task_21", "type": "Task", "name": "Return Invoice to Vendor for Correction" },
+    { "id": "task_22", "type": "Task", "name": "Correct Invoice" },
+    { "id": "task_23", "type": "Task", "name": "Send Corrected Invoice to Requestor" },
+    { "id": "end_event_vendor_invoice_correction", "type": "EndEvent", "name": "Vendor Process Ends (Invoice Corrected)" },
+    { "id": "task_24", "type": "Task", "name": "Receive Corrected Invoice" },
+    { "id": "task_25", "type": "Task", "name": "Post Invoice in SAP" },
+    { "id": "task_26", "type": "Task", "name": "Send Invoice to AP Team" },
+    { "id": "task_27", "type": "Task", "name": "Decide on Payment Method" },
+    { "id": "gateway_7", "type": "ExclusiveGateway", "name": "Payment Method Choice" },
+    { "id": "task_28", "type": "Task", "name": "Perform Payment to Vendor" },
+    { "id": "end_event_main", "type": "EndEvent", "name": "Process Successfully Completed" }
   ],
   "sequence_flows": [
-    {
-      "source": "se_start_1",
-      "target": "task_post_forecast_rev"
-    },
-    {
-      "source": "task_post_forecast_rev",
-      "target": "task_define_forecast_details"
-    },
-    {
-      "source": "task_define_forecast_details",
-      "target": "task_save_forecast_doc"
-    },
-    {
-      "source": "task_save_forecast_doc",
-      "target": "task_display_forecast_post"
-    },
-    {
-      "source": "task_display_forecast_post",
-      "target": "task_create_customer_define_params"
-    },
-    {
-      "source": "task_create_customer_define_params",
-      "target": "task_save_customer"
-    },
-    {
-      "source": "task_save_customer",
-      "target": "task_define_account_group"
-    },
-    {
-      "source": "task_define_account_group",
-      "target": "task_assign_customer_sales_org"
-    },
-    {
-      "source": "task_assign_customer_sales_org",
-      "target": "task_check_cost_centre_status"
-    },
-    {
-      "source": "task_check_cost_centre_status",
-      "target": "gw_cost_centre_blocked"
-    },
-    {
-      "source": "gw_cost_centre_blocked",
-      "target": "task_create_new_cost_centre",
-      "condition": "Cost centre blocked"
-    },
-    {
-      "source": "gw_cost_centre_blocked",
-      "target": "task_create_payment_req",
-      "condition": "Cost centre not blocked"
-    },
-    {
-      "source": "task_create_new_cost_centre",
-      "target": "task_create_payment_req"
-    },
-    {
-      "source": "task_create_payment_req",
-      "target": "task_save_payment_req_doc"
-    },
-    {
-      "source": "task_save_payment_req_doc",
-      "target": "task_display_parked_payment_doc"
-    },
-    {
-      "source": "task_display_parked_payment_doc",
-      "target": "task_assign_req_cat_fi"
-    },
-    {
-      "source": "task_assign_req_cat_fi",
-      "target": "task_link_req_cat_doc_type"
-    },
-    {
-      "source": "task_link_req_cat_doc_type",
-      "target": "task_control_proc_req_cat"
-    },
-    {
-      "source": "task_control_proc_req_cat",
-      "target": "task_assign_workflow"
-    },
-    {
-      "source": "task_assign_workflow",
-      "target": "task_post_acceptance_req"
-    },
-    {
-      "source": "task_post_acceptance_req",
-      "target": "ee_end_1"
-    }
+    { "source": "start_event_1", "target": "task_1" },
+    { "source": "task_1", "target": "task_2" },
+    { "source": "task_2", "target": "gateway_1" },
+    { "source": "gateway_1", "target": "task_3", "condition": "Approved by Requestor" },
+    { "source": "gateway_1", "target": "task_1", "condition": "Not Approved by Requestor" },
+    { "source": "task_3", "target": "task_4" },
+    { "source": "task_4", "target": "task_5" },
+    { "source": "task_5", "target": "gateway_2" },
+    { "source": "gateway_2", "target": "task_6", "condition": "PR Approved by HoD" },
+    { "source": "task_6", "target": "task_7" },
+    { "source": "gateway_2", "target": "task_1", "condition": "PR Declined by HoD" },
+    { "source": "gateway_2", "target": "task_1", "condition": "PR Rejected (Incomplete) by HoD" },
+    { "source": "task_7", "target": "task_8" },
+    { "source": "task_8", "target": "task_9" },
+    { "source": "task_9", "target": "gateway_3" },
+    { "source": "gateway_3", "target": "task_10", "condition": "PO Approved" },
+    { "source": "gateway_3", "target": "task_1", "condition": "PO Rejected" },
+    { "source": "task_10", "target": "task_11" },
+    { "source": "task_11", "target": "task_12" },
+    { "source": "task_12", "target": "gateway_4" },
+    { "source": "gateway_4", "target": "task_13", "condition": "PO Approved by Vendor" },
+    { "source": "gateway_4", "target": "task_13", "condition": "PO Negotiated by Vendor" },
+    { "source": "task_13", "target": "task_14" },
+    { "source": "gateway_4", "target": "end_event_vendor_reject", "condition": "PO Rejected by Vendor" },
+    { "source": "gateway_4", "target": "task_15", "condition": "PO Rejected by Vendor" },
+    { "source": "task_15", "target": "task_10" },
+    { "source": "task_13", "target": "task_16" },
+    { "source": "task_16", "target": "gateway_5" },
+    { "source": "gateway_5", "target": "task_17", "condition": "Goods Received" },
+    { "source": "gateway_5", "target": "task_18", "condition": "Service Received" },
+    { "source": "task_17", "target": "join_1" },
+    { "source": "task_18", "target": "join_1" },
+    { "source": "join_1", "target": "parallel_join_1" },
+    { "source": "task_14", "target": "task_19" },
+    { "source": "task_19", "target": "parallel_join_1" },
+    { "source": "parallel_join_1", "target": "task_20" },
+    { "source": "task_20", "target": "gateway_6" },
+    { "source": "gateway_6", "target": "task_21", "condition": "Invoice Wrong" },
+    { "source": "task_21", "target": "task_22" },
+    { "source": "task_22", "target": "task_23" },
+    { "source": "task_23", "target": "end_event_vendor_invoice_correction" },
+    { "source": "task_23", "target": "task_24" },
+    { "source": "task_24", "target": "task_20" },
+    { "source": "gateway_6", "target": "task_25", "condition": "Invoice Correct" },
+    { "source": "task_25", "target": "task_26" },
+    { "source": "task_26", "target": "task_27" },
+    { "source": "task_27", "target": "gateway_7" },
+    { "source": "gateway_7", "target": "task_28", "condition": "Payment in Full" },
+    { "source": "gateway_7", "target": "task_28", "condition": "Payment in Installments" },
+    { "source": "task_28", "target": "end_event_main" }
   ],
-  "process_description": "a) The Accounts Receivable (AR) department has received a request to perform the revenue forecast & revenue process in SAP ECC System. b) The AR Processor needs first to post the forecast revenue. In the Initial screen, following parameters have be defined at the same time: defining document type “11”, document date, posting date and company code. c)Upon entering the parameters, the posting details of the forecast has to be further defined. The AR Processer has then to note the fund & the functional area. d) Then the document has to be saved. Like in the Commitment & Invoice process, one may refer to the posting report, resulting in displaying the forecast posting. e) In the next step, the individual customer has to be created (depending on the Customer & Sales Accounting data) using SAP ECC and CRM (Customer Relationship Management System). The AR Processor has to create completer customer (complete in this context means sales & accounting data of a customer). f) Then, the newly created customer has to be assigned to a sales organization and to a company code. g) First step in this is to define the Account group which is customer general. h) In the Initial screen in defining the customer, following entries need to be defined at the same time: which are first to define the payment transaction tab, in which the customer’s bank account has to be defined. In the next tab, the company code data has to be defined, in which the reconciliation account 140000 has to be defined and the G/L account 140000 has to be also checked. i) After entering the required parameters, the AR Processor may now save the customer and as a result a confirmation message containing “Customer .. created”. j) In the next step, the revenues has to be posted against the cost centre. A common risk in this step is that the cost centre may be blocked against revenue posting.  To prevent this, the cost centre created for Commitment & Invoice process has to be checked in that it is not blocked against revenue posting. The AR Processor has then to display the control tab in cost centre. If the cost centre is blocked against revenue posting, then a new cost centre without revenue posting blocking has to be created. If on the other hand the cost centre is not blocked, then the acceptance request can be created. k) In the next step, the AR Processor has to create the payment request. In the Initial screen, following parameters are to be defined at the same time: defining document type “DR”, indicate the customer, defining the period, the commitment item, the fund, the funds center, the G/L account, the amount and the cost centre has to be also assigned to the acceptance request. l) After entering the required parameters, the document has to be saved. m) The AR processor may now display the document and as a result, the document status is “parked”. n) Following the same procedure like in the Commitment & Invoice process, the parked posting has to be released, in which the document has to be further customized. o) In the customization process, the request category has to be assigned to FI document type and the request category “acceptance request” has to be further linked to the document type. Then the processing of request categories has to be controlled and the workflow has to be assigned to the specific request type. p) The acceptance request can now be posted and finally the Revenue forecast process is successfully completed by the posting."
+  "process_description": "a) The first step in handling the process purchase to pay “P2P” by the Purchasing department starts with the Requestor to determine and define the business requirements & needs in a specific company using SAP ECC System. Once a valid need is identified, he requests to issue a Purchase Requisition (PR) and then send it for approval. If the PR is approved, he issues a purchase requisition (PR). A risk may occur at this stage in that a PR could be incompletely issued (PR discrepancy). If, on the other hand, the request to issue a PR is not approved, then the business requirements & needs have to be determined and defined again. b) After issuing a PR, the requestor submits/sends the issued PR to the heads of departments for approval. Once the heads of departments get the approval request, they review the PR by evaluating the needs, verifying the available budget (taking into consideration the risk, that budget overdraft may occur here) and validating the purchase requisition form (taking also into consideration the risk, that data breach may occur). After reviewing the PR, the PR approvers have to document/submit the final decision to the requestor. They may either approve the PR request, decline the PR request or reject the incompleted PR and send it back to the requestor. The role of the heads of departments ends then by submitting their decisions. c) Returing back to the requestor, if the PR is approved, he will create a Purchase Order (PO) and then send/submit to the PO approvers for approval. If, on the other hand, the PR was not approved by the head of departments, then the business requirements & needs have to be determined again. d) Once the PO approvers get the approval request, they review the purchase order specifications and then document/submit the final decision to the requestor. They may either approve the purchase order or reject the purchase order. After submitting their final decision, the process ends at this level (PO Approvers level). e) Returning back again to the requestor, if the PO is approved, he has to dispatch the approved PO to the vendor. If, on the other hand, the PO was not approved, then business requirements & needs have to be determined from the beginning again. f) Once the vendor receives the review request, he has to evaluate the PO and document decision to the requestor. He may either approve the PO, negotiate the PO or reject the PO. If the PO was rejected, then the process ends at this step for the vendor. If, on the other hand, the vendor approved or negotiated the PO, he has to deliver the agreed goods/services to the requestor and send the invoice for delivery. g) Returning back to the requestor, if the vendor didn’t approved the dispatched PO, then the requestor has to search for a new vendor. h) If, on the other hand, the dispatched PO was approved, then the requestor will receive the agreed goods/services. i) In the next step, if the requestor received goods, he has to issue a Goods Receipt (GR). If he received a service, then he has to issue a Service Entry Sheet (SES). j) After confirming the receipt of the agreed goods/services, the requestor will receive the invoice from the vendor. At common risk in this step, is that an invoice discrepancy may occur. A control for this risk, is to perform the three way match (comparing Invoice, PO and GR/SES). k) In the next step, either the invoice is correct or it is wrong. If the invoice is wrong, then it has to be returned to the vendor for correction. Once the vendor receives the wrong invoice he has to correct it and send it back to the requestor and afterwards, the process ends at this stage for the vendor. l) In the next step, the requestor will receive the corrected invoice from the vendor. m) After checking the invoice and correcting it if it was wrong, the requestor may now post the invoice in SAP and send it to the Accounts Payable (AP) team. n) Once the AP team receive the invoice, the AP Processor has to decide on the payment method. In this step, he may either decide on payment in full or in installments. After deciding on the payment method, he has to perform the payment to the vendor and the purchase to pay process is successfully completed."
 }
 ```
