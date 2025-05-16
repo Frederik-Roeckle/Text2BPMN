@@ -1,0 +1,371 @@
+***IS_VALID***
+<?xml version="1.0" standalone="yes"?>
+<semantic:definitions id="definitions_MaintainServiceMasterData"
+    targetNamespace="http://example.com/bpmn/maintain-service-master-data"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:semantic="http://www.omg.org/spec/BPMN/20100524/MODEL"
+    xmlns:di="http://www.omg.org/spec/DD/20100524/DI"
+    xmlns:dc="http://www.omg.org/spec/DD/20100524/DC"
+    xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI">
+
+  <semantic:collaboration id="collab_MaintainServiceMasterData">
+    <semantic:participant id="participant_ProductionDepartment" name="Production Department" processRef="process_MaintainServiceMasterData"/>
+  </semantic:collaboration>
+
+  <semantic:process id="process_MaintainServiceMasterData" isExecutable="true">
+    <semantic:laneSet id="laneSet_ProductionDepartment">
+      <semantic:lane id="lane_ProductionAssistant" name="Production Assistant">
+        <semantic:flowNodeRef>start_event_1</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_set_initial_wc_params</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_confirm_wc_selection</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_define_wc_details</semantic:flowNodeRef>
+        <semantic:flowNodeRef>sp_define_routing</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_set_wc_capacity_params</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_check_offered_capacity</semantic:flowNodeRef>
+        <semantic:flowNodeRef>gw_capacity_header_choice</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_enter_capacity_manually</semantic:flowNodeRef>
+        <semantic:flowNodeRef>sp_create_ref_capacity</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_select_created_ref_capacity</semantic:flowNodeRef>
+        <semantic:flowNodeRef>gw_merge_capacity_paths</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_define_wc_scheduling</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_confirm_scheduling_entries</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_define_link_params</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_save_new_wc</semantic:flowNodeRef>
+        <semantic:flowNodeRef>end_event_1</semantic:flowNodeRef>
+      </semantic:lane>
+    </semantic:laneSet>
+
+    <semantic:startEvent id="start_event_1" name="Service Received for Execution">
+      <semantic:outgoing>sf_0</semantic:outgoing>
+    </semantic:startEvent>
+    <semantic:task id="task_set_initial_wc_params" name="Set Initial Work Centre Parameters (Plant, Name, Category)">
+      <semantic:incoming>sf_0</semantic:incoming>
+      <semantic:outgoing>sf_1</semantic:outgoing>
+    </semantic:task>
+    <semantic:task id="task_confirm_wc_selection" name="Confirm Work Centre Selection">
+      <semantic:incoming>sf_1</semantic:incoming>
+      <semantic:outgoing>sf_2</semantic:outgoing>
+    </semantic:task>
+    <semantic:task id="task_define_wc_details" name="Define Work Centre Details (Full Name, Person, Usage)">
+      <semantic:incoming>sf_2</semantic:incoming>
+      <semantic:outgoing>sf_3</semantic:outgoing>
+    </semantic:task>
+
+    <semantic:subProcess id="sp_define_routing" name="Define Routing (Service)">
+      <semantic:incoming>sf_3</semantic:incoming>
+      <semantic:outgoing>sf_6</semantic:outgoing>
+      <semantic:startEvent id="sp_dr_start_1" name="Start Define Routing">
+        <semantic:outgoing>sf_4</semantic:outgoing>
+      </semantic:startEvent>
+      <semantic:task id="task_define_routing_params" name="Define Routing Parameters (Std Key, Setup, Machine, Labour, Teardown)">
+        <semantic:incoming>sf_4</semantic:incoming>
+        <semantic:outgoing>sf_5</semantic:outgoing>
+      </semantic:task>
+      <semantic:endEvent id="sp_dr_end_1" name="Routing Defined">
+        <semantic:incoming>sf_5</semantic:incoming>
+      </semantic:endEvent>
+      <semantic:sequenceFlow id="sf_4" sourceRef="sp_dr_start_1" targetRef="task_define_routing_params"/>
+      <semantic:sequenceFlow id="sf_5" sourceRef="task_define_routing_params" targetRef="sp_dr_end_1"/>
+    </semantic:subProcess>
+
+    <semantic:task id="task_set_wc_capacity_params" name="Set Work Centre Capacity Parameters (Category, Formulas)">
+      <semantic:incoming>sf_6</semantic:incoming>
+      <semantic:outgoing>sf_7</semantic:outgoing>
+    </semantic:task>
+    <semantic:task id="task_check_offered_capacity" name="Check Offered Capacity (Double-click Category)">
+      <semantic:incoming>sf_7</semantic:incoming>
+      <semantic:outgoing>sf_8</semantic:outgoing>
+    </semantic:task>
+    <semantic:exclusiveGateway id="gw_capacity_header_choice" name="Capacity Header Method?">
+      <semantic:incoming>sf_8</semantic:incoming>
+      <semantic:outgoing>sf_9</semantic:outgoing>
+      <semantic:outgoing>sf_10</semantic:outgoing>
+    </semantic:exclusiveGateway>
+    <semantic:task id="task_enter_capacity_manually" name="Enter Capacity Header Manually">
+      <semantic:incoming>sf_9</semantic:incoming>
+      <semantic:outgoing>sf_17</semantic:outgoing>
+    </semantic:task>
+
+    <semantic:subProcess id="sp_create_ref_capacity" name="Create Reference Capacity">
+      <semantic:incoming>sf_10</semantic:incoming>
+      <semantic:outgoing>sf_18</semantic:outgoing>
+      <semantic:startEvent id="sp_crc_start_1" name="Start Create Reference Capacity">
+        <semantic:outgoing>sf_11</semantic:outgoing>
+      </semantic:startEvent>
+      <semantic:task id="task_set_initial_ref_cap_params" name="Set Initial Reference Capacity Parameters (Plant, Name, Category)">
+        <semantic:incoming>sf_11</semantic:incoming>
+        <semantic:outgoing>sf_12</semantic:outgoing>
+      </semantic:task>
+      <semantic:task id="task_confirm_ref_cap_entries" name="Confirm Reference Capacity Entries">
+        <semantic:incoming>sf_12</semantic:incoming>
+        <semantic:outgoing>sf_13</semantic:outgoing>
+      </semantic:task>
+      <semantic:task id="task_specify_ref_cap_chars" name="Specify Reference Capacity Characteristics">
+        <semantic:incoming>sf_13</semantic:incoming>
+        <semantic:outgoing>sf_14</semantic:outgoing>
+      </semantic:task>
+      <semantic:task id="task_confirm_ref_cap_chars" name="Confirm Reference Capacity Characteristics">
+        <semantic:incoming>sf_14</semantic:incoming>
+        <semantic:outgoing>sf_15</semantic:outgoing>
+      </semantic:task>
+      <semantic:task id="task_save_ref_capacity" name="Save Reference Capacity">
+        <semantic:incoming>sf_15</semantic:incoming>
+        <semantic:outgoing>sf_16</semantic:outgoing>
+      </semantic:task>
+      <semantic:endEvent id="sp_crc_end_1" name="Reference Capacity Created">
+        <semantic:incoming>sf_16</semantic:incoming>
+      </semantic:endEvent>
+      <semantic:sequenceFlow id="sf_11" sourceRef="sp_crc_start_1" targetRef="task_set_initial_ref_cap_params"/>
+      <semantic:sequenceFlow id="sf_12" sourceRef="task_set_initial_ref_cap_params" targetRef="task_confirm_ref_cap_entries"/>
+      <semantic:sequenceFlow id="sf_13" sourceRef="task_confirm_ref_cap_entries" targetRef="task_specify_ref_cap_chars"/>
+      <semantic:sequenceFlow id="sf_14" sourceRef="task_specify_ref_cap_chars" targetRef="task_confirm_ref_cap_chars"/>
+      <semantic:sequenceFlow id="sf_15" sourceRef="task_confirm_ref_cap_chars" targetRef="task_save_ref_capacity"/>
+      <semantic:sequenceFlow id="sf_16" sourceRef="task_save_ref_capacity" targetRef="sp_crc_end_1"/>
+    </semantic:subProcess>
+
+    <semantic:task id="task_select_created_ref_capacity" name="Select Created Reference Capacity in Header">
+      <semantic:incoming>sf_18</semantic:incoming>
+      <semantic:outgoing>sf_19</semantic:outgoing>
+    </semantic:task>
+    <semantic:exclusiveGateway id="gw_merge_capacity_paths" name="Merge Capacity Definition Paths">
+      <semantic:incoming>sf_17</semantic:incoming>
+      <semantic:incoming>sf_19</semantic:incoming>
+      <semantic:outgoing>sf_20</semantic:outgoing>
+    </semantic:exclusiveGateway>
+    <semantic:task id="task_define_wc_scheduling" name="Define Work Centre Scheduling (Select Capacity, Formulas)">
+      <semantic:incoming>sf_20</semantic:incoming>
+      <semantic:outgoing>sf_21</semantic:outgoing>
+    </semantic:task>
+    <semantic:task id="task_confirm_scheduling_entries" name="Confirm Scheduling Entries">
+      <semantic:incoming>sf_21</semantic:incoming>
+      <semantic:outgoing>sf_22</semantic:outgoing>
+    </semantic:task>
+    <semantic:task id="task_define_link_params" name="Define Work and Cost Centres Link (Activity Type, Formulas)">
+      <semantic:incoming>sf_22</semantic:incoming>
+      <semantic:outgoing>sf_23</semantic:outgoing>
+    </semantic:task>
+    <semantic:task id="task_save_new_wc" name="Save New Work Centre">
+      <semantic:incoming>sf_23</semantic:incoming>
+      <semantic:outgoing>sf_24</semantic:outgoing>
+    </semantic:task>
+    <semantic:endEvent id="end_event_1" name="Service Master Data Maintained Successfully">
+      <semantic:incoming>sf_24</semantic:incoming>
+    </semantic:endEvent>
+
+    <semantic:sequenceFlow id="sf_0" sourceRef="start_event_1" targetRef="task_set_initial_wc_params"/>
+    <semantic:sequenceFlow id="sf_1" sourceRef="task_set_initial_wc_params" targetRef="task_confirm_wc_selection"/>
+    <semantic:sequenceFlow id="sf_2" sourceRef="task_confirm_wc_selection" targetRef="task_define_wc_details"/>
+    <semantic:sequenceFlow id="sf_3" sourceRef="task_define_wc_details" targetRef="sp_define_routing"/>
+    <semantic:sequenceFlow id="sf_6" sourceRef="sp_define_routing" targetRef="task_set_wc_capacity_params"/>
+    <semantic:sequenceFlow id="sf_7" sourceRef="task_set_wc_capacity_params" targetRef="task_check_offered_capacity"/>
+    <semantic:sequenceFlow id="sf_8" sourceRef="task_check_offered_capacity" targetRef="gw_capacity_header_choice"/>
+    <semantic:sequenceFlow id="sf_9" sourceRef="gw_capacity_header_choice" targetRef="task_enter_capacity_manually" name="Manual Entry"/>
+    <semantic:sequenceFlow id="sf_10" sourceRef="gw_capacity_header_choice" targetRef="sp_create_ref_capacity" name="Reference Pre-defined"/>
+    <semantic:sequenceFlow id="sf_17" sourceRef="task_enter_capacity_manually" targetRef="gw_merge_capacity_paths"/>
+    <semantic:sequenceFlow id="sf_18" sourceRef="sp_create_ref_capacity" targetRef="task_select_created_ref_capacity"/>
+    <semantic:sequenceFlow id="sf_19" sourceRef="task_select_created_ref_capacity" targetRef="gw_merge_capacity_paths"/>
+    <semantic:sequenceFlow id="sf_20" sourceRef="gw_merge_capacity_paths" targetRef="task_define_wc_scheduling"/>
+    <semantic:sequenceFlow id="sf_21" sourceRef="task_define_wc_scheduling" targetRef="task_confirm_scheduling_entries"/>
+    <semantic:sequenceFlow id="sf_22" sourceRef="task_confirm_scheduling_entries" targetRef="task_define_link_params"/>
+    <semantic:sequenceFlow id="sf_23" sourceRef="task_define_link_params" targetRef="task_save_new_wc"/>
+    <semantic:sequenceFlow id="sf_24" sourceRef="task_save_new_wc" targetRef="end_event_1"/>
+  </semantic:process>
+
+  <bpmndi:BPMNDiagram id="BPMNDiagram_MaintainServiceMasterData" name="Maintain Service Master Data Diagram" resolution="96.0">
+    <bpmndi:BPMNPlane bpmnElement="collab_MaintainServiceMasterData">
+      <bpmndi:BPMNShape id="participant_ProductionDepartment_shape" bpmnElement="participant_ProductionDepartment" isHorizontal="true">
+        <dc:Bounds x="20" y="20" width="3320" height="700"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="lane_ProductionAssistant_shape" bpmnElement="lane_ProductionAssistant" isHorizontal="true">
+        <dc:Bounds x="50" y="20" width="3290" height="700"/>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="start_event_1_shape" bpmnElement="start_event_1">
+        <dc:Bounds x="100" y="332" width="36" height="36"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="task_set_initial_wc_params_shape" bpmnElement="task_set_initial_wc_params">
+        <dc:Bounds x="180" y="310" width="100" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="task_confirm_wc_selection_shape" bpmnElement="task_confirm_wc_selection">
+        <dc:Bounds x="330" y="310" width="100" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="task_define_wc_details_shape" bpmnElement="task_define_wc_details">
+        <dc:Bounds x="480" y="310" width="100" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="sp_define_routing_shape" bpmnElement="sp_define_routing" isExpanded="true">
+        <dc:Bounds x="630" y="280" width="300" height="150"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="sp_dr_start_1_shape" bpmnElement="sp_dr_start_1">
+        <dc:Bounds x="650" y="337" width="36" height="36"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="task_define_routing_params_shape" bpmnElement="task_define_routing_params">
+        <dc:Bounds x="730" y="315" width="100" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="sp_dr_end_1_shape" bpmnElement="sp_dr_end_1">
+        <dc:Bounds x="880" y="337" width="36" height="36"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="task_set_wc_capacity_params_shape" bpmnElement="task_set_wc_capacity_params">
+        <dc:Bounds x="980" y="310" width="100" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="task_check_offered_capacity_shape" bpmnElement="task_check_offered_capacity">
+        <dc:Bounds x="1130" y="310" width="100" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="gw_capacity_header_choice_shape" bpmnElement="gw_capacity_header_choice" isMarkerVisible="true">
+        <dc:Bounds x="1280" y="325" width="50" height="50"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="task_enter_capacity_manually_shape" bpmnElement="task_enter_capacity_manually">
+        <dc:Bounds x="1380" y="210" width="100" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="sp_create_ref_capacity_shape" bpmnElement="sp_create_ref_capacity" isExpanded="true">
+        <dc:Bounds x="1380" y="420" width="920" height="250"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="sp_crc_start_1_shape" bpmnElement="sp_crc_start_1">
+        <dc:Bounds x="1400" y="527" width="36" height="36"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="task_set_initial_ref_cap_params_shape" bpmnElement="task_set_initial_ref_cap_params">
+        <dc:Bounds x="1480" y="505" width="100" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="task_confirm_ref_cap_entries_shape" bpmnElement="task_confirm_ref_cap_entries">
+        <dc:Bounds x="1630" y="505" width="100" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="task_specify_ref_cap_chars_shape" bpmnElement="task_specify_ref_cap_chars">
+        <dc:Bounds x="1780" y="505" width="100" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="task_confirm_ref_cap_chars_shape" bpmnElement="task_confirm_ref_cap_chars">
+        <dc:Bounds x="1930" y="505" width="100" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="task_save_ref_capacity_shape" bpmnElement="task_save_ref_capacity">
+        <dc:Bounds x="2080" y="505" width="100" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="sp_crc_end_1_shape" bpmnElement="sp_crc_end_1">
+        <dc:Bounds x="2230" y="527" width="36" height="36"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="task_select_created_ref_capacity_shape" bpmnElement="task_select_created_ref_capacity">
+        <dc:Bounds x="2350" y="505" width="100" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="gw_merge_capacity_paths_shape" bpmnElement="gw_merge_capacity_paths" isMarkerVisible="true">
+        <dc:Bounds x="2500" y="325" width="50" height="50"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="task_define_wc_scheduling_shape" bpmnElement="task_define_wc_scheduling">
+        <dc:Bounds x="2600" y="310" width="100" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="task_confirm_scheduling_entries_shape" bpmnElement="task_confirm_scheduling_entries">
+        <dc:Bounds x="2750" y="310" width="100" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="task_define_link_params_shape" bpmnElement="task_define_link_params">
+        <dc:Bounds x="2900" y="310" width="100" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="task_save_new_wc_shape" bpmnElement="task_save_new_wc">
+        <dc:Bounds x="3050" y="310" width="100" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="end_event_1_shape" bpmnElement="end_event_1">
+        <dc:Bounds x="3200" y="332" width="36" height="36"/>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNEdge id="sf_0_edge" bpmnElement="sf_0">
+        <di:waypoint x="136" y="350"/>
+        <di:waypoint x="180" y="350"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="sf_1_edge" bpmnElement="sf_1">
+        <di:waypoint x="280" y="350"/>
+        <di:waypoint x="330" y="350"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="sf_2_edge" bpmnElement="sf_2">
+        <di:waypoint x="430" y="350"/>
+        <di:waypoint x="480" y="350"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="sf_3_edge" bpmnElement="sf_3">
+        <di:waypoint x="580" y="350"/>
+        <di:waypoint x="630" y="355"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="sf_4_edge" bpmnElement="sf_4">
+        <di:waypoint x="686" y="355"/>
+        <di:waypoint x="730" y="355"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="sf_5_edge" bpmnElement="sf_5">
+        <di:waypoint x="830" y="355"/>
+        <di:waypoint x="880" y="355"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="sf_6_edge" bpmnElement="sf_6">
+        <di:waypoint x="930" y="355"/>
+        <di:waypoint x="980" y="350"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="sf_7_edge" bpmnElement="sf_7">
+        <di:waypoint x="1080" y="350"/>
+        <di:waypoint x="1130" y="350"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="sf_8_edge" bpmnElement="sf_8">
+        <di:waypoint x="1230" y="350"/>
+        <di:waypoint x="1280" y="350"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="sf_9_edge" bpmnElement="sf_9">
+        <di:waypoint x="1305" y="325"/>
+        <di:waypoint x="1305" y="250"/>
+        <di:waypoint x="1380" y="250"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="sf_10_edge" bpmnElement="sf_10">
+        <di:waypoint x="1305" y="375"/>
+        <di:waypoint x="1305" y="545"/> <!-- Adjusted to center on subprocess shape -->
+        <di:waypoint x="1380" y="545"/> <!-- Adjusted to center on subprocess shape -->
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="sf_11_edge" bpmnElement="sf_11">
+        <di:waypoint x="1436" y="545"/>
+        <di:waypoint x="1480" y="545"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="sf_12_edge" bpmnElement="sf_12">
+        <di:waypoint x="1580" y="545"/>
+        <di:waypoint x="1630" y="545"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="sf_13_edge" bpmnElement="sf_13">
+        <di:waypoint x="1730" y="545"/>
+        <di:waypoint x="1780" y="545"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="sf_14_edge" bpmnElement="sf_14">
+        <di:waypoint x="1880" y="545"/>
+        <di:waypoint x="1930" y="545"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="sf_15_edge" bpmnElement="sf_15">
+        <di:waypoint x="2030" y="545"/>
+        <di:waypoint x="2080" y="545"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="sf_16_edge" bpmnElement="sf_16">
+        <di:waypoint x="2180" y="545"/>
+        <di:waypoint x="2230" y="545"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="sf_17_edge" bpmnElement="sf_17">
+        <di:waypoint x="1480" y="250"/>
+        <di:waypoint x="2525" y="250"/> <!-- Adjusted for merge gateway -->
+        <di:waypoint x="2525" y="325"/> <!-- Adjusted for merge gateway -->
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="sf_18_edge" bpmnElement="sf_18">
+        <di:waypoint x="2300" y="545"/>
+        <di:waypoint x="2350" y="545"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="sf_19_edge" bpmnElement="sf_19">
+        <di:waypoint x="2450" y="545"/>
+        <di:waypoint x="2525" y="545"/> <!-- Adjusted for merge gateway -->
+        <di:waypoint x="2525" y="375"/> <!-- Adjusted for merge gateway -->
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="sf_20_edge" bpmnElement="sf_20">
+        <di:waypoint x="2550" y="350"/>
+        <di:waypoint x="2600" y="350"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="sf_21_edge" bpmnElement="sf_21">
+        <di:waypoint x="2700" y="350"/>
+        <di:waypoint x="2750" y="350"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="sf_22_edge" bpmnElement="sf_22">
+        <di:waypoint x="2850" y="350"/>
+        <di:waypoint x="2900" y="350"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="sf_23_edge" bpmnElement="sf_23">
+        <di:waypoint x="3000" y="350"/>
+        <di:waypoint x="3050" y="350"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="sf_24_edge" bpmnElement="sf_24">
+        <di:waypoint x="3150" y="350"/>
+        <di:waypoint x="3200" y="350"/>
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</semantic:definitions>

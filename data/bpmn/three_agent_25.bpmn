@@ -1,0 +1,781 @@
+<?xml version="1.0" standalone="yes"?>
+<semantic:definitions id="LogisticsProcessDefs"
+    targetNamespace="http://example.com/bpmn/logistics-process"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:semantic="http://www.omg.org/spec/BPMN/20100524/MODEL"
+    xmlns:di="http://www.omg.org/spec/DD/20100524/DI"
+    xmlns:dc="http://www.omg.org/spec/DD/20100524/DC"
+    xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI">
+
+  <semantic:collaboration id="collab_logistics">
+    <semantic:participant id="participant_logistics_process" name="Logistics Process" processRef="logisticsProcess"/>
+  </semantic:collaboration>
+
+  <semantic:process id="logisticsProcess" isExecutable="true">
+    <semantic:laneSet id="laneSet_logistics">
+      <semantic:lane id="lane_handler" name="Handler">
+        <semantic:flowNodeRef>event_start_handling_order</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_perform_goods_handling</semantic:flowNodeRef>
+        <semantic:flowNodeRef>gateway_handling_method_choice</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_take_sheet</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_load_feeder</semantic:flowNodeRef>
+        <semantic:flowNodeRef>gateway_handling_method_join</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_determine_efforts</semantic:flowNodeRef>
+        <semantic:flowNodeRef>event_boundary_effort_assessment_risk</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_handle_effort_assessment_risk</semantic:flowNodeRef>
+        <semantic:flowNodeRef>gateway_effort_considerable_check</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_conduct_robot_usage</semantic:flowNodeRef>
+        <semantic:flowNodeRef>gateway_robot_type_choice</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_use_stationary_robots</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_use_mobile_robots</semantic:flowNodeRef>
+        <semantic:flowNodeRef>gateway_robot_type_join</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_perform_human_handling</semantic:flowNodeRef>
+        <semantic:flowNodeRef>gateway_effort_path_join</semantic:flowNodeRef>
+      </semantic:lane>
+      <semantic:lane id="lane_picker" name="Picker">
+        <semantic:flowNodeRef>subprocess_goods_picking</semantic:flowNodeRef>
+        <semantic:flowNodeRef>event_boundary_sp_picking_risks</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_sp_handle_picking_risks</semantic:flowNodeRef>
+      </semantic:lane>
+      <semantic:lane id="lane_logistic_assistant" name="Logistic Assistant">
+        <semantic:flowNodeRef>subprocess_packaging</semantic:flowNodeRef>
+      </semantic:lane>
+      <semantic:lane id="lane_warehouse_assistant" name="Warehouse Assistant">
+        <semantic:flowNodeRef>task_transit_transport_goods</semantic:flowNodeRef>
+        <semantic:flowNodeRef>event_end_process</semantic:flowNodeRef>
+      </semantic:lane>
+    </semantic:laneSet>
+
+    <!-- Handler Lane Elements -->
+    <semantic:startEvent id="event_start_handling_order" name="Handling Order Received">
+      <semantic:outgoing>flow_1</semantic:outgoing>
+    </semantic:startEvent>
+    <semantic:task id="task_perform_goods_handling" name="Perform goods handling">
+      <semantic:incoming>flow_1</semantic:incoming>
+      <semantic:outgoing>flow_2</semantic:outgoing>
+    </semantic:task>
+    <semantic:exclusiveGateway id="gateway_handling_method_choice" name="Choose handling method">
+      <semantic:incoming>flow_2</semantic:incoming>
+      <semantic:outgoing>flow_3</semantic:outgoing>
+      <semantic:outgoing>flow_4</semantic:outgoing>
+    </semantic:exclusiveGateway>
+    <semantic:task id="task_take_sheet" name="Take sheet from a press">
+      <semantic:incoming>flow_3</semantic:incoming>
+      <semantic:outgoing>flow_5</semantic:outgoing>
+    </semantic:task>
+    <semantic:task id="task_load_feeder" name="Load material feeder to the machine">
+      <semantic:incoming>flow_4</semantic:incoming>
+      <semantic:outgoing>flow_6</semantic:outgoing>
+    </semantic:task>
+    <semantic:exclusiveGateway id="gateway_handling_method_join" name="Join handling method">
+      <semantic:incoming>flow_5</semantic:incoming>
+      <semantic:incoming>flow_6</semantic:incoming>
+      <semantic:outgoing>flow_7</semantic:outgoing>
+    </semantic:exclusiveGateway>
+    <semantic:task id="task_determine_efforts" name="Determine efforts of material handling technology">
+      <semantic:incoming>flow_7</semantic:incoming>
+      <semantic:outgoing>flow_9</semantic:outgoing>
+    </semantic:task>
+    <semantic:boundaryEvent id="event_boundary_effort_assessment_risk" name="Risk: Wrong assessment of material handling efforts" attachedToRef="task_determine_efforts" cancelActivity="false">
+      <semantic:outgoing>flow_8</semantic:outgoing>
+    </semantic:boundaryEvent>
+    <semantic:task id="task_handle_effort_assessment_risk" name="Handle wrong assessment of efforts">
+      <semantic:incoming>flow_8</semantic:incoming>
+      <semantic:outgoing>flow_18</semantic:outgoing>
+    </semantic:task>
+    <semantic:exclusiveGateway id="gateway_effort_considerable_check" name="Effort considerable?">
+      <semantic:incoming>flow_9</semantic:incoming>
+      <semantic:outgoing>flow_10</semantic:outgoing> <!-- Considerable effort -->
+      <semantic:outgoing>flow_16</semantic:outgoing> <!-- Not considerable effort -->
+    </semantic:exclusiveGateway>
+    <semantic:task id="task_conduct_robot_usage" name="Conduct usage of robots">
+      <semantic:incoming>flow_10</semantic:incoming>
+      <semantic:outgoing>flow_11</semantic:outgoing>
+    </semantic:task>
+    <semantic:exclusiveGateway id="gateway_robot_type_choice" name="Select robot type">
+      <semantic:incoming>flow_11</semantic:incoming>
+      <semantic:outgoing>flow_12</semantic:outgoing> <!-- Task is to stack products on a pallet -->
+      <semantic:outgoing>flow_13</semantic:outgoing> <!-- Task is to perform different things (movable) -->
+    </semantic:exclusiveGateway>
+    <semantic:task id="task_use_stationary_robots" name="Use stationary robots">
+      <semantic:incoming>flow_12</semantic:incoming>
+      <semantic:outgoing>flow_14</semantic:outgoing>
+    </semantic:task>
+    <semantic:task id="task_use_mobile_robots" name="Use mobile robots">
+      <semantic:incoming>flow_13</semantic:incoming>
+      <semantic:outgoing>flow_15</semantic:outgoing>
+    </semantic:task>
+    <semantic:exclusiveGateway id="gateway_robot_type_join" name="Join robot type">
+      <semantic:incoming>flow_14</semantic:incoming>
+      <semantic:incoming>flow_15</semantic:incoming>
+      <semantic:outgoing>flow_19</semantic:outgoing>
+    </semantic:exclusiveGateway>
+    <semantic:task id="task_perform_human_handling" name="Perform handling task by humans">
+      <semantic:incoming>flow_16</semantic:incoming>
+      <semantic:outgoing>flow_17</semantic:outgoing>
+    </semantic:task>
+    <semantic:exclusiveGateway id="gateway_effort_path_join" name="Join effort path">
+      <semantic:incoming>flow_17</semantic:incoming>
+      <semantic:incoming>flow_18</semantic:incoming>
+      <semantic:incoming>flow_19</semantic:incoming>
+      <semantic:outgoing>flow_20</semantic:outgoing>
+    </semantic:exclusiveGateway>
+
+    <!-- Picker Lane Elements -->
+    <semantic:subProcess id="subprocess_goods_picking" name="Perform goods picking (Service)">
+      <semantic:incoming>flow_20</semantic:incoming>
+      <semantic:outgoing>flow_43</semantic:outgoing>
+      <!-- Elements inside subprocess_goods_picking -->
+      <semantic:startEvent id="event_sp_picking_start" name="Picking Subprocess Starts">
+        <semantic:outgoing>flow_21</semantic:outgoing>
+      </semantic:startEvent>
+      <semantic:task id="task_sp_change_bundling" name="Change bundling of object quantities">
+        <semantic:incoming>flow_21</semantic:incoming>
+        <semantic:outgoing>flow_22</semantic:outgoing>
+      </semantic:task>
+      <semantic:task id="task_sp_move_goods_provision" name="Move goods for provision">
+        <semantic:incoming>flow_22</semantic:incoming>
+        <semantic:outgoing>flow_23</semantic:outgoing>
+      </semantic:task>
+      <semantic:exclusiveGateway id="gateway_sp_move_method_choice" name="Choose goods movement method">
+        <semantic:incoming>flow_23</semantic:incoming>
+        <semantic:outgoing>flow_24</semantic:outgoing> <!-- Mechanically -->
+        <semantic:outgoing>flow_25</semantic:outgoing> <!-- Manually -->
+        <semantic:outgoing>flow_26</semantic:outgoing> <!-- Automatically -->
+      </semantic:exclusiveGateway>
+      <semantic:task id="task_sp_move_mechanically" name="Move goods mechanically">
+        <semantic:incoming>flow_24</semantic:incoming>
+        <semantic:outgoing>flow_27</semantic:outgoing>
+      </semantic:task>
+      <semantic:task id="task_sp_move_manually" name="Move goods manually">
+        <semantic:incoming>flow_25</semantic:incoming>
+        <semantic:outgoing>flow_28</semantic:outgoing>
+      </semantic:task>
+      <semantic:task id="task_sp_move_automatically" name="Move goods automatically">
+        <semantic:incoming>flow_26</semantic:incoming>
+        <semantic:outgoing>flow_29</semantic:outgoing>
+      </semantic:task>
+      <semantic:exclusiveGateway id="gateway_sp_move_method_join" name="Join movement method">
+        <semantic:incoming>flow_27</semantic:incoming>
+        <semantic:incoming>flow_28</semantic:incoming>
+        <semantic:incoming>flow_29</semantic:incoming>
+        <semantic:outgoing>flow_30</semantic:outgoing>
+      </semantic:exclusiveGateway>
+      <semantic:task id="task_sp_perform_provision" name="Perform provision">
+        <semantic:incoming>flow_30</semantic:incoming>
+        <semantic:outgoing>flow_31</semantic:outgoing>
+      </semantic:task>
+      <semantic:exclusiveGateway id="gateway_sp_provision_type_choice" name="Choose provision type">
+        <semantic:incoming>flow_31</semantic:incoming>
+        <semantic:outgoing>flow_32</semantic:outgoing> <!-- Central provision -->
+        <semantic:outgoing>flow_35</semantic:outgoing> <!-- Decentralized provision -->
+      </semantic:exclusiveGateway>
+      <semantic:task id="task_sp_bring_goods_central" name="Bring goods to picking place (Central)">
+        <semantic:incoming>flow_32</semantic:incoming>
+        <semantic:outgoing>flow_33</semantic:outgoing>
+      </semantic:task>
+      <semantic:task id="task_sp_take_out_quantity_central" name="Take out appropriate quantity of products (Central)">
+        <semantic:incoming>flow_33</semantic:incoming>
+        <semantic:outgoing>flow_34</semantic:outgoing>
+      </semantic:task>
+      <semantic:task id="task_sp_pick_goods_decentralized" name="Pick goods by picker (Decentralized)">
+        <semantic:incoming>flow_35</semantic:incoming>
+        <semantic:outgoing>flow_36</semantic:outgoing>
+      </semantic:task>
+      <semantic:exclusiveGateway id="gateway_sp_provision_type_join" name="Join provision type">
+        <semantic:incoming>flow_34</semantic:incoming>
+        <semantic:incoming>flow_36</semantic:incoming>
+        <semantic:outgoing>flow_37</semantic:outgoing>
+      </semantic:exclusiveGateway>
+      <semantic:task id="task_sp_transport_to_container" name="Transport goods to transport container for delivery">
+        <semantic:incoming>flow_37</semantic:incoming>
+        <semantic:outgoing>flow_38</semantic:outgoing>
+      </semantic:task>
+      <semantic:task id="task_sp_discharge_goods" name="Discharge goods">
+        <semantic:incoming>flow_38</semantic:incoming>
+        <semantic:outgoing>flow_39</semantic:outgoing>
+      </semantic:task>
+      <semantic:task id="task_sp_transport_picking_unit" name="Transport picking unit for delivery">
+        <semantic:incoming>flow_39</semantic:incoming>
+        <semantic:outgoing>flow_40</semantic:outgoing>
+      </semantic:task>
+      <semantic:task id="task_sp_deliver_picking_unit" name="Deliver picking unit">
+        <semantic:incoming>flow_40</semantic:incoming>
+        <semantic:outgoing>flow_41</semantic:outgoing>
+      </semantic:task>
+      <semantic:endEvent id="event_sp_picking_end" name="Picking Subprocess Ends">
+        <semantic:incoming>flow_41</semantic:incoming>
+      </semantic:endEvent>
+      <semantic:sequenceFlow id="flow_21" sourceRef="event_sp_picking_start" targetRef="task_sp_change_bundling"/>
+      <semantic:sequenceFlow id="flow_22" sourceRef="task_sp_change_bundling" targetRef="task_sp_move_goods_provision"/>
+      <semantic:sequenceFlow id="flow_23" sourceRef="task_sp_move_goods_provision" targetRef="gateway_sp_move_method_choice"/>
+      <semantic:sequenceFlow id="flow_24" sourceRef="gateway_sp_move_method_choice" targetRef="task_sp_move_mechanically" name="Mechanically"/>
+      <semantic:sequenceFlow id="flow_25" sourceRef="gateway_sp_move_method_choice" targetRef="task_sp_move_manually" name="Manually"/>
+      <semantic:sequenceFlow id="flow_26" sourceRef="gateway_sp_move_method_choice" targetRef="task_sp_move_automatically" name="Automatically"/>
+      <semantic:sequenceFlow id="flow_27" sourceRef="task_sp_move_mechanically" targetRef="gateway_sp_move_method_join"/>
+      <semantic:sequenceFlow id="flow_28" sourceRef="task_sp_move_manually" targetRef="gateway_sp_move_method_join"/>
+      <semantic:sequenceFlow id="flow_29" sourceRef="task_sp_move_automatically" targetRef="gateway_sp_move_method_join"/>
+      <semantic:sequenceFlow id="flow_30" sourceRef="gateway_sp_move_method_join" targetRef="task_sp_perform_provision"/>
+      <semantic:sequenceFlow id="flow_31" sourceRef="task_sp_perform_provision" targetRef="gateway_sp_provision_type_choice"/>
+      <semantic:sequenceFlow id="flow_32" sourceRef="gateway_sp_provision_type_choice" targetRef="task_sp_bring_goods_central" name="Central provision"/>
+      <semantic:sequenceFlow id="flow_33" sourceRef="task_sp_bring_goods_central" targetRef="task_sp_take_out_quantity_central"/>
+      <semantic:sequenceFlow id="flow_34" sourceRef="task_sp_take_out_quantity_central" targetRef="gateway_sp_provision_type_join"/>
+      <semantic:sequenceFlow id="flow_35" sourceRef="gateway_sp_provision_type_choice" targetRef="task_sp_pick_goods_decentralized" name="Decentralized provision"/>
+      <semantic:sequenceFlow id="flow_36" sourceRef="task_sp_pick_goods_decentralized" targetRef="gateway_sp_provision_type_join"/>
+      <semantic:sequenceFlow id="flow_37" sourceRef="gateway_sp_provision_type_join" targetRef="task_sp_transport_to_container"/>
+      <semantic:sequenceFlow id="flow_38" sourceRef="task_sp_transport_to_container" targetRef="task_sp_discharge_goods"/>
+      <semantic:sequenceFlow id="flow_39" sourceRef="task_sp_discharge_goods" targetRef="task_sp_transport_picking_unit"/>
+      <semantic:sequenceFlow id="flow_40" sourceRef="task_sp_transport_picking_unit" targetRef="task_sp_deliver_picking_unit"/>
+      <semantic:sequenceFlow id="flow_41" sourceRef="task_sp_deliver_picking_unit" targetRef="event_sp_picking_end"/>
+    </semantic:subProcess>
+    <semantic:boundaryEvent id="event_boundary_sp_picking_risks" name="Risks: Wrong assessment, wrong product/quantity, broken load units" attachedToRef="subprocess_goods_picking" cancelActivity="false">
+      <semantic:outgoing>flow_42</semantic:outgoing>
+    </semantic:boundaryEvent>
+    <semantic:task id="task_sp_handle_picking_risks" name="Handle picking risks">
+      <semantic:incoming>flow_42</semantic:incoming>
+    </semantic:task> <!-- This task has no outgoing flow as per JSON -->
+
+    <!-- Logistic Assistant Lane Elements -->
+    <semantic:subProcess id="subprocess_packaging" name="Perform packaging (Service)">
+      <semantic:incoming>flow_43</semantic:incoming>
+      <semantic:outgoing>flow_55</semantic:outgoing>
+      <!-- Elements inside subprocess_packaging -->
+      <semantic:startEvent id="event_sp_packaging_start" name="Packaging Subprocess Starts">
+        <semantic:outgoing>flow_44</semantic:outgoing>
+      </semantic:startEvent>
+      <semantic:task id="task_sp_unify_goods_packaging" name="Unify goods &amp; packaging">
+        <semantic:incoming>flow_44</semantic:incoming>
+        <semantic:outgoing>flow_47</semantic:outgoing>
+      </semantic:task>
+      <semantic:boundaryEvent id="event_boundary_sp_unify_risks" name="Risks: Mechanical &amp; climatic loads, theft" attachedToRef="task_sp_unify_goods_packaging" cancelActivity="false">
+        <semantic:outgoing>flow_45</semantic:outgoing>
+      </semantic:boundaryEvent>
+      <semantic:task id="task_sp_handle_unify_risks" name="Handle packaging risks (mechanical/climatic/theft)">
+        <semantic:incoming>flow_45</semantic:incoming>
+        <!-- This task has no outgoing flow as per JSON, it does not rejoin the main subprocess flow -->
+      </semantic:task>
+      <semantic:task id="task_sp_set_packaging_protection" name="Set packaging protection function (Control)">
+        <semantic:incoming>flow_47</semantic:incoming>
+        <semantic:outgoing>flow_48</semantic:outgoing>
+      </semantic:task>
+      <semantic:parallelGateway id="gateway_sp_packaging_split" name="Split for packaging activities">
+        <semantic:incoming>flow_48</semantic:incoming>
+        <semantic:outgoing>flow_49</semantic:outgoing>
+        <semantic:outgoing>flow_50</semantic:outgoing>
+      </semantic:parallelGateway>
+      <semantic:task id="task_sp_actual_packaging" name="Perform actual packaging process">
+        <semantic:incoming>flow_49</semantic:incoming>
+        <semantic:outgoing>flow_51</semantic:outgoing>
+      </semantic:task>
+      <semantic:task id="task_sp_provide_packaging_transport" name="Provide packaging for transport">
+        <semantic:incoming>flow_50</semantic:incoming>
+        <semantic:outgoing>flow_52</semantic:outgoing>
+      </semantic:task>
+      <semantic:parallelGateway id="gateway_sp_packaging_join" name="Join packaging activities">
+        <semantic:incoming>flow_51</semantic:incoming>
+        <semantic:incoming>flow_52</semantic:incoming>
+        <semantic:outgoing>flow_53</semantic:outgoing>
+      </semantic:parallelGateway>
+      <semantic:task id="task_sp_use_reusable_packaging" name="Use reusable packaging">
+        <semantic:incoming>flow_53</semantic:incoming>
+        <semantic:outgoing>flow_54</semantic:outgoing>
+      </semantic:task>
+      <semantic:endEvent id="event_sp_packaging_end" name="Packaging Subprocess Ends">
+        <semantic:incoming>flow_54</semantic:incoming>
+      </semantic:endEvent>
+      <semantic:sequenceFlow id="flow_44" sourceRef="event_sp_packaging_start" targetRef="task_sp_unify_goods_packaging"/>
+      <semantic:sequenceFlow id="flow_45" sourceRef="event_boundary_sp_unify_risks" targetRef="task_sp_handle_unify_risks"/>
+      <semantic:sequenceFlow id="flow_47" sourceRef="task_sp_unify_goods_packaging" targetRef="task_sp_set_packaging_protection"/>
+      <semantic:sequenceFlow id="flow_48" sourceRef="task_sp_set_packaging_protection" targetRef="gateway_sp_packaging_split"/>
+      <semantic:sequenceFlow id="flow_49" sourceRef="gateway_sp_packaging_split" targetRef="task_sp_actual_packaging"/>
+      <semantic:sequenceFlow id="flow_50" sourceRef="gateway_sp_packaging_split" targetRef="task_sp_provide_packaging_transport"/>
+      <semantic:sequenceFlow id="flow_51" sourceRef="task_sp_actual_packaging" targetRef="gateway_sp_packaging_join"/>
+      <semantic:sequenceFlow id="flow_52" sourceRef="task_sp_provide_packaging_transport" targetRef="gateway_sp_packaging_join"/>
+      <semantic:sequenceFlow id="flow_53" sourceRef="gateway_sp_packaging_join" targetRef="task_sp_use_reusable_packaging"/>
+      <semantic:sequenceFlow id="flow_54" sourceRef="task_sp_use_reusable_packaging" targetRef="event_sp_packaging_end"/>
+    </semantic:subProcess>
+
+    <!-- Warehouse Assistant Lane Elements -->
+    <semantic:task id="task_transit_transport_goods" name="Transit &amp; transport goods (Service)">
+      <semantic:incoming>flow_55</semantic:incoming>
+      <semantic:outgoing>flow_56</semantic:outgoing>
+    </semantic:task>
+    <semantic:endEvent id="event_end_process" name="Process Ended">
+      <semantic:incoming>flow_56</semantic:incoming>
+    </semantic:endEvent>
+
+    <!-- Main Sequence Flows -->
+    <semantic:sequenceFlow id="flow_1" sourceRef="event_start_handling_order" targetRef="task_perform_goods_handling"/>
+    <semantic:sequenceFlow id="flow_2" sourceRef="task_perform_goods_handling" targetRef="gateway_handling_method_choice"/>
+    <semantic:sequenceFlow id="flow_3" sourceRef="gateway_handling_method_choice" targetRef="task_take_sheet"/>
+    <semantic:sequenceFlow id="flow_4" sourceRef="gateway_handling_method_choice" targetRef="task_load_feeder"/>
+    <semantic:sequenceFlow id="flow_5" sourceRef="task_take_sheet" targetRef="gateway_handling_method_join"/>
+    <semantic:sequenceFlow id="flow_6" sourceRef="task_load_feeder" targetRef="gateway_handling_method_join"/>
+    <semantic:sequenceFlow id="flow_7" sourceRef="gateway_handling_method_join" targetRef="task_determine_efforts"/>
+    <semantic:sequenceFlow id="flow_8" sourceRef="event_boundary_effort_assessment_risk" targetRef="task_handle_effort_assessment_risk"/>
+    <semantic:sequenceFlow id="flow_9" sourceRef="task_determine_efforts" targetRef="gateway_effort_considerable_check"/>
+    <semantic:sequenceFlow id="flow_10" sourceRef="gateway_effort_considerable_check" targetRef="task_conduct_robot_usage" name="Considerable effort"/>
+    <semantic:sequenceFlow id="flow_11" sourceRef="task_conduct_robot_usage" targetRef="gateway_robot_type_choice"/>
+    <semantic:sequenceFlow id="flow_12" sourceRef="gateway_robot_type_choice" targetRef="task_use_stationary_robots" name="Task is to stack products on a pallet"/>
+    <semantic:sequenceFlow id="flow_13" sourceRef="gateway_robot_type_choice" targetRef="task_use_mobile_robots" name="Task is to perform different things (movable)"/>
+    <semantic:sequenceFlow id="flow_14" sourceRef="task_use_stationary_robots" targetRef="gateway_robot_type_join"/>
+    <semantic:sequenceFlow id="flow_15" sourceRef="task_use_mobile_robots" targetRef="gateway_robot_type_join"/>
+    <semantic:sequenceFlow id="flow_16" sourceRef="gateway_effort_considerable_check" targetRef="task_perform_human_handling" name="Not considerable effort"/>
+    <semantic:sequenceFlow id="flow_17" sourceRef="task_perform_human_handling" targetRef="gateway_effort_path_join"/>
+    <semantic:sequenceFlow id="flow_18" sourceRef="task_handle_effort_assessment_risk" targetRef="gateway_effort_path_join"/>
+    <semantic:sequenceFlow id="flow_19" sourceRef="gateway_robot_type_join" targetRef="gateway_effort_path_join"/>
+    <semantic:sequenceFlow id="flow_20" sourceRef="gateway_effort_path_join" targetRef="subprocess_goods_picking"/>
+    <semantic:sequenceFlow id="flow_42" sourceRef="event_boundary_sp_picking_risks" targetRef="task_sp_handle_picking_risks"/>
+    <semantic:sequenceFlow id="flow_43" sourceRef="subprocess_goods_picking" targetRef="subprocess_packaging"/>
+    <semantic:sequenceFlow id="flow_55" sourceRef="subprocess_packaging" targetRef="task_transit_transport_goods"/>
+    <semantic:sequenceFlow id="flow_56" sourceRef="task_transit_transport_goods" targetRef="event_end_process"/>
+
+  </semantic:process>
+
+  <bpmndi:BPMNDiagram id="BPMNDiagram_LogisticsProcess">
+    <bpmndi:BPMNPlane bpmnElement="collab_logistics">
+      <bpmndi:BPMNShape id="participant_logistics_process_shape" bpmnElement="participant_logistics_process" isHorizontal="true">
+        <dc:Bounds x="10" y="10" width="6100" height="1550"/>
+      </bpmndi:BPMNShape>
+
+      <!-- Handler Lane Shapes -->
+      <bpmndi:BPMNShape id="lane_handler_shape" bpmnElement="lane_handler" isHorizontal="true">
+        <dc:Bounds x="40" y="10" width="6070" height="350"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="event_start_handling_order_shape" bpmnElement="event_start_handling_order">
+        <dc:Bounds x="60" y="177" width="36" height="36"/> <!-- Y_center=195 -->
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="task_perform_goods_handling_shape" bpmnElement="task_perform_goods_handling">
+        <dc:Bounds x="160" y="155" width="100" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="gateway_handling_method_choice_shape" bpmnElement="gateway_handling_method_choice" isMarkerVisible="true">
+        <dc:Bounds x="320" y="170" width="50" height="50"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="task_take_sheet_shape" bpmnElement="task_take_sheet">
+        <dc:Bounds x="430" y="105" width="100" height="80"/> <!-- Y_center=195-50=145 -->
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="task_load_feeder_shape" bpmnElement="task_load_feeder">
+        <dc:Bounds x="430" y="205" width="100" height="80"/> <!-- Y_center=195+50=245 -->
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="gateway_handling_method_join_shape" bpmnElement="gateway_handling_method_join" isMarkerVisible="true">
+        <dc:Bounds x="590" y="170" width="50" height="50"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="task_determine_efforts_shape" bpmnElement="task_determine_efforts">
+        <dc:Bounds x="700" y="155" width="100" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="event_boundary_effort_assessment_risk_shape" bpmnElement="event_boundary_effort_assessment_risk">
+        <dc:Bounds x="732" y="217" width="36" height="36"/> <!-- Attached to task_determine_efforts bottom -->
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="task_handle_effort_assessment_risk_shape" bpmnElement="task_handle_effort_assessment_risk">
+        <dc:Bounds x="700" y="265" width="100" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="gateway_effort_considerable_check_shape" bpmnElement="gateway_effort_considerable_check" isMarkerVisible="true">
+        <dc:Bounds x="860" y="170" width="50" height="50"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="task_conduct_robot_usage_shape" bpmnElement="task_conduct_robot_usage">
+        <dc:Bounds x="970" y="75" width="100" height="80"/> <!-- Y_center=115 -->
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="gateway_robot_type_choice_shape" bpmnElement="gateway_robot_type_choice" isMarkerVisible="true">
+        <dc:Bounds x="1130" y="90" width="50" height="50"/> <!-- Y_center=115 -->
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="task_use_stationary_robots_shape" bpmnElement="task_use_stationary_robots">
+        <dc:Bounds x="1240" y="40" width="100" height="80"/> <!-- Y_center=115-35=80 -->
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="task_use_mobile_robots_shape" bpmnElement="task_use_mobile_robots">
+        <dc:Bounds x="1240" y="140" width="100" height="80"/> <!-- Y_center=115+35=150 -->
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="gateway_robot_type_join_shape" bpmnElement="gateway_robot_type_join" isMarkerVisible="true">
+        <dc:Bounds x="1400" y="90" width="50" height="50"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="task_perform_human_handling_shape" bpmnElement="task_perform_human_handling">
+        <dc:Bounds x="970" y="235" width="100" height="80"/> <!-- Y_center=275 -->
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="gateway_effort_path_join_shape" bpmnElement="gateway_effort_path_join" isMarkerVisible="true">
+        <dc:Bounds x="1560" y="170" width="50" height="50"/>
+      </bpmndi:BPMNShape>
+
+      <!-- Picker Lane Shapes -->
+      <bpmndi:BPMNShape id="lane_picker_shape" bpmnElement="lane_picker" isHorizontal="true">
+        <dc:Bounds x="40" y="360" width="6070" height="450"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="subprocess_goods_picking_shape" bpmnElement="subprocess_goods_picking" isExpanded="true">
+        <dc:Bounds x="1700" y="420" width="2300" height="300"/> <!-- Y_top=420 -->
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="event_sp_picking_start_shape" bpmnElement="event_sp_picking_start">
+        <dc:Bounds x="1760" y="552" width="36" height="36"/> <!-- Abs Y_sub_top=420, Rel Y_center=150 => 420+150-18=552 -->
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="task_sp_change_bundling_shape" bpmnElement="task_sp_change_bundling">
+        <dc:Bounds x="1860" y="530" width="100" height="80"/> <!-- Abs Y_sub_top=420, Rel Y_center=150 => 420+150-40=530 -->
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="task_sp_move_goods_provision_shape" bpmnElement="task_sp_move_goods_provision">
+        <dc:Bounds x="2010" y="530" width="100" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="gateway_sp_move_method_choice_shape" bpmnElement="gateway_sp_move_method_choice" isMarkerVisible="true">
+        <dc:Bounds x="2160" y="545" width="50" height="50"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="task_sp_move_mechanically_shape" bpmnElement="task_sp_move_mechanically">
+        <dc:Bounds x="2270" y="460" width="100" height="80"/> <!-- Rel Y_center=150-70=80 => Abs Y=420+80-40=460 -->
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="task_sp_move_manually_shape" bpmnElement="task_sp_move_manually">
+        <dc:Bounds x="2270" y="530" width="100" height="80"/> <!-- Rel Y_center=150 => Abs Y=420+150-40=530 -->
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="task_sp_move_automatically_shape" bpmnElement="task_sp_move_automatically">
+        <dc:Bounds x="2270" y="600" width="100" height="80"/> <!-- Rel Y_center=150+70=220 => Abs Y=420+220-40=600 -->
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="gateway_sp_move_method_join_shape" bpmnElement="gateway_sp_move_method_join" isMarkerVisible="true">
+        <dc:Bounds x="2420" y="545" width="50" height="50"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="task_sp_perform_provision_shape" bpmnElement="task_sp_perform_provision">
+        <dc:Bounds x="2520" y="530" width="100" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="gateway_sp_provision_type_choice_shape" bpmnElement="gateway_sp_provision_type_choice" isMarkerVisible="true">
+        <dc:Bounds x="2670" y="545" width="50" height="50"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="task_sp_bring_goods_central_shape" bpmnElement="task_sp_bring_goods_central">
+        <dc:Bounds x="2780" y="490" width="100" height="80"/> <!-- Rel Y_center=150-40=110 => Abs Y=420+110-40=490 -->
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="task_sp_take_out_quantity_central_shape" bpmnElement="task_sp_take_out_quantity_central">
+        <dc:Bounds x="2930" y="490" width="100" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="task_sp_pick_goods_decentralized_shape" bpmnElement="task_sp_pick_goods_decentralized">
+        <dc:Bounds x="2780" y="600" width="100" height="80"/> <!-- Rel Y_center=150+40=190 => Abs Y=420+190-40=570, adjusted to 600 for spacing -->
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="gateway_sp_provision_type_join_shape" bpmnElement="gateway_sp_provision_type_join" isMarkerVisible="true">
+        <dc:Bounds x="3080" y="545" width="50" height="50"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="task_sp_transport_to_container_shape" bpmnElement="task_sp_transport_to_container">
+        <dc:Bounds x="3180" y="530" width="100" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="task_sp_discharge_goods_shape" bpmnElement="task_sp_discharge_goods">
+        <dc:Bounds x="3330" y="530" width="100" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="task_sp_transport_picking_unit_shape" bpmnElement="task_sp_transport_picking_unit">
+        <dc:Bounds x="3480" y="530" width="100" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="task_sp_deliver_picking_unit_shape" bpmnElement="task_sp_deliver_picking_unit">
+        <dc:Bounds x="3630" y="530" width="100" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="event_sp_picking_end_shape" bpmnElement="event_sp_picking_end">
+        <dc:Bounds x="3790" y="552" width="36" height="36"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="event_boundary_sp_picking_risks_shape" bpmnElement="event_boundary_sp_picking_risks">
+        <dc:Bounds x="2832" y="702" width="36" height="36"/> <!-- Attached to subprocess_goods_picking bottom (X centered) -->
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="task_sp_handle_picking_risks_shape" bpmnElement="task_sp_handle_picking_risks">
+        <dc:Bounds x="2800" y="750" width="100" height="80"/>
+      </bpmndi:BPMNShape>
+
+      <!-- Logistic Assistant Lane Shapes -->
+      <bpmndi:BPMNShape id="lane_logistic_assistant_shape" bpmnElement="lane_logistic_assistant" isHorizontal="true">
+        <dc:Bounds x="40" y="810" width="6070" height="450"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="subprocess_packaging_shape" bpmnElement="subprocess_packaging" isExpanded="true">
+        <dc:Bounds x="4150" y="870" width="1400" height="350"/> <!-- Y_top=870, H=350 to fit boundary task -->
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="event_sp_packaging_start_shape" bpmnElement="event_sp_packaging_start">
+        <dc:Bounds x="4210" y="1002" width="36" height="36"/> <!-- Abs Y_sub_top=870, Rel Y_center=150 => 870+150-18=1002 -->
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="task_sp_unify_goods_packaging_shape" bpmnElement="task_sp_unify_goods_packaging">
+        <dc:Bounds x="4310" y="980" width="100" height="80"/> <!-- Abs Y_sub_top=870, Rel Y_center=150 => 870+150-40=980 -->
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="event_boundary_sp_unify_risks_shape" bpmnElement="event_boundary_sp_unify_risks">
+        <dc:Bounds x="4342" y="1042" width="36" height="36"/> <!-- Attached to task_sp_unify_goods_packaging bottom -->
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="task_sp_handle_unify_risks_shape" bpmnElement="task_sp_handle_unify_risks">
+        <dc:Bounds x="4310" y="1090" width="100" height="80"/> <!-- Below boundary event -->
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="task_sp_set_packaging_protection_shape" bpmnElement="task_sp_set_packaging_protection">
+        <dc:Bounds x="4460" y="980" width="100" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="gateway_sp_packaging_split_shape" bpmnElement="gateway_sp_packaging_split" isMarkerVisible="true">
+        <dc:Bounds x="4610" y="995" width="50" height="50"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="task_sp_actual_packaging_shape" bpmnElement="task_sp_actual_packaging">
+        <dc:Bounds x="4720" y="930" width="100" height="80"/> <!-- Rel Y_center=150-50=100 => Abs Y=870+100-40=930 -->
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="task_sp_provide_packaging_transport_shape" bpmnElement="task_sp_provide_packaging_transport">
+        <dc:Bounds x="4720" y="1030" width="100" height="80"/> <!-- Rel Y_center=150+50=200 => Abs Y=870+200-40=1030 -->
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="gateway_sp_packaging_join_shape" bpmnElement="gateway_sp_packaging_join" isMarkerVisible="true">
+        <dc:Bounds x="4870" y="995" width="50" height="50"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="task_sp_use_reusable_packaging_shape" bpmnElement="task_sp_use_reusable_packaging">
+        <dc:Bounds x="4970" y="980" width="100" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="event_sp_packaging_end_shape" bpmnElement="event_sp_packaging_end">
+        <dc:Bounds x="5130" y="1002" width="36" height="36"/>
+      </bpmndi:BPMNShape>
+
+      <!-- Warehouse Assistant Lane Shapes -->
+      <bpmndi:BPMNShape id="lane_warehouse_assistant_shape" bpmnElement="lane_warehouse_assistant" isHorizontal="true">
+        <dc:Bounds x="40" y="1260" width="6070" height="200"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="task_transit_transport_goods_shape" bpmnElement="task_transit_transport_goods">
+        <dc:Bounds x="5700" y="1320" width="100" height="80"/> <!-- Y_center=1360 -->
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="event_end_process_shape" bpmnElement="event_end_process">
+        <dc:Bounds x="5860" y="1342" width="36" height="36"/>
+      </bpmndi:BPMNShape>
+
+      <!-- Edges for Handler Lane -->
+      <bpmndi:BPMNEdge id="flow_1_edge" bpmnElement="flow_1">
+        <di:waypoint x="96" y="195"/>
+        <di:waypoint x="160" y="195"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_2_edge" bpmnElement="flow_2">
+        <di:waypoint x="260" y="195"/>
+        <di:waypoint x="320" y="195"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_3_edge" bpmnElement="flow_3">
+        <di:waypoint x="345" y="170"/>
+        <di:waypoint x="345" y="145"/>
+        <di:waypoint x="430" y="145"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_4_edge" bpmnElement="flow_4">
+        <di:waypoint x="345" y="220"/>
+        <di:waypoint x="345" y="245"/>
+        <di:waypoint x="430" y="245"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_5_edge" bpmnElement="flow_5">
+        <di:waypoint x="530" y="145"/>
+        <di:waypoint x="615" y="145"/>
+        <di:waypoint x="615" y="170"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_6_edge" bpmnElement="flow_6">
+        <di:waypoint x="530" y="245"/>
+        <di:waypoint x="615" y="245"/>
+        <di:waypoint x="615" y="220"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_7_edge" bpmnElement="flow_7">
+        <di:waypoint x="640" y="195"/>
+        <di:waypoint x="700" y="195"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_8_edge" bpmnElement="flow_8">
+        <di:waypoint x="750" y="253"/>
+        <di:waypoint x="750" y="265"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_9_edge" bpmnElement="flow_9">
+        <di:waypoint x="800" y="195"/>
+        <di:waypoint x="860" y="195"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_10_edge" bpmnElement="flow_10" name="Considerable effort">
+        <di:waypoint x="885" y="170"/>
+        <di:waypoint x="885" y="115"/>
+        <di:waypoint x="970" y="115"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_11_edge" bpmnElement="flow_11">
+        <di:waypoint x="1070" y="115"/>
+        <di:waypoint x="1130" y="115"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_12_edge" bpmnElement="flow_12" name="Task is to stack products on a pallet">
+        <di:waypoint x="1155" y="90"/>
+        <di:waypoint x="1155" y="80"/>
+        <di:waypoint x="1240" y="80"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_13_edge" bpmnElement="flow_13" name="Task is to perform different things (movable)">
+        <di:waypoint x="1155" y="140"/>
+        <di:waypoint x="1155" y="180"/>
+        <di:waypoint x="1240" y="180"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_14_edge" bpmnElement="flow_14">
+        <di:waypoint x="1340" y="80"/>
+        <di:waypoint x="1425" y="80"/>
+        <di:waypoint x="1425" y="90"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_15_edge" bpmnElement="flow_15">
+        <di:waypoint x="1340" y="180"/>
+        <di:waypoint x="1425" y="180"/>
+        <di:waypoint x="1425" y="140"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_16_edge" bpmnElement="flow_16" name="Not considerable effort">
+        <di:waypoint x="885" y="220"/>
+        <di:waypoint x="885" y="275"/>
+        <di:waypoint x="970" y="275"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_17_edge" bpmnElement="flow_17">
+        <di:waypoint x="1070" y="275"/>
+        <di:waypoint x="1585" y="275"/>
+        <di:waypoint x="1585" y="220"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_18_edge" bpmnElement="flow_18">
+        <di:waypoint x="800" y="305"/>
+        <di:waypoint x="1585" y="305"/>
+        <di:waypoint x="1585" y="220"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_19_edge" bpmnElement="flow_19">
+        <di:waypoint x="1450" y="115"/>
+        <di:waypoint x="1585" y="115"/>
+        <di:waypoint x="1585" y="170"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_20_edge" bpmnElement="flow_20">
+        <di:waypoint x="1610" y="195"/>
+        <di:waypoint x="1655" y="195"/>
+        <di:waypoint x="1655" y="570"/> <!-- Y_subprocess_goods_picking_center -->
+        <di:waypoint x="1700" y="570"/>
+      </bpmndi:BPMNEdge>
+
+      <!-- Edges for Picker Lane & Subprocess -->
+      <bpmndi:BPMNEdge id="flow_21_edge" bpmnElement="flow_21">
+        <di:waypoint x="1796" y="570"/>
+        <di:waypoint x="1860" y="570"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_22_edge" bpmnElement="flow_22">
+        <di:waypoint x="1960" y="570"/>
+        <di:waypoint x="2010" y="570"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_23_edge" bpmnElement="flow_23">
+        <di:waypoint x="2110" y="570"/>
+        <di:waypoint x="2160" y="570"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_24_edge" bpmnElement="flow_24" name="Mechanically">
+        <di:waypoint x="2185" y="545"/>
+        <di:waypoint x="2185" y="500"/>
+        <di:waypoint x="2270" y="500"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_25_edge" bpmnElement="flow_25" name="Manually">
+        <di:waypoint x="2210" y="570"/>
+        <di:waypoint x="2270" y="570"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_26_edge" bpmnElement="flow_26" name="Automatically">
+        <di:waypoint x="2185" y="595"/>
+        <di:waypoint x="2185" y="640"/>
+        <di:waypoint x="2270" y="640"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_27_edge" bpmnElement="flow_27">
+        <di:waypoint x="2370" y="500"/>
+        <di:waypoint x="2445" y="500"/>
+        <di:waypoint x="2445" y="545"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_28_edge" bpmnElement="flow_28">
+        <di:waypoint x="2370" y="570"/>
+        <di:waypoint x="2420" y="570"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_29_edge" bpmnElement="flow_29">
+        <di:waypoint x="2370" y="640"/>
+        <di:waypoint x="2445" y="640"/>
+        <di:waypoint x="2445" y="595"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_30_edge" bpmnElement="flow_30">
+        <di:waypoint x="2470" y="570"/>
+        <di:waypoint x="2520" y="570"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_31_edge" bpmnElement="flow_31">
+        <di:waypoint x="2620" y="570"/>
+        <di:waypoint x="2670" y="570"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_32_edge" bpmnElement="flow_32" name="Central provision">
+        <di:waypoint x="2695" y="545"/>
+        <di:waypoint x="2695" y="530"/>
+        <di:waypoint x="2780" y="530"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_33_edge" bpmnElement="flow_33">
+        <di:waypoint x="2880" y="530"/>
+        <di:waypoint x="2930" y="530"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_34_edge" bpmnElement="flow_34">
+        <di:waypoint x="3030" y="530"/>
+        <di:waypoint x="3105" y="530"/>
+        <di:waypoint x="3105" y="545"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_35_edge" bpmnElement="flow_35" name="Decentralized provision">
+        <di:waypoint x="2695" y="595"/>
+        <di:waypoint x="2695" y="640"/>
+        <di:waypoint x="2780" y="640"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_36_edge" bpmnElement="flow_36">
+        <di:waypoint x="2880" y="640"/>
+        <di:waypoint x="3105" y="640"/>
+        <di:waypoint x="3105" y="595"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_37_edge" bpmnElement="flow_37">
+        <di:waypoint x="3130" y="570"/>
+        <di:waypoint x="3180" y="570"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_38_edge" bpmnElement="flow_38">
+        <di:waypoint x="3280" y="570"/>
+        <di:waypoint x="3330" y="570"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_39_edge" bpmnElement="flow_39">
+        <di:waypoint x="3430" y="570"/>
+        <di:waypoint x="3480" y="570"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_40_edge" bpmnElement="flow_40">
+        <di:waypoint x="3580" y="570"/>
+        <di:waypoint x="3630" y="570"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_41_edge" bpmnElement="flow_41">
+        <di:waypoint x="3730" y="570"/>
+        <di:waypoint x="3790" y="570"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_42_edge" bpmnElement="flow_42">
+        <di:waypoint x="2850" y="738"/>
+        <di:waypoint x="2850" y="750"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_43_edge" bpmnElement="flow_43">
+        <di:waypoint x="4000" y="570"/> <!-- from subprocess_goods_picking center right -->
+        <di:waypoint x="4075" y="570"/>
+        <di:waypoint x="4075" y="1020"/> <!-- Y_subprocess_packaging_center -->
+        <di:waypoint x="4150" y="1020"/>
+      </bpmndi:BPMNEdge>
+
+      <!-- Edges for Logistic Assistant Lane & Subprocess -->
+      <bpmndi:BPMNEdge id="flow_44_edge" bpmnElement="flow_44">
+        <di:waypoint x="4246" y="1020"/>
+        <di:waypoint x="4310" y="1020"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_45_edge" bpmnElement="flow_45">
+        <di:waypoint x="4360" y="1078"/>
+        <di:waypoint x="4360" y="1090"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_47_edge" bpmnElement="flow_47">
+        <di:waypoint x="4410" y="1020"/>
+        <di:waypoint x="4460" y="1020"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_48_edge" bpmnElement="flow_48">
+        <di:waypoint x="4560" y="1020"/>
+        <di:waypoint x="4610" y="1020"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_49_edge" bpmnElement="flow_49">
+        <di:waypoint x="4635" y="995"/>
+        <di:waypoint x="4635" y="970"/>
+        <di:waypoint x="4720" y="970"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_50_edge" bpmnElement="flow_50">
+        <di:waypoint x="4635" y="1045"/>
+        <di:waypoint x="4635" y="1070"/>
+        <di:waypoint x="4720" y="1070"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_51_edge" bpmnElement="flow_51">
+        <di:waypoint x="4820" y="970"/>
+        <di:waypoint x="4895" y="970"/>
+        <di:waypoint x="4895" y="995"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_52_edge" bpmnElement="flow_52">
+        <di:waypoint x="4820" y="1070"/>
+        <di:waypoint x="4895" y="1070"/>
+        <di:waypoint x="4895" y="1045"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_53_edge" bpmnElement="flow_53">
+        <di:waypoint x="4920" y="1020"/>
+        <di:waypoint x="4970" y="1020"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_54_edge" bpmnElement="flow_54">
+        <di:waypoint x="5070" y="1020"/>
+        <di:waypoint x="5130" y="1020"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_55_edge" bpmnElement="flow_55">
+        <di:waypoint x="5550" y="1020"/> <!-- from subprocess_packaging center right -->
+        <di:waypoint x="5625" y="1020"/>
+        <di:waypoint x="5625" y="1360"/> <!-- Y_task_transit_transport_goods_center -->
+        <di:waypoint x="5700" y="1360"/>
+      </bpmndi:BPMNEdge>
+
+      <!-- Edges for Warehouse Assistant Lane -->
+      <bpmndi:BPMNEdge id="flow_56_edge" bpmnElement="flow_56">
+        <di:waypoint x="5800" y="1360"/>
+        <di:waypoint x="5860" y="1360"/>
+      </bpmndi:BPMNEdge>
+
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</semantic:definitions>

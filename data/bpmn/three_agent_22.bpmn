@@ -1,0 +1,619 @@
+***IS_VALID***
+<?xml version="1.0" standalone="yes"?>
+<semantic:definitions id="procurementDefinitions"
+    targetNamespace="http://example.com/bpmn/procurement-requirement-determination"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:semantic="http://www.omg.org/spec/BPMN/20100524/MODEL"
+    xmlns:di="http://www.omg.org/spec/DD/20100524/DI"
+    xmlns:dc="http://www.omg.org/spec/DD/20100524/DC"
+    xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI">
+
+  <semantic:collaboration id="collab_procurement">
+    <semantic:participant id="participant_purchasing_dept" name="Purchasing Department" processRef="procurementProcess"/>
+  </semantic:collaboration>
+
+  <semantic:process id="procurementProcess" name="Procurement Requirement Determination Process" isExecutable="true">
+    <semantic:laneSet id="laneSet_purchasing_dept">
+      <semantic:lane id="lane_proc_manager" name="Procurement Manager">
+        <semantic:flowNodeRef>start_event_1</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_pm_decide_method</semantic:flowNodeRef>
+        <semantic:flowNodeRef>gateway_select_method</semantic:flowNodeRef>
+      </semantic:lane>
+      <semantic:lane id="lane_proc_specialist" name="Procurement Specialist">
+        <semantic:flowNodeRef>task_ps_prog_define_sales_vol</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_ps_prog_derive_req</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_ps_cons_determine_past_values</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_ps_cons_define_forecasts</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_ps_cons_define_forecast_values</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_ps_est_decide_estimate_method</semantic:flowNodeRef>
+        <semantic:flowNodeRef>gateway_select_estimate_sub_method</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_ps_est_analogous</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_ps_est_intuitive</semantic:flowNodeRef>
+        <semantic:flowNodeRef>gateway_merge_estimate_sub_methods</semantic:flowNodeRef>
+      </semantic:lane>
+      <semantic:lane id="lane_proc_assistant" name="Procurement Assistant">
+        <semantic:flowNodeRef>gateway_merge_determination_methods</semantic:flowNodeRef>
+        <semantic:flowNodeRef>gateway_split_aspects</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_pa_qual_determine_range</semantic:flowNodeRef>
+        <semantic:flowNodeRef>gateway_qual_split_mat_qual</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_pa_qual_define_materials</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_pa_qual_define_quality</semantic:flowNodeRef>
+        <semantic:flowNodeRef>gateway_qual_select_quality_level</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_pa_qual_best_quality</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_pa_qual_average_quality</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_pa_qual_minimum_quality</semantic:flowNodeRef>
+        <semantic:flowNodeRef>gateway_qual_merge_quality_level</semantic:flowNodeRef>
+        <semantic:flowNodeRef>gateway_qual_join_mat_qual</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_pa_quant_define_amount_period</semantic:flowNodeRef>
+        <semantic:flowNodeRef>gateway_join_aspects</semantic:flowNodeRef>
+        <semantic:flowNodeRef>subprocess_define_req_types</semantic:flowNodeRef>
+        <semantic:flowNodeRef>end_event_1</semantic:flowNodeRef>
+      </semantic:lane>
+    </semantic:laneSet>
+
+    <semantic:startEvent id="start_event_1" name="Procurement Process Initiated">
+      <semantic:outgoing>flow_1</semantic:outgoing>
+    </semantic:startEvent>
+    <semantic:task id="task_pm_decide_method" name="Decide on procurement requirement determination method (using ERP)">
+      <semantic:incoming>flow_1</semantic:incoming>
+      <semantic:outgoing>flow_2</semantic:outgoing>
+    </semantic:task>
+    <semantic:exclusiveGateway id="gateway_select_method" name="Select Determination Method">
+      <semantic:incoming>flow_2</semantic:incoming>
+      <semantic:outgoing>flow_3</semantic:outgoing>
+      <semantic:outgoing>flow_6</semantic:outgoing>
+      <semantic:outgoing>flow_10</semantic:outgoing>
+    </semantic:exclusiveGateway>
+
+    <semantic:task id="task_ps_prog_define_sales_vol" name="Define sales volume &amp; components (Program-oriented)">
+      <semantic:incoming>flow_3</semantic:incoming>
+      <semantic:outgoing>flow_4</semantic:outgoing>
+    </semantic:task>
+    <semantic:task id="task_ps_prog_derive_req" name="Derive requirements from production program (Program-oriented)">
+      <semantic:incoming>flow_4</semantic:incoming>
+      <semantic:outgoing>flow_5</semantic:outgoing>
+    </semantic:task>
+
+    <semantic:task id="task_ps_cons_determine_past_values" name="Determine consumption values from past (Consumption-oriented)">
+      <semantic:incoming>flow_6</semantic:incoming>
+      <semantic:outgoing>flow_7</semantic:outgoing>
+    </semantic:task>
+    <semantic:task id="task_ps_cons_define_forecasts" name="Define demand forecasts (Consumption-oriented)">
+      <semantic:incoming>flow_7</semantic:incoming>
+      <semantic:outgoing>flow_8</semantic:outgoing>
+    </semantic:task>
+    <semantic:task id="task_ps_cons_define_forecast_values" name="Define forecast values (Consumption-oriented)">
+      <semantic:incoming>flow_8</semantic:incoming>
+      <semantic:outgoing>flow_9</semantic:outgoing>
+    </semantic:task>
+
+    <semantic:task id="task_ps_est_decide_estimate_method" name="Decide on an estimate method (Estimates &amp; Heuristic)">
+      <semantic:incoming>flow_10</semantic:incoming>
+      <semantic:outgoing>flow_11</semantic:outgoing>
+    </semantic:task>
+    <semantic:exclusiveGateway id="gateway_select_estimate_sub_method" name="Select Estimate Sub-Method">
+      <semantic:incoming>flow_11</semantic:incoming>
+      <semantic:outgoing>flow_12</semantic:outgoing>
+      <semantic:outgoing>flow_14</semantic:outgoing>
+    </semantic:exclusiveGateway>
+    <semantic:task id="task_ps_est_analogous" name="Perform analogous estimate">
+      <semantic:incoming>flow_12</semantic:incoming>
+      <semantic:outgoing>flow_13</semantic:outgoing>
+    </semantic:task>
+    <semantic:task id="task_ps_est_intuitive" name="Perform intuitive estimate">
+      <semantic:incoming>flow_14</semantic:incoming>
+      <semantic:outgoing>flow_15</semantic:outgoing>
+    </semantic:task>
+    <semantic:exclusiveGateway id="gateway_merge_estimate_sub_methods" name="Merge Estimate Sub-Methods">
+      <semantic:incoming>flow_13</semantic:incoming>
+      <semantic:incoming>flow_15</semantic:incoming>
+      <semantic:outgoing>flow_16</semantic:outgoing>
+    </semantic:exclusiveGateway>
+
+    <semantic:exclusiveGateway id="gateway_merge_determination_methods" name="Merge Determination Methods">
+      <semantic:incoming>flow_5</semantic:incoming>
+      <semantic:incoming>flow_9</semantic:incoming>
+      <semantic:incoming>flow_16</semantic:incoming>
+      <semantic:outgoing>flow_17</semantic:outgoing>
+    </semantic:exclusiveGateway>
+    <semantic:parallelGateway id="gateway_split_aspects" name="Split for Qualitative/Quantitative Aspects Determination">
+      <semantic:incoming>flow_17</semantic:incoming>
+      <semantic:outgoing>flow_18</semantic:outgoing>
+      <semantic:outgoing>flow_19</semantic:outgoing>
+    </semantic:parallelGateway>
+
+    <semantic:task id="task_pa_qual_determine_range" name="Determine requirement range (Qualitative)">
+      <semantic:incoming>flow_18</semantic:incoming>
+      <semantic:outgoing>flow_20</semantic:outgoing>
+    </semantic:task>
+    <semantic:parallelGateway id="gateway_qual_split_mat_qual" name="Define Materials and Quality Simultaneously">
+      <semantic:incoming>flow_20</semantic:incoming>
+      <semantic:outgoing>flow_21</semantic:outgoing>
+      <semantic:outgoing>flow_22</semantic:outgoing>
+    </semantic:parallelGateway>
+    <semantic:task id="task_pa_qual_define_materials" name="Define materials (BOM) for qualitative aspect">
+      <semantic:incoming>flow_21</semantic:incoming>
+      <semantic:outgoing>flow_30</semantic:outgoing>
+    </semantic:task>
+    <semantic:task id="task_pa_qual_define_quality" name="Define quality for qualitative aspect">
+      <semantic:incoming>flow_22</semantic:incoming>
+      <semantic:outgoing>flow_23</semantic:outgoing>
+    </semantic:task>
+    <semantic:exclusiveGateway id="gateway_qual_select_quality_level" name="Select Quality Level">
+      <semantic:incoming>flow_23</semantic:incoming>
+      <semantic:outgoing>flow_24</semantic:outgoing>
+      <semantic:outgoing>flow_26</semantic:outgoing>
+      <semantic:outgoing>flow_28</semantic:outgoing>
+    </semantic:exclusiveGateway>
+    <semantic:task id="task_pa_qual_best_quality" name="Determine best quality">
+      <semantic:incoming>flow_24</semantic:incoming>
+      <semantic:outgoing>flow_25</semantic:outgoing>
+    </semantic:task>
+    <semantic:task id="task_pa_qual_average_quality" name="Determine average quality">
+      <semantic:incoming>flow_26</semantic:incoming>
+      <semantic:outgoing>flow_27</semantic:outgoing>
+    </semantic:task>
+    <semantic:task id="task_pa_qual_minimum_quality" name="Determine minimum quality">
+      <semantic:incoming>flow_28</semantic:incoming>
+      <semantic:outgoing>flow_29</semantic:outgoing>
+    </semantic:task>
+    <semantic:exclusiveGateway id="gateway_qual_merge_quality_level" name="Merge Quality Level">
+      <semantic:incoming>flow_25</semantic:incoming>
+      <semantic:incoming>flow_27</semantic:incoming>
+      <semantic:incoming>flow_29</semantic:incoming>
+      <semantic:outgoing>flow_31</semantic:outgoing>
+    </semantic:exclusiveGateway>
+    <semantic:parallelGateway id="gateway_qual_join_mat_qual" name="Join Materials and Quality Definition">
+      <semantic:incoming>flow_30</semantic:incoming>
+      <semantic:incoming>flow_31</semantic:incoming>
+      <semantic:outgoing>flow_32</semantic:outgoing>
+    </semantic:parallelGateway>
+
+    <semantic:task id="task_pa_quant_define_amount_period" name="Define requirement amount &amp; consumption period (Quantitative)">
+      <semantic:incoming>flow_19</semantic:incoming>
+      <semantic:outgoing>flow_33</semantic:outgoing>
+    </semantic:task>
+    <semantic:parallelGateway id="gateway_join_aspects" name="Join Qualitative/Quantitative Aspects Determination">
+      <semantic:incoming>flow_32</semantic:incoming>
+      <semantic:incoming>flow_33</semantic:incoming>
+      <semantic:outgoing>flow_34</semantic:outgoing>
+    </semantic:parallelGateway>
+
+    <semantic:subProcess id="subprocess_define_req_types" name="Define Requirement Types">
+      <semantic:incoming>flow_34</semantic:incoming>
+      <semantic:outgoing>flow_35</semantic:outgoing>
+      <semantic:startEvent id="start_sub_req" name="Start Defining Requirement Types">
+        <semantic:outgoing>flow_sub_1</semantic:outgoing>
+      </semantic:startEvent>
+      <semantic:task id="task_pa_sub_define_primary" name="Define primary requirements">
+        <semantic:incoming>flow_sub_1</semantic:incoming>
+        <semantic:outgoing>flow_sub_2</semantic:outgoing>
+      </semantic:task>
+      <semantic:task id="task_pa_sub_define_secondary" name="Define secondary requirements">
+        <semantic:incoming>flow_sub_2</semantic:incoming>
+        <semantic:outgoing>flow_sub_3</semantic:outgoing>
+      </semantic:task>
+      <semantic:task id="task_pa_sub_define_tertiary" name="Define tertiary requirements">
+        <semantic:incoming>flow_sub_3</semantic:incoming>
+        <semantic:outgoing>flow_sub_4</semantic:outgoing>
+      </semantic:task>
+      <semantic:task id="task_pa_sub_define_gross" name="Define gross requirements">
+        <semantic:incoming>flow_sub_4</semantic:incoming>
+        <semantic:outgoing>flow_sub_5</semantic:outgoing>
+      </semantic:task>
+      <semantic:task id="task_pa_sub_define_net" name="Define net requirements (ordering requirement)">
+        <semantic:incoming>flow_sub_5</semantic:incoming>
+        <semantic:outgoing>flow_sub_6</semantic:outgoing>
+      </semantic:task>
+      <semantic:endEvent id="end_sub_req" name="Finish Defining Requirement Types">
+        <semantic:incoming>flow_sub_6</semantic:incoming>
+      </semantic:endEvent>
+      <semantic:sequenceFlow id="flow_sub_1" sourceRef="start_sub_req" targetRef="task_pa_sub_define_primary"/>
+      <semantic:sequenceFlow id="flow_sub_2" sourceRef="task_pa_sub_define_primary" targetRef="task_pa_sub_define_secondary"/>
+      <semantic:sequenceFlow id="flow_sub_3" sourceRef="task_pa_sub_define_secondary" targetRef="task_pa_sub_define_tertiary"/>
+      <semantic:sequenceFlow id="flow_sub_4" sourceRef="task_pa_sub_define_tertiary" targetRef="task_pa_sub_define_gross"/>
+      <semantic:sequenceFlow id="flow_sub_5" sourceRef="task_pa_sub_define_gross" targetRef="task_pa_sub_define_net"/>
+      <semantic:sequenceFlow id="flow_sub_6" sourceRef="task_pa_sub_define_net" targetRef="end_sub_req"/>
+    </semantic:subProcess>
+
+    <semantic:endEvent id="end_event_1" name="Procurement Requirements Successfully Determined">
+      <semantic:incoming>flow_35</semantic:incoming>
+    </semantic:endEvent>
+
+    <semantic:sequenceFlow id="flow_1" sourceRef="start_event_1" targetRef="task_pm_decide_method"/>
+    <semantic:sequenceFlow id="flow_2" sourceRef="task_pm_decide_method" targetRef="gateway_select_method"/>
+    <semantic:sequenceFlow id="flow_3" name="Program-oriented method selected (Criteria: high material value OR product program planning possible OR BOM available)" sourceRef="gateway_select_method" targetRef="task_ps_prog_define_sales_vol">
+        <semantic:conditionExpression xsi:type="semantic:tFormalExpression">Program-oriented method selected (Criteria: high material value OR product program planning possible OR BOM available)</semantic:conditionExpression>
+    </semantic:sequenceFlow>
+    <semantic:sequenceFlow id="flow_4" sourceRef="task_ps_prog_define_sales_vol" targetRef="task_ps_prog_derive_req"/>
+    <semantic:sequenceFlow id="flow_5" sourceRef="task_ps_prog_derive_req" targetRef="gateway_merge_determination_methods"/>
+    <semantic:sequenceFlow id="flow_6" name="Consumption-oriented method selected (Criteria: product program planning not possible OR BOM not available OR low material value)" sourceRef="gateway_select_method" targetRef="task_ps_cons_determine_past_values">
+        <semantic:conditionExpression xsi:type="semantic:tFormalExpression">Consumption-oriented method selected (Criteria: product program planning not possible OR BOM not available OR low material value)</semantic:conditionExpression>
+    </semantic:sequenceFlow>
+    <semantic:sequenceFlow id="flow_7" sourceRef="task_ps_cons_determine_past_values" targetRef="task_ps_cons_define_forecasts"/>
+    <semantic:sequenceFlow id="flow_8" sourceRef="task_ps_cons_define_forecasts" targetRef="task_ps_cons_define_forecast_values"/>
+    <semantic:sequenceFlow id="flow_9" sourceRef="task_ps_cons_define_forecast_values" targetRef="gateway_merge_determination_methods"/>
+    <semantic:sequenceFlow id="flow_10" name="Estimates &amp; heuristic method selected (Criteria: Prerequisites for other methods missing)" sourceRef="gateway_select_method" targetRef="task_ps_est_decide_estimate_method">
+        <semantic:conditionExpression xsi:type="semantic:tFormalExpression">Estimates &amp; heuristic method selected (Criteria: Prerequisites for other methods missing)</semantic:conditionExpression>
+    </semantic:sequenceFlow>
+    <semantic:sequenceFlow id="flow_11" sourceRef="task_ps_est_decide_estimate_method" targetRef="gateway_select_estimate_sub_method"/>
+    <semantic:sequenceFlow id="flow_12" name="Analogous estimate selected" sourceRef="gateway_select_estimate_sub_method" targetRef="task_ps_est_analogous">
+        <semantic:conditionExpression xsi:type="semantic:tFormalExpression">Analogous estimate selected</semantic:conditionExpression>
+    </semantic:sequenceFlow>
+    <semantic:sequenceFlow id="flow_13" sourceRef="task_ps_est_analogous" targetRef="gateway_merge_estimate_sub_methods"/>
+    <semantic:sequenceFlow id="flow_14" name="Intuitive estimate selected" sourceRef="gateway_select_estimate_sub_method" targetRef="task_ps_est_intuitive">
+        <semantic:conditionExpression xsi:type="semantic:tFormalExpression">Intuitive estimate selected</semantic:conditionExpression>
+    </semantic:sequenceFlow>
+    <semantic:sequenceFlow id="flow_15" sourceRef="task_ps_est_intuitive" targetRef="gateway_merge_estimate_sub_methods"/>
+    <semantic:sequenceFlow id="flow_16" sourceRef="gateway_merge_estimate_sub_methods" targetRef="gateway_merge_determination_methods"/>
+    <semantic:sequenceFlow id="flow_17" sourceRef="gateway_merge_determination_methods" targetRef="gateway_split_aspects"/>
+    <semantic:sequenceFlow id="flow_18" sourceRef="gateway_split_aspects" targetRef="task_pa_qual_determine_range"/>
+    <semantic:sequenceFlow id="flow_19" sourceRef="gateway_split_aspects" targetRef="task_pa_quant_define_amount_period"/>
+    <semantic:sequenceFlow id="flow_20" sourceRef="task_pa_qual_determine_range" targetRef="gateway_qual_split_mat_qual"/>
+    <semantic:sequenceFlow id="flow_21" sourceRef="gateway_qual_split_mat_qual" targetRef="task_pa_qual_define_materials"/>
+    <semantic:sequenceFlow id="flow_22" sourceRef="gateway_qual_split_mat_qual" targetRef="task_pa_qual_define_quality"/>
+    <semantic:sequenceFlow id="flow_23" sourceRef="task_pa_qual_define_quality" targetRef="gateway_qual_select_quality_level"/>
+    <semantic:sequenceFlow id="flow_24" name="Best quality determined" sourceRef="gateway_qual_select_quality_level" targetRef="task_pa_qual_best_quality">
+        <semantic:conditionExpression xsi:type="semantic:tFormalExpression">Best quality determined</semantic:conditionExpression>
+    </semantic:sequenceFlow>
+    <semantic:sequenceFlow id="flow_25" sourceRef="task_pa_qual_best_quality" targetRef="gateway_qual_merge_quality_level"/>
+    <semantic:sequenceFlow id="flow_26" name="Average quality determined" sourceRef="gateway_qual_select_quality_level" targetRef="task_pa_qual_average_quality">
+        <semantic:conditionExpression xsi:type="semantic:tFormalExpression">Average quality determined</semantic:conditionExpression>
+    </semantic:sequenceFlow>
+    <semantic:sequenceFlow id="flow_27" sourceRef="task_pa_qual_average_quality" targetRef="gateway_qual_merge_quality_level"/>
+    <semantic:sequenceFlow id="flow_28" name="Minimum quality determined" sourceRef="gateway_qual_select_quality_level" targetRef="task_pa_qual_minimum_quality">
+        <semantic:conditionExpression xsi:type="semantic:tFormalExpression">Minimum quality determined</semantic:conditionExpression>
+    </semantic:sequenceFlow>
+    <semantic:sequenceFlow id="flow_29" sourceRef="task_pa_qual_minimum_quality" targetRef="gateway_qual_merge_quality_level"/>
+    <semantic:sequenceFlow id="flow_30" sourceRef="task_pa_qual_define_materials" targetRef="gateway_qual_join_mat_qual"/>
+    <semantic:sequenceFlow id="flow_31" sourceRef="gateway_qual_merge_quality_level" targetRef="gateway_qual_join_mat_qual"/>
+    <semantic:sequenceFlow id="flow_32" sourceRef="gateway_qual_join_mat_qual" targetRef="gateway_join_aspects"/>
+    <semantic:sequenceFlow id="flow_33" sourceRef="task_pa_quant_define_amount_period" targetRef="gateway_join_aspects"/>
+    <semantic:sequenceFlow id="flow_34" sourceRef="gateway_join_aspects" targetRef="subprocess_define_req_types"/>
+    <semantic:sequenceFlow id="flow_35" sourceRef="subprocess_define_req_types" targetRef="end_event_1"/>
+
+  </semantic:process>
+
+  <bpmndi:BPMNDiagram id="BPMNDiagram_procurement" name="Procurement Requirement Determination Diagram" resolution="96.0">
+    <bpmndi:BPMNPlane bpmnElement="collab_procurement">
+      <bpmndi:BPMNShape id="participant_purchasing_dept_shape" bpmnElement="participant_purchasing_dept" isHorizontal="true">
+        <dc:Bounds x="20" y="20" width="3750" height="950"/>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="lane_proc_manager_shape" bpmnElement="lane_proc_manager" isHorizontal="true">
+        <dc:Bounds x="50" y="20" width="3700" height="150"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="lane_proc_specialist_shape" bpmnElement="lane_proc_specialist" isHorizontal="true">
+        <dc:Bounds x="50" y="170" width="3700" height="400"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="lane_proc_assistant_shape" bpmnElement="lane_proc_assistant" isHorizontal="true">
+        <dc:Bounds x="50" y="570" width="3700" height="400"/>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="start_event_1_shape" bpmnElement="start_event_1">
+        <dc:Bounds x="100" y="82" width="36" height="36"/>
+        <bpmndi:BPMNLabel><dc:Bounds x="73" y="123" width="90" height="27"/></bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="task_pm_decide_method_shape" bpmnElement="task_pm_decide_method">
+        <dc:Bounds x="200" y="70" width="120" height="60"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="gateway_select_method_shape" bpmnElement="gateway_select_method" isMarkerVisible="true">
+        <dc:Bounds x="380" y="75" width="50" height="50"/>
+        <bpmndi:BPMNLabel><dc:Bounds x="360" y="130" width="90" height="27"/></bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="task_ps_prog_define_sales_vol_shape" bpmnElement="task_ps_prog_define_sales_vol">
+        <dc:Bounds x="500" y="200" width="150" height="70"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="task_ps_prog_derive_req_shape" bpmnElement="task_ps_prog_derive_req">
+        <dc:Bounds x="700" y="200" width="150" height="70"/>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="task_ps_cons_determine_past_values_shape" bpmnElement="task_ps_cons_determine_past_values">
+        <dc:Bounds x="500" y="300" width="150" height="70"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="task_ps_cons_define_forecasts_shape" bpmnElement="task_ps_cons_define_forecasts">
+        <dc:Bounds x="700" y="300" width="150" height="70"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="task_ps_cons_define_forecast_values_shape" bpmnElement="task_ps_cons_define_forecast_values">
+        <dc:Bounds x="900" y="300" width="150" height="70"/>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="task_ps_est_decide_estimate_method_shape" bpmnElement="task_ps_est_decide_estimate_method">
+        <dc:Bounds x="500" y="430" width="150" height="70"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="gateway_select_estimate_sub_method_shape" bpmnElement="gateway_select_estimate_sub_method" isMarkerVisible="true">
+        <dc:Bounds x="730" y="445" width="50" height="50"/>
+        <bpmndi:BPMNLabel><dc:Bounds x="710" y="500" width="90" height="27"/></bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="task_ps_est_analogous_shape" bpmnElement="task_ps_est_analogous">
+        <dc:Bounds x="850" y="390" width="120" height="60"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="task_ps_est_intuitive_shape" bpmnElement="task_ps_est_intuitive">
+        <dc:Bounds x="850" y="500" width="120" height="60"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="gateway_merge_estimate_sub_methods_shape" bpmnElement="gateway_merge_estimate_sub_methods" isMarkerVisible="true">
+        <dc:Bounds x="1030" y="445" width="50" height="50"/>
+         <bpmndi:BPMNLabel><dc:Bounds x="1010" y="500" width="90" height="27"/></bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="gateway_merge_determination_methods_shape" bpmnElement="gateway_merge_determination_methods" isMarkerVisible="true">
+        <dc:Bounds x="1150" y="765" width="50" height="50"/>
+        <bpmndi:BPMNLabel><dc:Bounds x="1130" y="820" width="90" height="27"/></bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="gateway_split_aspects_shape" bpmnElement="gateway_split_aspects" isMarkerVisible="true">
+        <dc:Bounds x="1300" y="765" width="50" height="50"/>
+        <bpmndi:BPMNLabel><dc:Bounds x="1280" y="820" width="90" height="40"/></bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="task_pa_qual_determine_range_shape" bpmnElement="task_pa_qual_determine_range">
+        <dc:Bounds x="1450" y="630" width="150" height="70"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="gateway_qual_split_mat_qual_shape" bpmnElement="gateway_qual_split_mat_qual" isMarkerVisible="true">
+        <dc:Bounds x="1680" y="645" width="50" height="50"/>
+        <bpmndi:BPMNLabel><dc:Bounds x="1660" y="700" width="90" height="40"/></bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="task_pa_qual_define_materials_shape" bpmnElement="task_pa_qual_define_materials">
+        <dc:Bounds x="1800" y="580" width="120" height="60"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="task_pa_qual_define_quality_shape" bpmnElement="task_pa_qual_define_quality">
+        <dc:Bounds x="1800" y="710" width="120" height="60"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="gateway_qual_select_quality_level_shape" bpmnElement="gateway_qual_select_quality_level" isMarkerVisible="true">
+        <dc:Bounds x="1980" y="705" width="50" height="50"/>
+        <bpmndi:BPMNLabel><dc:Bounds x="1960" y="760" width="90" height="27"/></bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="task_pa_qual_best_quality_shape" bpmnElement="task_pa_qual_best_quality">
+        <dc:Bounds x="2100" y="610" width="120" height="60"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="task_pa_qual_average_quality_shape" bpmnElement="task_pa_qual_average_quality">
+        <dc:Bounds x="2100" y="710" width="120" height="60"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="task_pa_qual_minimum_quality_shape" bpmnElement="task_pa_qual_minimum_quality">
+        <dc:Bounds x="2100" y="810" width="120" height="60"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="gateway_qual_merge_quality_level_shape" bpmnElement="gateway_qual_merge_quality_level" isMarkerVisible="true">
+        <dc:Bounds x="2280" y="705" width="50" height="50"/>
+        <bpmndi:BPMNLabel><dc:Bounds x="2260" y="760" width="90" height="27"/></bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="gateway_qual_join_mat_qual_shape" bpmnElement="gateway_qual_join_mat_qual" isMarkerVisible="true">
+        <dc:Bounds x="2400" y="645" width="50" height="50"/>
+        <bpmndi:BPMNLabel><dc:Bounds x="2380" y="700" width="90" height="40"/></bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="task_pa_quant_define_amount_period_shape" bpmnElement="task_pa_quant_define_amount_period">
+        <dc:Bounds x="1450" y="880" width="150" height="70"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="gateway_join_aspects_shape" bpmnElement="gateway_join_aspects" isMarkerVisible="true">
+        <dc:Bounds x="2550" y="765" width="50" height="50"/>
+        <bpmndi:BPMNLabel><dc:Bounds x="2530" y="820" width="90" height="40"/></bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="subprocess_define_req_types_shape" bpmnElement="subprocess_define_req_types" isExpanded="true">
+        <dc:Bounds x="2700" y="690" width="750" height="200"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="start_sub_req_shape" bpmnElement="start_sub_req">
+        <dc:Bounds x="2730" y="772" width="36" height="36"/>
+        <bpmndi:BPMNLabel><dc:Bounds x="2703" y="813" width="90" height="27"/></bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="task_pa_sub_define_primary_shape" bpmnElement="task_pa_sub_define_primary">
+        <dc:Bounds x="2810" y="760" width="120" height="60"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="task_pa_sub_define_secondary_shape" bpmnElement="task_pa_sub_define_secondary">
+        <dc:Bounds x="2950" y="760" width="120" height="60"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="task_pa_sub_define_tertiary_shape" bpmnElement="task_pa_sub_define_tertiary">
+        <dc:Bounds x="3090" y="760" width="120" height="60"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="task_pa_sub_define_gross_shape" bpmnElement="task_pa_sub_define_gross">
+        <dc:Bounds x="3230" y="760" width="120" height="60"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="task_pa_sub_define_net_shape" bpmnElement="task_pa_sub_define_net">
+        <dc:Bounds x="3370" y="760" width="120" height="60"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="end_sub_req_shape" bpmnElement="end_sub_req">
+        <dc:Bounds x="3530" y="772" width="36" height="36"/>
+        <bpmndi:BPMNLabel><dc:Bounds x="3503" y="813" width="90" height="27"/></bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="end_event_1_shape" bpmnElement="end_event_1">
+        <dc:Bounds x="3600" y="772" width="36" height="36"/>
+        <bpmndi:BPMNLabel><dc:Bounds x="3573" y="813" width="90" height="40"/></bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNEdge id="flow_1_edge" bpmnElement="flow_1">
+        <di:waypoint x="136" y="100"/>
+        <di:waypoint x="200" y="100"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_2_edge" bpmnElement="flow_2">
+        <di:waypoint x="320" y="100"/>
+        <di:waypoint x="380" y="100"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_3_edge" bpmnElement="flow_3">
+        <di:waypoint x="405" y="125"/>
+        <di:waypoint x="405" y="235"/>
+        <di:waypoint x="500" y="235"/>
+        <bpmndi:BPMNLabel><dc:Bounds x="410" y="170" width="80" height="60"/></bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_4_edge" bpmnElement="flow_4">
+        <di:waypoint x="650" y="235"/>
+        <di:waypoint x="700" y="235"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_5_edge" bpmnElement="flow_5">
+        <di:waypoint x="775" y="270"/>
+        <di:waypoint x="775" y="790"/>
+        <di:waypoint x="1150" y="790"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_6_edge" bpmnElement="flow_6">
+        <di:waypoint x="405" y="125"/>
+        <di:waypoint x="405" y="335"/>
+        <di:waypoint x="500" y="335"/>
+        <bpmndi:BPMNLabel><dc:Bounds x="410" y="260" width="80" height="60"/></bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_7_edge" bpmnElement="flow_7">
+        <di:waypoint x="650" y="335"/>
+        <di:waypoint x="700" y="335"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_8_edge" bpmnElement="flow_8">
+        <di:waypoint x="850" y="335"/>
+        <di:waypoint x="900" y="335"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_9_edge" bpmnElement="flow_9">
+        <di:waypoint x="975" y="370"/>
+        <di:waypoint x="975" y="790"/>
+        <di:waypoint x="1150" y="790"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_10_edge" bpmnElement="flow_10">
+        <di:waypoint x="405" y="125"/>
+        <di:waypoint x="405" y="465"/>
+        <di:waypoint x="500" y="465"/>
+        <bpmndi:BPMNLabel><dc:Bounds x="410" y="380" width="80" height="60"/></bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_11_edge" bpmnElement="flow_11">
+        <di:waypoint x="650" y="465"/>
+        <di:waypoint x="730" y="470"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_12_edge" bpmnElement="flow_12">
+        <di:waypoint x="755" y="445"/>
+        <di:waypoint x="755" y="420"/>
+        <di:waypoint x="850" y="420"/>
+        <bpmndi:BPMNLabel><dc:Bounds x="760" y="400" width="80" height="27"/></bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_13_edge" bpmnElement="flow_13">
+        <di:waypoint x="970" y="420"/>
+        <di:waypoint x="1030" y="470"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_14_edge" bpmnElement="flow_14">
+        <di:waypoint x="755" y="495"/>
+        <di:waypoint x="755" y="530"/>
+        <di:waypoint x="850" y="530"/>
+        <bpmndi:BPMNLabel><dc:Bounds x="760" y="535" width="80" height="27"/></bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_15_edge" bpmnElement="flow_15">
+        <di:waypoint x="970" y="530"/>
+        <di:waypoint x="1030" y="470"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_16_edge" bpmnElement="flow_16">
+        <di:waypoint x="1080" y="470"/>
+        <di:waypoint x="1100" y="470"/>
+        <di:waypoint x="1100" y="790"/>
+        <di:waypoint x="1150" y="790"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_17_edge" bpmnElement="flow_17">
+        <di:waypoint x="1200" y="790"/>
+        <di:waypoint x="1300" y="790"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_18_edge" bpmnElement="flow_18">
+        <di:waypoint x="1325" y="765"/>
+        <di:waypoint x="1325" y="665"/>
+        <di:waypoint x="1450" y="665"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_19_edge" bpmnElement="flow_19">
+        <di:waypoint x="1325" y="815"/>
+        <di:waypoint x="1325" y="915"/>
+        <di:waypoint x="1450" y="915"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_20_edge" bpmnElement="flow_20">
+        <di:waypoint x="1600" y="665"/>
+        <di:waypoint x="1680" y="670"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_21_edge" bpmnElement="flow_21">
+        <di:waypoint x="1705" y="645"/>
+        <di:waypoint x="1705" y="610"/>
+        <di:waypoint x="1800" y="610"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_22_edge" bpmnElement="flow_22">
+        <di:waypoint x="1705" y="695"/>
+        <di:waypoint x="1705" y="740"/>
+        <di:waypoint x="1800" y="740"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_23_edge" bpmnElement="flow_23">
+        <di:waypoint x="1920" y="740"/>
+        <di:waypoint x="1980" y="730"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_24_edge" bpmnElement="flow_24">
+        <di:waypoint x="2005" y="705"/>
+        <di:waypoint x="2005" y="640"/>
+        <di:waypoint x="2100" y="640"/>
+        <bpmndi:BPMNLabel><dc:Bounds x="2010" y="615" width="80" height="27"/></bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_25_edge" bpmnElement="flow_25">
+        <di:waypoint x="2220" y="640"/>
+        <di:waypoint x="2280" y="730"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_26_edge" bpmnElement="flow_26">
+        <di:waypoint x="2030" y="730"/>
+        <di:waypoint x="2100" y="740"/>
+        <bpmndi:BPMNLabel><dc:Bounds x="2035" y="745" width="80" height="27"/></bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_27_edge" bpmnElement="flow_27">
+        <di:waypoint x="2220" y="740"/>
+        <di:waypoint x="2280" y="730"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_28_edge" bpmnElement="flow_28">
+        <di:waypoint x="2005" y="755"/>
+        <di:waypoint x="2005" y="840"/>
+        <di:waypoint x="2100" y="840"/>
+        <bpmndi:BPMNLabel><dc:Bounds x="2010" y="845" width="80" height="27"/></bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_29_edge" bpmnElement="flow_29">
+        <di:waypoint x="2220" y="840"/>
+        <di:waypoint x="2280" y="730"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_30_edge" bpmnElement="flow_30">
+        <di:waypoint x="1920" y="610"/>
+        <di:waypoint x="2400" y="670"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_31_edge" bpmnElement="flow_31">
+        <di:waypoint x="2330" y="730"/>
+        <di:waypoint x="2400" y="670"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_32_edge" bpmnElement="flow_32">
+        <di:waypoint x="2425" y="695"/>
+        <di:waypoint x="2425" y="790"/>
+        <di:waypoint x="2550" y="790"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_33_edge" bpmnElement="flow_33">
+        <di:waypoint x="1600" y="915"/>
+        <di:waypoint x="2425" y="915"/>
+        <di:waypoint x="2425" y="790"/>
+        <di:waypoint x="2550" y="790"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_34_edge" bpmnElement="flow_34">
+        <di:waypoint x="2600" y="790"/>
+        <di:waypoint x="2700" y="790"/>
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="flow_sub_1_edge" bpmnElement="flow_sub_1">
+        <di:waypoint x="2766" y="790"/>
+        <di:waypoint x="2810" y="790"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_sub_2_edge" bpmnElement="flow_sub_2">
+        <di:waypoint x="2930" y="790"/>
+        <di:waypoint x="2950" y="790"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_sub_3_edge" bpmnElement="flow_sub_3">
+        <di:waypoint x="3070" y="790"/>
+        <di:waypoint x="3090" y="790"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_sub_4_edge" bpmnElement="flow_sub_4">
+        <di:waypoint x="3210" y="790"/>
+        <di:waypoint x="3230" y="790"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_sub_5_edge" bpmnElement="flow_sub_5">
+        <di:waypoint x="3350" y="790"/>
+        <di:waypoint x="3370" y="790"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_sub_6_edge" bpmnElement="flow_sub_6">
+        <di:waypoint x="3490" y="790"/>
+        <di:waypoint x="3530" y="790"/>
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="flow_35_edge" bpmnElement="flow_35">
+        <di:waypoint x="3450" y="790"/>
+        <di:waypoint x="3600" y="790"/>
+      </bpmndi:BPMNEdge>
+
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</semantic:definitions>
