@@ -1,0 +1,349 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<semantic:definitions xmlns:semantic="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" id="definitions_hiring_process" targetNamespace="http://example.com/bpmn/hiring_process">
+  <semantic:collaboration id="collab_hiring_process">
+    <semantic:participant id="pool_hiring_process" name="Hiring Process" processRef="process_hiring"/>
+  </semantic:collaboration>
+  <semantic:process id="process_hiring" isExecutable="false">
+    <semantic:laneSet id="lane_set_hiring">
+      <semantic:lane id="lane_hiring_manager" name="Hiring Manager">
+        <semantic:flowNodeRef>start_event_hiring_need</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_create_requisition</semantic:flowNodeRef>
+      </semantic:lane>
+      <semantic:lane id="lane_hr" name="Human Resources">
+        <semantic:flowNodeRef>task_find_candidates</semantic:flowNodeRef>
+        <semantic:flowNodeRef>pg_prep_interviews_fork</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_select_panel</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_invite_panel</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_invite_candidates</semantic:flowNodeRef>
+        <semantic:flowNodeRef>pg_prep_interviews_join</semantic:flowNodeRef>
+        <semantic:flowNodeRef>pg_offer_payroll_fork</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_setup_payroll</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_prepare_offer</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_send_offer</semantic:flowNodeRef>
+        <semantic:flowNodeRef>rt_receive_contract</semantic:flowNodeRef>
+        <semantic:flowNodeRef>pg_offer_payroll_join</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_onboard_hire</semantic:flowNodeRef>
+        <semantic:flowNodeRef>end_event_person_hired</semantic:flowNodeRef>
+      </semantic:lane>
+      <semantic:lane id="lane_hr_manager" name="HR Manager">
+        <semantic:flowNodeRef>task_conduct_interviews</semantic:flowNodeRef>
+        <semantic:flowNodeRef>eg_candidate_suitable</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_instruct_hr</semantic:flowNodeRef>
+      </semantic:lane>
+    </semantic:laneSet>
+    <semantic:startEvent id="start_event_hiring_need" name="Hiring Need Identified">
+      <semantic:outgoing>sf_hm_start_to_createreq</semantic:outgoing>
+    </semantic:startEvent>
+    <semantic:task id="task_create_requisition" name="Create Job Requisition">
+      <semantic:incoming>sf_hm_start_to_createreq</semantic:incoming>
+      <semantic:outgoing>sf_hm_createreq_to_hr_findcand</semantic:outgoing>
+    </semantic:task>
+    <semantic:sequenceFlow id="sf_hm_start_to_createreq" sourceRef="start_event_hiring_need" targetRef="task_create_requisition"/>
+    <semantic:task id="task_find_candidates" name="Find Best Candidates">
+      <semantic:incoming>sf_hm_createreq_to_hr_findcand</semantic:incoming>
+      <semantic:incoming>sf_hrm_egsuitable_no_to_hr_findcand</semantic:incoming>
+      <semantic:outgoing>sf_hr_findcand_to_pgprepfork</semantic:outgoing>
+    </semantic:task>
+    <semantic:sequenceFlow id="sf_hm_createreq_to_hr_findcand" sourceRef="task_create_requisition" targetRef="task_find_candidates"/>
+    <semantic:parallelGateway id="pg_prep_interviews_fork" name="Prepare for Interviews">
+      <semantic:incoming>sf_hr_findcand_to_pgprepfork</semantic:incoming>
+      <semantic:outgoing>sf_hr_pgprepfork_to_selectpanel</semantic:outgoing>
+      <semantic:outgoing>sf_hr_pgprepfork_to_invitecand</semantic:outgoing>
+    </semantic:parallelGateway>
+    <semantic:sequenceFlow id="sf_hr_findcand_to_pgprepfork" sourceRef="task_find_candidates" targetRef="pg_prep_interviews_fork"/>
+    <semantic:task id="task_select_panel" name="Select Interview Panel">
+      <semantic:incoming>sf_hr_pgprepfork_to_selectpanel</semantic:incoming>
+      <semantic:outgoing>sf_hr_selectpanel_to_invitepanel</semantic:outgoing>
+    </semantic:task>
+    <semantic:sequenceFlow id="sf_hr_pgprepfork_to_selectpanel" sourceRef="pg_prep_interviews_fork" targetRef="task_select_panel"/>
+    <semantic:task id="task_invite_panel" name="Invite Interview Panel Members">
+      <semantic:incoming>sf_hr_selectpanel_to_invitepanel</semantic:incoming>
+      <semantic:outgoing>sf_hr_invitepanel_to_pgprepjoin</semantic:outgoing>
+    </semantic:task>
+    <semantic:sequenceFlow id="sf_hr_selectpanel_to_invitepanel" sourceRef="task_select_panel" targetRef="task_invite_panel"/>
+    <semantic:task id="task_invite_candidates" name="Invite Selected Candidates">
+      <semantic:incoming>sf_hr_pgprepfork_to_invitecand</semantic:incoming>
+      <semantic:outgoing>sf_hr_invitecand_to_pgprepjoin</semantic:outgoing>
+    </semantic:task>
+    <semantic:sequenceFlow id="sf_hr_pgprepfork_to_invitecand" sourceRef="pg_prep_interviews_fork" targetRef="task_invite_candidates"/>
+    <semantic:parallelGateway id="pg_prep_interviews_join" name="Interviews Scheduled">
+      <semantic:incoming>sf_hr_invitepanel_to_pgprepjoin</semantic:incoming>
+      <semantic:incoming>sf_hr_invitecand_to_pgprepjoin</semantic:incoming>
+      <semantic:outgoing>sf_hr_pgprepjoin_to_hrm_conductint</semantic:outgoing>
+    </semantic:parallelGateway>
+    <semantic:sequenceFlow id="sf_hr_invitepanel_to_pgprepjoin" sourceRef="task_invite_panel" targetRef="pg_prep_interviews_join"/>
+    <semantic:sequenceFlow id="sf_hr_invitecand_to_pgprepjoin" sourceRef="task_invite_candidates" targetRef="pg_prep_interviews_join"/>
+    <semantic:task id="task_conduct_interviews" name="Conduct Interviews">
+      <semantic:incoming>sf_hr_pgprepjoin_to_hrm_conductint</semantic:incoming>
+      <semantic:outgoing>sf_hrm_conductint_to_egsuitable</semantic:outgoing>
+    </semantic:task>
+    <semantic:sequenceFlow id="sf_hr_pgprepjoin_to_hrm_conductint" sourceRef="pg_prep_interviews_join" targetRef="task_conduct_interviews"/>
+    <semantic:exclusiveGateway id="eg_candidate_suitable" name="Candidate Suitable?">
+      <semantic:incoming>sf_hrm_conductint_to_egsuitable</semantic:incoming>
+      <semantic:outgoing>sf_hrm_egsuitable_yes_to_instructhr</semantic:outgoing>
+      <semantic:outgoing>sf_hrm_egsuitable_no_to_hr_findcand</semantic:outgoing>
+    </semantic:exclusiveGateway>
+    <semantic:sequenceFlow id="sf_hrm_conductint_to_egsuitable" sourceRef="task_conduct_interviews" targetRef="eg_candidate_suitable"/>
+    <semantic:task id="task_instruct_hr" name="Instruct HR for Offer &amp; Payroll">
+      <semantic:incoming>sf_hrm_egsuitable_yes_to_instructhr</semantic:incoming>
+      <semantic:outgoing>sf_hrm_instructhr_to_hr_pgofferfork</semantic:outgoing>
+    </semantic:task>
+    <semantic:sequenceFlow id="sf_hrm_egsuitable_yes_to_instructhr" name="Yes" sourceRef="eg_candidate_suitable" targetRef="task_instruct_hr"/>
+    <semantic:sequenceFlow id="sf_hrm_egsuitable_no_to_hr_findcand" name="No" sourceRef="eg_candidate_suitable" targetRef="task_find_candidates"/>
+    <semantic:parallelGateway id="pg_offer_payroll_fork" name="Initiate Offer and Payroll">
+      <semantic:incoming>sf_hrm_instructhr_to_hr_pgofferfork</semantic:incoming>
+      <semantic:outgoing>sf_hr_pgofferfork_to_setuppayroll</semantic:outgoing>
+      <semantic:outgoing>sf_hr_pgofferfork_to_prepareoffer</semantic:outgoing>
+    </semantic:parallelGateway>
+    <semantic:sequenceFlow id="sf_hrm_instructhr_to_hr_pgofferfork" sourceRef="task_instruct_hr" targetRef="pg_offer_payroll_fork"/>
+    <semantic:task id="task_setup_payroll" name="Setup Payroll">
+      <semantic:incoming>sf_hr_pgofferfork_to_setuppayroll</semantic:incoming>
+      <semantic:outgoing>sf_hr_setuppayroll_to_pgofferjoin</semantic:outgoing>
+    </semantic:task>
+    <semantic:sequenceFlow id="sf_hr_pgofferfork_to_setuppayroll" sourceRef="pg_offer_payroll_fork" targetRef="task_setup_payroll"/>
+    <semantic:task id="task_prepare_offer" name="Prepare Offer/Contract">
+      <semantic:incoming>sf_hr_pgofferfork_to_prepareoffer</semantic:incoming>
+      <semantic:outgoing>sf_hr_prepareoffer_to_sendoffer</semantic:outgoing>
+    </semantic:task>
+    <semantic:sequenceFlow id="sf_hr_pgofferfork_to_prepareoffer" sourceRef="pg_offer_payroll_fork" targetRef="task_prepare_offer"/>
+    <semantic:task id="task_send_offer" name="Send Offer to Candidate">
+      <semantic:incoming>sf_hr_prepareoffer_to_sendoffer</semantic:incoming>
+      <semantic:outgoing>sf_hr_sendoffer_to_rtreceivecontract</semantic:outgoing>
+    </semantic:task>
+    <semantic:sequenceFlow id="sf_hr_prepareoffer_to_sendoffer" sourceRef="task_prepare_offer" targetRef="task_send_offer"/>
+    <semantic:receiveTask id="rt_receive_contract" name="Receive Signed Contract">
+      <semantic:incoming>sf_hr_sendoffer_to_rtreceivecontract</semantic:incoming>
+      <semantic:outgoing>sf_hr_rtreceivecontract_to_pgofferjoin</semantic:outgoing>
+    </semantic:receiveTask>
+    <semantic:sequenceFlow id="sf_hr_sendoffer_to_rtreceivecontract" sourceRef="task_send_offer" targetRef="rt_receive_contract"/>
+    <semantic:parallelGateway id="pg_offer_payroll_join" name="Payroll and Contract Finalized">
+      <semantic:incoming>sf_hr_setuppayroll_to_pgofferjoin</semantic:incoming>
+      <semantic:incoming>sf_hr_rtreceivecontract_to_pgofferjoin</semantic:incoming>
+      <semantic:outgoing>sf_hr_pgofferjoin_to_onboard</semantic:outgoing>
+    </semantic:parallelGateway>
+    <semantic:sequenceFlow id="sf_hr_setuppayroll_to_pgofferjoin" sourceRef="task_setup_payroll" targetRef="pg_offer_payroll_join"/>
+    <semantic:sequenceFlow id="sf_hr_rtreceivecontract_to_pgofferjoin" sourceRef="rt_receive_contract" targetRef="pg_offer_payroll_join"/>
+    <semantic:task id="task_onboard_hire" name="Onboard New Hire">
+      <semantic:incoming>sf_hr_pgofferjoin_to_onboard</semantic:incoming>
+      <semantic:outgoing>sf_hr_onboard_to_end</semantic:outgoing>
+    </semantic:task>
+    <semantic:sequenceFlow id="sf_hr_pgofferjoin_to_onboard" sourceRef="pg_offer_payroll_join" targetRef="task_onboard_hire"/>
+    <semantic:endEvent id="end_event_person_hired" name="Person Hired">
+      <semantic:incoming>sf_hr_onboard_to_end</semantic:incoming>
+    </semantic:endEvent>
+    <semantic:sequenceFlow id="sf_hr_onboard_to_end" sourceRef="task_onboard_hire" targetRef="end_event_person_hired"/>
+  </semantic:process>
+  <bpmndi:BPMNDiagram id="diagram_hiring_process">
+    <bpmndi:BPMNPlane id="plane_hiring_process" bpmnElement="collab_hiring_process">
+      <bpmndi:BPMNShape id="shape_pool_hiring_process" bpmnElement="pool_hiring_process" isHorizontal="true">
+        <dc:Bounds x="20" y="20" width="2560" height="800"/>
+        <bpmndi:BPMNLabel/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_lane_hiring_manager" bpmnElement="lane_hiring_manager" isHorizontal="true">
+        <dc:Bounds x="50" y="20" width="2530" height="150"/>
+        <bpmndi:BPMNLabel/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_lane_hr" bpmnElement="lane_hr" isHorizontal="true">
+        <dc:Bounds x="50" y="170" width="2530" height="480"/>
+        <bpmndi:BPMNLabel/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_lane_hr_manager" bpmnElement="lane_hr_manager" isHorizontal="true">
+        <dc:Bounds x="50" y="650" width="2530" height="170"/>
+        <bpmndi:BPMNLabel/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_start_event_hiring_need" bpmnElement="start_event_hiring_need">
+        <dc:Bounds x="100" y="77" width="36" height="36"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="72" y="118" width="92" height="28"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_task_create_requisition" bpmnElement="task_create_requisition">
+        <dc:Bounds x="200" y="55" width="100" height="80"/>
+        <bpmndi:BPMNLabel/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="edge_sf_hm_start_to_createreq" bpmnElement="sf_hm_start_to_createreq">
+        <di:waypoint x="136" y="95"/>
+        <di:waypoint x="200" y="95"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="shape_task_find_candidates" bpmnElement="task_find_candidates">
+        <dc:Bounds x="350" y="380" width="100" height="80"/>
+        <bpmndi:BPMNLabel/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="edge_sf_hm_createreq_to_hr_findcand" bpmnElement="sf_hm_createreq_to_hr_findcand">
+        <di:waypoint x="250" y="135"/>
+        <di:waypoint x="250" y="420"/>
+        <di:waypoint x="350" y="420"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="shape_pg_prep_interviews_fork" bpmnElement="pg_prep_interviews_fork">
+        <dc:Bounds x="500" y="395" width="50" height="50"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="480" y="450" width="90" height="28"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="edge_sf_hr_findcand_to_pgprepfork" bpmnElement="sf_hr_findcand_to_pgprepfork">
+        <di:waypoint x="450" y="420"/>
+        <di:waypoint x="500" y="420"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="shape_task_select_panel" bpmnElement="task_select_panel">
+        <dc:Bounds x="600" y="280" width="100" height="80"/>
+        <bpmndi:BPMNLabel/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="edge_sf_hr_pgprepfork_to_selectpanel" bpmnElement="sf_hr_pgprepfork_to_selectpanel">
+        <di:waypoint x="525" y="395"/>
+        <di:waypoint x="525" y="320"/>
+        <di:waypoint x="600" y="320"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="shape_task_invite_panel" bpmnElement="task_invite_panel">
+        <dc:Bounds x="750" y="280" width="100" height="80"/>
+        <bpmndi:BPMNLabel/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="edge_sf_hr_selectpanel_to_invitepanel" bpmnElement="sf_hr_selectpanel_to_invitepanel">
+        <di:waypoint x="700" y="320"/>
+        <di:waypoint x="750" y="320"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="shape_task_invite_candidates" bpmnElement="task_invite_candidates">
+        <dc:Bounds x="600" y="480" width="100" height="80"/>
+        <bpmndi:BPMNLabel/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="edge_sf_hr_pgprepfork_to_invitecand" bpmnElement="sf_hr_pgprepfork_to_invitecand">
+        <di:waypoint x="525" y="445"/>
+        <di:waypoint x="525" y="520"/>
+        <di:waypoint x="600" y="520"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="shape_pg_prep_interviews_join" bpmnElement="pg_prep_interviews_join">
+        <dc:Bounds x="900" y="395" width="50" height="50"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="880" y="450" width="90" height="28"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="edge_sf_hr_invitepanel_to_pgprepjoin" bpmnElement="sf_hr_invitepanel_to_pgprepjoin">
+        <di:waypoint x="850" y="320"/>
+        <di:waypoint x="925" y="320"/>
+        <di:waypoint x="925" y="395"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_sf_hr_invitecand_to_pgprepjoin" bpmnElement="sf_hr_invitecand_to_pgprepjoin">
+        <di:waypoint x="700" y="520"/>
+        <di:waypoint x="925" y="520"/>
+        <di:waypoint x="925" y="445"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="shape_task_conduct_interviews" bpmnElement="task_conduct_interviews">
+        <dc:Bounds x="1050" y="695" width="100" height="80"/>
+        <bpmndi:BPMNLabel/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="edge_sf_hr_pgprepjoin_to_hrm_conductint" bpmnElement="sf_hr_pgprepjoin_to_hrm_conductint">
+        <di:waypoint x="925" y="445"/>
+        <di:waypoint x="925" y="735"/>
+        <di:waypoint x="1050" y="735"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="shape_eg_candidate_suitable" bpmnElement="eg_candidate_suitable">
+        <dc:Bounds x="1200" y="710" width="50" height="50"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1180" y="765" width="90" height="28"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="edge_sf_hrm_conductint_to_egsuitable" bpmnElement="sf_hrm_conductint_to_egsuitable">
+        <di:waypoint x="1150" y="735"/>
+        <di:waypoint x="1200" y="735"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="shape_task_instruct_hr" bpmnElement="task_instruct_hr">
+        <dc:Bounds x="1300" y="695" width="100" height="80"/>
+        <bpmndi:BPMNLabel/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="edge_sf_hrm_egsuitable_yes_to_instructhr" bpmnElement="sf_hrm_egsuitable_yes_to_instructhr">
+        <di:waypoint x="1250" y="735"/>
+        <di:waypoint x="1300" y="735"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1265" y="715" width="20" height="14"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_sf_hrm_egsuitable_no_to_hr_findcand" bpmnElement="sf_hrm_egsuitable_no_to_hr_findcand">
+        <di:waypoint x="1225" y="710"/>
+        <di:waypoint x="1225" y="600"/>
+        <di:waypoint x="400" y="600"/>
+        <di:waypoint x="400" y="460"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1235" y="680" width="18" height="14"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="shape_pg_offer_payroll_fork" bpmnElement="pg_offer_payroll_fork">
+        <dc:Bounds x="1500" y="395" width="50" height="50"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1480" y="450" width="90" height="28"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="edge_sf_hrm_instructhr_to_hr_pgofferfork" bpmnElement="sf_hrm_instructhr_to_hr_pgofferfork">
+        <di:waypoint x="1350" y="695"/>
+        <di:waypoint x="1350" y="420"/>
+        <di:waypoint x="1500" y="420"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="shape_task_setup_payroll" bpmnElement="task_setup_payroll">
+        <dc:Bounds x="1600" y="280" width="100" height="80"/>
+        <bpmndi:BPMNLabel/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="edge_sf_hr_pgofferfork_to_setuppayroll" bpmnElement="sf_hr_pgofferfork_to_setuppayroll">
+        <di:waypoint x="1525" y="395"/>
+        <di:waypoint x="1525" y="320"/>
+        <di:waypoint x="1600" y="320"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="shape_task_prepare_offer" bpmnElement="task_prepare_offer">
+        <dc:Bounds x="1600" y="480" width="100" height="80"/>
+        <bpmndi:BPMNLabel/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="edge_sf_hr_pgofferfork_to_prepareoffer" bpmnElement="sf_hr_pgofferfork_to_prepareoffer">
+        <di:waypoint x="1525" y="445"/>
+        <di:waypoint x="1525" y="520"/>
+        <di:waypoint x="1600" y="520"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="shape_task_send_offer" bpmnElement="task_send_offer">
+        <dc:Bounds x="1750" y="480" width="100" height="80"/>
+        <bpmndi:BPMNLabel/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="edge_sf_hr_prepareoffer_to_sendoffer" bpmnElement="sf_hr_prepareoffer_to_sendoffer">
+        <di:waypoint x="1700" y="520"/>
+        <di:waypoint x="1750" y="520"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="shape_rt_receive_contract" bpmnElement="rt_receive_contract">
+        <dc:Bounds x="1900" y="480" width="100" height="80"/>
+        <bpmndi:BPMNLabel/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="edge_sf_hr_sendoffer_to_rtreceivecontract" bpmnElement="sf_hr_sendoffer_to_rtreceivecontract">
+        <di:waypoint x="1850" y="520"/>
+        <di:waypoint x="1900" y="520"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="shape_pg_offer_payroll_join" bpmnElement="pg_offer_payroll_join">
+        <dc:Bounds x="2050" y="395" width="50" height="50"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="2030" y="450" width="90" height="28"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="edge_sf_hr_setuppayroll_to_pgofferjoin" bpmnElement="sf_hr_setuppayroll_to_pgofferjoin">
+        <di:waypoint x="1700" y="320"/>
+        <di:waypoint x="2075" y="320"/>
+        <di:waypoint x="2075" y="395"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_sf_hr_rtreceivecontract_to_pgofferjoin" bpmnElement="sf_hr_rtreceivecontract_to_pgofferjoin">
+        <di:waypoint x="2000" y="520"/>
+        <di:waypoint x="2075" y="520"/>
+        <di:waypoint x="2075" y="445"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="shape_task_onboard_hire" bpmnElement="task_onboard_hire">
+        <dc:Bounds x="2150" y="380" width="100" height="80"/>
+        <bpmndi:BPMNLabel/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="edge_sf_hr_pgofferjoin_to_onboard" bpmnElement="sf_hr_pgofferjoin_to_onboard">
+        <di:waypoint x="2100" y="420"/>
+        <di:waypoint x="2150" y="420"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="shape_end_event_person_hired" bpmnElement="end_event_person_hired">
+        <dc:Bounds x="2300" y="402" width="36" height="36"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="2280" y="443" width="76" height="14"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="edge_sf_hr_onboard_to_end" bpmnElement="sf_hr_onboard_to_end">
+        <di:waypoint x="2250" y="420"/>
+        <di:waypoint x="2300" y="420"/>
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</semantic:definitions>

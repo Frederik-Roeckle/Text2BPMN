@@ -1,0 +1,550 @@
+<?xml version="1.0" standalone="yes"?>
+<semantic:definitions id="WorkCentreMasterDataMaintenance_def"
+    targetNamespace="http://example.com/bpmn/WorkCentreMasterDataMaintenance"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:semantic="http://www.omg.org/spec/BPMN/20100524/MODEL"
+    xmlns:di="http://www.omg.org/spec/DD/20100524/DI"
+    xmlns:dc="http://www.omg.org/spec/DD/20100524/DC"
+    xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI">
+
+  <semantic:collaboration id="collab_WorkCentreMasterDataMaintenance">
+    <semantic:participant id="participant_productionDepartment" name="Production Department" processRef="process_WorkCentreMasterDataMaintenance"/>
+  </semantic:collaboration>
+
+  <semantic:process id="process_WorkCentreMasterDataMaintenance" isExecutable="true">
+    <semantic:laneSet id="laneSet_productionDepartment">
+      <semantic:lane id="lane_productionAssistant" name="Production Assistant">
+        <semantic:flowNodeRef>start_event_1</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_1</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_2</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_3</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_4</semantic:flowNodeRef>
+        <semantic:flowNodeRef>subprocess_1</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_5</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_6</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_7</semantic:flowNodeRef>
+        <semantic:flowNodeRef>gateway_1</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_8</semantic:flowNodeRef>
+        <semantic:flowNodeRef>subprocess_2</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_9</semantic:flowNodeRef>
+        <semantic:flowNodeRef>gateway_2</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_10</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_11</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_12</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_13</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_14</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_15</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_16</semantic:flowNodeRef>
+        <semantic:flowNodeRef>end_event_1</semantic:flowNodeRef>
+      </semantic:lane>
+    </semantic:laneSet>
+
+    <semantic:startEvent id="start_event_1" name="Service Order Received for Execution">
+      <semantic:outgoing>flow_start_to_task1</semantic:outgoing>
+    </semantic:startEvent>
+
+    <semantic:task id="task_1" name="Reference Plant, Select Work Centre Name, Define Work Centre Category">
+      <semantic:incoming>flow_start_to_task1</semantic:incoming>
+      <semantic:outgoing>flow_task1_to_task2</semantic:outgoing>
+    </semantic:task>
+
+    <semantic:task id="task_2" name="Confirm Selection for Work Centre Basic Data">
+      <semantic:incoming>flow_task1_to_task2</semantic:incoming>
+      <semantic:outgoing>flow_task2_to_task3</semantic:outgoing>
+    </semantic:task>
+
+    <semantic:task id="task_3" name="Review New Work Centre Details">
+      <semantic:incoming>flow_task2_to_task3</semantic:incoming>
+      <semantic:outgoing>flow_task3_to_task4</semantic:outgoing>
+    </semantic:task>
+
+    <semantic:task id="task_4" name="Select Work Centre Full Name, Person Responsible, and Usage">
+      <semantic:incoming>flow_task3_to_task4</semantic:incoming>
+      <semantic:outgoing>flow_task4_to_subprocess1</semantic:outgoing>
+    </semantic:task>
+
+    <semantic:subProcess id="subprocess_1" name="Define Routing (Service)">
+      <semantic:incoming>flow_task4_to_subprocess1</semantic:incoming>
+      <semantic:outgoing>flow_subprocess1_to_task5</semantic:outgoing>
+      <semantic:startEvent id="sp1_start" name="Start Define Routing">
+        <semantic:outgoing>flow_sp1_start_to_sp1_task1</semantic:outgoing>
+      </semantic:startEvent>
+      <semantic:task id="sp1_task_1" name="Select Standard Key Value (Service)">
+        <semantic:incoming>flow_sp1_start_to_sp1_task1</semantic:incoming>
+        <semantic:outgoing>flow_sp1_task1_to_sp1_task2</semantic:outgoing>
+      </semantic:task>
+      <semantic:task id="sp1_task_2" name="Enter Set-up Time">
+        <semantic:incoming>flow_sp1_task1_to_sp1_task2</semantic:incoming>
+        <semantic:outgoing>flow_sp1_task2_to_sp1_task3</semantic:outgoing>
+      </semantic:task>
+      <semantic:task id="sp1_task_3" name="Enter Machine Time (Optional)">
+        <semantic:incoming>flow_sp1_task2_to_sp1_task3</semantic:incoming>
+        <semantic:outgoing>flow_sp1_task3_to_sp1_task4</semantic:outgoing>
+      </semantic:task>
+      <semantic:task id="sp1_task_4" name="Enter Variable Labour Time">
+        <semantic:incoming>flow_sp1_task3_to_sp1_task4</semantic:incoming>
+        <semantic:outgoing>flow_sp1_task4_to_sp1_task5</semantic:outgoing>
+      </semantic:task>
+      <semantic:task id="sp1_task_5" name="Enter Teardown Time">
+        <semantic:incoming>flow_sp1_task4_to_sp1_task5</semantic:incoming>
+        <semantic:outgoing>flow_sp1_task5_to_sp1_end</semantic:outgoing>
+      </semantic:task>
+      <semantic:endEvent id="sp1_end" name="Routing for Service Defined">
+        <semantic:incoming>flow_sp1_task5_to_sp1_end</semantic:incoming>
+      </semantic:endEvent>
+      <semantic:sequenceFlow id="flow_sp1_start_to_sp1_task1" sourceRef="sp1_start" targetRef="sp1_task_1"/>
+      <semantic:sequenceFlow id="flow_sp1_task1_to_sp1_task2" sourceRef="sp1_task_1" targetRef="sp1_task_2"/>
+      <semantic:sequenceFlow id="flow_sp1_task2_to_sp1_task3" sourceRef="sp1_task_2" targetRef="sp1_task_3"/>
+      <semantic:sequenceFlow id="flow_sp1_task3_to_sp1_task4" sourceRef="sp1_task_3" targetRef="sp1_task_4"/>
+      <semantic:sequenceFlow id="flow_sp1_task4_to_sp1_task5" sourceRef="sp1_task_4" targetRef="sp1_task_5"/>
+      <semantic:sequenceFlow id="flow_sp1_task5_to_sp1_end" sourceRef="sp1_task_5" targetRef="sp1_end"/>
+    </semantic:subProcess>
+
+    <semantic:task id="task_5" name="Review Displayed Routing Steps">
+      <semantic:incoming>flow_subprocess1_to_task5</semantic:incoming>
+      <semantic:outgoing>flow_task5_to_task6</semantic:outgoing>
+    </semantic:task>
+
+    <semantic:task id="task_6" name="Define Capacity Category and Select Formulas for Capacity Tab">
+      <semantic:incoming>flow_task5_to_task6</semantic:incoming>
+      <semantic:outgoing>flow_task6_to_task7</semantic:outgoing>
+    </semantic:task>
+
+    <semantic:task id="task_7" name="Check Offered Capacity (Double-click Category)">
+      <semantic:incoming>flow_task6_to_task7</semantic:incoming>
+      <semantic:outgoing>flow_task7_to_gateway1</semantic:outgoing>
+    </semantic:task>
+
+    <semantic:exclusiveGateway id="gateway_1" name="Capacity Header Entry Method?">
+      <semantic:incoming>flow_task7_to_gateway1</semantic:incoming>
+      <semantic:outgoing>flow_gateway1_to_task8</semantic:outgoing>
+      <semantic:outgoing>flow_gateway1_to_subprocess2</semantic:outgoing>
+    </semantic:exclusiveGateway>
+
+    <semantic:task id="task_8" name="Enter Capacity Header Manually">
+      <semantic:incoming>flow_gateway1_to_task8</semantic:incoming>
+      <semantic:outgoing>flow_task8_to_gateway2</semantic:outgoing>
+    </semantic:task>
+
+    <semantic:subProcess id="subprocess_2" name="Create Reference Capacity">
+      <semantic:incoming>flow_gateway1_to_subprocess2</semantic:incoming>
+      <semantic:outgoing>flow_subprocess2_to_task9</semantic:outgoing>
+      <semantic:startEvent id="sp2_start" name="Start Create Reference Capacity">
+        <semantic:outgoing>flow_sp2_start_to_sp2_task1</semantic:outgoing>
+      </semantic:startEvent>
+      <semantic:task id="sp2_task_1" name="Select Plant, Name for 'Personnel' Capacity, Capacity Category '002 – Personnel'">
+        <semantic:incoming>flow_sp2_start_to_sp2_task1</semantic:incoming>
+        <semantic:outgoing>flow_sp2_task1_to_sp2_task2</semantic:outgoing>
+      </semantic:task>
+      <semantic:task id="sp2_task_2" name="Confirm Entries for Reference Capacity">
+        <semantic:incoming>flow_sp2_task1_to_sp2_task2</semantic:incoming>
+        <semantic:outgoing>flow_sp2_task2_to_sp2_task3</semantic:outgoing>
+      </semantic:task>
+      <semantic:task id="sp2_task_3" name="Review Standard Capacity Details">
+        <semantic:incoming>flow_sp2_task2_to_sp2_task3</semantic:incoming>
+        <semantic:outgoing>flow_sp2_task3_to_sp2_task4</semantic:outgoing>
+      </semantic:task>
+      <semantic:task id="sp2_task_4" name="Specify Capacity Characteristics (Name, Planner Group, Calendar ID, UoM, Time Frame, No. of Capacities)">
+        <semantic:incoming>flow_sp2_task3_to_sp2_task4</semantic:incoming>
+        <semantic:outgoing>flow_sp2_task4_to_sp2_task5</semantic:outgoing>
+      </semantic:task>
+      <semantic:task id="sp2_task_5" name="Confirm Characteristics">
+        <semantic:incoming>flow_sp2_task4_to_sp2_task5</semantic:incoming>
+        <semantic:outgoing>flow_sp2_task5_to_sp2_task6</semantic:outgoing>
+      </semantic:task>
+      <semantic:task id="sp2_task_6" name="Review System Calculated Daily Operating Time">
+        <semantic:incoming>flow_sp2_task5_to_sp2_task6</semantic:incoming>
+        <semantic:outgoing>flow_sp2_task6_to_sp2_task7</semantic:outgoing>
+      </semantic:task>
+      <semantic:task id="sp2_task_7" name="Save Reference Capacity">
+        <semantic:incoming>flow_sp2_task6_to_sp2_task7</semantic:incoming>
+        <semantic:outgoing>flow_sp2_task7_to_sp2_end</semantic:outgoing>
+      </semantic:task>
+      <semantic:endEvent id="sp2_end" name="Reference Capacity Successfully Created">
+        <semantic:incoming>flow_sp2_task7_to_sp2_end</semantic:incoming>
+      </semantic:endEvent>
+      <semantic:sequenceFlow id="flow_sp2_start_to_sp2_task1" sourceRef="sp2_start" targetRef="sp2_task_1"/>
+      <semantic:sequenceFlow id="flow_sp2_task1_to_sp2_task2" sourceRef="sp2_task_1" targetRef="sp2_task_2"/>
+      <semantic:sequenceFlow id="flow_sp2_task2_to_sp2_task3" sourceRef="sp2_task_2" targetRef="sp2_task_3"/>
+      <semantic:sequenceFlow id="flow_sp2_task3_to_sp2_task4" sourceRef="sp2_task_3" targetRef="sp2_task_4"/>
+      <semantic:sequenceFlow id="flow_sp2_task4_to_sp2_task5" sourceRef="sp2_task_4" targetRef="sp2_task_5"/>
+      <semantic:sequenceFlow id="flow_sp2_task5_to_sp2_task6" sourceRef="sp2_task_5" targetRef="sp2_task_6"/>
+      <semantic:sequenceFlow id="flow_sp2_task6_to_sp2_task7" sourceRef="sp2_task_6" targetRef="sp2_task_7"/>
+      <semantic:sequenceFlow id="flow_sp2_task7_to_sp2_end" sourceRef="sp2_task_7" targetRef="sp2_end"/>
+    </semantic:subProcess>
+
+    <semantic:task id="task_9" name="Select Created Reference Capacity in Header">
+      <semantic:incoming>flow_subprocess2_to_task9</semantic:incoming>
+      <semantic:outgoing>flow_task9_to_gateway2</semantic:outgoing>
+    </semantic:task>
+
+    <semantic:exclusiveGateway id="gateway_2" name="Merge Capacity Header Paths">
+      <semantic:incoming>flow_task8_to_gateway2</semantic:incoming>
+      <semantic:incoming>flow_task9_to_gateway2</semantic:incoming>
+      <semantic:outgoing>flow_gateway2_to_task10</semantic:outgoing>
+    </semantic:exclusiveGateway>
+
+    <semantic:task id="task_10" name="Confirm Work Centre Capacity Defined">
+      <semantic:incoming>flow_gateway2_to_task10</semantic:incoming>
+      <semantic:outgoing>flow_task10_to_task11</semantic:outgoing>
+    </semantic:task>
+
+    <semantic:task id="task_11" name="Select Capacity and Enter Formulas for Scheduling Tab">
+      <semantic:incoming>flow_task10_to_task11</semantic:incoming>
+      <semantic:outgoing>flow_task11_to_task12</semantic:outgoing>
+    </semantic:task>
+
+    <semantic:task id="task_12" name="Confirm Scheduling Entries">
+      <semantic:incoming>flow_task11_to_task12</semantic:incoming>
+      <semantic:outgoing>flow_task12_to_task13</semantic:outgoing>
+    </semantic:task>
+
+    <semantic:task id="task_13" name="Review Scheduling Parameters and Info Buttons">
+      <semantic:incoming>flow_task12_to_task13</semantic:incoming>
+      <semantic:outgoing>flow_task13_to_task14</semantic:outgoing>
+    </semantic:task>
+
+    <semantic:task id="task_14" name="Indicate Activity Type and Formulas for Work and Cost Centres Link Tab">
+      <semantic:incoming>flow_task13_to_task14</semantic:incoming>
+      <semantic:outgoing>flow_task14_to_task15</semantic:outgoing>
+    </semantic:task>
+
+    <semantic:task id="task_15" name="Confirm Work and Cost Centres Link Created">
+      <semantic:incoming>flow_task14_to_task15</semantic:incoming>
+      <semantic:outgoing>flow_task15_to_task16</semantic:outgoing>
+    </semantic:task>
+
+    <semantic:task id="task_16" name="Save New Work Centre">
+      <semantic:incoming>flow_task15_to_task16</semantic:incoming>
+      <semantic:outgoing>flow_task16_to_end</semantic:outgoing>
+    </semantic:task>
+
+    <semantic:endEvent id="end_event_1" name="Service Master Data Maintained Successfully">
+      <semantic:incoming>flow_task16_to_end</semantic:incoming>
+    </semantic:endEvent>
+
+    <semantic:sequenceFlow id="flow_start_to_task1" sourceRef="start_event_1" targetRef="task_1"/>
+    <semantic:sequenceFlow id="flow_task1_to_task2" sourceRef="task_1" targetRef="task_2"/>
+    <semantic:sequenceFlow id="flow_task2_to_task3" sourceRef="task_2" targetRef="task_3"/>
+    <semantic:sequenceFlow id="flow_task3_to_task4" sourceRef="task_3" targetRef="task_4"/>
+    <semantic:sequenceFlow id="flow_task4_to_subprocess1" sourceRef="task_4" targetRef="subprocess_1"/>
+    <semantic:sequenceFlow id="flow_subprocess1_to_task5" sourceRef="subprocess_1" targetRef="task_5"/>
+    <semantic:sequenceFlow id="flow_task5_to_task6" sourceRef="task_5" targetRef="task_6"/>
+    <semantic:sequenceFlow id="flow_task6_to_task7" sourceRef="task_6" targetRef="task_7"/>
+    <semantic:sequenceFlow id="flow_task7_to_gateway1" sourceRef="task_7" targetRef="gateway_1"/>
+    <semantic:sequenceFlow id="flow_gateway1_to_task8" name="Manual Entry" sourceRef="gateway_1" targetRef="task_8"/>
+    <semantic:sequenceFlow id="flow_gateway1_to_subprocess2" name="Reference Pre-defined Standard Category" sourceRef="gateway_1" targetRef="subprocess_2"/>
+    <semantic:sequenceFlow id="flow_task8_to_gateway2" sourceRef="task_8" targetRef="gateway_2"/>
+    <semantic:sequenceFlow id="flow_subprocess2_to_task9" sourceRef="subprocess_2" targetRef="task_9"/>
+    <semantic:sequenceFlow id="flow_task9_to_gateway2" sourceRef="task_9" targetRef="gateway_2"/>
+    <semantic:sequenceFlow id="flow_gateway2_to_task10" sourceRef="gateway_2" targetRef="task_10"/>
+    <semantic:sequenceFlow id="flow_task10_to_task11" sourceRef="task_10" targetRef="task_11"/>
+    <semantic:sequenceFlow id="flow_task11_to_task12" sourceRef="task_11" targetRef="task_12"/>
+    <semantic:sequenceFlow id="flow_task12_to_task13" sourceRef="task_12" targetRef="task_13"/>
+    <semantic:sequenceFlow id="flow_task13_to_task14" sourceRef="task_13" targetRef="task_14"/>
+    <semantic:sequenceFlow id="flow_task14_to_task15" sourceRef="task_14" targetRef="task_15"/>
+    <semantic:sequenceFlow id="flow_task15_to_task16" sourceRef="task_15" targetRef="task_16"/>
+    <semantic:sequenceFlow id="flow_task16_to_end" sourceRef="task_16" targetRef="end_event_1"/>
+
+  </semantic:process>
+
+  <bpmndi:BPMNDiagram id="BPMNDiagram_WorkCentreMasterDataMaintenance" name="Work Centre Master Data Maintenance Diagram" resolution="96.0">
+    <bpmndi:BPMNPlane bpmnElement="collab_WorkCentreMasterDataMaintenance">
+      <bpmndi:BPMNShape id="participant_productionDepartment_shape" bpmnElement="participant_productionDepartment" isHorizontal="true">
+        <dc:Bounds x="20" y="20" width="3000" height="1200"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="lane_productionAssistant_shape" bpmnElement="lane_productionAssistant" isHorizontal="true">
+        <dc:Bounds x="50" y="20" width="2970" height="1200"/>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="start_event_1_shape" bpmnElement="start_event_1">
+        <dc:Bounds x="100" y="582" width="36" height="36"/>
+        <bpmndi:BPMNLabel><dc:Bounds x="70" y="628" width="96" height="40" /></bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="task_1_shape" bpmnElement="task_1">
+        <dc:Bounds x="186" y="564" width="160" height="72"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="task_2_shape" bpmnElement="task_2">
+        <dc:Bounds x="396" y="564" width="100" height="72"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="task_3_shape" bpmnElement="task_3">
+        <dc:Bounds x="546" y="564" width="100" height="72"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="task_4_shape" bpmnElement="task_4">
+        <dc:Bounds x="696" y="564" width="150" height="72"/>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="subprocess_1_shape" bpmnElement="subprocess_1" isExpanded="true">
+        <dc:Bounds x="896" y="450" width="450" height="300"/>
+         <bpmndi:BPMNLabel><dc:Bounds x="1071" y="455" width="100" height="14" /></bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="sp1_start_shape" bpmnElement="sp1_start">
+        <dc:Bounds x="926" y="582" width="36" height="36"/>
+         <bpmndi:BPMNLabel><dc:Bounds x="906" y="628" width="76" height="28" /></bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="sp1_task_1_shape" bpmnElement="sp1_task_1">
+        <dc:Bounds x="992" y="564" width="100" height="72"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="sp1_task_2_shape" bpmnElement="sp1_task_2">
+        <dc:Bounds x="992" y="472" width="100" height="72"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="sp1_task_3_shape" bpmnElement="sp1_task_3">
+        <dc:Bounds x="1122" y="472" width="100" height="72"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="sp1_task_4_shape" bpmnElement="sp1_task_4">
+        <dc:Bounds x="1122" y="564" width="100" height="72"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="sp1_task_5_shape" bpmnElement="sp1_task_5">
+        <dc:Bounds x="1252" y="564" width="100" height="72"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="sp1_end_shape" bpmnElement="sp1_end">
+        <dc:Bounds x="1284" y="490" width="36" height="36"/>
+         <bpmndi:BPMNLabel><dc:Bounds x="1259" y="536" width="86" height="28" /></bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="task_5_shape" bpmnElement="task_5">
+        <dc:Bounds x="1396" y="564" width="100" height="72"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="task_6_shape" bpmnElement="task_6">
+        <dc:Bounds x="1546" y="564" width="160" height="72"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="task_7_shape" bpmnElement="task_7">
+        <dc:Bounds x="1756" y="564" width="100" height="72"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="gateway_1_shape" bpmnElement="gateway_1" isMarkerVisible="true">
+        <dc:Bounds x="1906" y="576" width="50" height="50"/>
+         <bpmndi:BPMNLabel><dc:Bounds x="1881" y="636" width="100" height="28" /></bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="task_8_shape" bpmnElement="task_8">
+        <dc:Bounds x="2006" y="472" width="100" height="72"/>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="subprocess_2_shape" bpmnElement="subprocess_2" isExpanded="true">
+        <dc:Bounds x="2006" y="670" width="550" height="400"/>
+        <bpmndi:BPMNLabel><dc:Bounds x="2231" y="675" width="100" height="28" /></bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="sp2_start_shape" bpmnElement="sp2_start">
+        <dc:Bounds x="2036" y="852" width="36" height="36"/>
+        <bpmndi:BPMNLabel><dc:Bounds x="2016" y="898" width="76" height="40" /></bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="sp2_task_1_shape" bpmnElement="sp2_task_1">
+        <dc:Bounds x="2102" y="834" width="200" height="72"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="sp2_task_2_shape" bpmnElement="sp2_task_2">
+        <dc:Bounds x="2102" y="742" width="100" height="72"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="sp2_task_3_shape" bpmnElement="sp2_task_3">
+        <dc:Bounds x="2232" y="742" width="100" height="72"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="sp2_task_4_shape" bpmnElement="sp2_task_4">
+        <dc:Bounds x="2362" y="742" width="160" height="72"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="sp2_task_5_shape" bpmnElement="sp2_task_5">
+        <dc:Bounds x="2362" y="834" width="100" height="72"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="sp2_task_6_shape" bpmnElement="sp2_task_6">
+        <dc:Bounds x="2362" y="926" width="100" height="72"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="sp2_task_7_shape" bpmnElement="sp2_task_7">
+        <dc:Bounds x="2232" y="926" width="100" height="72"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="sp2_end_shape" bpmnElement="sp2_end">
+        <dc:Bounds x="2264" y="1018" width="36" height="36"/>
+        <bpmndi:BPMNLabel><dc:Bounds x="2239" y="1064" width="86" height="40" /></bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="task_9_shape" bpmnElement="task_9">
+        <dc:Bounds x="2156" y="564" width="100" height="72"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="gateway_2_shape" bpmnElement="gateway_2" isMarkerVisible="true">
+        <dc:Bounds x="2306" y="576" width="50" height="50"/>
+        <bpmndi:BPMNLabel><dc:Bounds x="2281" y="636" width="100" height="28" /></bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="task_10_shape" bpmnElement="task_10">
+        <dc:Bounds x="2406" y="564" width="100" height="72"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="task_11_shape" bpmnElement="task_11">
+        <dc:Bounds x="2556" y="564" width="150" height="72"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="task_12_shape" bpmnElement="task_12">
+        <dc:Bounds x="2756" y="564" width="100" height="72"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="task_13_shape" bpmnElement="task_13">
+        <dc:Bounds x="2756" y="472" width="100" height="72"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="task_14_shape" bpmnElement="task_14">
+        <dc:Bounds x="2756" y="380" width="160" height="72"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="task_15_shape" bpmnElement="task_15">
+        <dc:Bounds x="2606" y="380" width="100" height="72"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="task_16_shape" bpmnElement="task_16">
+        <dc:Bounds x="2606" y="288" width="100" height="72"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="end_event_1_shape" bpmnElement="end_event_1">
+        <dc:Bounds x="2638" y="196" width="36" height="36"/>
+        <bpmndi:BPMNLabel><dc:Bounds x="2608" y="242" width="96" height="40" /></bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNEdge id="flow_start_to_task1_edge" bpmnElement="flow_start_to_task1">
+        <di:waypoint x="136" y="600"/>
+        <di:waypoint x="186" y="600"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_task1_to_task2_edge" bpmnElement="flow_task1_to_task2">
+        <di:waypoint x="346" y="600"/>
+        <di:waypoint x="396" y="600"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_task2_to_task3_edge" bpmnElement="flow_task2_to_task3">
+        <di:waypoint x="496" y="600"/>
+        <di:waypoint x="546" y="600"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_task3_to_task4_edge" bpmnElement="flow_task3_to_task4">
+        <di:waypoint x="646" y="600"/>
+        <di:waypoint x="696" y="600"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_task4_to_subprocess1_edge" bpmnElement="flow_task4_to_subprocess1">
+        <di:waypoint x="846" y="600"/>
+        <di:waypoint x="896" y="600"/>
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="flow_sp1_start_to_sp1_task1_edge" bpmnElement="flow_sp1_start_to_sp1_task1">
+        <di:waypoint x="962" y="600"/>
+        <di:waypoint x="992" y="600"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_sp1_task1_to_sp1_task2_edge" bpmnElement="flow_sp1_task1_to_sp1_task2">
+        <di:waypoint x="1042" y="564"/>
+        <di:waypoint x="1042" y="544"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_sp1_task2_to_sp1_task3_edge" bpmnElement="flow_sp1_task2_to_sp1_task3">
+        <di:waypoint x="1092" y="508"/>
+        <di:waypoint x="1122" y="508"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_sp1_task3_to_sp1_task4_edge" bpmnElement="flow_sp1_task3_to_sp1_task4">
+        <di:waypoint x="1172" y="544"/>
+        <di:waypoint x="1172" y="564"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_sp1_task4_to_sp1_task5_edge" bpmnElement="flow_sp1_task4_to_sp1_task5">
+        <di:waypoint x="1222" y="600"/>
+        <di:waypoint x="1252" y="600"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_sp1_task5_to_sp1_end_edge" bpmnElement="flow_sp1_task5_to_sp1_end">
+        <di:waypoint x="1302" y="564"/>
+        <di:waypoint x="1302" y="526"/>
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="flow_subprocess1_to_task5_edge" bpmnElement="flow_subprocess1_to_task5">
+        <di:waypoint x="1346" y="600"/>
+        <di:waypoint x="1396" y="600"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_task5_to_task6_edge" bpmnElement="flow_task5_to_task6">
+        <di:waypoint x="1496" y="600"/>
+        <di:waypoint x="1546" y="600"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_task6_to_task7_edge" bpmnElement="flow_task6_to_task7">
+        <di:waypoint x="1706" y="600"/>
+        <di:waypoint x="1756" y="600"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_task7_to_gateway1_edge" bpmnElement="flow_task7_to_gateway1">
+        <di:waypoint x="1856" y="600"/>
+        <di:waypoint x="1906" y="601"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_gateway1_to_task8_edge" bpmnElement="flow_gateway1_to_task8">
+        <di:waypoint x="1931" y="576"/>
+        <di:waypoint x="1931" y="508"/>
+        <di:waypoint x="2006" y="508"/>
+        <bpmndi:BPMNLabel><dc:Bounds x="1936" y="532" width="60" height="14" /></bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_gateway1_to_subprocess2_edge" bpmnElement="flow_gateway1_to_subprocess2">
+        <di:waypoint x="1931" y="626"/>
+        <di:waypoint x="1931" y="870"/>
+        <di:waypoint x="2006" y="870"/>
+         <bpmndi:BPMNLabel><dc:Bounds x="1936" y="743" width="80" height="40" /></bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_task8_to_gateway2_edge" bpmnElement="flow_task8_to_gateway2">
+        <di:waypoint x="2106" y="508"/>
+        <di:waypoint x="2331" y="508"/>
+        <di:waypoint x="2331" y="576"/>
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="flow_sp2_start_to_sp2_task1_edge" bpmnElement="flow_sp2_start_to_sp2_task1">
+        <di:waypoint x="2072" y="870"/>
+        <di:waypoint x="2102" y="870"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_sp2_task1_to_sp2_task2_edge" bpmnElement="flow_sp2_task1_to_sp2_task2">
+        <di:waypoint x="2202" y="834"/>
+        <di:waypoint x="2202" y="814"/>
+        <di:waypoint x="2152" y="814"/>
+        <di:waypoint x="2152" y="788"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_sp2_task2_to_sp2_task3_edge" bpmnElement="flow_sp2_task2_to_sp2_task3">
+        <di:waypoint x="2202" y="778"/>
+        <di:waypoint x="2232" y="778"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_sp2_task3_to_sp2_task4_edge" bpmnElement="flow_sp2_task3_to_sp2_task4">
+        <di:waypoint x="2332" y="778"/>
+        <di:waypoint x="2362" y="778"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_sp2_task4_to_sp2_task5_edge" bpmnElement="flow_sp2_task4_to_sp2_task5">
+        <di:waypoint x="2442" y="814"/>
+        <di:waypoint x="2442" y="834"/>
+        <di:waypoint x="2412" y="834"/>
+        <di:waypoint x="2412" y="870"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_sp2_task5_to_sp2_task6_edge" bpmnElement="flow_sp2_task5_to_sp2_task6">
+        <di:waypoint x="2412" y="906"/>
+        <di:waypoint x="2412" y="926"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_sp2_task6_to_sp2_task7_edge" bpmnElement="flow_sp2_task6_to_sp2_task7">
+        <di:waypoint x="2362" y="962"/>
+        <di:waypoint x="2332" y="962"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_sp2_task7_to_sp2_end_edge" bpmnElement="flow_sp2_task7_to_sp2_end">
+        <di:waypoint x="2282" y="998"/>
+        <di:waypoint x="2282" y="1018"/>
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="flow_subprocess2_to_task9_edge" bpmnElement="flow_subprocess2_to_task9">
+        <di:waypoint x="2281" y="670"/>
+        <di:waypoint x="2281" y="600"/>
+        <di:waypoint x="2256" y="600"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_task9_to_gateway2_edge" bpmnElement="flow_task9_to_gateway2">
+        <di:waypoint x="2256" y="600"/>
+        <di:waypoint x="2306" y="601"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_gateway2_to_task10_edge" bpmnElement="flow_gateway2_to_task10">
+        <di:waypoint x="2356" y="601"/>
+        <di:waypoint x="2406" y="600"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_task10_to_task11_edge" bpmnElement="flow_task10_to_task11">
+        <di:waypoint x="2506" y="600"/>
+        <di:waypoint x="2556" y="600"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_task11_to_task12_edge" bpmnElement="flow_task11_to_task12">
+        <di:waypoint x="2706" y="600"/>
+        <di:waypoint x="2756" y="600"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_task12_to_task13_edge" bpmnElement="flow_task12_to_task13">
+        <di:waypoint x="2806" y="564"/>
+        <di:waypoint x="2806" y="544"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_task13_to_task14_edge" bpmnElement="flow_task13_to_task14">
+        <di:waypoint x="2806" y="472"/>
+        <di:waypoint x="2806" y="452"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_task14_to_task15_edge" bpmnElement="flow_task14_to_task15">
+        <di:waypoint x="2756" y="416"/>
+        <di:waypoint x="2706" y="416"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_task15_to_task16_edge" bpmnElement="flow_task15_to_task16">
+        <di:waypoint x="2656" y="380"/>
+        <di:waypoint x="2656" y="360"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_task16_to_end_edge" bpmnElement="flow_task16_to_end">
+        <di:waypoint x="2656" y="288"/>
+        <di:waypoint x="2656" y="232"/>
+      </bpmndi:BPMNEdge>
+
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</semantic:definitions>

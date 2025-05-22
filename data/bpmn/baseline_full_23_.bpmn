@@ -1,0 +1,449 @@
+<?xml version="1.0" standalone="yes"?>
+<semantic:definitions id="BroomMaterialMasterProcessDefs"
+    targetNamespace="http://example.com/bpmn/BroomMaterialMaster"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:semantic="http://www.omg.org/spec/BPMN/20100524/MODEL"
+    xmlns:di="http://www.omg.org/spec/DD/20100524/DI"
+    xmlns:dc="http://www.omg.org/spec/DD/20100524/DC"
+    xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI">
+
+  <semantic:collaboration id="collab_BroomMaterialMaster">
+    <semantic:participant id="participant_PurchasingDept" name="Purchasing Department Pool" processRef="process_BroomMaterialMaster"/>
+  </semantic:collaboration>
+
+  <semantic:process id="process_BroomMaterialMaster" isExecutable="true">
+    <semantic:laneSet id="laneSet_Purchasing">
+      <semantic:lane id="lane_ResponsiblePurchaser" name="Responsible Purchaser">
+        <semantic:flowNodeRef>startEvent_RequestReceived</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_CreateMaterialMasterSAP</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_DefineInitialScreenData</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_ConfirmInitialEntries</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_SelectAllTabs</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_SaveDefaultSetting</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_ConfirmDefaultSettingSelection</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_DefineOrganizationalData</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_ExecuteOrganizationalDataEntries</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_DefineBasicData</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_ConfirmBasicDataEntries</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_DefineClassificationData</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_ConfirmClassificationSelection</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_DefineSalesData</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_DefinePurchasingData</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_DefineMRPData1</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_ExecuteMRPData1Entries</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_DefineMRPData2</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_ConfirmMRPData2Entries</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_DefineRemainingMRPDataForecasting</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_ExecuteRemainingMRPDataEntries</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_DefineAccountingCostingData</semantic:flowNodeRef>
+        <semantic:flowNodeRef>gateway_PriceControl</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_SelectVariableMovingAverage</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_SelectStandardPrice</semantic:flowNodeRef>
+        <semantic:flowNodeRef>gateway_MergePriceControl</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_ExecuteAccountingCostingDataEntries</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_SaveMaterialMaster</semantic:flowNodeRef>
+        <semantic:flowNodeRef>endEvent_MaterialMasterCreated</semantic:flowNodeRef>
+      </semantic:lane>
+    </semantic:laneSet>
+
+    <semantic:startEvent id="startEvent_RequestReceived" name="Receive Material Master Creation Request">
+      <semantic:outgoing>flow_1</semantic:outgoing>
+    </semantic:startEvent>
+    <semantic:task id="task_CreateMaterialMasterSAP" name="Create Material Master in SAP ECC">
+      <semantic:incoming>flow_1</semantic:incoming>
+      <semantic:outgoing>flow_2</semantic:outgoing>
+    </semantic:task>
+    <semantic:task id="task_DefineInitialScreenData" name="Define Industry Sector and Material Number">
+      <semantic:incoming>flow_2</semantic:incoming>
+      <semantic:outgoing>flow_3</semantic:outgoing>
+    </semantic:task>
+    <semantic:task id="task_ConfirmInitialEntries" name="Confirm Initial Entries">
+      <semantic:incoming>flow_3</semantic:incoming>
+      <semantic:outgoing>flow_4</semantic:outgoing>
+    </semantic:task>
+    <semantic:task id="task_SelectAllTabs" name="Select All Material Master Tabs">
+      <semantic:incoming>flow_4</semantic:incoming>
+      <semantic:outgoing>flow_5</semantic:outgoing>
+    </semantic:task>
+    <semantic:task id="task_SaveDefaultSetting" name="Save Selected Tabs as Default Setting">
+      <semantic:incoming>flow_5</semantic:incoming>
+      <semantic:outgoing>flow_6</semantic:outgoing>
+    </semantic:task>
+    <semantic:task id="task_ConfirmDefaultSettingSelection" name="Confirm Default Setting Selection">
+      <semantic:incoming>flow_6</semantic:incoming>
+      <semantic:outgoing>flow_7</semantic:outgoing>
+    </semantic:task>
+    <semantic:task id="task_DefineOrganizationalData" name="Define Organizational Data">
+      <semantic:incoming>flow_7</semantic:incoming>
+      <semantic:outgoing>flow_8</semantic:outgoing>
+    </semantic:task>
+    <semantic:task id="task_ExecuteOrganizationalDataEntries" name="Execute Organizational Data Entries">
+      <semantic:incoming>flow_8</semantic:incoming>
+      <semantic:outgoing>flow_9</semantic:outgoing>
+    </semantic:task>
+    <semantic:task id="task_DefineBasicData" name="Define Basic Data">
+      <semantic:incoming>flow_9</semantic:incoming>
+      <semantic:outgoing>flow_10</semantic:outgoing>
+    </semantic:task>
+    <semantic:task id="task_ConfirmBasicDataEntries" name="Confirm Basic Data Entries">
+      <semantic:incoming>flow_10</semantic:incoming>
+      <semantic:outgoing>flow_11</semantic:outgoing>
+    </semantic:task>
+    <semantic:task id="task_DefineClassificationData" name="Define Classification Data (Activate Search, Select Filter)">
+      <semantic:incoming>flow_11</semantic:incoming>
+      <semantic:outgoing>flow_12</semantic:outgoing>
+    </semantic:task>
+    <semantic:task id="task_ConfirmClassificationSelection" name="Confirm Classification Selection">
+      <semantic:incoming>flow_12</semantic:incoming>
+      <semantic:outgoing>flow_13</semantic:outgoing>
+    </semantic:task>
+    <semantic:task id="task_DefineSalesData" name="Define Sales Data">
+      <semantic:incoming>flow_13</semantic:incoming>
+      <semantic:outgoing>flow_14</semantic:outgoing>
+    </semantic:task>
+    <semantic:task id="task_DefinePurchasingData" name="Define Purchasing Data">
+      <semantic:incoming>flow_14</semantic:incoming>
+      <semantic:outgoing>flow_15</semantic:outgoing>
+    </semantic:task>
+    <semantic:task id="task_DefineMRPData1" name="Define MRP Data 1">
+      <semantic:incoming>flow_15</semantic:incoming>
+      <semantic:outgoing>flow_16</semantic:outgoing>
+    </semantic:task>
+    <semantic:task id="task_ExecuteMRPData1Entries" name="Execute MRP Data 1 Entries">
+      <semantic:incoming>flow_16</semantic:incoming>
+      <semantic:outgoing>flow_17</semantic:outgoing>
+    </semantic:task>
+    <semantic:task id="task_DefineMRPData2" name="Define MRP Data 2">
+      <semantic:incoming>flow_17</semantic:incoming>
+      <semantic:outgoing>flow_18</semantic:outgoing>
+    </semantic:task>
+    <semantic:task id="task_ConfirmMRPData2Entries" name="Confirm MRP Data 2 Entries">
+      <semantic:incoming>flow_18</semantic:incoming>
+      <semantic:outgoing>flow_19</semantic:outgoing>
+    </semantic:task>
+    <semantic:task id="task_DefineRemainingMRPDataForecasting" name="Define Remaining MRP Data &amp; Forecasting">
+      <semantic:incoming>flow_19</semantic:incoming>
+      <semantic:outgoing>flow_20</semantic:outgoing>
+    </semantic:task>
+    <semantic:task id="task_ExecuteRemainingMRPDataEntries" name="Execute Remaining MRP Data Entries">
+      <semantic:incoming>flow_20</semantic:incoming>
+      <semantic:outgoing>flow_21</semantic:outgoing>
+    </semantic:task>
+    <semantic:task id="task_DefineAccountingCostingData" name="Define Accounting &amp; Costing Data">
+      <semantic:incoming>flow_21</semantic:incoming>
+      <semantic:outgoing>flow_22</semantic:outgoing>
+    </semantic:task>
+    <semantic:exclusiveGateway id="gateway_PriceControl" name="Price Control Decision">
+      <semantic:incoming>flow_22</semantic:incoming>
+      <semantic:outgoing>flow_23_V</semantic:outgoing>
+      <semantic:outgoing>flow_24_S</semantic:outgoing>
+    </semantic:exclusiveGateway>
+    <semantic:task id="task_SelectVariableMovingAverage" name="Select Variable Moving Average (V)">
+      <semantic:incoming>flow_23_V</semantic:incoming>
+      <semantic:outgoing>flow_25_MergeV</semantic:outgoing>
+    </semantic:task>
+    <semantic:task id="task_SelectStandardPrice" name="Select Standard Price (S)">
+      <semantic:incoming>flow_24_S</semantic:incoming>
+      <semantic:outgoing>flow_26_MergeS</semantic:outgoing>
+    </semantic:task>
+    <semantic:exclusiveGateway id="gateway_MergePriceControl" name="Merge Price Control Path">
+      <semantic:incoming>flow_25_MergeV</semantic:incoming>
+      <semantic:incoming>flow_26_MergeS</semantic:incoming>
+      <semantic:outgoing>flow_27</semantic:outgoing>
+    </semantic:exclusiveGateway>
+    <semantic:task id="task_ExecuteAccountingCostingDataEntries" name="Execute Accounting &amp; Costing Data Entries">
+      <semantic:incoming>flow_27</semantic:incoming>
+      <semantic:outgoing>flow_28</semantic:outgoing>
+    </semantic:task>
+    <semantic:task id="task_SaveMaterialMaster" name="Save Material Master">
+      <semantic:incoming>flow_28</semantic:incoming>
+      <semantic:outgoing>flow_29</semantic:outgoing>
+    </semantic:task>
+    <semantic:endEvent id="endEvent_MaterialMasterCreated" name="Material Master Created">
+      <semantic:incoming>flow_29</semantic:incoming>
+    </semantic:endEvent>
+
+    <semantic:sequenceFlow id="flow_1" sourceRef="startEvent_RequestReceived" targetRef="task_CreateMaterialMasterSAP"/>
+    <semantic:sequenceFlow id="flow_2" sourceRef="task_CreateMaterialMasterSAP" targetRef="task_DefineInitialScreenData"/>
+    <semantic:sequenceFlow id="flow_3" sourceRef="task_DefineInitialScreenData" targetRef="task_ConfirmInitialEntries"/>
+    <semantic:sequenceFlow id="flow_4" sourceRef="task_ConfirmInitialEntries" targetRef="task_SelectAllTabs"/>
+    <semantic:sequenceFlow id="flow_5" sourceRef="task_SelectAllTabs" targetRef="task_SaveDefaultSetting"/>
+    <semantic:sequenceFlow id="flow_6" sourceRef="task_SaveDefaultSetting" targetRef="task_ConfirmDefaultSettingSelection"/>
+    <semantic:sequenceFlow id="flow_7" sourceRef="task_ConfirmDefaultSettingSelection" targetRef="task_DefineOrganizationalData"/>
+    <semantic:sequenceFlow id="flow_8" sourceRef="task_DefineOrganizationalData" targetRef="task_ExecuteOrganizationalDataEntries"/>
+    <semantic:sequenceFlow id="flow_9" sourceRef="task_ExecuteOrganizationalDataEntries" targetRef="task_DefineBasicData"/>
+    <semantic:sequenceFlow id="flow_10" sourceRef="task_DefineBasicData" targetRef="task_ConfirmBasicDataEntries"/>
+    <semantic:sequenceFlow id="flow_11" sourceRef="task_ConfirmBasicDataEntries" targetRef="task_DefineClassificationData"/>
+    <semantic:sequenceFlow id="flow_12" sourceRef="task_DefineClassificationData" targetRef="task_ConfirmClassificationSelection"/>
+    <semantic:sequenceFlow id="flow_13" sourceRef="task_ConfirmClassificationSelection" targetRef="task_DefineSalesData"/>
+    <semantic:sequenceFlow id="flow_14" sourceRef="task_DefineSalesData" targetRef="task_DefinePurchasingData"/>
+    <semantic:sequenceFlow id="flow_15" sourceRef="task_DefinePurchasingData" targetRef="task_DefineMRPData1"/>
+    <semantic:sequenceFlow id="flow_16" sourceRef="task_DefineMRPData1" targetRef="task_ExecuteMRPData1Entries"/>
+    <semantic:sequenceFlow id="flow_17" sourceRef="task_ExecuteMRPData1Entries" targetRef="task_DefineMRPData2"/>
+    <semantic:sequenceFlow id="flow_18" sourceRef="task_DefineMRPData2" targetRef="task_ConfirmMRPData2Entries"/>
+    <semantic:sequenceFlow id="flow_19" sourceRef="task_ConfirmMRPData2Entries" targetRef="task_DefineRemainingMRPDataForecasting"/>
+    <semantic:sequenceFlow id="flow_20" sourceRef="task_DefineRemainingMRPDataForecasting" targetRef="task_ExecuteRemainingMRPDataEntries"/>
+    <semantic:sequenceFlow id="flow_21" sourceRef="task_ExecuteRemainingMRPDataEntries" targetRef="task_DefineAccountingCostingData"/>
+    <semantic:sequenceFlow id="flow_22" sourceRef="task_DefineAccountingCostingData" targetRef="gateway_PriceControl"/>
+    <semantic:sequenceFlow id="flow_23_V" name="Select Variable Moving Average (V)" sourceRef="gateway_PriceControl" targetRef="task_SelectVariableMovingAverage"/>
+    <semantic:sequenceFlow id="flow_24_S" name="Select Standard Price (S)" sourceRef="gateway_PriceControl" targetRef="task_SelectStandardPrice"/>
+    <semantic:sequenceFlow id="flow_25_MergeV" sourceRef="task_SelectVariableMovingAverage" targetRef="gateway_MergePriceControl"/>
+    <semantic:sequenceFlow id="flow_26_MergeS" sourceRef="task_SelectStandardPrice" targetRef="gateway_MergePriceControl"/>
+    <semantic:sequenceFlow id="flow_27" sourceRef="gateway_MergePriceControl" targetRef="task_ExecuteAccountingCostingDataEntries"/>
+    <semantic:sequenceFlow id="flow_28" sourceRef="task_ExecuteAccountingCostingDataEntries" targetRef="task_SaveMaterialMaster"/>
+    <semantic:sequenceFlow id="flow_29" sourceRef="task_SaveMaterialMaster" targetRef="endEvent_MaterialMasterCreated"/>
+  </semantic:process>
+
+  <bpmndi:BPMNDiagram id="BPMNDiagram_BroomMaterialMaster" name="Broom Material Master Creation Diagram" resolution="96.0">
+    <bpmndi:BPMNPlane bpmnElement="collab_BroomMaterialMaster">
+      <bpmndi:BPMNShape id="participant_PurchasingDept_shape" bpmnElement="participant_PurchasingDept" isHorizontal="true">
+        <dc:Bounds x="20" y="20" width="4050" height="380"/>
+        <bpmndi:BPMNLabel/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="lane_ResponsiblePurchaser_shape" bpmnElement="lane_ResponsiblePurchaser" isHorizontal="true">
+        <dc:Bounds x="50" y="20" width="4020" height="380"/>
+        <bpmndi:BPMNLabel/>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="startEvent_RequestReceived_shape" bpmnElement="startEvent_RequestReceived">
+        <dc:Bounds x="60" y="172" width="36" height="36"/>
+        <bpmndi:BPMNLabel><dc:Bounds x="40" y="213" width="78" height="40"/></bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="task_CreateMaterialMasterSAP_shape" bpmnElement="task_CreateMaterialMasterSAP">
+        <dc:Bounds x="146" y="150" width="100" height="80"/>
+        <bpmndi:BPMNLabel/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="task_DefineInitialScreenData_shape" bpmnElement="task_DefineInitialScreenData">
+        <dc:Bounds x="296" y="150" width="100" height="80"/>
+        <bpmndi:BPMNLabel/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="task_ConfirmInitialEntries_shape" bpmnElement="task_ConfirmInitialEntries">
+        <dc:Bounds x="446" y="150" width="100" height="80"/>
+        <bpmndi:BPMNLabel/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="task_SelectAllTabs_shape" bpmnElement="task_SelectAllTabs">
+        <dc:Bounds x="596" y="150" width="100" height="80"/>
+        <bpmndi:BPMNLabel/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="task_SaveDefaultSetting_shape" bpmnElement="task_SaveDefaultSetting">
+        <dc:Bounds x="746" y="150" width="100" height="80"/>
+        <bpmndi:BPMNLabel/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="task_ConfirmDefaultSettingSelection_shape" bpmnElement="task_ConfirmDefaultSettingSelection">
+        <dc:Bounds x="896" y="150" width="100" height="80"/>
+        <bpmndi:BPMNLabel/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="task_DefineOrganizationalData_shape" bpmnElement="task_DefineOrganizationalData">
+        <dc:Bounds x="1046" y="150" width="100" height="80"/>
+        <bpmndi:BPMNLabel/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="task_ExecuteOrganizationalDataEntries_shape" bpmnElement="task_ExecuteOrganizationalDataEntries">
+        <dc:Bounds x="1196" y="150" width="100" height="80"/>
+        <bpmndi:BPMNLabel/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="task_DefineBasicData_shape" bpmnElement="task_DefineBasicData">
+        <dc:Bounds x="1346" y="150" width="100" height="80"/>
+        <bpmndi:BPMNLabel/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="task_ConfirmBasicDataEntries_shape" bpmnElement="task_ConfirmBasicDataEntries">
+        <dc:Bounds x="1496" y="150" width="100" height="80"/>
+        <bpmndi:BPMNLabel/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="task_DefineClassificationData_shape" bpmnElement="task_DefineClassificationData">
+        <dc:Bounds x="1646" y="150" width="100" height="80"/>
+        <bpmndi:BPMNLabel/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="task_ConfirmClassificationSelection_shape" bpmnElement="task_ConfirmClassificationSelection">
+        <dc:Bounds x="1796" y="150" width="100" height="80"/>
+        <bpmndi:BPMNLabel/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="task_DefineSalesData_shape" bpmnElement="task_DefineSalesData">
+        <dc:Bounds x="1946" y="150" width="100" height="80"/>
+        <bpmndi:BPMNLabel/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="task_DefinePurchasingData_shape" bpmnElement="task_DefinePurchasingData">
+        <dc:Bounds x="2096" y="150" width="100" height="80"/>
+        <bpmndi:BPMNLabel/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="task_DefineMRPData1_shape" bpmnElement="task_DefineMRPData1">
+        <dc:Bounds x="2246" y="150" width="100" height="80"/>
+        <bpmndi:BPMNLabel/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="task_ExecuteMRPData1Entries_shape" bpmnElement="task_ExecuteMRPData1Entries">
+        <dc:Bounds x="2396" y="150" width="100" height="80"/>
+        <bpmndi:BPMNLabel/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="task_DefineMRPData2_shape" bpmnElement="task_DefineMRPData2">
+        <dc:Bounds x="2546" y="150" width="100" height="80"/>
+        <bpmndi:BPMNLabel/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="task_ConfirmMRPData2Entries_shape" bpmnElement="task_ConfirmMRPData2Entries">
+        <dc:Bounds x="2696" y="150" width="100" height="80"/>
+        <bpmndi:BPMNLabel/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="task_DefineRemainingMRPDataForecasting_shape" bpmnElement="task_DefineRemainingMRPDataForecasting">
+        <dc:Bounds x="2846" y="150" width="100" height="80"/>
+        <bpmndi:BPMNLabel/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="task_ExecuteRemainingMRPDataEntries_shape" bpmnElement="task_ExecuteRemainingMRPDataEntries">
+        <dc:Bounds x="2996" y="150" width="100" height="80"/>
+        <bpmndi:BPMNLabel/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="task_DefineAccountingCostingData_shape" bpmnElement="task_DefineAccountingCostingData">
+        <dc:Bounds x="3146" y="150" width="100" height="80"/>
+        <bpmndi:BPMNLabel/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="gateway_PriceControl_shape" bpmnElement="gateway_PriceControl" isMarkerVisible="true">
+        <dc:Bounds x="3296" y="165" width="50" height="50"/>
+        <bpmndi:BPMNLabel><dc:Bounds x="3279" y="220" width="82" height="27"/></bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="task_SelectVariableMovingAverage_shape" bpmnElement="task_SelectVariableMovingAverage">
+        <dc:Bounds x="3396" y="80" width="100" height="80"/>
+        <bpmndi:BPMNLabel/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="task_SelectStandardPrice_shape" bpmnElement="task_SelectStandardPrice">
+        <dc:Bounds x="3396" y="250" width="100" height="80"/>
+        <bpmndi:BPMNLabel/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="gateway_MergePriceControl_shape" bpmnElement="gateway_MergePriceControl" isMarkerVisible="true">
+        <dc:Bounds x="3546" y="165" width="50" height="50"/>
+        <bpmndi:BPMNLabel><dc:Bounds x="3526" y="220" width="90" height="27"/></bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="task_ExecuteAccountingCostingDataEntries_shape" bpmnElement="task_ExecuteAccountingCostingDataEntries">
+        <dc:Bounds x="3646" y="150" width="100" height="80"/>
+        <bpmndi:BPMNLabel/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="task_SaveMaterialMaster_shape" bpmnElement="task_SaveMaterialMaster">
+        <dc:Bounds x="3796" y="150" width="100" height="80"/>
+        <bpmndi:BPMNLabel/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="endEvent_MaterialMasterCreated_shape" bpmnElement="endEvent_MaterialMasterCreated">
+        <dc:Bounds x="3946" y="172" width="36" height="36"/>
+        <bpmndi:BPMNLabel><dc:Bounds x="3927" y="213" width="74" height="27"/></bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNEdge id="flow_1_edge" bpmnElement="flow_1">
+        <di:waypoint x="96" y="190"/>
+        <di:waypoint x="146" y="190"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_2_edge" bpmnElement="flow_2">
+        <di:waypoint x="246" y="190"/>
+        <di:waypoint x="296" y="190"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_3_edge" bpmnElement="flow_3">
+        <di:waypoint x="396" y="190"/>
+        <di:waypoint x="446" y="190"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_4_edge" bpmnElement="flow_4">
+        <di:waypoint x="546" y="190"/>
+        <di:waypoint x="596" y="190"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_5_edge" bpmnElement="flow_5">
+        <di:waypoint x="696" y="190"/>
+        <di:waypoint x="746" y="190"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_6_edge" bpmnElement="flow_6">
+        <di:waypoint x="846" y="190"/>
+        <di:waypoint x="896" y="190"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_7_edge" bpmnElement="flow_7">
+        <di:waypoint x="996" y="190"/>
+        <di:waypoint x="1046" y="190"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_8_edge" bpmnElement="flow_8">
+        <di:waypoint x="1146" y="190"/>
+        <di:waypoint x="1196" y="190"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_9_edge" bpmnElement="flow_9">
+        <di:waypoint x="1296" y="190"/>
+        <di:waypoint x="1346" y="190"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_10_edge" bpmnElement="flow_10">
+        <di:waypoint x="1446" y="190"/>
+        <di:waypoint x="1496" y="190"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_11_edge" bpmnElement="flow_11">
+        <di:waypoint x="1596" y="190"/>
+        <di:waypoint x="1646" y="190"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_12_edge" bpmnElement="flow_12">
+        <di:waypoint x="1746" y="190"/>
+        <di:waypoint x="1796" y="190"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_13_edge" bpmnElement="flow_13">
+        <di:waypoint x="1896" y="190"/>
+        <di:waypoint x="1946" y="190"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_14_edge" bpmnElement="flow_14">
+        <di:waypoint x="2046" y="190"/>
+        <di:waypoint x="2096" y="190"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_15_edge" bpmnElement="flow_15">
+        <di:waypoint x="2196" y="190"/>
+        <di:waypoint x="2246" y="190"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_16_edge" bpmnElement="flow_16">
+        <di:waypoint x="2346" y="190"/>
+        <di:waypoint x="2396" y="190"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_17_edge" bpmnElement="flow_17">
+        <di:waypoint x="2496" y="190"/>
+        <di:waypoint x="2546" y="190"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_18_edge" bpmnElement="flow_18">
+        <di:waypoint x="2646" y="190"/>
+        <di:waypoint x="2696" y="190"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_19_edge" bpmnElement="flow_19">
+        <di:waypoint x="2796" y="190"/>
+        <di:waypoint x="2846" y="190"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_20_edge" bpmnElement="flow_20">
+        <di:waypoint x="2946" y="190"/>
+        <di:waypoint x="2996" y="190"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_21_edge" bpmnElement="flow_21">
+        <di:waypoint x="3096" y="190"/>
+        <di:waypoint x="3146" y="190"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_22_edge" bpmnElement="flow_22">
+        <di:waypoint x="3246" y="190"/>
+        <di:waypoint x="3296" y="190"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_23_V_edge" bpmnElement="flow_23_V">
+        <di:waypoint x="3321" y="190"/>
+        <di:waypoint x="3321" y="120"/>
+        <di:waypoint x="3396" y="120"/>
+        <bpmndi:BPMNLabel><dc:Bounds x="3295" y="95" width="80" height="27"/></bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_24_S_edge" bpmnElement="flow_24_S">
+        <di:waypoint x="3321" y="190"/>
+        <di:waypoint x="3321" y="290"/>
+        <di:waypoint x="3396" y="290"/>
+        <bpmndi:BPMNLabel><dc:Bounds x="3305" y="300" width="80" height="27"/></bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_25_MergeV_edge" bpmnElement="flow_25_MergeV">
+        <di:waypoint x="3496" y="120"/>
+        <di:waypoint x="3571" y="120"/>
+        <di:waypoint x="3571" y="165"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_26_MergeS_edge" bpmnElement="flow_26_MergeS">
+        <di:waypoint x="3496" y="290"/>
+        <di:waypoint x="3571" y="290"/>
+        <di:waypoint x="3571" y="215"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_27_edge" bpmnElement="flow_27">
+        <di:waypoint x="3596" y="190"/>
+        <di:waypoint x="3646" y="190"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_28_edge" bpmnElement="flow_28">
+        <di:waypoint x="3746" y="190"/>
+        <di:waypoint x="3796" y="190"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_29_edge" bpmnElement="flow_29">
+        <di:waypoint x="3896" y="190"/>
+        <di:waypoint x="3946" y="190"/>
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</semantic:definitions>

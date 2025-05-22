@@ -1,0 +1,240 @@
+<?xml version="1.0" standalone="yes"?>
+<semantic:definitions id="ProductionOrderCheckProcess"
+    targetNamespace="http://example.com/bpmn/productionOrderCheck"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:semantic="http://www.omg.org/spec/BPMN/20100524/MODEL"
+    xmlns:di="http://www.omg.org/spec/DD/20100524/DI"
+    xmlns:dc="http://www.omg.org/spec/DD/20100524/DC"
+    xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI">
+
+  <semantic:collaboration id="collab_productionOrderCheck">
+    <semantic:participant id="participant_productionDepartment" name="Production Department" processRef="productionOrderCheckProcess"/>
+  </semantic:collaboration>
+
+  <semantic:process id="productionOrderCheckProcess" isExecutable="true">
+    <semantic:laneSet id="laneSet_production">
+      <semantic:lane id="lane_productionAssistant" name="Production Assistant">
+        <semantic:flowNodeRef>startEvent_productionOrderReceived</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_performSchedulingCheck</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_performMaterialAvailabilityCheck</semantic:flowNodeRef>
+        <semantic:flowNodeRef>gateway_materialsAvailable</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_checkComponentsViewAndPlantStock</semantic:flowNodeRef>
+        <semantic:flowNodeRef>endEvent_processEndedMaterialNotAvailable</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_performCapacityCheck</semantic:flowNodeRef>
+        <semantic:flowNodeRef>gateway_capacityAvailable</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_checkOverloadList</semantic:flowNodeRef>
+        <semantic:flowNodeRef>endEvent_processEndedCapacityNotAvailable</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_analyzeCosts</semantic:flowNodeRef>
+        <semantic:flowNodeRef>endEvent_productionOrderSuccessfullyChecked</semantic:flowNodeRef>
+      </semantic:lane>
+    </semantic:laneSet>
+
+    <semantic:startEvent id="startEvent_productionOrderReceived" name="Production Order Received">
+      <semantic:outgoing>flow_toPerformSchedulingCheck</semantic:outgoing>
+    </semantic:startEvent>
+
+    <semantic:task id="task_performSchedulingCheck" name="Perform Scheduling Check">
+      <semantic:incoming>flow_toPerformSchedulingCheck</semantic:incoming>
+      <semantic:outgoing>flow_toPerformMaterialAvailabilityCheck</semantic:outgoing>
+    </semantic:task>
+
+    <semantic:task id="task_performMaterialAvailabilityCheck" name="Perform Material Availability Check">
+      <semantic:incoming>flow_toPerformMaterialAvailabilityCheck</semantic:incoming>
+      <semantic:outgoing>flow_toMaterialsAvailableGateway</semantic:outgoing>
+    </semantic:task>
+
+    <semantic:exclusiveGateway id="gateway_materialsAvailable" name="Materials Available?">
+      <semantic:incoming>flow_toMaterialsAvailableGateway</semantic:incoming>
+      <semantic:outgoing>flow_materialsNotAvailable</semantic:outgoing>
+      <semantic:outgoing>flow_materialsAvailable</semantic:outgoing>
+    </semantic:exclusiveGateway>
+
+    <semantic:task id="task_checkComponentsViewAndPlantStock" name="Check Components View and Plant Stock">
+      <semantic:incoming>flow_materialsNotAvailable</semantic:incoming>
+      <semantic:outgoing>flow_toProcessEndedMaterialNotAvailable</semantic:outgoing>
+    </semantic:task>
+
+    <semantic:endEvent id="endEvent_processEndedMaterialNotAvailable" name="Process Ended (Material Not Available)">
+      <semantic:incoming>flow_toProcessEndedMaterialNotAvailable</semantic:incoming>
+    </semantic:endEvent>
+
+    <semantic:task id="task_performCapacityCheck" name="Perform Capacity Check">
+      <semantic:incoming>flow_materialsAvailable</semantic:incoming>
+      <semantic:outgoing>flow_toCapacityAvailableGateway</semantic:outgoing>
+    </semantic:task>
+
+    <semantic:exclusiveGateway id="gateway_capacityAvailable" name="Capacity Available?">
+      <semantic:incoming>flow_toCapacityAvailableGateway</semantic:incoming>
+      <semantic:outgoing>flow_capacityNotAvailable</semantic:outgoing>
+      <semantic:outgoing>flow_capacityAvailable</semantic:outgoing>
+    </semantic:exclusiveGateway>
+
+    <semantic:task id="task_checkOverloadList" name="Check Overload List">
+      <semantic:incoming>flow_capacityNotAvailable</semantic:incoming>
+      <semantic:outgoing>flow_toProcessEndedCapacityNotAvailable</semantic:outgoing>
+    </semantic:task>
+
+    <semantic:endEvent id="endEvent_processEndedCapacityNotAvailable" name="Process Ended (Capacity Not Available)">
+      <semantic:incoming>flow_toProcessEndedCapacityNotAvailable</semantic:incoming>
+    </semantic:endEvent>
+
+    <semantic:task id="task_analyzeCosts" name="Analyze Costs">
+      <semantic:incoming>flow_capacityAvailable</semantic:incoming>
+      <semantic:outgoing>flow_toProductionOrderSuccessfullyChecked</semantic:outgoing>
+    </semantic:task>
+
+    <semantic:endEvent id="endEvent_productionOrderSuccessfullyChecked" name="Production Order Successfully Checked">
+      <semantic:incoming>flow_toProductionOrderSuccessfullyChecked</semantic:incoming>
+    </semantic:endEvent>
+
+    <semantic:sequenceFlow id="flow_toPerformSchedulingCheck" sourceRef="startEvent_productionOrderReceived" targetRef="task_performSchedulingCheck"/>
+    <semantic:sequenceFlow id="flow_toPerformMaterialAvailabilityCheck" sourceRef="task_performSchedulingCheck" targetRef="task_performMaterialAvailabilityCheck"/>
+    <semantic:sequenceFlow id="flow_toMaterialsAvailableGateway" sourceRef="task_performMaterialAvailabilityCheck" targetRef="gateway_materialsAvailable"/>
+    <semantic:sequenceFlow id="flow_materialsNotAvailable" name="Materials Not Available" sourceRef="gateway_materialsAvailable" targetRef="task_checkComponentsViewAndPlantStock"/>
+    <semantic:sequenceFlow id="flow_toProcessEndedMaterialNotAvailable" sourceRef="task_checkComponentsViewAndPlantStock" targetRef="endEvent_processEndedMaterialNotAvailable"/>
+    <semantic:sequenceFlow id="flow_materialsAvailable" name="Materials Available" sourceRef="gateway_materialsAvailable" targetRef="task_performCapacityCheck"/>
+    <semantic:sequenceFlow id="flow_toCapacityAvailableGateway" sourceRef="task_performCapacityCheck" targetRef="gateway_capacityAvailable"/>
+    <semantic:sequenceFlow id="flow_capacityNotAvailable" name="Capacity Not Available" sourceRef="gateway_capacityAvailable" targetRef="task_checkOverloadList"/>
+    <semantic:sequenceFlow id="flow_toProcessEndedCapacityNotAvailable" sourceRef="task_checkOverloadList" targetRef="endEvent_processEndedCapacityNotAvailable"/>
+    <semantic:sequenceFlow id="flow_capacityAvailable" name="Capacity Available" sourceRef="gateway_capacityAvailable" targetRef="task_analyzeCosts"/>
+    <semantic:sequenceFlow id="flow_toProductionOrderSuccessfullyChecked" sourceRef="task_analyzeCosts" targetRef="endEvent_productionOrderSuccessfullyChecked"/>
+  </semantic:process>
+
+  <bpmndi:BPMNDiagram id="BPMNDiagram_productionOrderCheck" name="Production Order Check Diagram" resolution="96.0">
+    <bpmndi:BPMNPlane bpmnElement="collab_productionOrderCheck">
+      <bpmndi:BPMNShape id="participant_productionDepartment_shape" bpmnElement="participant_productionDepartment" isHorizontal="true">
+        <dc:Bounds x="50" y="50" width="1300" height="450"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="lane_productionAssistant_shape" bpmnElement="lane_productionAssistant" isHorizontal="true">
+        <dc:Bounds x="80" y="50" width="1270" height="450"/>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="startEvent_productionOrderReceived_shape" bpmnElement="startEvent_productionOrderReceived">
+        <dc:Bounds x="120" y="252" width="36" height="36"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="100" y="298" width="80" height="30"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="task_performSchedulingCheck_shape" bpmnElement="task_performSchedulingCheck">
+        <dc:Bounds x="200" y="240" width="100" height="60"/>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="task_performMaterialAvailabilityCheck_shape" bpmnElement="task_performMaterialAvailabilityCheck">
+        <dc:Bounds x="350" y="240" width="100" height="60"/>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="gateway_materialsAvailable_shape" bpmnElement="gateway_materialsAvailable" isMarkerVisible="true">
+        <dc:Bounds x="500" y="245" width="50" height="50"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="480" y="305" width="90" height="14"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="task_checkComponentsViewAndPlantStock_shape" bpmnElement="task_checkComponentsViewAndPlantStock">
+        <dc:Bounds x="600" y="150" width="100" height="60"/>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="endEvent_processEndedMaterialNotAvailable_shape" bpmnElement="endEvent_processEndedMaterialNotAvailable">
+        <dc:Bounds x="750" y="162" width="36" height="36"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="720" y="208" width="90" height="40"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="task_performCapacityCheck_shape" bpmnElement="task_performCapacityCheck">
+        <dc:Bounds x="600" y="330" width="100" height="60"/>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="gateway_capacityAvailable_shape" bpmnElement="gateway_capacityAvailable" isMarkerVisible="true">
+        <dc:Bounds x="750" y="335" width="50" height="50"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="730" y="395" width="90" height="14"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="task_checkOverloadList_shape" bpmnElement="task_checkOverloadList">
+        <dc:Bounds x="850" y="240" width="100" height="60"/>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="endEvent_processEndedCapacityNotAvailable_shape" bpmnElement="endEvent_processEndedCapacityNotAvailable">
+        <dc:Bounds x="1000" y="252" width="36" height="36"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="970" y="298" width="90" height="40"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="task_analyzeCosts_shape" bpmnElement="task_analyzeCosts">
+        <dc:Bounds x="850" y="420" width="100" height="60"/>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="endEvent_productionOrderSuccessfullyChecked_shape" bpmnElement="endEvent_productionOrderSuccessfullyChecked">
+        <dc:Bounds x="1000" y="432" width="36" height="36"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="970" y="478" width="90" height="40"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNEdge id="flow_toPerformSchedulingCheck_edge" bpmnElement="flow_toPerformSchedulingCheck">
+        <di:waypoint x="156" y="270"/>
+        <di:waypoint x="200" y="270"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_toPerformMaterialAvailabilityCheck_edge" bpmnElement="flow_toPerformMaterialAvailabilityCheck">
+        <di:waypoint x="300" y="270"/>
+        <di:waypoint x="350" y="270"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_toMaterialsAvailableGateway_edge" bpmnElement="flow_toMaterialsAvailableGateway">
+        <di:waypoint x="450" y="270"/>
+        <di:waypoint x="500" y="270"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_materialsNotAvailable_edge" bpmnElement="flow_materialsNotAvailable">
+        <di:waypoint x="525" y="245"/>
+        <di:waypoint x="525" y="180"/>
+        <di:waypoint x="600" y="180"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="530" y="200" width="80" height="30"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_toProcessEndedMaterialNotAvailable_edge" bpmnElement="flow_toProcessEndedMaterialNotAvailable">
+        <di:waypoint x="700" y="180"/>
+        <di:waypoint x="750" y="180"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_materialsAvailable_edge" bpmnElement="flow_materialsAvailable">
+        <di:waypoint x="525" y="295"/>
+        <di:waypoint x="525" y="360"/>
+        <di:waypoint x="600" y="360"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="530" y="315" width="80" height="30"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_toCapacityAvailableGateway_edge" bpmnElement="flow_toCapacityAvailableGateway">
+        <di:waypoint x="700" y="360"/>
+        <di:waypoint x="750" y="360"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_capacityNotAvailable_edge" bpmnElement="flow_capacityNotAvailable">
+        <di:waypoint x="775" y="335"/>
+        <di:waypoint x="775" y="270"/>
+        <di:waypoint x="850" y="270"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="780" y="290" width="80" height="30"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_toProcessEndedCapacityNotAvailable_edge" bpmnElement="flow_toProcessEndedCapacityNotAvailable">
+        <di:waypoint x="950" y="270"/>
+        <di:waypoint x="1000" y="270"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_capacityAvailable_edge" bpmnElement="flow_capacityAvailable">
+        <di:waypoint x="775" y="385"/>
+        <di:waypoint x="775" y="450"/>
+        <di:waypoint x="850" y="450"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="780" y="405" width="80" height="30"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_toProductionOrderSuccessfullyChecked_edge" bpmnElement="flow_toProductionOrderSuccessfullyChecked">
+        <di:waypoint x="950" y="450"/>
+        <di:waypoint x="1000" y="450"/>
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</semantic:definitions>

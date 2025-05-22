@@ -1,0 +1,368 @@
+<?xml version="1.0" standalone="yes"?>
+<semantic:definitions id="RevenueForecastProcess"
+    targetNamespace="http://example.com/bpmn/revenueForecast"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:semantic="http://www.omg.org/spec/BPMN/20100524/MODEL"
+    xmlns:di="http://www.omg.org/spec/DD/20100524/DI"
+    xmlns:dc="http://www.omg.org/spec/DD/20100524/DC"
+    xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI">
+
+  <semantic:collaboration id="collab_revenueForecast">
+    <semantic:participant id="participant_arDepartment" name="Accounts Receivable Department" processRef="revenueForecastProcess"/>
+  </semantic:collaboration>
+
+  <semantic:process id="revenueForecastProcess" isExecutable="true">
+    <semantic:laneSet id="laneSet_ar">
+      <semantic:lane id="lane_arProcessor" name="AR Processor">
+        <semantic:flowNodeRef>se_start_1</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_post_forecast_rev</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_define_forecast_details</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_save_forecast_doc</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_display_forecast_post</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_create_customer_define_params</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_define_account_group</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_assign_customer_sales_org</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_save_customer</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_check_cost_centre_status</semantic:flowNodeRef>
+        <semantic:flowNodeRef>gw_cost_centre_blocked</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_create_new_cost_centre</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_create_payment_req</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_save_payment_req_doc</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_display_parked_payment_doc</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_assign_req_cat_fi</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_link_req_cat_doc_type</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_control_proc_req_cat</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_assign_workflow</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_post_acceptance_req</semantic:flowNodeRef>
+        <semantic:flowNodeRef>ee_end_1</semantic:flowNodeRef>
+      </semantic:lane>
+    </semantic:laneSet>
+
+    <semantic:startEvent id="se_start_1" name="Revenue Forecast Request Received">
+      <semantic:outgoing>flow_start_to_postforecast</semantic:outgoing>
+    </semantic:startEvent>
+
+    <semantic:task id="task_post_forecast_rev" name="Post Forecast Revenue in SAP ECC">
+      <semantic:incoming>flow_start_to_postforecast</semantic:incoming>
+      <semantic:outgoing>flow_postforecast_to_defineforecast</semantic:outgoing>
+    </semantic:task>
+
+    <semantic:task id="task_define_forecast_details" name="Define Forecast Posting Details">
+      <semantic:incoming>flow_postforecast_to_defineforecast</semantic:incoming>
+      <semantic:outgoing>flow_defineforecast_to_saveforecast</semantic:outgoing>
+    </semantic:task>
+
+    <semantic:task id="task_save_forecast_doc" name="Save Forecast Document">
+      <semantic:incoming>flow_defineforecast_to_saveforecast</semantic:incoming>
+      <semantic:outgoing>flow_saveforecast_to_displayforecast</semantic:outgoing>
+    </semantic:task>
+
+    <semantic:task id="task_display_forecast_post" name="Display Forecast Posting">
+      <semantic:incoming>flow_saveforecast_to_displayforecast</semantic:incoming>
+      <semantic:outgoing>flow_displayforecast_to_createcustomer</semantic:outgoing>
+    </semantic:task>
+
+    <semantic:task id="task_create_customer_define_params" name="Create Customer and Define Parameters (SAP ECC &amp; CRM)">
+      <semantic:incoming>flow_displayforecast_to_createcustomer</semantic:incoming>
+      <semantic:outgoing>flow_createcustomer_to_defineaccountgroup</semantic:outgoing>
+    </semantic:task>
+
+    <semantic:task id="task_define_account_group" name="Define Account Group (Customer General)">
+      <semantic:incoming>flow_createcustomer_to_defineaccountgroup</semantic:incoming>
+      <semantic:outgoing>flow_defineaccountgroup_to_assigncustomer</semantic:outgoing>
+    </semantic:task>
+
+    <semantic:task id="task_assign_customer_sales_org" name="Assign Customer to Sales Org &amp; Company Code">
+      <semantic:incoming>flow_defineaccountgroup_to_assigncustomer</semantic:incoming>
+      <semantic:outgoing>flow_assigncustomer_to_savecustomer</semantic:outgoing>
+    </semantic:task>
+
+    <semantic:task id="task_save_customer" name="Save Customer">
+      <semantic:incoming>flow_assigncustomer_to_savecustomer</semantic:incoming>
+      <semantic:outgoing>flow_savecustomer_to_checkcostcentre</semantic:outgoing>
+    </semantic:task>
+
+    <semantic:task id="task_check_cost_centre_status" name="Check Cost Centre Blocking Status">
+      <semantic:incoming>flow_savecustomer_to_checkcostcentre</semantic:incoming>
+      <semantic:outgoing>flow_checkcostcentre_to_gwblocked</semantic:outgoing>
+    </semantic:task>
+
+    <semantic:exclusiveGateway id="gw_cost_centre_blocked" name="Cost Centre Blocked?">
+      <semantic:incoming>flow_checkcostcentre_to_gwblocked</semantic:incoming>
+      <semantic:outgoing>flow_gwblocked_to_createcostcentre</semantic:outgoing>
+      <semantic:outgoing>flow_gwblocked_to_createpaymentreq</semantic:outgoing>
+    </semantic:exclusiveGateway>
+
+    <semantic:task id="task_create_new_cost_centre" name="Create New Cost Centre">
+      <semantic:incoming>flow_gwblocked_to_createcostcentre</semantic:incoming>
+      <semantic:outgoing>flow_createcostcentre_to_createpaymentreq</semantic:outgoing>
+    </semantic:task>
+
+    <semantic:task id="task_create_payment_req" name="Create Payment Request (Acceptance Request)">
+      <semantic:incoming>flow_gwblocked_to_createpaymentreq</semantic:incoming>
+      <semantic:incoming>flow_createcostcentre_to_createpaymentreq</semantic:incoming>
+      <semantic:outgoing>flow_createpaymentreq_to_savepaymentreq</semantic:outgoing>
+    </semantic:task>
+
+    <semantic:task id="task_save_payment_req_doc" name="Save Payment Request Document">
+      <semantic:incoming>flow_createpaymentreq_to_savepaymentreq</semantic:incoming>
+      <semantic:outgoing>flow_savepaymentreq_to_displayparkeddoc</semantic:outgoing>
+    </semantic:task>
+
+    <semantic:task id="task_display_parked_payment_doc" name="Display Parked Payment Request Document">
+      <semantic:incoming>flow_savepaymentreq_to_displayparkeddoc</semantic:incoming>
+      <semantic:outgoing>flow_displayparkeddoc_to_assignreqcat</semantic:outgoing>
+    </semantic:task>
+
+    <semantic:task id="task_assign_req_cat_fi" name="Assign Request Category to FI Document Type">
+      <semantic:incoming>flow_displayparkeddoc_to_assignreqcat</semantic:incoming>
+      <semantic:outgoing>flow_assignreqcat_to_linkreqcat</semantic:outgoing>
+    </semantic:task>
+
+    <semantic:task id="task_link_req_cat_doc_type" name="Link 'Acceptance Request' Category to Document Type">
+      <semantic:incoming>flow_assignreqcat_to_linkreqcat</semantic:incoming>
+      <semantic:outgoing>flow_linkreqcat_to_controlproc</semantic:outgoing>
+    </semantic:task>
+
+    <semantic:task id="task_control_proc_req_cat" name="Control Processing of Request Categories">
+      <semantic:incoming>flow_linkreqcat_to_controlproc</semantic:incoming>
+      <semantic:outgoing>flow_controlproc_to_assignworkflow</semantic:outgoing>
+    </semantic:task>
+
+    <semantic:task id="task_assign_workflow" name="Assign Workflow to Request Type">
+      <semantic:incoming>flow_controlproc_to_assignworkflow</semantic:incoming>
+      <semantic:outgoing>flow_assignworkflow_to_postacceptance</semantic:outgoing>
+    </semantic:task>
+
+    <semantic:task id="task_post_acceptance_req" name="Post Acceptance Request">
+      <semantic:incoming>flow_assignworkflow_to_postacceptance</semantic:incoming>
+      <semantic:outgoing>flow_postacceptance_to_end</semantic:outgoing>
+    </semantic:task>
+
+    <semantic:endEvent id="ee_end_1" name="Revenue Forecast Process Completed">
+      <semantic:incoming>flow_postacceptance_to_end</semantic:incoming>
+    </semantic:endEvent>
+
+    <semantic:sequenceFlow id="flow_start_to_postforecast" sourceRef="se_start_1" targetRef="task_post_forecast_rev"/>
+    <semantic:sequenceFlow id="flow_postforecast_to_defineforecast" sourceRef="task_post_forecast_rev" targetRef="task_define_forecast_details"/>
+    <semantic:sequenceFlow id="flow_defineforecast_to_saveforecast" sourceRef="task_define_forecast_details" targetRef="task_save_forecast_doc"/>
+    <semantic:sequenceFlow id="flow_saveforecast_to_displayforecast" sourceRef="task_save_forecast_doc" targetRef="task_display_forecast_post"/>
+    <semantic:sequenceFlow id="flow_displayforecast_to_createcustomer" sourceRef="task_display_forecast_post" targetRef="task_create_customer_define_params"/>
+    <semantic:sequenceFlow id="flow_createcustomer_to_defineaccountgroup" sourceRef="task_create_customer_define_params" targetRef="task_define_account_group"/>
+    <semantic:sequenceFlow id="flow_defineaccountgroup_to_assigncustomer" sourceRef="task_define_account_group" targetRef="task_assign_customer_sales_org"/>
+    <semantic:sequenceFlow id="flow_assigncustomer_to_savecustomer" sourceRef="task_assign_customer_sales_org" targetRef="task_save_customer"/>
+    <semantic:sequenceFlow id="flow_savecustomer_to_checkcostcentre" sourceRef="task_save_customer" targetRef="task_check_cost_centre_status"/>
+    <semantic:sequenceFlow id="flow_checkcostcentre_to_gwblocked" sourceRef="task_check_cost_centre_status" targetRef="gw_cost_centre_blocked"/>
+    <semantic:sequenceFlow id="flow_gwblocked_to_createcostcentre" name="Cost centre blocked" sourceRef="gw_cost_centre_blocked" targetRef="task_create_new_cost_centre"/>
+    <semantic:sequenceFlow id="flow_gwblocked_to_createpaymentreq" name="Cost centre not blocked" sourceRef="gw_cost_centre_blocked" targetRef="task_create_payment_req"/>
+    <semantic:sequenceFlow id="flow_createcostcentre_to_createpaymentreq" sourceRef="task_create_new_cost_centre" targetRef="task_create_payment_req"/>
+    <semantic:sequenceFlow id="flow_createpaymentreq_to_savepaymentreq" sourceRef="task_create_payment_req" targetRef="task_save_payment_req_doc"/>
+    <semantic:sequenceFlow id="flow_savepaymentreq_to_displayparkeddoc" sourceRef="task_save_payment_req_doc" targetRef="task_display_parked_payment_doc"/>
+    <semantic:sequenceFlow id="flow_displayparkeddoc_to_assignreqcat" sourceRef="task_display_parked_payment_doc" targetRef="task_assign_req_cat_fi"/>
+    <semantic:sequenceFlow id="flow_assignreqcat_to_linkreqcat" sourceRef="task_assign_req_cat_fi" targetRef="task_link_req_cat_doc_type"/>
+    <semantic:sequenceFlow id="flow_linkreqcat_to_controlproc" sourceRef="task_link_req_cat_doc_type" targetRef="task_control_proc_req_cat"/>
+    <semantic:sequenceFlow id="flow_controlproc_to_assignworkflow" sourceRef="task_control_proc_req_cat" targetRef="task_assign_workflow"/>
+    <semantic:sequenceFlow id="flow_assignworkflow_to_postacceptance" sourceRef="task_assign_workflow" targetRef="task_post_acceptance_req"/>
+    <semantic:sequenceFlow id="flow_postacceptance_to_end" sourceRef="task_post_acceptance_req" targetRef="ee_end_1"/>
+
+  </semantic:process>
+
+  <bpmndi:BPMNDiagram id="BPMNDiagram_revenueForecast" name="Revenue Forecast Diagram" resolution="96.0">
+    <bpmndi:BPMNPlane bpmnElement="collab_revenueForecast">
+      <bpmndi:BPMNShape id="participant_arDepartment_shape" bpmnElement="participant_arDepartment" isHorizontal="true">
+        <dc:Bounds x="20" y="20" width="2000" height="600"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="lane_arProcessor_shape" bpmnElement="lane_arProcessor" isHorizontal="true">
+        <dc:Bounds x="50" y="20" width="1970" height="600"/>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="se_start_1_shape" bpmnElement="se_start_1">
+        <dc:Bounds x="100" y="282" width="36" height="36"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="70" y="328" width="96" height="40"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="task_post_forecast_rev_shape" bpmnElement="task_post_forecast_rev">
+        <dc:Bounds x="186" y="273" width="100" height="56"/>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="task_define_forecast_details_shape" bpmnElement="task_define_forecast_details">
+        <dc:Bounds x="336" y="273" width="100" height="56"/>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="task_save_forecast_doc_shape" bpmnElement="task_save_forecast_doc">
+        <dc:Bounds x="486" y="273" width="100" height="56"/>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="task_display_forecast_post_shape" bpmnElement="task_display_forecast_post">
+        <dc:Bounds x="636" y="273" width="100" height="56"/>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="task_create_customer_define_params_shape" bpmnElement="task_create_customer_define_params">
+        <dc:Bounds x="786" y="273" width="100" height="56"/>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="task_define_account_group_shape" bpmnElement="task_define_account_group">
+        <dc:Bounds x="936" y="273" width="100" height="56"/>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="task_assign_customer_sales_org_shape" bpmnElement="task_assign_customer_sales_org">
+        <dc:Bounds x="1086" y="273" width="100" height="56"/>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="task_save_customer_shape" bpmnElement="task_save_customer">
+        <dc:Bounds x="1236" y="273" width="100" height="56"/>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="task_check_cost_centre_status_shape" bpmnElement="task_check_cost_centre_status">
+        <dc:Bounds x="1386" y="273" width="100" height="56"/>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="gw_cost_centre_blocked_shape" bpmnElement="gw_cost_centre_blocked" isMarkerVisible="true">
+        <dc:Bounds x="1536" y="276" width="50" height="50"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1516" y="336" width="90" height="14"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="task_create_new_cost_centre_shape" bpmnElement="task_create_new_cost_centre">
+        <dc:Bounds x="1636" y="173" width="100" height="56"/>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="task_create_payment_req_shape" bpmnElement="task_create_payment_req">
+        <dc:Bounds x="1636" y="373" width="100" height="56"/>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="task_save_payment_req_doc_shape" bpmnElement="task_save_payment_req_doc">
+        <dc:Bounds x="1786" y="373" width="100" height="56"/>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="task_display_parked_payment_doc_shape" bpmnElement="task_display_parked_payment_doc">
+        <dc:Bounds x="1936" y="373" width="100" height="56"/>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="task_assign_req_cat_fi_shape" bpmnElement="task_assign_req_cat_fi">
+        <dc:Bounds x="1936" y="273" width="100" height="56"/>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="task_link_req_cat_doc_type_shape" bpmnElement="task_link_req_cat_doc_type">
+        <dc:Bounds x="1786" y="273" width="100" height="56"/>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="task_control_proc_req_cat_shape" bpmnElement="task_control_proc_req_cat">
+        <dc:Bounds x="1636" y="273" width="100" height="56"/>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="task_assign_workflow_shape" bpmnElement="task_assign_workflow">
+        <dc:Bounds x="1486" y="473" width="100" height="56"/>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="task_post_acceptance_req_shape" bpmnElement="task_post_acceptance_req">
+        <dc:Bounds x="1336" y="473" width="100" height="56"/>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="ee_end_1_shape" bpmnElement="ee_end_1">
+        <dc:Bounds x="1250" y="483" width="36" height="36"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1220" y="529" width="96" height="40"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNEdge id="flow_start_to_postforecast_edge" bpmnElement="flow_start_to_postforecast">
+        <di:waypoint x="136" y="300"/>
+        <di:waypoint x="186" y="301"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_postforecast_to_defineforecast_edge" bpmnElement="flow_postforecast_to_defineforecast">
+        <di:waypoint x="286" y="301"/>
+        <di:waypoint x="336" y="301"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_defineforecast_to_saveforecast_edge" bpmnElement="flow_defineforecast_to_saveforecast">
+        <di:waypoint x="436" y="301"/>
+        <di:waypoint x="486" y="301"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_saveforecast_to_displayforecast_edge" bpmnElement="flow_saveforecast_to_displayforecast">
+        <di:waypoint x="586" y="301"/>
+        <di:waypoint x="636" y="301"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_displayforecast_to_createcustomer_edge" bpmnElement="flow_displayforecast_to_createcustomer">
+        <di:waypoint x="736" y="301"/>
+        <di:waypoint x="786" y="301"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_createcustomer_to_defineaccountgroup_edge" bpmnElement="flow_createcustomer_to_defineaccountgroup">
+        <di:waypoint x="886" y="301"/>
+        <di:waypoint x="936" y="301"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_defineaccountgroup_to_assigncustomer_edge" bpmnElement="flow_defineaccountgroup_to_assigncustomer">
+        <di:waypoint x="1036" y="301"/>
+        <di:waypoint x="1086" y="301"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_assigncustomer_to_savecustomer_edge" bpmnElement="flow_assigncustomer_to_savecustomer">
+        <di:waypoint x="1186" y="301"/>
+        <di:waypoint x="1236" y="301"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_savecustomer_to_checkcostcentre_edge" bpmnElement="flow_savecustomer_to_checkcostcentre">
+        <di:waypoint x="1336" y="301"/>
+        <di:waypoint x="1386" y="301"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_checkcostcentre_to_gwblocked_edge" bpmnElement="flow_checkcostcentre_to_gwblocked">
+        <di:waypoint x="1486" y="301"/>
+        <di:waypoint x="1536" y="301"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_gwblocked_to_createcostcentre_edge" bpmnElement="flow_gwblocked_to_createcostcentre">
+        <di:waypoint x="1561" y="276"/>
+        <di:waypoint x="1561" y="201"/>
+        <di:waypoint x="1636" y="201"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1530" y="230" width="80" height="14"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_gwblocked_to_createpaymentreq_edge" bpmnElement="flow_gwblocked_to_createpaymentreq">
+        <di:waypoint x="1561" y="326"/>
+        <di:waypoint x="1561" y="401"/>
+        <di:waypoint x="1636" y="401"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1530" y="355" width="80" height="28"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_createcostcentre_to_createpaymentreq_edge" bpmnElement="flow_createcostcentre_to_createpaymentreq">
+        <di:waypoint x="1686" y="229"/>
+        <di:waypoint x="1686" y="373"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_createpaymentreq_to_savepaymentreq_edge" bpmnElement="flow_createpaymentreq_to_savepaymentreq">
+        <di:waypoint x="1736" y="401"/>
+        <di:waypoint x="1786" y="401"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_savepaymentreq_to_displayparkeddoc_edge" bpmnElement="flow_savepaymentreq_to_displayparkeddoc">
+        <di:waypoint x="1886" y="401"/>
+        <di:waypoint x="1936" y="401"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_displayparkeddoc_to_assignreqcat_edge" bpmnElement="flow_displayparkeddoc_to_assignreqcat">
+        <di:waypoint x="1986" y="373"/>
+        <di:waypoint x="1986" y="329"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_assignreqcat_to_linkreqcat_edge" bpmnElement="flow_assignreqcat_to_linkreqcat">
+        <di:waypoint x="1936" y="301"/>
+        <di:waypoint x="1886" y="301"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_linkreqcat_to_controlproc_edge" bpmnElement="flow_linkreqcat_to_controlproc">
+        <di:waypoint x="1786" y="301"/>
+        <di:waypoint x="1736" y="301"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_controlproc_to_assignworkflow_edge" bpmnElement="flow_controlproc_to_assignworkflow">
+        <di:waypoint x="1686" y="329"/>
+        <di:waypoint x="1686" y="501"/>
+        <di:waypoint x="1586" y="501"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_assignworkflow_to_postacceptance_edge" bpmnElement="flow_assignworkflow_to_postacceptance">
+        <di:waypoint x="1486" y="501"/>
+        <di:waypoint x="1436" y="501"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_postacceptance_to_end_edge" bpmnElement="flow_postacceptance_to_end">
+        <di:waypoint x="1336" y="501"/>
+        <di:waypoint x="1286" y="501"/>
+      </bpmndi:BPMNEdge>
+
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</semantic:definitions>

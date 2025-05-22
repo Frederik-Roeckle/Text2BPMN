@@ -1,0 +1,332 @@
+<?xml version="1.0" standalone="yes"?>
+<semantic:definitions id="vendor_evaluation_definitions"
+    targetNamespace="http://example.com/bpmn/vendor-evaluation"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:semantic="http://www.omg.org/spec/BPMN/20100524/MODEL"
+    xmlns:di="http://www.omg.org/spec/DD/20100524/DI"
+    xmlns:dc="http://www.omg.org/spec/DD/20100524/DC"
+    xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI">
+
+  <semantic:collaboration id="collab_vendor_evaluation">
+    <semantic:participant id="purchasing_dept_pool" name="Purchasing Department" processRef="vendor_evaluation_process"/>
+  </semantic:collaboration>
+
+  <semantic:process id="vendor_evaluation_process" isExecutable="true">
+    <semantic:laneSet id="lane_set_purchasing">
+      <semantic:lane id="mm_employee_lane" name="MM Employee">
+        <semantic:flowNodeRef>start_eval_request</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_evaluate_vendors</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_compare_performance</semantic:flowNodeRef>
+        <semantic:flowNodeRef>gw_criteria_sufficient</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_maintain_criteria</semantic:flowNodeRef>
+        <semantic:flowNodeRef>gw_merge_after_criteria</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_assign_weights</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_define_subcriteria</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_decide_calc_method</semantic:flowNodeRef>
+        <semantic:flowNodeRef>gw_calc_method</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_enter_scores_manual</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_define_scores_info_record</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_system_computes_scores</semantic:flowNodeRef>
+        <semantic:flowNodeRef>gw_merge_after_calc_methods</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_save_evaluation</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_measure_performance</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_display_rank_list</semantic:flowNodeRef>
+        <semantic:flowNodeRef>end_evaluation_maintained</semantic:flowNodeRef>
+      </semantic:lane>
+    </semantic:laneSet>
+
+    <semantic:startEvent id="start_eval_request" name="Vendor Evaluation Request Received">
+      <semantic:outgoing>flow_to_evaluate_vendors</semantic:outgoing>
+    </semantic:startEvent>
+
+    <semantic:userTask id="task_evaluate_vendors" name="Evaluate Vendors in SAP">
+      <semantic:incoming>flow_to_evaluate_vendors</semantic:incoming>
+      <semantic:outgoing>flow_to_compare_performance</semantic:outgoing>
+    </semantic:userTask>
+
+    <semantic:userTask id="task_compare_performance" name="Compare Vendor Performance (Main Criteria)">
+      <semantic:incoming>flow_to_compare_performance</semantic:incoming>
+      <semantic:outgoing>flow_to_gw_criteria_sufficient</semantic:outgoing>
+    </semantic:userTask>
+
+    <semantic:exclusiveGateway id="gw_criteria_sufficient" name="Main Criteria Sufficient?">
+      <semantic:incoming>flow_to_gw_criteria_sufficient</semantic:incoming>
+      <semantic:outgoing>flow_criteria_not_sufficient</semantic:outgoing>
+      <semantic:outgoing>flow_criteria_sufficient</semantic:outgoing>
+    </semantic:exclusiveGateway>
+
+    <semantic:userTask id="task_maintain_criteria" name="Maintain Further Main Criteria">
+      <semantic:incoming>flow_criteria_not_sufficient</semantic:incoming>
+      <semantic:outgoing>flow_from_maintain_to_merge</semantic:outgoing>
+    </semantic:userTask>
+
+    <semantic:exclusiveGateway id="gw_merge_after_criteria" name="Merge Criteria Path">
+        <semantic:incoming>flow_criteria_sufficient</semantic:incoming>
+        <semantic:incoming>flow_from_maintain_to_merge</semantic:incoming>
+        <semantic:outgoing>flow_to_assign_weights</semantic:outgoing>
+    </semantic:exclusiveGateway>
+
+    <semantic:userTask id="task_assign_weights" name="Assign Weights to Criteria">
+      <semantic:incoming>flow_to_assign_weights</semantic:incoming>
+      <semantic:outgoing>flow_to_define_subcriteria</semantic:outgoing>
+    </semantic:userTask>
+
+    <semantic:userTask id="task_define_subcriteria" name="Define Subcriteria">
+      <semantic:incoming>flow_to_define_subcriteria</semantic:incoming>
+      <semantic:outgoing>flow_to_decide_calc_method</semantic:outgoing>
+    </semantic:userTask>
+
+    <semantic:userTask id="task_decide_calc_method" name="Decide Subcriteria Score Calculation Method">
+      <semantic:incoming>flow_to_decide_calc_method</semantic:incoming>
+      <semantic:outgoing>flow_to_gw_calc_method</semantic:outgoing>
+    </semantic:userTask>
+
+    <semantic:exclusiveGateway id="gw_calc_method" name="Selected Calculation Method?">
+      <semantic:incoming>flow_to_gw_calc_method</semantic:incoming>
+      <semantic:outgoing>flow_method_manual</semantic:outgoing>
+      <semantic:outgoing>flow_method_semi_auto</semantic:outgoing>
+      <semantic:outgoing>flow_method_full_auto</semantic:outgoing>
+    </semantic:exclusiveGateway>
+
+    <semantic:userTask id="task_enter_scores_manual" name="Enter Scores Manually">
+      <semantic:incoming>flow_method_manual</semantic:incoming>
+      <semantic:outgoing>flow_manual_to_merge</semantic:outgoing>
+    </semantic:userTask>
+
+    <semantic:userTask id="task_define_scores_info_record" name="Define Scores at Info Record Level">
+      <semantic:incoming>flow_method_semi_auto</semantic:incoming>
+      <semantic:outgoing>flow_semi_auto_to_merge</semantic:outgoing>
+    </semantic:userTask>
+
+    <semantic:userTask id="task_system_computes_scores" name="System Computes Scores">
+      <semantic:incoming>flow_method_full_auto</semantic:incoming>
+      <semantic:outgoing>flow_full_auto_to_merge</semantic:outgoing>
+    </semantic:userTask>
+
+    <semantic:exclusiveGateway id="gw_merge_after_calc_methods" name="Merge Calculation Paths">
+      <semantic:incoming>flow_manual_to_merge</semantic:incoming>
+      <semantic:incoming>flow_semi_auto_to_merge</semantic:incoming>
+      <semantic:incoming>flow_full_auto_to_merge</semantic:incoming>
+      <semantic:outgoing>flow_to_save_evaluation</semantic:outgoing>
+    </semantic:exclusiveGateway>
+
+    <semantic:userTask id="task_save_evaluation" name="Save Evaluation &amp; Calculate Overall Scores">
+      <semantic:incoming>flow_to_save_evaluation</semantic:incoming>
+      <semantic:outgoing>flow_to_measure_performance</semantic:outgoing>
+    </semantic:userTask>
+
+    <semantic:userTask id="task_measure_performance" name="Measure Vendor Performance">
+      <semantic:incoming>flow_to_measure_performance</semantic:incoming>
+      <semantic:outgoing>flow_to_display_rank_list</semantic:outgoing>
+    </semantic:userTask>
+
+    <semantic:userTask id="task_display_rank_list" name="Display Vendor Rank List">
+      <semantic:incoming>flow_to_display_rank_list</semantic:incoming>
+      <semantic:outgoing>flow_to_end_evaluation</semantic:outgoing>
+    </semantic:userTask>
+
+    <semantic:endEvent id="end_evaluation_maintained" name="Vendor Evaluation Maintained">
+      <semantic:incoming>flow_to_end_evaluation</semantic:incoming>
+    </semantic:endEvent>
+
+    <semantic:sequenceFlow id="flow_to_evaluate_vendors" sourceRef="start_eval_request" targetRef="task_evaluate_vendors"/>
+    <semantic:sequenceFlow id="flow_to_compare_performance" sourceRef="task_evaluate_vendors" targetRef="task_compare_performance"/>
+    <semantic:sequenceFlow id="flow_to_gw_criteria_sufficient" sourceRef="task_compare_performance" targetRef="gw_criteria_sufficient"/>
+    <semantic:sequenceFlow id="flow_criteria_not_sufficient" name="No" sourceRef="gw_criteria_sufficient" targetRef="task_maintain_criteria"/>
+    <semantic:sequenceFlow id="flow_criteria_sufficient" name="Yes" sourceRef="gw_criteria_sufficient" targetRef="gw_merge_after_criteria"/>
+    <semantic:sequenceFlow id="flow_from_maintain_to_merge" sourceRef="task_maintain_criteria" targetRef="gw_merge_after_criteria"/>
+    <semantic:sequenceFlow id="flow_to_assign_weights" sourceRef="gw_merge_after_criteria" targetRef="task_assign_weights"/>
+    <semantic:sequenceFlow id="flow_to_define_subcriteria" sourceRef="task_assign_weights" targetRef="task_define_subcriteria"/>
+    <semantic:sequenceFlow id="flow_to_decide_calc_method" sourceRef="task_define_subcriteria" targetRef="task_decide_calc_method"/>
+    <semantic:sequenceFlow id="flow_to_gw_calc_method" sourceRef="task_decide_calc_method" targetRef="gw_calc_method"/>
+    <semantic:sequenceFlow id="flow_method_manual" name="Manual" sourceRef="gw_calc_method" targetRef="task_enter_scores_manual"/>
+    <semantic:sequenceFlow id="flow_method_semi_auto" name="Semi-automatic" sourceRef="gw_calc_method" targetRef="task_define_scores_info_record"/>
+    <semantic:sequenceFlow id="flow_method_full_auto" name="Fully-automatic" sourceRef="gw_calc_method" targetRef="task_system_computes_scores"/>
+    <semantic:sequenceFlow id="flow_manual_to_merge" sourceRef="task_enter_scores_manual" targetRef="gw_merge_after_calc_methods"/>
+    <semantic:sequenceFlow id="flow_semi_auto_to_merge" sourceRef="task_define_scores_info_record" targetRef="gw_merge_after_calc_methods"/>
+    <semantic:sequenceFlow id="flow_full_auto_to_merge" sourceRef="task_system_computes_scores" targetRef="gw_merge_after_calc_methods"/>
+    <semantic:sequenceFlow id="flow_to_save_evaluation" sourceRef="gw_merge_after_calc_methods" targetRef="task_save_evaluation"/>
+    <semantic:sequenceFlow id="flow_to_measure_performance" sourceRef="task_save_evaluation" targetRef="task_measure_performance"/>
+    <semantic:sequenceFlow id="flow_to_display_rank_list" sourceRef="task_measure_performance" targetRef="task_display_rank_list"/>
+    <semantic:sequenceFlow id="flow_to_end_evaluation" sourceRef="task_display_rank_list" targetRef="end_evaluation_maintained"/>
+  </semantic:process>
+
+  <bpmndi:BPMNDiagram id="BPMNDiagram_vendor_evaluation">
+    <bpmndi:BPMNPlane bpmnElement="collab_vendor_evaluation">
+      <bpmndi:BPMNShape id="shape_purchasing_dept_pool" bpmnElement="purchasing_dept_pool" isHorizontal="true">
+        <dc:Bounds x="50" y="50" width="2550" height="560"/>
+        <bpmndi:BPMNLabel/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_mm_employee_lane" bpmnElement="mm_employee_lane" isHorizontal="true">
+        <dc:Bounds x="80" y="80" width="2490" height="500"/>
+        <bpmndi:BPMNLabel/>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="shape_start_eval_request" bpmnElement="start_eval_request">
+        <dc:Bounds x="150" y="282" width="36" height="36"/>
+        <bpmndi:BPMNLabel><dc:Bounds x="120" y="323" width="96" height="28"/></bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_task_evaluate_vendors" bpmnElement="task_evaluate_vendors">
+        <dc:Bounds x="250" y="260" width="100" height="80"/>
+        <bpmndi:BPMNLabel/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_task_compare_performance" bpmnElement="task_compare_performance">
+        <dc:Bounds x="420" y="260" width="100" height="80"/>
+        <bpmndi:BPMNLabel/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_gw_criteria_sufficient" bpmnElement="gw_criteria_sufficient" isMarkerVisible="true">
+        <dc:Bounds x="590" y="275" width="50" height="50"/>
+        <bpmndi:BPMNLabel><dc:Bounds x="570" y="330" width="90" height="28"/></bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_task_maintain_criteria" bpmnElement="task_maintain_criteria">
+        <dc:Bounds x="720" y="140" width="100" height="80"/>
+        <bpmndi:BPMNLabel/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_gw_merge_after_criteria" bpmnElement="gw_merge_after_criteria" isMarkerVisible="true">
+        <dc:Bounds x="870" y="275" width="50" height="50"/>
+        <bpmndi:BPMNLabel><dc:Bounds x="850" y="330" width="90" height="14"/></bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_task_assign_weights" bpmnElement="task_assign_weights">
+        <dc:Bounds x="1000" y="260" width="100" height="80"/>
+        <bpmndi:BPMNLabel/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_task_define_subcriteria" bpmnElement="task_define_subcriteria">
+        <dc:Bounds x="1170" y="260" width="100" height="80"/>
+        <bpmndi:BPMNLabel/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_task_decide_calc_method" bpmnElement="task_decide_calc_method">
+        <dc:Bounds x="1340" y="260" width="100" height="80"/>
+        <bpmndi:BPMNLabel/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_gw_calc_method" bpmnElement="gw_calc_method" isMarkerVisible="true">
+        <dc:Bounds x="1510" y="275" width="50" height="50"/>
+        <bpmndi:BPMNLabel><dc:Bounds x="1480" y="330" width="110" height="28"/></bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_task_enter_scores_manual" bpmnElement="task_enter_scores_manual">
+        <dc:Bounds x="1640" y="90" width="100" height="80"/>
+        <bpmndi:BPMNLabel/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_task_define_scores_info_record" bpmnElement="task_define_scores_info_record">
+        <dc:Bounds x="1640" y="260" width="100" height="80"/>
+        <bpmndi:BPMNLabel/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_task_system_computes_scores" bpmnElement="task_system_computes_scores">
+        <dc:Bounds x="1640" y="430" width="100" height="80"/>
+        <bpmndi:BPMNLabel/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_gw_merge_after_calc_methods" bpmnElement="gw_merge_after_calc_methods" isMarkerVisible="true">
+        <dc:Bounds x="1810" y="275" width="50" height="50"/>
+        <bpmndi:BPMNLabel><dc:Bounds x="1785" y="330" width="100" height="28"/></bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_task_save_evaluation" bpmnElement="task_save_evaluation">
+        <dc:Bounds x="1940" y="260" width="100" height="80"/>
+        <bpmndi:BPMNLabel/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_task_measure_performance" bpmnElement="task_measure_performance">
+        <dc:Bounds x="2110" y="260" width="100" height="80"/>
+        <bpmndi:BPMNLabel/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_task_display_rank_list" bpmnElement="task_display_rank_list">
+        <dc:Bounds x="2280" y="260" width="100" height="80"/>
+        <bpmndi:BPMNLabel/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_end_evaluation_maintained" bpmnElement="end_evaluation_maintained">
+        <dc:Bounds x="2450" y="282" width="36" height="36"/>
+        <bpmndi:BPMNLabel><dc:Bounds x="2420" y="323" width="96" height="28"/></bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNEdge id="edge_flow_to_evaluate_vendors" bpmnElement="flow_to_evaluate_vendors">
+        <di:waypoint x="186" y="300"/>
+        <di:waypoint x="250" y="300"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_to_compare_performance" bpmnElement="flow_to_compare_performance">
+        <di:waypoint x="350" y="300"/>
+        <di:waypoint x="420" y="300"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_to_gw_criteria_sufficient" bpmnElement="flow_to_gw_criteria_sufficient">
+        <di:waypoint x="520" y="300"/>
+        <di:waypoint x="590" y="300"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_criteria_not_sufficient" bpmnElement="flow_criteria_not_sufficient">
+        <di:waypoint x="615" y="275"/>
+        <di:waypoint x="615" y="180"/>
+        <di:waypoint x="720" y="180"/>
+        <bpmndi:BPMNLabel><dc:Bounds x="620" y="225" width="20" height="14"/></bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_criteria_sufficient" bpmnElement="flow_criteria_sufficient">
+        <di:waypoint x="640" y="300"/>
+        <di:waypoint x="870" y="300"/>
+        <bpmndi:BPMNLabel><dc:Bounds x="745" y="280" width="23" height="14"/></bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_from_maintain_to_merge" bpmnElement="flow_from_maintain_to_merge">
+        <di:waypoint x="820" y="180"/>
+        <di:waypoint x="895" y="180"/>
+        <di:waypoint x="895" y="275"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_to_assign_weights" bpmnElement="flow_to_assign_weights">
+        <di:waypoint x="920" y="300"/>
+        <di:waypoint x="1000" y="300"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_to_define_subcriteria" bpmnElement="flow_to_define_subcriteria">
+        <di:waypoint x="1100" y="300"/>
+        <di:waypoint x="1170" y="300"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_to_decide_calc_method" bpmnElement="flow_to_decide_calc_method">
+        <di:waypoint x="1240" y="300"/>
+        <di:waypoint x="1340" y="300"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_to_gw_calc_method" bpmnElement="flow_to_gw_calc_method">
+        <di:waypoint x="1440" y="300"/>
+        <di:waypoint x="1510" y="300"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_method_manual" bpmnElement="flow_method_manual">
+        <di:waypoint x="1535" y="275"/>
+        <di:waypoint x="1535" y="130"/>
+        <di:waypoint x="1640" y="130"/>
+        <bpmndi:BPMNLabel><dc:Bounds x="1540" y="200" width="40" height="14"/></bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_method_semi_auto" bpmnElement="flow_method_semi_auto">
+        <di:waypoint x="1560" y="300"/>
+        <di:waypoint x="1640" y="300"/>
+        <bpmndi:BPMNLabel><dc:Bounds x="1570" y="280" width="70" height="14"/></bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_method_full_auto" bpmnElement="flow_method_full_auto">
+        <di:waypoint x="1535" y="325"/>
+        <di:waypoint x="1535" y="470"/>
+        <di:waypoint x="1640" y="470"/>
+        <bpmndi:BPMNLabel><dc:Bounds x="1540" y="395" width="80" height="14"/></bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_manual_to_merge" bpmnElement="flow_manual_to_merge">
+        <di:waypoint x="1740" y="130"/>
+        <di:waypoint x="1835" y="130"/>
+        <di:waypoint x="1835" y="275"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_semi_auto_to_merge" bpmnElement="flow_semi_auto_to_merge">
+        <di:waypoint x="1740" y="300"/>
+        <di:waypoint x="1810" y="300"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_full_auto_to_merge" bpmnElement="flow_full_auto_to_merge">
+        <di:waypoint x="1740" y="470"/>
+        <di:waypoint x="1835" y="470"/>
+        <di:waypoint x="1835" y="325"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_to_save_evaluation" bpmnElement="flow_to_save_evaluation">
+        <di:waypoint x="1860" y="300"/>
+        <di:waypoint x="1940" y="300"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_to_measure_performance" bpmnElement="flow_to_measure_performance">
+        <di:waypoint x="2040" y="300"/>
+        <di:waypoint x="2110" y="300"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_to_display_rank_list" bpmnElement="flow_to_display_rank_list">
+        <di:waypoint x="2210" y="300"/>
+        <di:waypoint x="2280" y="300"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_to_end_evaluation" bpmnElement="flow_to_end_evaluation">
+        <di:waypoint x="2380" y="300"/>
+        <di:waypoint x="2450" y="300"/>
+      </bpmndi:BPMNEdge>
+
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</semantic:definitions>

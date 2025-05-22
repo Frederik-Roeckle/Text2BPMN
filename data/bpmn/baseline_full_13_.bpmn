@@ -1,0 +1,448 @@
+<?xml version="1.0" standalone="yes"?>
+<semantic:definitions id="chocolateProductionProcessDefs"
+    targetNamespace="http://example.com/bpmn/chocolate-production"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:semantic="http://www.omg.org/spec/BPMN/20100524/MODEL"
+    xmlns:di="http://www.omg.org/spec/DD/20100524/DI"
+    xmlns:dc="http://www.omg.org/spec/DD/20100524/DC"
+    xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI">
+
+  <semantic:collaboration id="collab_chocolateFactory">
+    <semantic:participant id="participant_factory" name="Chocolate Factory" processRef="chocolateProductionProcess"/>
+  </semantic:collaboration>
+
+  <semantic:process id="chocolateProductionProcess" isExecutable="true">
+    <semantic:laneSet id="laneSet_factory">
+      <semantic:lane id="lane_prodManager" name="Production Manager">
+        <semantic:flowNodeRef>startEvent_OrderReceived</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_BookOrderSAP</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_ManageRecipe</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_SendFeedbackToMM</semantic:flowNodeRef>
+      </semantic:lane>
+      <semantic:lane id="lane_mmProcessor" name="MM Processor">
+        <semantic:flowNodeRef>task_CheckMaterials</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_InformPurchaser</semantic:flowNodeRef>
+        <semantic:flowNodeRef>gateway_MatAvailableDecision</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_PrepareProdProcessMM</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_InformOperators</semantic:flowNodeRef>
+      </semantic:lane>
+      <semantic:lane id="lane_purchaser" name="Purchaser">
+        <semantic:flowNodeRef>task_PlaceMaterialOrder</semantic:flowNodeRef>
+      </semantic:lane>
+      <semantic:lane id="lane_operators" name="Operators">
+        <semantic:flowNodeRef>task_StartProduction</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_RoastGrindBeans</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_CreateCocoaPowder</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_CreatePressCocoaMass</semantic:flowNodeRef>
+        <semantic:flowNodeRef>gateway_SplitCakeButter</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_CreateCocoaCake</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_CreateCocoaButter</semantic:flowNodeRef>
+        <semantic:flowNodeRef>gateway_PostButterCreationSplit</semantic:flowNodeRef>
+        <semantic:flowNodeRef>gateway_SplitAromaMilk</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_StirAroma</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_MixMilk</semantic:flowNodeRef>
+        <semantic:flowNodeRef>gateway_JoinAromaMilk</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_CreateChocolateMass</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_ShapeChocolateMass</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_CreateChocolate</semantic:flowNodeRef>
+        <semantic:flowNodeRef>gateway_SyncBreakCake</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_BreakCocoaCake</semantic:flowNodeRef>
+        <semantic:flowNodeRef>gateway_JoinForPackaging</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_CarryOutPackaging</semantic:flowNodeRef>
+        <semantic:flowNodeRef>endEvent_OrderProduced</semantic:flowNodeRef>
+      </semantic:lane>
+    </semantic:laneSet>
+
+    <!-- Production Manager Lane Elements -->
+    <semantic:startEvent id="startEvent_OrderReceived" name="Production Order Received">
+      <semantic:outgoing>flow_to_BookOrder</semantic:outgoing>
+    </semantic:startEvent>
+    <semantic:task id="task_BookOrderSAP" name="Book Order in SAP">
+      <semantic:incoming>flow_to_BookOrder</semantic:incoming>
+      <semantic:outgoing>flow_to_ManageRecipe</semantic:outgoing>
+    </semantic:task>
+    <semantic:task id="task_ManageRecipe" name="Manage Recipe">
+      <semantic:incoming>flow_to_ManageRecipe</semantic:incoming>
+      <semantic:outgoing>flow_to_SendFeedback</semantic:outgoing>
+    </semantic:task>
+    <semantic:task id="task_SendFeedbackToMM" name="Send Feedback to MM">
+      <semantic:incoming>flow_to_SendFeedback</semantic:incoming>
+      <semantic:outgoing>flow_to_CheckMaterials</semantic:outgoing>
+    </semantic:task>
+
+    <!-- MM Processor Lane Elements -->
+    <semantic:task id="task_CheckMaterials" name="Check Materials Availability">
+      <semantic:incoming>flow_to_CheckMaterials</semantic:incoming>
+      <semantic:outgoing>flow_to_InformPurchaser</semantic:outgoing>
+    </semantic:task>
+    <semantic:task id="task_InformPurchaser" name="Inform Purchaser of Availability">
+      <semantic:incoming>flow_to_InformPurchaser</semantic:incoming>
+      <semantic:outgoing>flow_to_MatAvailableDecision</semantic:outgoing>
+    </semantic:task>
+    <semantic:exclusiveGateway id="gateway_MatAvailableDecision" name="Materials Available?">
+      <semantic:incoming>flow_to_MatAvailableDecision</semantic:incoming>
+      <semantic:outgoing>flow_MatAvailable_Yes</semantic:outgoing>
+      <semantic:outgoing>flow_MatAvailable_No</semantic:outgoing>
+    </semantic:exclusiveGateway>
+    <semantic:task id="task_PrepareProdProcessMM" name="Prepare Production Process">
+      <semantic:incoming>flow_MatAvailable_Yes</semantic:incoming>
+      <semantic:incoming>flow_from_PlaceOrder</semantic:incoming>
+      <semantic:outgoing>flow_to_InformOperators</semantic:outgoing>
+    </semantic:task>
+    <semantic:task id="task_InformOperators" name="Inform Operators to Start Production">
+      <semantic:incoming>flow_to_InformOperators</semantic:incoming>
+      <semantic:outgoing>flow_to_StartProduction</semantic:outgoing>
+    </semantic:task>
+
+    <!-- Purchaser Lane Elements -->
+    <semantic:task id="task_PlaceMaterialOrder" name="Place Material Order">
+      <semantic:incoming>flow_MatAvailable_No</semantic:incoming>
+      <semantic:outgoing>flow_from_PlaceOrder</semantic:outgoing>
+    </semantic:task>
+
+    <!-- Operators Lane Elements -->
+    <semantic:task id="task_StartProduction" name="Start Chocolate Production">
+      <semantic:incoming>flow_to_StartProduction</semantic:incoming>
+      <semantic:outgoing>flow_to_RoastGrind</semantic:outgoing>
+    </semantic:task>
+    <semantic:task id="task_RoastGrindBeans" name="Roast and Grind Cocoa Beans">
+      <semantic:incoming>flow_to_RoastGrind</semantic:incoming>
+      <semantic:outgoing>flow_to_CreatePowder</semantic:outgoing>
+    </semantic:task>
+    <semantic:task id="task_CreateCocoaPowder" name="Create Cocoa Powder">
+      <semantic:incoming>flow_to_CreatePowder</semantic:incoming>
+      <semantic:outgoing>flow_to_CreatePressMass</semantic:outgoing>
+    </semantic:task>
+    <semantic:task id="task_CreatePressCocoaMass" name="Create and Press Cocoa Mass">
+      <semantic:incoming>flow_to_CreatePressMass</semantic:incoming>
+      <semantic:outgoing>flow_to_SplitCakeButter</semantic:outgoing>
+    </semantic:task>
+    <semantic:parallelGateway id="gateway_SplitCakeButter" name="Start Cake and Butter Lines">
+      <semantic:incoming>flow_to_SplitCakeButter</semantic:incoming>
+      <semantic:outgoing>flow_to_CreateCake</semantic:outgoing>
+      <semantic:outgoing>flow_to_CreateButter</semantic:outgoing>
+    </semantic:parallelGateway>
+    <semantic:task id="task_CreateCocoaCake" name="Create Cocoa Cake">
+      <semantic:incoming>flow_to_CreateCake</semantic:incoming>
+      <semantic:outgoing>flow_cake_to_SyncBreak</semantic:outgoing>
+    </semantic:task>
+    <semantic:task id="task_CreateCocoaButter" name="Create Cocoa Butter">
+      <semantic:incoming>flow_to_CreateButter</semantic:incoming>
+      <semantic:outgoing>flow_to_PostButterSplit</semantic:outgoing>
+    </semantic:task>
+    <semantic:parallelGateway id="gateway_PostButterCreationSplit" name="Post Butter Creation Activities">
+      <semantic:incoming>flow_to_PostButterSplit</semantic:incoming>
+      <semantic:outgoing>flow_butter_to_SyncBreak</semantic:outgoing>
+      <semantic:outgoing>flow_to_SplitAromaMilk</semantic:outgoing>
+    </semantic:parallelGateway>
+    <semantic:parallelGateway id="gateway_SplitAromaMilk" name="Process Aroma and Milk">
+      <semantic:incoming>flow_to_SplitAromaMilk</semantic:incoming>
+      <semantic:outgoing>flow_to_StirAroma</semantic:outgoing>
+      <semantic:outgoing>flow_to_MixMilk</semantic:outgoing>
+    </semantic:parallelGateway>
+    <semantic:task id="task_StirAroma" name="Stir Aroma">
+      <semantic:incoming>flow_to_StirAroma</semantic:incoming>
+      <semantic:outgoing>flow_from_StirAroma_to_Join</semantic:outgoing>
+    </semantic:task>
+    <semantic:task id="task_MixMilk" name="Mix Milk">
+      <semantic:incoming>flow_to_MixMilk</semantic:incoming>
+      <semantic:outgoing>flow_from_MixMilk_to_Join</semantic:outgoing>
+    </semantic:task>
+    <semantic:parallelGateway id="gateway_JoinAromaMilk" name="Combine Aroma and Milk">
+      <semantic:incoming>flow_from_StirAroma_to_Join</semantic:incoming>
+      <semantic:incoming>flow_from_MixMilk_to_Join</semantic:incoming>
+      <semantic:outgoing>flow_to_CreateChocolateMass</semantic:outgoing>
+    </semantic:parallelGateway>
+    <semantic:task id="task_CreateChocolateMass" name="Create Chocolate Mass">
+      <semantic:incoming>flow_to_CreateChocolateMass</semantic:incoming>
+      <semantic:outgoing>flow_to_ShapeMass</semantic:outgoing>
+    </semantic:task>
+    <semantic:task id="task_ShapeChocolateMass" name="Shape Chocolate Mass">
+      <semantic:incoming>flow_to_ShapeMass</semantic:incoming>
+      <semantic:outgoing>flow_to_CreateChocolate</semantic:outgoing>
+    </semantic:task>
+    <semantic:task id="task_CreateChocolate" name="Create Chocolate">
+      <semantic:incoming>flow_to_CreateChocolate</semantic:incoming>
+      <semantic:outgoing>flow_chocolate_to_PackagingJoin</semantic:outgoing>
+    </semantic:task>
+    <semantic:parallelGateway id="gateway_SyncBreakCake" name="Synchronize for Cake Breaking">
+      <semantic:incoming>flow_cake_to_SyncBreak</semantic:incoming>
+      <semantic:incoming>flow_butter_to_SyncBreak</semantic:incoming>
+      <semantic:outgoing>flow_to_BreakCake</semantic:outgoing>
+    </semantic:parallelGateway>
+    <semantic:task id="task_BreakCocoaCake" name="Break Cocoa Cake">
+      <semantic:incoming>flow_to_BreakCake</semantic:incoming>
+      <semantic:outgoing>flow_cake_to_PackagingJoin</semantic:outgoing>
+    </semantic:task>
+    <semantic:parallelGateway id="gateway_JoinForPackaging" name="Combine Products for Packaging">
+      <semantic:incoming>flow_chocolate_to_PackagingJoin</semantic:incoming>
+      <semantic:incoming>flow_cake_to_PackagingJoin</semantic:incoming>
+      <semantic:outgoing>flow_to_Packaging</semantic:outgoing>
+    </semantic:parallelGateway>
+    <semantic:task id="task_CarryOutPackaging" name="Carry Out Packaging">
+      <semantic:incoming>flow_to_Packaging</semantic:incoming>
+      <semantic:outgoing>flow_to_End</semantic:outgoing>
+    </semantic:task>
+    <semantic:endEvent id="endEvent_OrderProduced" name="Production Order Produced">
+      <semantic:incoming>flow_to_End</semantic:incoming>
+    </semantic:endEvent>
+
+    <!-- Sequence Flows -->
+    <semantic:sequenceFlow id="flow_to_BookOrder" sourceRef="startEvent_OrderReceived" targetRef="task_BookOrderSAP"/>
+    <semantic:sequenceFlow id="flow_to_ManageRecipe" sourceRef="task_BookOrderSAP" targetRef="task_ManageRecipe"/>
+    <semantic:sequenceFlow id="flow_to_SendFeedback" sourceRef="task_ManageRecipe" targetRef="task_SendFeedbackToMM"/>
+    <semantic:sequenceFlow id="flow_to_CheckMaterials" sourceRef="task_SendFeedbackToMM" targetRef="task_CheckMaterials"/>
+    <semantic:sequenceFlow id="flow_to_InformPurchaser" sourceRef="task_CheckMaterials" targetRef="task_InformPurchaser"/>
+    <semantic:sequenceFlow id="flow_to_MatAvailableDecision" sourceRef="task_InformPurchaser" targetRef="gateway_MatAvailableDecision"/>
+    <semantic:sequenceFlow id="flow_MatAvailable_Yes" name="Yes" sourceRef="gateway_MatAvailableDecision" targetRef="task_PrepareProdProcessMM"/>
+    <semantic:sequenceFlow id="flow_MatAvailable_No" name="No" sourceRef="gateway_MatAvailableDecision" targetRef="task_PlaceMaterialOrder"/>
+    <semantic:sequenceFlow id="flow_from_PlaceOrder" sourceRef="task_PlaceMaterialOrder" targetRef="task_PrepareProdProcessMM"/>
+    <semantic:sequenceFlow id="flow_to_InformOperators" sourceRef="task_PrepareProdProcessMM" targetRef="task_InformOperators"/>
+    <semantic:sequenceFlow id="flow_to_StartProduction" sourceRef="task_InformOperators" targetRef="task_StartProduction"/>
+    <semantic:sequenceFlow id="flow_to_RoastGrind" sourceRef="task_StartProduction" targetRef="task_RoastGrindBeans"/>
+    <semantic:sequenceFlow id="flow_to_CreatePowder" sourceRef="task_RoastGrindBeans" targetRef="task_CreateCocoaPowder"/>
+    <semantic:sequenceFlow id="flow_to_CreatePressMass" sourceRef="task_CreateCocoaPowder" targetRef="task_CreatePressCocoaMass"/>
+    <semantic:sequenceFlow id="flow_to_SplitCakeButter" sourceRef="task_CreatePressCocoaMass" targetRef="gateway_SplitCakeButter"/>
+    <semantic:sequenceFlow id="flow_to_CreateCake" sourceRef="gateway_SplitCakeButter" targetRef="task_CreateCocoaCake"/>
+    <semantic:sequenceFlow id="flow_to_CreateButter" sourceRef="gateway_SplitCakeButter" targetRef="task_CreateCocoaButter"/>
+    <semantic:sequenceFlow id="flow_to_PostButterSplit" sourceRef="task_CreateCocoaButter" targetRef="gateway_PostButterCreationSplit"/>
+    <semantic:sequenceFlow id="flow_cake_to_SyncBreak" sourceRef="task_CreateCocoaCake" targetRef="gateway_SyncBreakCake"/>
+    <semantic:sequenceFlow id="flow_butter_to_SyncBreak" sourceRef="gateway_PostButterCreationSplit" targetRef="gateway_SyncBreakCake"/>
+    <semantic:sequenceFlow id="flow_to_SplitAromaMilk" sourceRef="gateway_PostButterCreationSplit" targetRef="gateway_SplitAromaMilk"/>
+    <semantic:sequenceFlow id="flow_to_StirAroma" sourceRef="gateway_SplitAromaMilk" targetRef="task_StirAroma"/>
+    <semantic:sequenceFlow id="flow_to_MixMilk" sourceRef="gateway_SplitAromaMilk" targetRef="task_MixMilk"/>
+    <semantic:sequenceFlow id="flow_from_StirAroma_to_Join" sourceRef="task_StirAroma" targetRef="gateway_JoinAromaMilk"/>
+    <semantic:sequenceFlow id="flow_from_MixMilk_to_Join" sourceRef="task_MixMilk" targetRef="gateway_JoinAromaMilk"/>
+    <semantic:sequenceFlow id="flow_to_CreateChocolateMass" sourceRef="gateway_JoinAromaMilk" targetRef="task_CreateChocolateMass"/>
+    <semantic:sequenceFlow id="flow_to_ShapeMass" sourceRef="task_CreateChocolateMass" targetRef="task_ShapeChocolateMass"/>
+    <semantic:sequenceFlow id="flow_to_CreateChocolate" sourceRef="task_ShapeChocolateMass" targetRef="task_CreateChocolate"/>
+    <semantic:sequenceFlow id="flow_to_BreakCake" sourceRef="gateway_SyncBreakCake" targetRef="task_BreakCocoaCake"/>
+    <semantic:sequenceFlow id="flow_chocolate_to_PackagingJoin" sourceRef="task_CreateChocolate" targetRef="gateway_JoinForPackaging"/>
+    <semantic:sequenceFlow id="flow_cake_to_PackagingJoin" sourceRef="task_BreakCocoaCake" targetRef="gateway_JoinForPackaging"/>
+    <semantic:sequenceFlow id="flow_to_Packaging" sourceRef="gateway_JoinForPackaging" targetRef="task_CarryOutPackaging"/>
+    <semantic:sequenceFlow id="flow_to_End" sourceRef="task_CarryOutPackaging" targetRef="endEvent_OrderProduced"/>
+  </semantic:process>
+
+  <bpmndi:BPMNDiagram id="BPMNDiagram_chocolateProduction" name="Chocolate Production Diagram" resolution="96.0">
+    <bpmndi:BPMNPlane bpmnElement="collab_chocolateFactory">
+      <bpmndi:BPMNShape id="participant_factory_shape" bpmnElement="participant_factory" isHorizontal="true">
+        <dc:Bounds x="10" y="10" width="3500" height="740"/>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="lane_prodManager_shape" bpmnElement="lane_prodManager" isHorizontal="true">
+        <dc:Bounds x="40" y="10" width="3470" height="150"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="lane_mmProcessor_shape" bpmnElement="lane_mmProcessor" isHorizontal="true">
+        <dc:Bounds x="40" y="160" width="3470" height="150"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="lane_purchaser_shape" bpmnElement="lane_purchaser" isHorizontal="true">
+        <dc:Bounds x="40" y="310" width="3470" height="150"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="lane_operators_shape" bpmnElement="lane_operators" isHorizontal="true">
+        <dc:Bounds x="40" y="460" width="3470" height="290"/> <!-- Increased height for Operators lane -->
+      </bpmndi:BPMNShape>
+
+      <!-- Production Manager Shapes -->
+      <bpmndi:BPMNShape id="startEvent_OrderReceived_shape" bpmnElement="startEvent_OrderReceived">
+        <dc:Bounds x="70" y="67" width="36" height="36"/> <!-- y = 10 + (150-36)/2 = 67 -->
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="task_BookOrderSAP_shape" bpmnElement="task_BookOrderSAP">
+        <dc:Bounds x="150" y="45" width="100" height="80"/> <!-- y = 10 + (150-80)/2 = 45 -->
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="task_ManageRecipe_shape" bpmnElement="task_ManageRecipe">
+        <dc:Bounds x="300" y="45" width="100" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="task_SendFeedbackToMM_shape" bpmnElement="task_SendFeedbackToMM">
+        <dc:Bounds x="450" y="45" width="100" height="80"/>
+      </bpmndi:BPMNShape>
+
+      <!-- MM Processor Shapes -->
+      <bpmndi:BPMNShape id="task_CheckMaterials_shape" bpmnElement="task_CheckMaterials">
+        <dc:Bounds x="450" y="195" width="100" height="80"/> <!-- y = 160 + (150-80)/2 = 195 -->
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="task_InformPurchaser_shape" bpmnElement="task_InformPurchaser">
+        <dc:Bounds x="600" y="195" width="100" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="gateway_MatAvailableDecision_shape" bpmnElement="gateway_MatAvailableDecision" isMarkerVisible="true">
+        <dc:Bounds x="750" y="210" width="50" height="50"/> <!-- y = 160 + (150-50)/2 = 210 -->
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="task_PrepareProdProcessMM_shape" bpmnElement="task_PrepareProdProcessMM">
+        <dc:Bounds x="900" y="195" width="100" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="task_InformOperators_shape" bpmnElement="task_InformOperators">
+        <dc:Bounds x="1050" y="195" width="100" height="80"/>
+      </bpmndi:BPMNShape>
+
+      <!-- Purchaser Shapes -->
+      <bpmndi:BPMNShape id="task_PlaceMaterialOrder_shape" bpmnElement="task_PlaceMaterialOrder">
+        <dc:Bounds x="725" y="345" width="100" height="80"/> <!-- y = 310 + (150-80)/2 = 345 -->
+      </bpmndi:BPMNShape>
+
+      <!-- Operators Shapes -->
+      <bpmndi:BPMNShape id="task_StartProduction_shape" bpmnElement="task_StartProduction">
+        <dc:Bounds x="1050" y="565" width="100" height="80"/> <!-- y = 460 + (290-80)/2 = 565 (center of larger lane) -->
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="task_RoastGrindBeans_shape" bpmnElement="task_RoastGrindBeans">
+        <dc:Bounds x="1200" y="565" width="100" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="task_CreateCocoaPowder_shape" bpmnElement="task_CreateCocoaPowder">
+        <dc:Bounds x="1350" y="565" width="100" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="task_CreatePressCocoaMass_shape" bpmnElement="task_CreatePressCocoaMass">
+        <dc:Bounds x="1500" y="565" width="100" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="gateway_SplitCakeButter_shape" bpmnElement="gateway_SplitCakeButter" isMarkerVisible="true">
+        <dc:Bounds x="1650" y="580" width="50" height="50"/> <!-- y = 460 + (290-50)/2 = 580 -->
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="task_CreateCocoaCake_shape" bpmnElement="task_CreateCocoaCake">
+        <dc:Bounds x="1800" y="490" width="100" height="80"/> <!-- y adjusted for upper branch -->
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="task_CreateCocoaButter_shape" bpmnElement="task_CreateCocoaButter">
+        <dc:Bounds x="1800" y="630" width="100" height="80"/> <!-- y adjusted for lower branch -->
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="gateway_PostButterCreationSplit_shape" bpmnElement="gateway_PostButterCreationSplit" isMarkerVisible="true">
+        <dc:Bounds x="1950" y="645" width="50" height="50"/> <!-- Aligned with CreateCocoaButter output -->
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="gateway_SyncBreakCake_shape" bpmnElement="gateway_SyncBreakCake" isMarkerVisible="true">
+        <dc:Bounds x="2100" y="505" width="50" height="50"/> <!-- Aligned with CreateCocoaCake output and PostButterCreationSplit upper output -->
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="task_BreakCocoaCake_shape" bpmnElement="task_BreakCocoaCake">
+        <dc:Bounds x="2250" y="490" width="100" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="gateway_SplitAromaMilk_shape" bpmnElement="gateway_SplitAromaMilk" isMarkerVisible="true">
+        <dc:Bounds x="2100" y="645" width="50" height="50"/> <!-- Aligned with PostButterCreationSplit lower output -->
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="task_StirAroma_shape" bpmnElement="task_StirAroma">
+        <dc:Bounds x="2250" y="585" width="100" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="task_MixMilk_shape" bpmnElement="task_MixMilk">
+        <dc:Bounds x="2250" y="705" width="100" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="gateway_JoinAromaMilk_shape" bpmnElement="gateway_JoinAromaMilk" isMarkerVisible="true">
+        <dc:Bounds x="2400" y="645" width="50" height="50"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="task_CreateChocolateMass_shape" bpmnElement="task_CreateChocolateMass">
+        <dc:Bounds x="2550" y="630" width="100" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="task_ShapeChocolateMass_shape" bpmnElement="task_ShapeChocolateMass">
+        <dc:Bounds x="2700" y="630" width="100" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="task_CreateChocolate_shape" bpmnElement="task_CreateChocolate">
+        <dc:Bounds x="2850" y="630" width="100" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="gateway_JoinForPackaging_shape" bpmnElement="gateway_JoinForPackaging" isMarkerVisible="true">
+        <dc:Bounds x="3000" y="580" width="50" height="50"/> <!-- Centered between incoming branches -->
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="task_CarryOutPackaging_shape" bpmnElement="task_CarryOutPackaging">
+        <dc:Bounds x="3150" y="565" width="100" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="endEvent_OrderProduced_shape" bpmnElement="endEvent_OrderProduced">
+        <dc:Bounds x="3300" y="587" width="36" height="36"/> <!-- y = 460 + (290-36)/2 = 587 -->
+      </bpmndi:BPMNShape>
+
+      <!-- BPMN Edges (Sequence Flows) -->
+      <bpmndi:BPMNEdge id="flow_to_BookOrder_edge" bpmnElement="flow_to_BookOrder">
+        <di:waypoint x="106" y="85"/> <di:waypoint x="150" y="85"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_to_ManageRecipe_edge" bpmnElement="flow_to_ManageRecipe">
+        <di:waypoint x="250" y="85"/> <di:waypoint x="300" y="85"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_to_SendFeedback_edge" bpmnElement="flow_to_SendFeedback">
+        <di:waypoint x="400" y="85"/> <di:waypoint x="450" y="85"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_to_CheckMaterials_edge" bpmnElement="flow_to_CheckMaterials">
+        <di:waypoint x="500" y="125"/> <di:waypoint x="500" y="195"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_to_InformPurchaser_edge" bpmnElement="flow_to_InformPurchaser">
+        <di:waypoint x="550" y="235"/> <di:waypoint x="600" y="235"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_to_MatAvailableDecision_edge" bpmnElement="flow_to_MatAvailableDecision">
+        <di:waypoint x="700" y="235"/> <di:waypoint x="750" y="235"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_MatAvailable_Yes_edge" bpmnElement="flow_MatAvailable_Yes">
+        <di:waypoint x="800" y="235"/> <di:waypoint x="900" y="235"/>
+         <bpmndi:BPMNLabel><dc:Bounds x="830" y="215" width="25" height="14"/></bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_MatAvailable_No_edge" bpmnElement="flow_MatAvailable_No">
+        <di:waypoint x="775" y="260"/> <di:waypoint x="775" y="345"/>
+        <bpmndi:BPMNLabel><dc:Bounds x="780" y="290" width="20" height="14"/></bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_from_PlaceOrder_edge" bpmnElement="flow_from_PlaceOrder">
+        <di:waypoint x="825" y="385"/> <di:waypoint x="950" y="385"/> <di:waypoint x="950" y="275"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_to_InformOperators_edge" bpmnElement="flow_to_InformOperators">
+        <di:waypoint x="1000" y="235"/> <di:waypoint x="1050" y="235"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_to_StartProduction_edge" bpmnElement="flow_to_StartProduction">
+        <di:waypoint x="1100" y="275"/> <di:waypoint x="1100" y="565"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_to_RoastGrind_edge" bpmnElement="flow_to_RoastGrind">
+        <di:waypoint x="1150" y="605"/> <di:waypoint x="1200" y="605"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_to_CreatePowder_edge" bpmnElement="flow_to_CreatePowder">
+        <di:waypoint x="1300" y="605"/> <di:waypoint x="1350" y="605"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_to_CreatePressMass_edge" bpmnElement="flow_to_CreatePressMass">
+        <di:waypoint x="1450" y="605"/> <di:waypoint x="1500" y="605"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_to_SplitCakeButter_edge" bpmnElement="flow_to_SplitCakeButter">
+        <di:waypoint x="1600" y="605"/> <di:waypoint x="1650" y="605"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_to_CreateCake_edge" bpmnElement="flow_to_CreateCake">
+        <di:waypoint x="1675" y="580"/> <di:waypoint x="1675" y="530"/> <di:waypoint x="1800" y="530"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_to_CreateButter_edge" bpmnElement="flow_to_CreateButter">
+        <di:waypoint x="1675" y="630"/> <di:waypoint x="1675" y="670"/> <di:waypoint x="1800" y="670"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_to_PostButterSplit_edge" bpmnElement="flow_to_PostButterSplit">
+        <di:waypoint x="1900" y="670"/> <di:waypoint x="1950" y="670"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_cake_to_SyncBreak_edge" bpmnElement="flow_cake_to_SyncBreak">
+        <di:waypoint x="1900" y="530"/> <di:waypoint x="2100" y="530"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_butter_to_SyncBreak_edge" bpmnElement="flow_butter_to_SyncBreak">
+        <di:waypoint x="1975" y="645"/> <di:waypoint x="1975" y="530"/> <di:waypoint x="2100" y="530"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_to_SplitAromaMilk_edge" bpmnElement="flow_to_SplitAromaMilk">
+        <di:waypoint x="2000" y="670"/> <di:waypoint x="2100" y="670"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_to_StirAroma_edge" bpmnElement="flow_to_StirAroma">
+        <di:waypoint x="2125" y="645"/> <di:waypoint x="2125" y="625"/> <di:waypoint x="2250" y="625"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_to_MixMilk_edge" bpmnElement="flow_to_MixMilk">
+        <di:waypoint x="2125" y="695"/> <di:waypoint x="2125" y="745"/> <di:waypoint x="2250" y="745"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_from_StirAroma_to_Join_edge" bpmnElement="flow_from_StirAroma_to_Join">
+        <di:waypoint x="2350" y="625"/> <di:waypoint x="2400" y="625"/> <di:waypoint x="2425" y="645"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_from_MixMilk_to_Join_edge" bpmnElement="flow_from_MixMilk_to_Join">
+        <di:waypoint x="2350" y="745"/> <di:waypoint x="2400" y="745"/> <di:waypoint x="2425" y="695"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_to_CreateChocolateMass_edge" bpmnElement="flow_to_CreateChocolateMass">
+        <di:waypoint x="2450" y="670"/> <di:waypoint x="2550" y="670"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_to_ShapeMass_edge" bpmnElement="flow_to_ShapeMass">
+        <di:waypoint x="2650" y="670"/> <di:waypoint x="2700" y="670"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_to_CreateChocolate_edge" bpmnElement="flow_to_CreateChocolate">
+        <di:waypoint x="2800" y="670"/> <di:waypoint x="2850" y="670"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_to_BreakCake_edge" bpmnElement="flow_to_BreakCake">
+        <di:waypoint x="2150" y="530"/> <di:waypoint x="2250" y="530"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_chocolate_to_PackagingJoin_edge" bpmnElement="flow_chocolate_to_PackagingJoin">
+        <di:waypoint x="2950" y="670"/> <di:waypoint x="3025" y="670"/> <di:waypoint x="3025" y="630"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_cake_to_PackagingJoin_edge" bpmnElement="flow_cake_to_PackagingJoin">
+        <di:waypoint x="2350" y="530"/> <di:waypoint x="3025" y="530"/> <di:waypoint x="3025" y="580"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_to_Packaging_edge" bpmnElement="flow_to_Packaging">
+        <di:waypoint x="3050" y="605"/> <di:waypoint x="3150" y="605"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_to_End_edge" bpmnElement="flow_to_End">
+        <di:waypoint x="3250" y="605"/> <di:waypoint x="3300" y="605"/>
+      </bpmndi:BPMNEdge>
+
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</semantic:definitions>

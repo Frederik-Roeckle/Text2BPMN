@@ -1,0 +1,347 @@
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<semantic:definitions xmlns:semantic="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:omgdc="http://www.omg.org/spec/DD/20100524/DC" xmlns:omgdi="http://www.omg.org/spec/DD/20100524/DI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" id="sid-38422fae-e532-4499-9944-5393a79a8a77" targetNamespace="http://bpmn.io/schema/bpmn" exporter="bpmn-js (https://demo.bpmn.io)" exporterVersion="13.0.0">
+  <semantic:process id="Process_1" isExecutable="true">
+    <semantic:startEvent id="StartEvent_1" name="Start P2P Process">
+      <semantic:outgoing>SequenceFlow_0m9cr4r</semantic:outgoing>
+    </semantic:startEvent>
+    <semantic:task id="Task_DefineNeeds" name="Define Business Needs">
+      <semantic:incoming>SequenceFlow_0m9cr4r</semantic:incoming>
+      <semantic:outgoing>SequenceFlow_199v1kw</semantic:outgoing>
+    </semantic:task>
+    <semantic:sequenceFlow id="SequenceFlow_0m9cr4r" sourceRef="StartEvent_1" targetRef="Task_DefineNeeds" />
+    <semantic:exclusiveGateway id="ExclusiveGateway_0l8rzfn" name="PR Approved?">
+      <semantic:incoming>SequenceFlow_0049v82</semantic:incoming>
+      <semantic:outgoing>SequenceFlow_0444j14</semantic:outgoing>
+      <semantic:outgoing>SequenceFlow_039ou9j</semantic:outgoing>
+    </semantic:exclusiveGateway>
+    <semantic:sequenceFlow id="SequenceFlow_0444j14" name="Yes" sourceRef="ExclusiveGateway_0l8rzfn" targetRef="Task_CreatePO">
+      <semantic:conditionExpression xsi:type="semantic:tFormalExpression">approved</semantic:conditionExpression>
+    </semantic:sequenceFlow>
+    <semantic:sequenceFlow id="SequenceFlow_039ou9j" name="No" sourceRef="ExclusiveGateway_0l8rzfn" targetRef="Task_DefineNeeds">
+      <semantic:conditionExpression xsi:type="semantic:tFormalExpression">not approved</semantic:conditionExpression>
+    </semantic:sequenceFlow>
+    <semantic:task id="Task_CreatePO" name="Create Purchase Order">
+      <semantic:incoming>SequenceFlow_0444j14</semantic:incoming>
+      <semantic:outgoing>SequenceFlow_049534z</semantic:outgoing>
+    </semantic:task>
+    <semantic:task id="Task_DispatchPO" name="Dispatch PO to Vendor">
+      <semantic:incoming>SequenceFlow_104046w</semantic:incoming>
+      <semantic:outgoing>SequenceFlow_046353x</semantic:outgoing>
+    </semantic:task>
+    <semantic:exclusiveGateway id="ExclusiveGateway_005493l" name="PO Approved?">
+      <semantic:incoming>SequenceFlow_049534z</semantic:incoming>
+      <semantic:outgoing>SequenceFlow_104046w</semantic:outgoing>
+      <semantic:outgoing>SequenceFlow_046484x</semantic:outgoing>
+    </semantic:exclusiveGateway>
+    <semantic:sequenceFlow id="SequenceFlow_104046w" name="Yes" sourceRef="ExclusiveGateway_005493l" targetRef="Task_DispatchPO">
+      <semantic:conditionExpression xsi:type="semantic:tFormalExpression">approved</semantic:conditionExpression>
+    </semantic:sequenceFlow>
+    <semantic:sequenceFlow id="SequenceFlow_046484x" name="No" sourceRef="ExclusiveGateway_005493l" targetRef="Task_DefineNeeds">
+      <semantic:conditionExpression xsi:type="semantic:tFormalExpression">not approved</semantic:conditionExpression>
+    </semantic:sequenceFlow>
+    <semantic:exclusiveGateway id="ExclusiveGateway_039464x" name="Vendor Accepts PO?">
+      <semantic:incoming>SequenceFlow_046353x</semantic:incoming>
+      <semantic:outgoing>SequenceFlow_044999x</semantic:outgoing>
+      <semantic:outgoing>SequenceFlow_044444x</semantic:outgoing>
+      <semantic:outgoing>SequenceFlow_044445x</semantic:outgoing>
+    </semantic:exclusiveGateway>
+    <semantic:sequenceFlow id="SequenceFlow_046353x" sourceRef="Task_DispatchPO" targetRef="ExclusiveGateway_039464x" />
+    <semantic:task id="Task_ReceiveGoodsServices" name="Receive Goods/Services">
+      <semantic:incoming>SequenceFlow_044999x</semantic:incoming>
+      <semantic:outgoing>SequenceFlow_044446x</semantic:outgoing>
+    </semantic:task>
+    <semantic:sequenceFlow id="SequenceFlow_044999x" name="Yes/Negotiate" sourceRef="ExclusiveGateway_039464x" targetRef="Task_ReceiveGoodsServices">
+      <semantic:conditionExpression xsi:type="semantic:tFormalExpression">approved or negotiated</semantic:conditionExpression>
+    </semantic:sequenceFlow>
+    <semantic:endEvent id="EndEvent_033582v" name="Vendor Rejects PO">
+      <semantic:incoming>SequenceFlow_044445x</semantic:incoming>
+    </semantic:endEvent>
+    <semantic:sequenceFlow id="SequenceFlow_044445x" name="No" sourceRef="ExclusiveGateway_039464x" targetRef="EndEvent_033582v">
+      <semantic:conditionExpression xsi:type="semantic:tFormalExpression">rejected</semantic:conditionExpression>
+    </semantic:sequenceFlow>
+    <semantic:task id="Task_IssueGRSES" name="Issue GR/SES">
+      <semantic:incoming>SequenceFlow_044446x</semantic:incoming>
+      <semantic:outgoing>SequenceFlow_044447x</semantic:outgoing>
+    </semantic:task>
+    <semantic:sequenceFlow id="SequenceFlow_044446x" sourceRef="Task_ReceiveGoodsServices" targetRef="Task_IssueGRSES" />
+    <semantic:task id="Task_ReceiveInvoice" name="Receive Invoice">
+      <semantic:incoming>SequenceFlow_044447x</semantic:incoming>
+      <semantic:outgoing>SequenceFlow_044448x</semantic:outgoing>
+    </semantic:task>
+    <semantic:sequenceFlow id="SequenceFlow_044447x" sourceRef="Task_IssueGRSES" targetRef="Task_ReceiveInvoice" />
+    <semantic:exclusiveGateway id="ExclusiveGateway_044449x" name="Invoice Correct?">
+      <semantic:incoming>SequenceFlow_044448x</semantic:incoming>
+      <semantic:outgoing>SequenceFlow_044450x</semantic:outgoing>
+      <semantic:outgoing>SequenceFlow_044451x</semantic:outgoing>
+    </semantic:exclusiveGateway>
+    <semantic:sequenceFlow id="SequenceFlow_044448x" sourceRef="Task_ReceiveInvoice" targetRef="ExclusiveGateway_044449x" />
+    <semantic:task id="Task_ReturnInvoice" name="Return Invoice to Vendor">
+      <semantic:incoming>SequenceFlow_044451x</semantic:incoming>
+      <semantic:outgoing>SequenceFlow_044452x</semantic:outgoing>
+    </semantic:task>
+    <semantic:sequenceFlow id="SequenceFlow_044451x" name="No" sourceRef="ExclusiveGateway_044449x" targetRef="Task_ReturnInvoice">
+      <semantic:conditionExpression xsi:type="semantic:tFormalExpression">incorrect</semantic:conditionExpression>
+    </semantic:sequenceFlow>
+    <semantic:task id="Task_ReceiveCorrectedInvoice" name="Receive Corrected Invoice">
+      <semantic:incoming>SequenceFlow_044452x</semantic:incoming>
+      <semantic:outgoing>SequenceFlow_044453x</semantic:outgoing>
+    </semantic:task>
+    <semantic:sequenceFlow id="SequenceFlow_044452x" sourceRef="Task_ReturnInvoice" targetRef="Task_ReceiveCorrectedInvoice" />
+    <semantic:task id="Task_PostInvoice" name="Post Invoice in SAP">
+      <semantic:incoming>SequenceFlow_044453x</semantic:incoming>
+      <semantic:incoming>SequenceFlow_044450x</semantic:incoming>
+      <semantic:outgoing>SequenceFlow_044454x</semantic:outgoing>
+    </semantic:task>
+    <semantic:sequenceFlow id="SequenceFlow_044453x" sourceRef="Task_ReceiveCorrectedInvoice" targetRef="Task_PostInvoice" />
+    <semantic:sequenceFlow id="SequenceFlow_044450x" name="Yes" sourceRef="ExclusiveGateway_044449x" targetRef="Task_PostInvoice">
+      <semantic:conditionExpression xsi:type="semantic:tFormalExpression">correct</semantic:conditionExpression>
+    </semantic:sequenceFlow>
+    <semantic:task id="Task_DecidePaymentMethod" name="Decide Payment Method">
+      <semantic:incoming>SequenceFlow_044454x</semantic:incoming>
+      <semantic:outgoing>SequenceFlow_044455x</semantic:outgoing>
+    </semantic:task>
+    <semantic:sequenceFlow id="SequenceFlow_044454x" sourceRef="Task_PostInvoice" targetRef="Task_DecidePaymentMethod" />
+    <semantic:task id="Task_PerformPayment" name="Perform Payment">
+      <semantic:incoming>SequenceFlow_044455x</semantic:incoming>
+      <semantic:outgoing>SequenceFlow_044456x</semantic:outgoing>
+    </semantic:task>
+    <semantic:sequenceFlow id="SequenceFlow_044455x" sourceRef="Task_DecidePaymentMethod" targetRef="Task_PerformPayment" />
+    <semantic:endEvent id="EndEvent_044457x" name="P2P Process Completed">
+      <semantic:incoming>SequenceFlow_044456x</semantic:incoming>
+    </semantic:endEvent>
+    <semantic:sequenceFlow id="SequenceFlow_044456x" sourceRef="Task_PerformPayment" targetRef="EndEvent_044457x" />
+    <semantic:task id="Task_RequestPR" name="Request Purchase Requisition">
+      <semantic:incoming>SequenceFlow_199v1kw</semantic:incoming>
+      <semantic:outgoing>SequenceFlow_0049v82</semantic:outgoing>
+    </semantic:task>
+    <semantic:sequenceFlow id="SequenceFlow_199v1kw" sourceRef="Task_DefineNeeds" targetRef="Task_RequestPR" />
+    <semantic:exclusiveGateway id="ExclusiveGateway_199v1kx" name="PR Approved?">
+      <semantic:incoming>SequenceFlow_049534y</semantic:incoming>
+      <semantic:outgoing>SequenceFlow_0444j14y</semantic:outgoing>
+      <semantic:outgoing>SequenceFlow_039ou9jy</semantic:outgoing>
+    </semantic:exclusiveGateway>
+    <semantic:sequenceFlow id="SequenceFlow_0444j14y" name="Yes" sourceRef="ExclusiveGateway_199v1kx" targetRef="Task_CreatePO">
+      <semantic:conditionExpression xsi:type="semantic:tFormalExpression">approved</semantic:conditionExpression>
+    </semantic:sequenceFlow>
+    <semantic:sequenceFlow id="SequenceFlow_039ou9jy" name="No" sourceRef="ExclusiveGateway_199v1kx" targetRef="Task_DefineNeeds">
+      <semantic:conditionExpression xsi:type="semantic:tFormalExpression">not approved</semantic:conditionExpression>
+    </semantic:sequenceFlow>
+    <semantic:task id="Task_ApprovePR" name="Approve Purchase Requisition">
+      <semantic:incoming>SequenceFlow_0049v82</semantic:incoming>
+      <semantic:outgoing>SequenceFlow_049534y</semantic:outgoing>
+    </semantic:task>
+    <semantic:sequenceFlow id="SequenceFlow_0049v82" sourceRef="Task_RequestPR" targetRef="Task_ApprovePR" />
+    <semantic:sequenceFlow id="SequenceFlow_049534y" sourceRef="Task_ApprovePR" targetRef="ExclusiveGateway_0l8rzfn" />
+    <semantic:task id="Task_SearchNewVendor" name="Search New Vendor">
+      <semantic:incoming>SequenceFlow_044444x</semantic:incoming>
+      <semantic:outgoing>SequenceFlow_049534z1</semantic:outgoing>
+    </semantic:task>
+    <semantic:sequenceFlow id="SequenceFlow_044444x" name="Search New Vendor" sourceRef="ExclusiveGateway_039464x" targetRef="Task_SearchNewVendor" />
+    <semantic:sequenceFlow id="SequenceFlow_049534z1" sourceRef="Task_SearchNewVendor" targetRef="Task_DispatchPO" />
+  </semantic:process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_1">
+    <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="Process_1">
+      <bpmndi:BPMNShape id="StartEvent_1_di" bpmnElement="StartEvent_1">
+        <omgdc:Bounds x="152" y="102" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_199v1ku_di" bpmnElement="Task_DefineNeeds">
+        <omgdc:Bounds x="248" y="80" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="SequenceFlow_0m9cr4r_di" bpmnElement="SequenceFlow_0m9cr4r">
+        <omgdi:waypoint x="188" y="120" />
+        <omgdi:waypoint x="248" y="120" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="ExclusiveGateway_0l8rzfn_di" bpmnElement="ExclusiveGateway_0l8rzfn" isMarkerVisible="true">
+        <omgdc:Bounds x="675" y="95" width="50" height="50" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="SequenceFlow_0444j14_di" bpmnElement="SequenceFlow_0444j14">
+        <omgdi:waypoint x="725" y="120" />
+        <omgdi:waypoint x="788" y="120" />
+        <omgdi:waypoint x="788" y="240" />
+        <omgdi:waypoint x="853" y="240" />
+        <omgdi:waypoint x="853" y="160" />
+        <omgdi:waypoint x="918" y="160" />
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds x="798" y="120" width="18" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="SequenceFlow_039ou9j_di" bpmnElement="SequenceFlow_039ou9j">
+        <omgdi:waypoint x="700" y="95" />
+        <omgdi:waypoint x="700" y="55" />
+        <omgdi:waypoint x="298" y="55" />
+        <omgdi:waypoint x="298" y="80" />
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds x="693" y="75" width="13" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="Task_049534y_di" bpmnElement="Task_CreatePO">
+        <omgdc:Bounds x="918" y="120" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_104046w_di" bpmnElement="Task_DispatchPO">
+        <omgdc:Bounds x="1238" y="120" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="ExclusiveGateway_005493l_di" bpmnElement="ExclusiveGateway_005493l" isMarkerVisible="true">
+        <omgdc:Bounds x="1138" y="135" width="50" height="50" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="SequenceFlow_104046w_di" bpmnElement="SequenceFlow_104046w">
+        <omgdi:waypoint x="1188" y="160" />
+        <omgdi:waypoint x="1238" y="160" />
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds x="1208" y="142" width="18" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="SequenceFlow_046484x_di" bpmnElement="SequenceFlow_046484x">
+        <omgdi:waypoint x="1163" y="135" />
+        <omgdi:waypoint x="1163" y="95" />
+        <omgdi:waypoint x="348" y="95" />
+        <omgdi:waypoint x="348" y="80" />
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds x="1156" y="115" width="13" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="ExclusiveGateway_039464x_di" bpmnElement="ExclusiveGateway_039464x" isMarkerVisible="true">
+        <omgdc:Bounds x="1398" y="135" width="50" height="50" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="SequenceFlow_046353x_di" bpmnElement="SequenceFlow_046353x">
+        <omgdi:waypoint x="1338" y="160" />
+        <omgdi:waypoint x="1398" y="160" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="Task_044999x_di" bpmnElement="Task_ReceiveGoodsServices">
+        <omgdc:Bounds x="1498" y="120" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="SequenceFlow_044999x_di" bpmnElement="SequenceFlow_044999x">
+        <omgdi:waypoint x="1448" y="160" />
+        <omgdi:waypoint x="1498" y="160" />
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds x="1458" y="142" width="80" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="EndEvent_033582v_di" bpmnElement="EndEvent_033582v">
+        <omgdc:Bounds x="1405" y="272" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds x="1384" y="315" width="79" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="SequenceFlow_044445x_di" bpmnElement="SequenceFlow_044445x">
+        <omgdi:waypoint x="1423" y="185" />
+        <omgdi:waypoint x="1423" y="272" />
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds x="1426" y="226" width="13" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="Task_044446x_di" bpmnElement="Task_IssueGRSES">
+        <omgdc:Bounds x="1638" y="120" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="SequenceFlow_044446x_di" bpmnElement="SequenceFlow_044446x">
+        <omgdi:waypoint x="1598" y="160" />
+        <omgdi:waypoint x="1638" y="160" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="Task_044447x_di" bpmnElement="Task_ReceiveInvoice">
+        <omgdc:Bounds x="1778" y="120" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="SequenceFlow_044447x_di" bpmnElement="SequenceFlow_044447x">
+        <omgdi:waypoint x="1738" y="160" />
+        <omgdi:waypoint x="1778" y="160" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="ExclusiveGateway_044449x_di" bpmnElement="ExclusiveGateway_044449x" isMarkerVisible="true">
+        <omgdc:Bounds x="1918" y="135" width="50" height="50" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="SequenceFlow_044448x_di" bpmnElement="SequenceFlow_044448x">
+        <omgdi:waypoint x="1878" y="160" />
+        <omgdi:waypoint x="1918" y="160" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="Task_044450x_di" bpmnElement="Task_ReturnInvoice">
+        <omgdc:Bounds x="2018" y="240" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="SequenceFlow_044451x_di" bpmnElement="SequenceFlow_044451x">
+        <omgdi:waypoint x="1943" y="185" />
+        <omgdi:waypoint x="1943" y="280" />
+        <omgdi:waypoint x="2018" y="280" />
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds x="1946" y="230" width="13" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="Task_044452x_di" bpmnElement="Task_ReceiveCorrectedInvoice">
+        <omgdc:Bounds x="2158" y="240" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="SequenceFlow_044452x_di" bpmnElement="SequenceFlow_044452x">
+        <omgdi:waypoint x="2118" y="280" />
+        <omgdi:waypoint x="2158" y="280" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="Task_044453x_di" bpmnElement="Task_PostInvoice">
+        <omgdc:Bounds x="2158" y="120" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="SequenceFlow_044453x_di" bpmnElement="SequenceFlow_044453x">
+        <omgdi:waypoint x="2208" y="240" />
+        <omgdi:waypoint x="2208" y="200" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="SequenceFlow_044450x_di" bpmnElement="SequenceFlow_044450x">
+        <omgdi:waypoint x="1968" y="160" />
+        <omgdi:waypoint x="2158" y="160" />
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds x="2050" y="142" width="18" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="Task_044454x_di" bpmnElement="Task_DecidePaymentMethod">
+        <omgdc:Bounds x="2298" y="120" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="SequenceFlow_044454x_di" bpmnElement="SequenceFlow_044454x">
+        <omgdi:waypoint x="2258" y="160" />
+        <omgdi:waypoint x="2298" y="160" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="Task_044455x_di" bpmnElement="Task_PerformPayment">
+        <omgdc:Bounds x="2438" y="120" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="SequenceFlow_044455x_di" bpmnElement="SequenceFlow_044455x">
+        <omgdi:waypoint x="2398" y="160" />
+        <omgdi:waypoint x="2438" y="160" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="EndEvent_044457x_di" bpmnElement="EndEvent_044457x">
+        <omgdc:Bounds x="2578" y="142" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds x="2557" y="185" width="79" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="SequenceFlow_044456x_di" bpmnElement="SequenceFlow_044456x">
+        <omgdi:waypoint x="2538" y="160" />
+        <omgdi:waypoint x="2578" y="160" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="Task_0049v81_di" bpmnElement="Task_RequestPR">
+        <omgdc:Bounds x="418" y="80" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="SequenceFlow_199v1kw_di" bpmnElement="SequenceFlow_199v1kw">
+        <omgdi:waypoint x="348" y="120" />
+        <omgdi:waypoint x="418" y="120" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="ExclusiveGateway_199v1kx_di" bpmnElement="ExclusiveGateway_199v1kx" isMarkerVisible="true">
+        <omgdc:Bounds x="1038" y="135" width="50" height="50" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="SequenceFlow_0444j14y_di" bpmnElement="SequenceFlow_0444j14y">
+        <omgdi:waypoint x="1088" y="160" />
+        <omgdi:waypoint x="1138" y="160" />
+        <omgdi:waypoint x="1138" y="240" />
+        <omgdi:waypoint x="968" y="240" />
+        <omgdi:waypoint x="968" y="200" />
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds x="1148" y="240" width="18" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="SequenceFlow_039ou9jy_di" bpmnElement="SequenceFlow_039ou9jy">
+        <omgdi:waypoint x="1063" y="135" />
+        <omgdi:waypoint x="1063" y="95" />
+        <omgdi:waypoint x="348" y="95" />
+        <omgdi:waypoint x="348" y="80" />
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds x="1056" y="115" width="13" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="Task_0049v82_di" bpmnElement="Task_ApprovePR">
+        <omgdc:Bounds x="548" y="80" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="SequenceFlow_0049v82_di" bpmnElement="SequenceFlow_0049v82">
+        <omgdi:waypoint x="518" y="120" />
+        <omgdi:waypoint x="548" y="120" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="SequenceFlow_049534y_di" bpmnElement="SequenceFlow_049534y">
+        <omgdi

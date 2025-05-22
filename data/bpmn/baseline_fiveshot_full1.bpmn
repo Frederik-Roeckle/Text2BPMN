@@ -1,0 +1,239 @@
+<?xml version="1.0" standalone="yes"?>
+<semantic:definitions id="definitions_studentLendingProcess"
+    targetNamespace="http://example.com/bpmn/studentLendingProcess"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:semantic="http://www.omg.org/spec/BPMN/20100524/MODEL"
+    xmlns:di="http://www.omg.org/spec/DD/20100524/DI"
+    xmlns:dc="http://www.omg.org/spec/DD/20100524/DC"
+    xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI">
+
+  <semantic:collaboration id="collab_studentLendingProcess">
+    <semantic:participant id="participant_student" name="Student Process" processRef="studentLendingProcess"/>
+  </semantic:collaboration>
+
+  <semantic:process id="studentLendingProcess" isExecutable="true">
+    <semantic:laneSet id="laneSet_student">
+      <semantic:lane id="studentLane" name="Student">
+        <semantic:flowNodeRef>startEvent</semantic:flowNodeRef>
+        <semantic:flowNodeRef>taskRequestBook</semantic:flowNodeRef>
+        <semantic:flowNodeRef>gatewayBookStatus</semantic:flowNodeRef>
+        <semantic:flowNodeRef>taskSubmitOrder</semantic:flowNodeRef>
+        <semantic:flowNodeRef>gatewayLoanDuration</semantic:flowNodeRef>
+        <semantic:flowNodeRef>taskCancelRequest</semantic:flowNodeRef>
+        <semantic:flowNodeRef>endEventRequestCancelled</semantic:flowNodeRef>
+        <semantic:flowNodeRef>taskDecideHold</semantic:flowNodeRef>
+        <semantic:flowNodeRef>taskRequestHold</semantic:flowNodeRef>
+        <semantic:flowNodeRef>timer2Weeks</semantic:flowNodeRef>
+        <semantic:flowNodeRef>taskReceiveAvailability</semantic:flowNodeRef>
+        <semantic:flowNodeRef>taskGetBook</semantic:flowNodeRef>
+        <semantic:flowNodeRef>endEventBookLent</semantic:flowNodeRef>
+      </semantic:lane>
+    </semantic:laneSet>
+
+    <semantic:startEvent id="startEvent" name="Book Lending Realized">
+      <semantic:outgoing>sf_start_to_request</semantic:outgoing>
+    </semantic:startEvent>
+
+    <semantic:task id="taskRequestBook" name="Request Book Lending">
+      <semantic:incoming>sf_start_to_request</semantic:incoming>
+      <semantic:outgoing>sf_request_to_gatewayStatus</semantic:outgoing>
+    </semantic:task>
+
+    <semantic:exclusiveGateway id="gatewayBookStatus" name="Check Book Status">
+      <semantic:incoming>sf_request_to_gatewayStatus</semantic:incoming>
+      <semantic:outgoing>sf_status_to_submitOrder</semantic:outgoing>
+      <semantic:outgoing>sf_status_to_gatewayDuration</semantic:outgoing>
+    </semantic:exclusiveGateway>
+
+    <semantic:task id="taskSubmitOrder" name="Submit Lending Order">
+      <semantic:incoming>sf_status_to_submitOrder</semantic:incoming>
+      <semantic:outgoing>sf_submitOrder_to_endLent</semantic:outgoing>
+    </semantic:task>
+
+    <semantic:exclusiveGateway id="gatewayLoanDuration" name="Check Loan Duration">
+      <semantic:incoming>sf_status_to_gatewayDuration</semantic:incoming>
+      <semantic:outgoing>sf_duration_to_cancel</semantic:outgoing>
+      <semantic:outgoing>sf_duration_to_decideHold</semantic:outgoing>
+    </semantic:exclusiveGateway>
+
+    <semantic:task id="taskCancelRequest" name="Cancel Lending Request">
+      <semantic:incoming>sf_duration_to_cancel</semantic:incoming>
+      <semantic:outgoing>sf_cancel_to_endCancelled</semantic:outgoing>
+    </semantic:task>
+
+    <semantic:endEvent id="endEventRequestCancelled" name="Request Cancelled">
+      <semantic:incoming>sf_cancel_to_endCancelled</semantic:incoming>
+    </semantic:endEvent>
+
+    <semantic:task id="taskDecideHold" name="Decide to Hold Request">
+      <semantic:incoming>sf_duration_to_decideHold</semantic:incoming>
+      <semantic:outgoing>sf_decideHold_to_requestHold</semantic:outgoing>
+    </semantic:task>
+
+    <semantic:task id="taskRequestHold" name="Request Book Hold">
+      <semantic:incoming>sf_decideHold_to_requestHold</semantic:incoming>
+      <semantic:outgoing>sf_requestHold_to_timer</semantic:outgoing>
+    </semantic:task>
+
+    <semantic:intermediateCatchEvent id="timer2Weeks" name="Wait 2 Weeks">
+      <semantic:incoming>sf_requestHold_to_timer</semantic:incoming>
+      <semantic:outgoing>sf_timer_to_receiveAvailability</semantic:outgoing>
+      <semantic:timerEventDefinition/>
+    </semantic:intermediateCatchEvent>
+
+    <semantic:task id="taskReceiveAvailability" name="Receive Book Availability">
+      <semantic:incoming>sf_timer_to_receiveAvailability</semantic:incoming>
+      <semantic:outgoing>sf_receiveAvailability_to_getBook</semantic:outgoing>
+    </semantic:task>
+
+    <semantic:task id="taskGetBook" name="Get Book">
+      <semantic:incoming>sf_receiveAvailability_to_getBook</semantic:incoming>
+      <semantic:outgoing>sf_getBook_to_endLent</semantic:outgoing>
+    </semantic:task>
+
+    <semantic:endEvent id="endEventBookLent" name="Book Lent">
+      <semantic:incoming>sf_submitOrder_to_endLent</semantic:incoming>
+      <semantic:incoming>sf_getBook_to_endLent</semantic:incoming>
+    </semantic:endEvent>
+
+    <semantic:sequenceFlow id="sf_start_to_request" sourceRef="startEvent" targetRef="taskRequestBook"/>
+    <semantic:sequenceFlow id="sf_request_to_gatewayStatus" sourceRef="taskRequestBook" targetRef="gatewayBookStatus"/>
+    <semantic:sequenceFlow id="sf_status_to_submitOrder" name="Book Available" sourceRef="gatewayBookStatus" targetRef="taskSubmitOrder"/>
+    <semantic:sequenceFlow id="sf_submitOrder_to_endLent" sourceRef="taskSubmitOrder" targetRef="endEventBookLent"/>
+    <semantic:sequenceFlow id="sf_status_to_gatewayDuration" name="Book Unavailable/On Loan" sourceRef="gatewayBookStatus" targetRef="gatewayLoanDuration"/>
+    <semantic:sequenceFlow id="sf_duration_to_cancel" name="On Loan for 1 Month" sourceRef="gatewayLoanDuration" targetRef="taskCancelRequest"/>
+    <semantic:sequenceFlow id="sf_cancel_to_endCancelled" sourceRef="taskCancelRequest" targetRef="endEventRequestCancelled"/>
+    <semantic:sequenceFlow id="sf_duration_to_decideHold" name="On Loan for 2 Weeks" sourceRef="gatewayLoanDuration" targetRef="taskDecideHold"/>
+    <semantic:sequenceFlow id="sf_decideHold_to_requestHold" sourceRef="taskDecideHold" targetRef="taskRequestHold"/>
+    <semantic:sequenceFlow id="sf_requestHold_to_timer" sourceRef="taskRequestHold" targetRef="timer2Weeks"/>
+    <semantic:sequenceFlow id="sf_timer_to_receiveAvailability" sourceRef="timer2Weeks" targetRef="taskReceiveAvailability"/>
+    <semantic:sequenceFlow id="sf_receiveAvailability_to_getBook" sourceRef="taskReceiveAvailability" targetRef="taskGetBook"/>
+    <semantic:sequenceFlow id="sf_getBook_to_endLent" sourceRef="taskGetBook" targetRef="endEventBookLent"/>
+  </semantic:process>
+
+  <bpmndi:BPMNDiagram id="BPMNDiagram_studentLendingProcess" name="Student Book Lending Diagram" resolution="96.0">
+    <bpmndi:BPMNPlane bpmnElement="collab_studentLendingProcess">
+      <bpmndi:BPMNShape id="participant_student_shape" bpmnElement="participant_student" isHorizontal="true">
+        <dc:Bounds x="50" y="50" width="1500" height="550"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="studentLane_shape" bpmnElement="studentLane" isHorizontal="true">
+        <dc:Bounds x="80" y="50" width="1470" height="550"/>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="startEvent_shape" bpmnElement="startEvent">
+        <dc:Bounds x="100" y="259" width="36" height="36"/>
+        <bpmndi:BPMNLabel><dc:Bounds x="80" y="300" width="76" height="28" /></bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="taskRequestBook_shape" bpmnElement="taskRequestBook">
+        <dc:Bounds x="200" y="237" width="100" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="gatewayBookStatus_shape" bpmnElement="gatewayBookStatus" isMarkerVisible="true">
+        <dc:Bounds x="370" y="252" width="50" height="50"/>
+        <bpmndi:BPMNLabel><dc:Bounds x="345" y="307" width="100" height="14" /></bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="taskSubmitOrder_shape" bpmnElement="taskSubmitOrder">
+        <dc:Bounds x="500" y="157" width="100" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="gatewayLoanDuration_shape" bpmnElement="gatewayLoanDuration" isMarkerVisible="true">
+        <dc:Bounds x="500" y="332" width="50" height="50"/>
+        <bpmndi:BPMNLabel><dc:Bounds x="475" y="387" width="100" height="14" /></bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="taskCancelRequest_shape" bpmnElement="taskCancelRequest">
+        <dc:Bounds x="630" y="337" width="100" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="endEventRequestCancelled_shape" bpmnElement="endEventRequestCancelled">
+        <dc:Bounds x="800" y="359" width="36" height="36"/>
+        <bpmndi:BPMNLabel><dc:Bounds x="778" y="400" width="80" height="14" /></bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="taskDecideHold_shape" bpmnElement="taskDecideHold">
+        <dc:Bounds x="630" y="417" width="100" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="taskRequestHold_shape" bpmnElement="taskRequestHold">
+        <dc:Bounds x="800" y="417" width="100" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="timer2Weeks_shape" bpmnElement="timer2Weeks">
+        <dc:Bounds x="970" y="439" width="36" height="36"/>
+        <bpmndi:BPMNLabel><dc:Bounds x="950" y="480" width="76" height="14" /></bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="taskReceiveAvailability_shape" bpmnElement="taskReceiveAvailability">
+        <dc:Bounds x="1070" y="417" width="100" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="taskGetBook_shape" bpmnElement="taskGetBook">
+        <dc:Bounds x="1230" y="417" width="100" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="endEventBookLent_shape" bpmnElement="endEventBookLent">
+        <dc:Bounds x="1400" y="259" width="36" height="36"/>
+        <bpmndi:BPMNLabel><dc:Bounds x="1385" y="300" width="66" height="14" /></bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNEdge id="sf_start_to_request_edge" bpmnElement="sf_start_to_request">
+        <di:waypoint x="136" y="277"/>
+        <di:waypoint x="200" y="277"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="sf_request_to_gatewayStatus_edge" bpmnElement="sf_request_to_gatewayStatus">
+        <di:waypoint x="300" y="277"/>
+        <di:waypoint x="370" y="277"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="sf_status_to_submitOrder_edge" bpmnElement="sf_status_to_submitOrder">
+        <di:waypoint x="420" y="277"/>
+        <di:waypoint x="460" y="277"/>
+        <di:waypoint x="460" y="197"/>
+        <di:waypoint x="500" y="197"/>
+        <bpmndi:BPMNLabel><dc:Bounds x="430" y="230" width="80" height="14" /></bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="sf_submitOrder_to_endLent_edge" bpmnElement="sf_submitOrder_to_endLent">
+        <di:waypoint x="600" y="197"/>
+        <di:waypoint x="1000" y="197"/>
+        <di:waypoint x="1000" y="277"/>
+        <di:waypoint x="1400" y="277"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="sf_status_to_gatewayDuration_edge" bpmnElement="sf_status_to_gatewayDuration">
+        <di:waypoint x="420" y="277"/>
+        <di:waypoint x="460" y="277"/>
+        <di:waypoint x="460" y="357"/>
+        <di:waypoint x="500" y="357"/>
+        <bpmndi:BPMNLabel><dc:Bounds x="430" y="310" width="130" height="14" /></bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="sf_duration_to_cancel_edge" bpmnElement="sf_duration_to_cancel">
+        <di:waypoint x="550" y="357"/>
+        <di:waypoint x="590" y="357"/>
+        <di:waypoint x="590" y="377"/>
+        <di:waypoint x="630" y="377"/>
+        <bpmndi:BPMNLabel><dc:Bounds x="560" y="330" width="100" height="14" /></bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="sf_cancel_to_endCancelled_edge" bpmnElement="sf_cancel_to_endCancelled">
+        <di:waypoint x="730" y="377"/>
+        <di:waypoint x="800" y="377"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="sf_duration_to_decideHold_edge" bpmnElement="sf_duration_to_decideHold">
+        <di:waypoint x="550" y="357"/>
+        <di:waypoint x="590" y="357"/>
+        <di:waypoint x="590" y="457"/>
+        <di:waypoint x="630" y="457"/>
+        <bpmndi:BPMNLabel><dc:Bounds x="560" y="400" width="100" height="14" /></bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="sf_decideHold_to_requestHold_edge" bpmnElement="sf_decideHold_to_requestHold">
+        <di:waypoint x="730" y="457"/>
+        <di:waypoint x="800" y="457"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="sf_requestHold_to_timer_edge" bpmnElement="sf_requestHold_to_timer">
+        <di:waypoint x="900" y="457"/>
+        <di:waypoint x="970" y="457"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="sf_timer_to_receiveAvailability_edge" bpmnElement="sf_timer_to_receiveAvailability">
+        <di:waypoint x="1006" y="457"/>
+        <di:waypoint x="1070" y="457"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="sf_receiveAvailability_to_getBook_edge" bpmnElement="sf_receiveAvailability_to_getBook">
+        <di:waypoint x="1170" y="457"/>
+        <di:waypoint x="1230" y="457"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="sf_getBook_to_endLent_edge" bpmnElement="sf_getBook_to_endLent">
+        <di:waypoint x="1330" y="457"/>
+        <di:waypoint x="1365" y="457"/>
+        <di:waypoint x="1365" y="277"/>
+        <di:waypoint x="1400" y="277"/>
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</semantic:definitions>

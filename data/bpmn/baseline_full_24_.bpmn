@@ -1,0 +1,374 @@
+<?xml version="1.0" standalone="yes"?>
+<semantic:definitions id="Definitions_MasterDataProcess"
+    targetNamespace="http://example.com/bpmn/master-data-maintenance"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:semantic="http://www.omg.org/spec/BPMN/20100524/MODEL"
+    xmlns:di="http://www.omg.org/spec/DD/20100524/DI"
+    xmlns:dc="http://www.omg.org/spec/DD/20100524/DC"
+    xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI">
+
+  <semantic:collaboration id="Collab_MasterData">
+    <semantic:participant id="Participant_ProductionDepartment" name="Production Department" processRef="Process_MasterDataMaintenance"/>
+  </semantic:collaboration>
+
+  <semantic:process id="Process_MasterDataMaintenance" isExecutable="true">
+    <semantic:laneSet id="LaneSet_Main">
+      <semantic:lane id="Lane_ProductionAssistant" name="Production Assistant">
+        <semantic:flowNodeRef>StartEvent_ServiceOrderReceived</semantic:flowNodeRef>
+        <semantic:flowNodeRef>Task_InitiateMasterData</semantic:flowNodeRef>
+        <semantic:flowNodeRef>Task_DefineBasicWCData</semantic:flowNodeRef>
+        <semantic:flowNodeRef>Task_SpecifyWCDetails</semantic:flowNodeRef>
+        <semantic:flowNodeRef>CallActivity_DefineRouting</semantic:flowNodeRef>
+        <semantic:flowNodeRef>Task_DefineWCCapacityParams</semantic:flowNodeRef>
+        <semantic:flowNodeRef>Task_AccessCapacityHeader</semantic:flowNodeRef>
+        <semantic:flowNodeRef>Gateway_CapacityHeaderSource</semantic:flowNodeRef>
+        <semantic:flowNodeRef>Task_EnterCapacityHeaderManually</semantic:flowNodeRef>
+        <semantic:flowNodeRef>Task_InitiateRefCapCreation</semantic:flowNodeRef>
+        <semantic:flowNodeRef>CallActivity_CreateReferenceCapacity</semantic:flowNodeRef>
+        <semantic:flowNodeRef>Task_SelectReferencedCapacity</semantic:flowNodeRef>
+        <semantic:flowNodeRef>Gateway_MergeCapacityDefinition</semantic:flowNodeRef>
+        <semantic:flowNodeRef>Task_DefineWCScheduling</semantic:flowNodeRef>
+        <semantic:flowNodeRef>Task_DefineWorkCostLink</semantic:flowNodeRef>
+        <semantic:flowNodeRef>Task_SaveNewWorkCentre</semantic:flowNodeRef>
+        <semantic:flowNodeRef>EndEvent_MasterDataMaintained</semantic:flowNodeRef>
+      </semantic:lane>
+    </semantic:laneSet>
+
+    <semantic:startEvent id="StartEvent_ServiceOrderReceived" name="Service Order Received">
+      <semantic:outgoing>Flow_1_ToInitiateMasterData</semantic:outgoing>
+    </semantic:startEvent>
+    <semantic:task id="Task_InitiateMasterData" name="Initiate Master Data Creation">
+      <semantic:incoming>Flow_1_ToInitiateMasterData</semantic:incoming>
+      <semantic:outgoing>Flow_2_ToDefineBasicWC</semantic:outgoing>
+    </semantic:task>
+    <semantic:task id="Task_DefineBasicWCData" name="Define Basic Work Centre Data">
+      <semantic:incoming>Flow_2_ToDefineBasicWC</semantic:incoming>
+      <semantic:outgoing>Flow_3_ToSpecifyWCDetails</semantic:outgoing>
+    </semantic:task>
+    <semantic:task id="Task_SpecifyWCDetails" name="Specify Work Centre Details">
+      <semantic:incoming>Flow_3_ToSpecifyWCDetails</semantic:incoming>
+      <semantic:outgoing>Flow_4_ToDefineRouting</semantic:outgoing>
+    </semantic:task>
+    <semantic:callActivity id="CallActivity_DefineRouting" name="Define Routing for Service" calledElement="Process_DefineRouting">
+      <semantic:incoming>Flow_4_ToDefineRouting</semantic:incoming>
+      <semantic:outgoing>Flow_5_ToDefineCapParams</semantic:outgoing>
+    </semantic:callActivity>
+    <semantic:task id="Task_DefineWCCapacityParams" name="Define Work Centre Capacity Parameters">
+      <semantic:incoming>Flow_5_ToDefineCapParams</semantic:incoming>
+      <semantic:outgoing>Flow_6_ToAccessCapHeader</semantic:outgoing>
+    </semantic:task>
+    <semantic:task id="Task_AccessCapacityHeader" name="Access Capacity Header Details">
+      <semantic:incoming>Flow_6_ToAccessCapHeader</semantic:incoming>
+      <semantic:outgoing>Flow_7_ToGatewayHeaderSource</semantic:outgoing>
+    </semantic:task>
+    <semantic:exclusiveGateway id="Gateway_CapacityHeaderSource" name="Determine Capacity Header Source">
+      <semantic:incoming>Flow_7_ToGatewayHeaderSource</semantic:incoming>
+      <semantic:outgoing>Flow_8_ToManualEntry</semantic:outgoing>
+      <semantic:outgoing>Flow_9_ToRefChoice</semantic:outgoing>
+    </semantic:exclusiveGateway>
+    <semantic:task id="Task_EnterCapacityHeaderManually" name="Enter Capacity Header Manually">
+      <semantic:incoming>Flow_8_ToManualEntry</semantic:incoming>
+      <semantic:outgoing>Flow_10_ManualToMerge</semantic:outgoing>
+    </semantic:task>
+    <semantic:task id="Task_InitiateRefCapCreation" name="Initiate Reference Capacity Creation">
+      <semantic:incoming>Flow_9_ToRefChoice</semantic:incoming>
+      <semantic:outgoing>Flow_11_ToCreateRefCapSub</semantic:outgoing>
+    </semantic:task>
+    <semantic:callActivity id="CallActivity_CreateReferenceCapacity" name="Create Reference Capacity" calledElement="Process_CreateReferenceCapacity">
+      <semantic:incoming>Flow_11_ToCreateRefCapSub</semantic:incoming>
+      <semantic:outgoing>Flow_12_FromCreateRefCapSub</semantic:outgoing>
+    </semantic:callActivity>
+    <semantic:task id="Task_SelectReferencedCapacity" name="Select Referenced Capacity in Header">
+      <semantic:incoming>Flow_12_FromCreateRefCapSub</semantic:incoming>
+      <semantic:outgoing>Flow_13_RefToMerge</semantic:outgoing>
+    </semantic:task>
+    <semantic:exclusiveGateway id="Gateway_MergeCapacityDefinition" name="Merge Capacity Definition Paths">
+      <semantic:incoming>Flow_10_ManualToMerge</semantic:incoming>
+      <semantic:incoming>Flow_13_RefToMerge</semantic:incoming>
+      <semantic:outgoing>Flow_14_MergedToScheduling</semantic:outgoing>
+    </semantic:exclusiveGateway>
+    <semantic:task id="Task_DefineWCScheduling" name="Define Work Centre Scheduling">
+      <semantic:incoming>Flow_14_MergedToScheduling</semantic:incoming>
+      <semantic:outgoing>Flow_15_SchedulingToLink</semantic:outgoing>
+    </semantic:task>
+    <semantic:task id="Task_DefineWorkCostLink" name="Define Work and Cost Centre Link">
+      <semantic:incoming>Flow_15_SchedulingToLink</semantic:incoming>
+      <semantic:outgoing>Flow_16_LinkToSave</semantic:outgoing>
+    </semantic:task>
+    <semantic:task id="Task_SaveNewWorkCentre" name="Save New Work Centre">
+      <semantic:incoming>Flow_16_LinkToSave</semantic:incoming>
+      <semantic:outgoing>Flow_17_SaveToEnd</semantic:outgoing>
+    </semantic:task>
+    <semantic:endEvent id="EndEvent_MasterDataMaintained" name="Service Master Data Maintained">
+      <semantic:incoming>Flow_17_SaveToEnd</semantic:incoming>
+    </semantic:endEvent>
+
+    <semantic:sequenceFlow id="Flow_1_ToInitiateMasterData" sourceRef="StartEvent_ServiceOrderReceived" targetRef="Task_InitiateMasterData"/>
+    <semantic:sequenceFlow id="Flow_2_ToDefineBasicWC" sourceRef="Task_InitiateMasterData" targetRef="Task_DefineBasicWCData"/>
+    <semantic:sequenceFlow id="Flow_3_ToSpecifyWCDetails" sourceRef="Task_DefineBasicWCData" targetRef="Task_SpecifyWCDetails"/>
+    <semantic:sequenceFlow id="Flow_4_ToDefineRouting" sourceRef="Task_SpecifyWCDetails" targetRef="CallActivity_DefineRouting"/>
+    <semantic:sequenceFlow id="Flow_5_ToDefineCapParams" sourceRef="CallActivity_DefineRouting" targetRef="Task_DefineWCCapacityParams"/>
+    <semantic:sequenceFlow id="Flow_6_ToAccessCapHeader" sourceRef="Task_DefineWCCapacityParams" targetRef="Task_AccessCapacityHeader"/>
+    <semantic:sequenceFlow id="Flow_7_ToGatewayHeaderSource" sourceRef="Task_AccessCapacityHeader" targetRef="Gateway_CapacityHeaderSource"/>
+    <semantic:sequenceFlow id="Flow_8_ToManualEntry" name="Manual Entry" sourceRef="Gateway_CapacityHeaderSource" targetRef="Task_EnterCapacityHeaderManually"/>
+    <semantic:sequenceFlow id="Flow_9_ToRefChoice" name="Reference Pre-defined" sourceRef="Gateway_CapacityHeaderSource" targetRef="Task_InitiateRefCapCreation"/>
+    <semantic:sequenceFlow id="Flow_10_ManualToMerge" sourceRef="Task_EnterCapacityHeaderManually" targetRef="Gateway_MergeCapacityDefinition"/>
+    <semantic:sequenceFlow id="Flow_11_ToCreateRefCapSub" sourceRef="Task_InitiateRefCapCreation" targetRef="CallActivity_CreateReferenceCapacity"/>
+    <semantic:sequenceFlow id="Flow_12_FromCreateRefCapSub" sourceRef="CallActivity_CreateReferenceCapacity" targetRef="Task_SelectReferencedCapacity"/>
+    <semantic:sequenceFlow id="Flow_13_RefToMerge" sourceRef="Task_SelectReferencedCapacity" targetRef="Gateway_MergeCapacityDefinition"/>
+    <semantic:sequenceFlow id="Flow_14_MergedToScheduling" sourceRef="Gateway_MergeCapacityDefinition" targetRef="Task_DefineWCScheduling"/>
+    <semantic:sequenceFlow id="Flow_15_SchedulingToLink" sourceRef="Task_DefineWCScheduling" targetRef="Task_DefineWorkCostLink"/>
+    <semantic:sequenceFlow id="Flow_16_LinkToSave" sourceRef="Task_DefineWorkCostLink" targetRef="Task_SaveNewWorkCentre"/>
+    <semantic:sequenceFlow id="Flow_17_SaveToEnd" sourceRef="Task_SaveNewWorkCentre" targetRef="EndEvent_MasterDataMaintained"/>
+  </semantic:process>
+
+  <semantic:process id="Process_DefineRouting" name="Define Routing Process" isExecutable="false">
+    <semantic:startEvent id="SDR_Start" name="Start Routing Definition">
+      <semantic:outgoing>SDR_Flow1</semantic:outgoing>
+    </semantic:startEvent>
+    <semantic:task id="SDR_Task_SelectKey" name="Select Standard Key Value">
+      <semantic:incoming>SDR_Flow1</semantic:incoming>
+      <semantic:outgoing>SDR_Flow2</semantic:outgoing>
+    </semantic:task>
+    <semantic:task id="SDR_Task_EnterTimes" name="Enter Time Parameters">
+      <semantic:incoming>SDR_Flow2</semantic:incoming>
+      <semantic:outgoing>SDR_Flow3</semantic:outgoing>
+    </semantic:task>
+    <semantic:endEvent id="SDR_End" name="Routing Definition Completed">
+      <semantic:incoming>SDR_Flow3</semantic:incoming>
+    </semantic:endEvent>
+    <semantic:sequenceFlow id="SDR_Flow1" sourceRef="SDR_Start" targetRef="SDR_Task_SelectKey"/>
+    <semantic:sequenceFlow id="SDR_Flow2" sourceRef="SDR_Task_SelectKey" targetRef="SDR_Task_EnterTimes"/>
+    <semantic:sequenceFlow id="SDR_Flow3" sourceRef="SDR_Task_EnterTimes" targetRef="SDR_End"/>
+  </semantic:process>
+
+  <semantic:process id="Process_CreateReferenceCapacity" name="Create Reference Capacity Process" isExecutable="false">
+    <semantic:startEvent id="SCRC_Start" name="Start Reference Capacity Creation">
+      <semantic:outgoing>SCRC_Flow1</semantic:outgoing>
+    </semantic:startEvent>
+    <semantic:task id="SCRC_Task_DefineInitial" name="Define Initial Reference Capacity Data">
+      <semantic:incoming>SCRC_Flow1</semantic:incoming>
+      <semantic:outgoing>SCRC_Flow2</semantic:outgoing>
+    </semantic:task>
+    <semantic:task id="SCRC_Task_ConfirmInitial" name="Confirm Initial Entries">
+      <semantic:incoming>SCRC_Flow2</semantic:incoming>
+      <semantic:outgoing>SCRC_Flow3</semantic:outgoing>
+    </semantic:task>
+    <semantic:task id="SCRC_Task_SpecifyDetailed" name="Specify Detailed Capacity Characteristics">
+      <semantic:incoming>SCRC_Flow3</semantic:incoming>
+      <semantic:outgoing>SCRC_Flow4</semantic:outgoing>
+    </semantic:task>
+    <semantic:task id="SCRC_Task_ConfirmDetailed" name="Confirm Capacity Characteristics">
+      <semantic:incoming>SCRC_Flow4</semantic:incoming>
+      <semantic:outgoing>SCRC_Flow5</semantic:outgoing>
+    </semantic:task>
+    <semantic:task id="SCRC_Task_SaveRefCap" name="Save Reference Capacity">
+      <semantic:incoming>SCRC_Flow5</semantic:incoming>
+      <semantic:outgoing>SCRC_Flow6</semantic:outgoing>
+    </semantic:task>
+    <semantic:endEvent id="SCRC_End" name="Reference Capacity Created">
+      <semantic:incoming>SCRC_Flow6</semantic:incoming>
+    </semantic:endEvent>
+    <semantic:sequenceFlow id="SCRC_Flow1" sourceRef="SCRC_Start" targetRef="SCRC_Task_DefineInitial"/>
+    <semantic:sequenceFlow id="SCRC_Flow2" sourceRef="SCRC_Task_DefineInitial" targetRef="SCRC_Task_ConfirmInitial"/>
+    <semantic:sequenceFlow id="SCRC_Flow3" sourceRef="SCRC_Task_ConfirmInitial" targetRef="SCRC_Task_SpecifyDetailed"/>
+    <semantic:sequenceFlow id="SCRC_Flow4" sourceRef="SCRC_Task_SpecifyDetailed" targetRef="SCRC_Task_ConfirmDetailed"/>
+    <semantic:sequenceFlow id="SCRC_Flow5" sourceRef="SCRC_Task_ConfirmDetailed" targetRef="SCRC_Task_SaveRefCap"/>
+    <semantic:sequenceFlow id="SCRC_Flow6" sourceRef="SCRC_Task_SaveRefCap" targetRef="SCRC_End"/>
+  </semantic:process>
+
+  <bpmndi:BPMNDiagram id="Diagram_MainProcess" name="Main Master Data Maintenance Diagram">
+    <bpmndi:BPMNPlane bpmnElement="Collab_MasterData">
+      <bpmndi:BPMNShape id="Shape_Participant_ProductionDepartment" bpmnElement="Participant_ProductionDepartment" isHorizontal="true">
+        <dc:Bounds x="40" y="10" width="2680" height="350"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Lane_ProductionAssistant" bpmnElement="Lane_ProductionAssistant" isHorizontal="true">
+        <dc:Bounds x="70" y="10" width="2650" height="350"/>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="Shape_StartEvent_ServiceOrderReceived" bpmnElement="StartEvent_ServiceOrderReceived">
+        <dc:Bounds x="100" y="122" width="36" height="36"/>
+        <bpmndi:BPMNLabel><dc:Bounds x="80" y="168" width="80" height="30"/></bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Task_InitiateMasterData" bpmnElement="Task_InitiateMasterData">
+        <dc:Bounds x="200" y="100" width="140" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Task_DefineBasicWCData" bpmnElement="Task_DefineBasicWCData">
+        <dc:Bounds x="400" y="100" width="140" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Task_SpecifyWCDetails" bpmnElement="Task_SpecifyWCDetails">
+        <dc:Bounds x="600" y="100" width="140" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_CallActivity_DefineRouting" bpmnElement="CallActivity_DefineRouting">
+        <dc:Bounds x="800" y="100" width="140" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Task_DefineWCCapacityParams" bpmnElement="Task_DefineWCCapacityParams">
+        <dc:Bounds x="1000" y="100" width="140" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Task_AccessCapacityHeader" bpmnElement="Task_AccessCapacityHeader">
+        <dc:Bounds x="1200" y="100" width="140" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Gateway_CapacityHeaderSource" bpmnElement="Gateway_CapacityHeaderSource" isMarkerVisible="true">
+        <dc:Bounds x="1400" y="115" width="50" height="50"/>
+         <bpmndi:BPMNLabel><dc:Bounds x="1380" y="170" width="90" height="30"/></bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Task_EnterCapacityHeaderManually" bpmnElement="Task_EnterCapacityHeaderManually">
+        <dc:Bounds x="1500" y="220" width="140" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Task_InitiateRefCapCreation" bpmnElement="Task_InitiateRefCapCreation">
+        <dc:Bounds x="1500" y="30" width="140" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_CallActivity_CreateReferenceCapacity" bpmnElement="CallActivity_CreateReferenceCapacity">
+        <dc:Bounds x="1700" y="30" width="140" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Task_SelectReferencedCapacity" bpmnElement="Task_SelectReferencedCapacity">
+        <dc:Bounds x="1900" y="30" width="140" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Gateway_MergeCapacityDefinition" bpmnElement="Gateway_MergeCapacityDefinition" isMarkerVisible="true">
+        <dc:Bounds x="2100" y="115" width="50" height="50"/>
+        <bpmndi:BPMNLabel><dc:Bounds x="2080" y="170" width="90" height="40"/></bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Task_DefineWCScheduling" bpmnElement="Task_DefineWCScheduling">
+        <dc:Bounds x="2210" y="100" width="140" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Task_DefineWorkCostLink" bpmnElement="Task_DefineWorkCostLink">
+        <dc:Bounds x="2410" y="100" width="140" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Task_SaveNewWorkCentre" bpmnElement="Task_SaveNewWorkCentre">
+        <dc:Bounds x="2610" y="100" width="140" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_EndEvent_MasterDataMaintained" bpmnElement="EndEvent_MasterDataMaintained">
+        <dc:Bounds x="2810" y="122" width="36" height="36"/>
+        <bpmndi:BPMNLabel><dc:Bounds x="2780" y="168" width="100" height="30"/></bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNEdge id="Edge_Flow_1" bpmnElement="Flow_1_ToInitiateMasterData">
+        <di:waypoint x="136" y="140"/> <di:waypoint x="200" y="140"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Flow_2" bpmnElement="Flow_2_ToDefineBasicWC">
+        <di:waypoint x="340" y="140"/> <di:waypoint x="400" y="140"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Flow_3" bpmnElement="Flow_3_ToSpecifyWCDetails">
+        <di:waypoint x="540" y="140"/> <di:waypoint x="600" y="140"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Flow_4" bpmnElement="Flow_4_ToDefineRouting">
+        <di:waypoint x="740" y="140"/> <di:waypoint x="800" y="140"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Flow_5" bpmnElement="Flow_5_ToDefineCapParams">
+        <di:waypoint x="940" y="140"/> <di:waypoint x="1000" y="140"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Flow_6" bpmnElement="Flow_6_ToAccessCapHeader">
+        <di:waypoint x="1140" y="140"/> <di:waypoint x="1200" y="140"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Flow_7" bpmnElement="Flow_7_ToGatewayHeaderSource">
+        <di:waypoint x="1340" y="140"/> <di:waypoint x="1400" y="140"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Flow_8" bpmnElement="Flow_8_ToManualEntry">
+        <di:waypoint x="1425" y="165"/> <di:waypoint x="1425" y="260"/> <di:waypoint x="1500" y="260"/>
+        <bpmndi:BPMNLabel><dc:Bounds x="1430" y="200" width="80" height="20"/></bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Flow_9" bpmnElement="Flow_9_ToRefChoice">
+        <di:waypoint x="1425" y="115"/> <di:waypoint x="1425" y="70"/> <di:waypoint x="1500" y="70"/>
+        <bpmndi:BPMNLabel><dc:Bounds x="1430" y="80" width="80" height="30"/></bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Flow_10" bpmnElement="Flow_10_ManualToMerge">
+        <di:waypoint x="1640" y="260"/> <di:waypoint x="2000" y="260"/> <di:waypoint x="2000" y="140"/> <di:waypoint x="2100" y="140"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Flow_11" bpmnElement="Flow_11_ToCreateRefCapSub">
+        <di:waypoint x="1640" y="70"/> <di:waypoint x="1700" y="70"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Flow_12" bpmnElement="Flow_12_FromCreateRefCapSub">
+        <di:waypoint x="1840" y="70"/> <di:waypoint x="1900" y="70"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Flow_13" bpmnElement="Flow_13_RefToMerge">
+        <di:waypoint x="2040" y="70"/> <di:waypoint x="2075" y="70"/> <di:waypoint x="2075" y="140"/> <di:waypoint x="2100" y="140"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Flow_14" bpmnElement="Flow_14_MergedToScheduling">
+        <di:waypoint x="2150" y="140"/> <di:waypoint x="2210" y="140"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Flow_15" bpmnElement="Flow_15_SchedulingToLink">
+        <di:waypoint x="2350" y="140"/> <di:waypoint x="2410" y="140"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Flow_16" bpmnElement="Flow_16_LinkToSave">
+        <di:waypoint x="2550" y="140"/> <di:waypoint x="2610" y="140"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Flow_17" bpmnElement="Flow_17_SaveToEnd">
+        <di:waypoint x="2750" y="140"/> <di:waypoint x="2810" y="140"/>
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+
+  <bpmndi:BPMNDiagram id="Diagram_DefineRouting" name="Define Routing Subprocess Diagram">
+    <bpmndi:BPMNPlane bpmnElement="Process_DefineRouting">
+      <bpmndi:BPMNShape id="Shape_SDR_Start" bpmnElement="SDR_Start">
+        <dc:Bounds x="50" y="82" width="36" height="36"/>
+        <bpmndi:BPMNLabel><dc:Bounds x="30" y="128" width="80" height="30"/></bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_SDR_Task_SelectKey" bpmnElement="SDR_Task_SelectKey">
+        <dc:Bounds x="150" y="60" width="140" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_SDR_Task_EnterTimes" bpmnElement="SDR_Task_EnterTimes">
+        <dc:Bounds x="350" y="60" width="140" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_SDR_End" bpmnElement="SDR_End">
+        <dc:Bounds x="550" y="82" width="36" height="36"/>
+        <bpmndi:BPMNLabel><dc:Bounds x="520" y="128" width="100" height="30"/></bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="Edge_SDR_Flow1" bpmnElement="SDR_Flow1">
+        <di:waypoint x="86" y="100"/> <di:waypoint x="150" y="100"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_SDR_Flow2" bpmnElement="SDR_Flow2">
+        <di:waypoint x="290" y="100"/> <di:waypoint x="350" y="100"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_SDR_Flow3" bpmnElement="SDR_Flow3">
+        <di:waypoint x="490" y="100"/> <di:waypoint x="550" y="100"/>
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+
+  <bpmndi:BPMNDiagram id="Diagram_CreateReferenceCapacity" name="Create Reference Capacity Subprocess Diagram">
+    <bpmndi:BPMNPlane bpmnElement="Process_CreateReferenceCapacity">
+      <bpmndi:BPMNShape id="Shape_SCRC_Start" bpmnElement="SCRC_Start">
+        <dc:Bounds x="50" y="82" width="36" height="36"/>
+        <bpmndi:BPMNLabel><dc:Bounds x="20" y="128" width="100" height="40"/></bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_SCRC_Task_DefineInitial" bpmnElement="SCRC_Task_DefineInitial">
+        <dc:Bounds x="150" y="60" width="140" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_SCRC_Task_ConfirmInitial" bpmnElement="SCRC_Task_ConfirmInitial">
+        <dc:Bounds x="350" y="60" width="140" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_SCRC_Task_SpecifyDetailed" bpmnElement="SCRC_Task_SpecifyDetailed">
+        <dc:Bounds x="550" y="60" width="140" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_SCRC_Task_ConfirmDetailed" bpmnElement="SCRC_Task_ConfirmDetailed">
+        <dc:Bounds x="750" y="60" width="140" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_SCRC_Task_SaveRefCap" bpmnElement="SCRC_Task_SaveRefCap">
+        <dc:Bounds x="950" y="60" width="140" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_SCRC_End" bpmnElement="SCRC_End">
+        <dc:Bounds x="1150" y="82" width="36" height="36"/>
+        <bpmndi:BPMNLabel><dc:Bounds x="1120" y="128" width="100" height="30"/></bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="Edge_SCRC_Flow1" bpmnElement="SCRC_Flow1">
+        <di:waypoint x="86" y="100"/> <di:waypoint x="150" y="100"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_SCRC_Flow2" bpmnElement="SCRC_Flow2">
+        <di:waypoint x="290" y="100"/> <di:waypoint x="350" y="100"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_SCRC_Flow3" bpmnElement="SCRC_Flow3">
+        <di:waypoint x="490" y="100"/> <di:waypoint x="550" y="100"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_SCRC_Flow4" bpmnElement="SCRC_Flow4">
+        <di:waypoint x="690" y="100"/> <di:waypoint x="750" y="100"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_SCRC_Flow5" bpmnElement="SCRC_Flow5">
+        <di:waypoint x="890" y="100"/> <di:waypoint x="950" y="100"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_SCRC_Flow6" bpmnElement="SCRC_Flow6">
+        <di:waypoint x="1090" y="100"/> <di:waypoint x="1150" y="100"/>
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</semantic:definitions>

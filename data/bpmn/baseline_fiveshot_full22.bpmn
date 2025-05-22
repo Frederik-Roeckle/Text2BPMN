@@ -1,0 +1,495 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<semantic:definitions xmlns:semantic="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" id="Definitions_Procurement" targetNamespace="http://example.com/bpmn/procurementRequirements">
+  <semantic:collaboration id="Collab_Procurement">
+    <semantic:participant id="Participant_PurchasingDept" name="Purchasing Department" processRef="Process_Purchasing"/>
+  </semantic:collaboration>
+  <semantic:process id="Process_Purchasing" isExecutable="false">
+    <semantic:laneSet id="LaneSet_Purchasing">
+      <semantic:lane id="Lane_ProcurementManager" name="Procurement Manager">
+        <semantic:flowNodeRef>StartEvent_ReqDetInitiated</semantic:flowNodeRef>
+        <semantic:flowNodeRef>Task_DecideMethod</semantic:flowNodeRef>
+        <semantic:flowNodeRef>Gateway_SelectedMethod</semantic:flowNodeRef>
+      </semantic:lane>
+      <semantic:lane id="Lane_ProcurementSpecialist" name="Procurement Specialist">
+        <semantic:flowNodeRef>Task_DefineSalesVolumeComponents</semantic:flowNodeRef>
+        <semantic:flowNodeRef>Task_DeriveReqsFromProdProgram</semantic:flowNodeRef>
+        <semantic:flowNodeRef>Task_DeterminePastConsumption</semantic:flowNodeRef>
+        <semantic:flowNodeRef>Task_DefineDemandForecasts</semantic:flowNodeRef>
+        <semantic:flowNodeRef>Task_DefineForecastValues</semantic:flowNodeRef>
+        <semantic:flowNodeRef>Task_DecideEstimateSubMethod</semantic:flowNodeRef>
+        <semantic:flowNodeRef>Gateway_SelectedEstimateSubMethod</semantic:flowNodeRef>
+        <semantic:flowNodeRef>Task_PerformAnalogousEstimate</semantic:flowNodeRef>
+        <semantic:flowNodeRef>Task_PerformIntuitiveEstimate</semantic:flowNodeRef>
+        <semantic:flowNodeRef>Gateway_EstimateSubMethodCompleted</semantic:flowNodeRef>
+        <semantic:flowNodeRef>Gateway_MethodSpecificDetCompleted</semantic:flowNodeRef>
+      </semantic:lane>
+      <semantic:lane id="Lane_ProcurementAssistant" name="Procurement Assistant">
+        <semantic:flowNodeRef>Task_ConsolidateOutputsForQualQuant</semantic:flowNodeRef>
+        <semantic:flowNodeRef>Task_DetermineQualitativeAspects</semantic:flowNodeRef>
+        <semantic:flowNodeRef>Gateway_ParallelDefineMaterialQualityStart</semantic:flowNodeRef>
+        <semantic:flowNodeRef>Task_DefineMaterialsQualitative</semantic:flowNodeRef>
+        <semantic:flowNodeRef>Task_DefineQualityQualitative</semantic:flowNodeRef>
+        <semantic:flowNodeRef>Gateway_QualityLevel</semantic:flowNodeRef>
+        <semantic:flowNodeRef>Gateway_QualityLevelDefined</semantic:flowNodeRef>
+        <semantic:flowNodeRef>Gateway_ParallelDefineMaterialQualityEnd</semantic:flowNodeRef>
+        <semantic:flowNodeRef>Task_DetermineQuantitativeAspects</semantic:flowNodeRef>
+        <semantic:flowNodeRef>Task_DefinePrimaryRequirements</semantic:flowNodeRef>
+        <semantic:flowNodeRef>Task_DefineSecondaryRequirements</semantic:flowNodeRef>
+        <semantic:flowNodeRef>Task_DefineTertiaryRequirements</semantic:flowNodeRef>
+        <semantic:flowNodeRef>Task_DefineGrossRequirements</semantic:flowNodeRef>
+        <semantic:flowNodeRef>Task_DefineNetRequirements</semantic:flowNodeRef>
+        <semantic:flowNodeRef>Task_CompileFinalRequirementsDoc</semantic:flowNodeRef>
+        <semantic:flowNodeRef>EndEvent_ReqDetCompleted</semantic:flowNodeRef>
+      </semantic:lane>
+    </semantic:laneSet>
+    <semantic:startEvent id="StartEvent_ReqDetInitiated" name="Procurement Requirements Determination Initiated">
+      <semantic:outgoing>Flow_StartToDecideMethod</semantic:outgoing>
+    </semantic:startEvent>
+    <semantic:task id="Task_DecideMethod" name="Decide on Procurement Requirement Determination Method">
+      <semantic:incoming>Flow_StartToDecideMethod</semantic:incoming>
+      <semantic:outgoing>Flow_DecideMethodToGateway</semantic:outgoing>
+    </semantic:task>
+    <semantic:exclusiveGateway id="Gateway_SelectedMethod" name="Selected Method?">
+      <semantic:incoming>Flow_DecideMethodToGateway</semantic:incoming>
+      <semantic:outgoing>Flow_ToProgramOriented</semantic:outgoing>
+      <semantic:outgoing>Flow_ToConsumptionOriented</semantic:outgoing>
+      <semantic:outgoing>Flow_ToEstimates</semantic:outgoing>
+    </semantic:exclusiveGateway>
+    <semantic:task id="Task_DefineSalesVolumeComponents" name="Define Sales Volume &amp; Components">
+      <semantic:incoming>Flow_ToProgramOriented</semantic:incoming>
+      <semantic:outgoing>Flow_DefineSalesToDeriveReqs</semantic:outgoing>
+    </semantic:task>
+    <semantic:task id="Task_DeriveReqsFromProdProgram" name="Derive Requirements from Production Program">
+      <semantic:incoming>Flow_DefineSalesToDeriveReqs</semantic:incoming>
+      <semantic:outgoing>Flow_ProgramOrientedToMerge</semantic:outgoing>
+    </semantic:task>
+    <semantic:task id="Task_DeterminePastConsumption" name="Determine Consumption Values from Past">
+      <semantic:incoming>Flow_ToConsumptionOriented</semantic:incoming>
+      <semantic:outgoing>Flow_PastConsumptionToDemandForecast</semantic:outgoing>
+    </semantic:task>
+    <semantic:task id="Task_DefineDemandForecasts" name="Define Demand Forecasts (Stochastic)">
+      <semantic:incoming>Flow_PastConsumptionToDemandForecast</semantic:incoming>
+      <semantic:outgoing>Flow_DemandForecastToForecastValues</semantic:outgoing>
+    </semantic:task>
+    <semantic:task id="Task_DefineForecastValues" name="Define Forecast Values">
+      <semantic:incoming>Flow_DemandForecastToForecastValues</semantic:incoming>
+      <semantic:outgoing>Flow_ConsumptionOrientedToMerge</semantic:outgoing>
+    </semantic:task>
+    <semantic:task id="Task_DecideEstimateSubMethod" name="Decide on Estimate Sub-Method">
+      <semantic:incoming>Flow_ToEstimates</semantic:incoming>
+      <semantic:outgoing>Flow_DecideEstimateToGateway</semantic:outgoing>
+    </semantic:task>
+    <semantic:exclusiveGateway id="Gateway_SelectedEstimateSubMethod" name="Selected Estimate Sub-Method?">
+      <semantic:incoming>Flow_DecideEstimateToGateway</semantic:incoming>
+      <semantic:outgoing>Flow_ToAnalogousEstimate</semantic:outgoing>
+      <semantic:outgoing>Flow_ToIntuitiveEstimate</semantic:outgoing>
+    </semantic:exclusiveGateway>
+    <semantic:task id="Task_PerformAnalogousEstimate" name="Perform Analogous Estimate">
+      <semantic:incoming>Flow_ToAnalogousEstimate</semantic:incoming>
+      <semantic:outgoing>Flow_AnalogousToMergeEstimate</semantic:outgoing>
+    </semantic:task>
+    <semantic:task id="Task_PerformIntuitiveEstimate" name="Perform Intuitive Estimate (Heuristics)">
+      <semantic:incoming>Flow_ToIntuitiveEstimate</semantic:incoming>
+      <semantic:outgoing>Flow_IntuitiveToMergeEstimate</semantic:outgoing>
+    </semantic:task>
+    <semantic:exclusiveGateway id="Gateway_EstimateSubMethodCompleted" name="Estimate Sub-Method Completed">
+      <semantic:incoming>Flow_AnalogousToMergeEstimate</semantic:incoming>
+      <semantic:incoming>Flow_IntuitiveToMergeEstimate</semantic:incoming>
+      <semantic:outgoing>Flow_EstimatesToMerge</semantic:outgoing>
+    </semantic:exclusiveGateway>
+    <semantic:exclusiveGateway id="Gateway_MethodSpecificDetCompleted" name="Method-Specific Determination Completed">
+      <semantic:incoming>Flow_ProgramOrientedToMerge</semantic:incoming>
+      <semantic:incoming>Flow_ConsumptionOrientedToMerge</semantic:incoming>
+      <semantic:incoming>Flow_EstimatesToMerge</semantic:incoming>
+      <semantic:outgoing>Flow_MergeToConsolidate</semantic:outgoing>
+    </semantic:exclusiveGateway>
+    <semantic:task id="Task_ConsolidateOutputsForQualQuant" name="Consolidate Outputs for Qual/Quant Analysis">
+      <semantic:incoming>Flow_MergeToConsolidate</semantic:incoming>
+      <semantic:outgoing>Flow_ConsolidateToQual</semantic:outgoing>
+    </semantic:task>
+    <semantic:task id="Task_DetermineQualitativeAspects" name="Determine Qualitative Aspects (Requirement Range)">
+      <semantic:incoming>Flow_ConsolidateToQual</semantic:incoming>
+      <semantic:outgoing>Flow_QualToParallelMatQualStart</semantic:outgoing>
+    </semantic:task>
+    <semantic:parallelGateway id="Gateway_ParallelDefineMaterialQualityStart" name="Define Material and Quality">
+      <semantic:incoming>Flow_QualToParallelMatQualStart</semantic:incoming>
+      <semantic:outgoing>Flow_ParallelStartToDefineMaterials</semantic:outgoing>
+      <semantic:outgoing>Flow_ParallelStartToDefineQuality</semantic:outgoing>
+    </semantic:parallelGateway>
+    <semantic:task id="Task_DefineMaterialsQualitative" name="Define Materials (Qualitative)">
+      <semantic:incoming>Flow_ParallelStartToDefineMaterials</semantic:incoming>
+      <semantic:outgoing>Flow_DefineMaterialsToParallelEnd</semantic:outgoing>
+    </semantic:task>
+    <semantic:task id="Task_DefineQualityQualitative" name="Define Quality (Qualitative)">
+      <semantic:incoming>Flow_ParallelStartToDefineQuality</semantic:incoming>
+      <semantic:outgoing>Flow_DefineQualityToGatewayQualityLevel</semantic:outgoing>
+    </semantic:task>
+    <semantic:exclusiveGateway id="Gateway_QualityLevel" name="Quality Level?">
+      <semantic:incoming>Flow_DefineQualityToGatewayQualityLevel</semantic:incoming>
+      <semantic:outgoing>Flow_ToBestQuality</semantic:outgoing>
+      <semantic:outgoing>Flow_ToAverageQuality</semantic:outgoing>
+      <semantic:outgoing>Flow_ToMinimumQuality</semantic:outgoing>
+    </semantic:exclusiveGateway>
+    <semantic:exclusiveGateway id="Gateway_QualityLevelDefined" name="Quality Level Defined">
+      <semantic:incoming>Flow_ToBestQuality</semantic:incoming>
+      <semantic:incoming>Flow_ToAverageQuality</semantic:incoming>
+      <semantic:incoming>Flow_ToMinimumQuality</semantic:incoming>
+      <semantic:outgoing>Flow_QualityLevelDefinedToParallelEnd</semantic:outgoing>
+    </semantic:exclusiveGateway>
+    <semantic:parallelGateway id="Gateway_ParallelDefineMaterialQualityEnd" name="Material and Quality Defined">
+      <semantic:incoming>Flow_DefineMaterialsToParallelEnd</semantic:incoming>
+      <semantic:incoming>Flow_QualityLevelDefinedToParallelEnd</semantic:incoming>
+      <semantic:outgoing>Flow_ParallelEndToQuant</semantic:outgoing>
+    </semantic:parallelGateway>
+    <semantic:task id="Task_DetermineQuantitativeAspects" name="Determine Quantitative Aspects (Amount &amp; Period)">
+      <semantic:incoming>Flow_ParallelEndToQuant</semantic:incoming>
+      <semantic:outgoing>Flow_QuantToPrimaryReq</semantic:outgoing>
+    </semantic:task>
+    <semantic:task id="Task_DefinePrimaryRequirements" name="Define Primary Requirements">
+      <semantic:incoming>Flow_QuantToPrimaryReq</semantic:incoming>
+      <semantic:outgoing>Flow_PrimaryToSecondaryReq</semantic:outgoing>
+    </semantic:task>
+    <semantic:task id="Task_DefineSecondaryRequirements" name="Define Secondary Requirements">
+      <semantic:incoming>Flow_PrimaryToSecondaryReq</semantic:incoming>
+      <semantic:outgoing>Flow_SecondaryToTertiaryReq</semantic:outgoing>
+    </semantic:task>
+    <semantic:task id="Task_DefineTertiaryRequirements" name="Define Tertiary Requirements">
+      <semantic:incoming>Flow_SecondaryToTertiaryReq</semantic:incoming>
+      <semantic:outgoing>Flow_TertiaryToGrossReq</semantic:outgoing>
+    </semantic:task>
+    <semantic:task id="Task_DefineGrossRequirements" name="Define Gross Requirements">
+      <semantic:incoming>Flow_TertiaryToGrossReq</semantic:incoming>
+      <semantic:outgoing>Flow_GrossToNetReq</semantic:outgoing>
+    </semantic:task>
+    <semantic:task id="Task_DefineNetRequirements" name="Define Net Requirements (Ordering Requirement)">
+      <semantic:incoming>Flow_GrossToNetReq</semantic:incoming>
+      <semantic:outgoing>Flow_NetToCompile</semantic:outgoing>
+    </semantic:task>
+    <semantic:task id="Task_CompileFinalRequirementsDoc" name="Compile Final Procurement Requirements Document">
+      <semantic:incoming>Flow_NetToCompile</semantic:incoming>
+      <semantic:outgoing>Flow_CompileToEnd</semantic:outgoing>
+    </semantic:task>
+    <semantic:endEvent id="EndEvent_ReqDetCompleted" name="Procurement Requirements Determined">
+      <semantic:incoming>Flow_CompileToEnd</semantic:incoming>
+    </semantic:endEvent>
+    <semantic:sequenceFlow id="Flow_StartToDecideMethod" sourceRef="StartEvent_ReqDetInitiated" targetRef="Task_DecideMethod"/>
+    <semantic:sequenceFlow id="Flow_DecideMethodToGateway" sourceRef="Task_DecideMethod" targetRef="Gateway_SelectedMethod"/>
+    <semantic:sequenceFlow id="Flow_ToProgramOriented" name="Program-oriented" sourceRef="Gateway_SelectedMethod" targetRef="Task_DefineSalesVolumeComponents"/>
+    <semantic:sequenceFlow id="Flow_DefineSalesToDeriveReqs" sourceRef="Task_DefineSalesVolumeComponents" targetRef="Task_DeriveReqsFromProdProgram"/>
+    <semantic:sequenceFlow id="Flow_ProgramOrientedToMerge" sourceRef="Task_DeriveReqsFromProdProgram" targetRef="Gateway_MethodSpecificDetCompleted"/>
+    <semantic:sequenceFlow id="Flow_ToConsumptionOriented" name="Consumption-oriented" sourceRef="Gateway_SelectedMethod" targetRef="Task_DeterminePastConsumption"/>
+    <semantic:sequenceFlow id="Flow_PastConsumptionToDemandForecast" sourceRef="Task_DeterminePastConsumption" targetRef="Task_DefineDemandForecasts"/>
+    <semantic:sequenceFlow id="Flow_DemandForecastToForecastValues" sourceRef="Task_DefineDemandForecasts" targetRef="Task_DefineForecastValues"/>
+    <semantic:sequenceFlow id="Flow_ConsumptionOrientedToMerge" sourceRef="Task_DefineForecastValues" targetRef="Gateway_MethodSpecificDetCompleted"/>
+    <semantic:sequenceFlow id="Flow_ToEstimates" name="Estimates &amp; Heuristic" sourceRef="Gateway_SelectedMethod" targetRef="Task_DecideEstimateSubMethod"/>
+    <semantic:sequenceFlow id="Flow_DecideEstimateToGateway" sourceRef="Task_DecideEstimateSubMethod" targetRef="Gateway_SelectedEstimateSubMethod"/>
+    <semantic:sequenceFlow id="Flow_ToAnalogousEstimate" name="Analogous Estimate" sourceRef="Gateway_SelectedEstimateSubMethod" targetRef="Task_PerformAnalogousEstimate"/>
+    <semantic:sequenceFlow id="Flow_AnalogousToMergeEstimate" sourceRef="Task_PerformAnalogousEstimate" targetRef="Gateway_EstimateSubMethodCompleted"/>
+    <semantic:sequenceFlow id="Flow_ToIntuitiveEstimate" name="Intuitive Estimate" sourceRef="Gateway_SelectedEstimateSubMethod" targetRef="Task_PerformIntuitiveEstimate"/>
+    <semantic:sequenceFlow id="Flow_IntuitiveToMergeEstimate" sourceRef="Task_PerformIntuitiveEstimate" targetRef="Gateway_EstimateSubMethodCompleted"/>
+    <semantic:sequenceFlow id="Flow_EstimatesToMerge" sourceRef="Gateway_EstimateSubMethodCompleted" targetRef="Gateway_MethodSpecificDetCompleted"/>
+    <semantic:sequenceFlow id="Flow_MergeToConsolidate" sourceRef="Gateway_MethodSpecificDetCompleted" targetRef="Task_ConsolidateOutputsForQualQuant"/>
+    <semantic:sequenceFlow id="Flow_ConsolidateToQual" sourceRef="Task_ConsolidateOutputsForQualQuant" targetRef="Task_DetermineQualitativeAspects"/>
+    <semantic:sequenceFlow id="Flow_QualToParallelMatQualStart" sourceRef="Task_DetermineQualitativeAspects" targetRef="Gateway_ParallelDefineMaterialQualityStart"/>
+    <semantic:sequenceFlow id="Flow_ParallelStartToDefineMaterials" sourceRef="Gateway_ParallelDefineMaterialQualityStart" targetRef="Task_DefineMaterialsQualitative"/>
+    <semantic:sequenceFlow id="Flow_DefineMaterialsToParallelEnd" sourceRef="Task_DefineMaterialsQualitative" targetRef="Gateway_ParallelDefineMaterialQualityEnd"/>
+    <semantic:sequenceFlow id="Flow_ParallelStartToDefineQuality" sourceRef="Gateway_ParallelDefineMaterialQualityStart" targetRef="Task_DefineQualityQualitative"/>
+    <semantic:sequenceFlow id="Flow_DefineQualityToGatewayQualityLevel" sourceRef="Task_DefineQualityQualitative" targetRef="Gateway_QualityLevel"/>
+    <semantic:sequenceFlow id="Flow_ToBestQuality" name="Best Quality" sourceRef="Gateway_QualityLevel" targetRef="Gateway_QualityLevelDefined"/>
+    <semantic:sequenceFlow id="Flow_ToAverageQuality" name="Average Quality" sourceRef="Gateway_QualityLevel" targetRef="Gateway_QualityLevelDefined"/>
+    <semantic:sequenceFlow id="Flow_ToMinimumQuality" name="Minimum Quality" sourceRef="Gateway_QualityLevel" targetRef="Gateway_QualityLevelDefined"/>
+    <semantic:sequenceFlow id="Flow_QualityLevelDefinedToParallelEnd" sourceRef="Gateway_QualityLevelDefined" targetRef="Gateway_ParallelDefineMaterialQualityEnd"/>
+    <semantic:sequenceFlow id="Flow_ParallelEndToQuant" sourceRef="Gateway_ParallelDefineMaterialQualityEnd" targetRef="Task_DetermineQuantitativeAspects"/>
+    <semantic:sequenceFlow id="Flow_QuantToPrimaryReq" sourceRef="Task_DetermineQuantitativeAspects" targetRef="Task_DefinePrimaryRequirements"/>
+    <semantic:sequenceFlow id="Flow_PrimaryToSecondaryReq" sourceRef="Task_DefinePrimaryRequirements" targetRef="Task_DefineSecondaryRequirements"/>
+    <semantic:sequenceFlow id="Flow_SecondaryToTertiaryReq" sourceRef="Task_DefineSecondaryRequirements" targetRef="Task_DefineTertiaryRequirements"/>
+    <semantic:sequenceFlow id="Flow_TertiaryToGrossReq" sourceRef="Task_DefineTertiaryRequirements" targetRef="Task_DefineGrossRequirements"/>
+    <semantic:sequenceFlow id="Flow_GrossToNetReq" sourceRef="Task_DefineGrossRequirements" targetRef="Task_DefineNetRequirements"/>
+    <semantic:sequenceFlow id="Flow_NetToCompile" sourceRef="Task_DefineNetRequirements" targetRef="Task_CompileFinalRequirementsDoc"/>
+    <semantic:sequenceFlow id="Flow_CompileToEnd" sourceRef="Task_CompileFinalRequirementsDoc" targetRef="EndEvent_ReqDetCompleted"/>
+  </semantic:process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_Procurement">
+    <bpmndi:BPMNPlane id="BPMNPlane_Procurement" bpmnElement="Collab_Procurement">
+      <bpmndi:BPMNShape id="Shape_Participant_PurchasingDept" bpmnElement="Participant_PurchasingDept" isHorizontal="true">
+        <dc:Bounds x="30" y="30" width="1950" height="1050"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Lane_ProcurementManager" bpmnElement="Lane_ProcurementManager" isHorizontal="true">
+        <dc:Bounds x="60" y="30" width="1920" height="150"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Lane_ProcurementSpecialist" bpmnElement="Lane_ProcurementSpecialist" isHorizontal="true">
+        <dc:Bounds x="60" y="180" width="1920" height="300"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Lane_ProcurementAssistant" bpmnElement="Lane_ProcurementAssistant" isHorizontal="true">
+        <dc:Bounds x="60" y="480" width="1920" height="600"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_StartEvent_ReqDetInitiated" bpmnElement="StartEvent_ReqDetInitiated">
+        <dc:Bounds x="100" y="80" width="36" height="36"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="70" y="120" width="96" height="40"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Task_DecideMethod" bpmnElement="Task_DecideMethod">
+        <dc:Bounds x="186" y="62" width="180" height="72"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Gateway_SelectedMethod" bpmnElement="Gateway_SelectedMethod" isMarkerVisible="true">
+        <dc:Bounds x="416" y="76" width="50" height="50"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="400" y="130" width="82" height="14"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Task_DefineSalesVolumeComponents" bpmnElement="Task_DefineSalesVolumeComponents">
+        <dc:Bounds x="100" y="220" width="160" height="70"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Task_DeriveReqsFromProdProgram" bpmnElement="Task_DeriveReqsFromProdProgram">
+        <dc:Bounds x="300" y="220" width="160" height="70"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Task_DeterminePastConsumption" bpmnElement="Task_DeterminePastConsumption">
+        <dc:Bounds x="500" y="220" width="160" height="70"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Task_DefineDemandForecasts" bpmnElement="Task_DefineDemandForecasts">
+        <dc:Bounds x="500" y="310" width="160" height="70"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Task_DefineForecastValues" bpmnElement="Task_DefineForecastValues">
+        <dc:Bounds x="500" y="400" width="160" height="70"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Task_DecideEstimateSubMethod" bpmnElement="Task_DecideEstimateSubMethod">
+        <dc:Bounds x="700" y="220" width="160" height="70"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Gateway_SelectedEstimateSubMethod" bpmnElement="Gateway_SelectedEstimateSubMethod" isMarkerVisible="true">
+        <dc:Bounds x="755" y="310" width="50" height="50"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Task_PerformAnalogousEstimate" bpmnElement="Task_PerformAnalogousEstimate">
+        <dc:Bounds x="620" y="380" width="160" height="70"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Task_PerformIntuitiveEstimate" bpmnElement="Task_PerformIntuitiveEstimate">
+        <dc:Bounds x="820" y="380" width="160" height="70"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Gateway_EstimateSubMethodCompleted" bpmnElement="Gateway_EstimateSubMethodCompleted" isMarkerVisible="true">
+        <dc:Bounds x="755" y="400" width="50" height="50"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Gateway_MethodSpecificDetCompleted" bpmnElement="Gateway_MethodSpecificDetCompleted" isMarkerVisible="true">
+        <dc:Bounds x="1000" y="310" width="50" height="50"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Task_ConsolidateOutputsForQualQuant" bpmnElement="Task_ConsolidateOutputsForQualQuant">
+        <dc:Bounds x="100" y="520" width="180" height="70"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Task_DetermineQualitativeAspects" bpmnElement="Task_DetermineQualitativeAspects">
+        <dc:Bounds x="320" y="520" width="180" height="70"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Gateway_ParallelDefineMaterialQualityStart" bpmnElement="Gateway_ParallelDefineMaterialQualityStart">
+        <dc:Bounds x="540" y="535" width="50" height="50"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Task_DefineMaterialsQualitative" bpmnElement="Task_DefineMaterialsQualitative">
+        <dc:Bounds x="630" y="500" width="160" height="70"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Task_DefineQualityQualitative" bpmnElement="Task_DefineQualityQualitative">
+        <dc:Bounds x="630" y="590" width="160" height="70"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Gateway_QualityLevel" bpmnElement="Gateway_QualityLevel" isMarkerVisible="true">
+        <dc:Bounds x="830" y="605" width="50" height="50"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Gateway_QualityLevelDefined" bpmnElement="Gateway_QualityLevelDefined" isMarkerVisible="true">
+        <dc:Bounds x="920" y="605" width="50" height="50"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Gateway_ParallelDefineMaterialQualityEnd" bpmnElement="Gateway_ParallelDefineMaterialQualityEnd">
+        <dc:Bounds x="1010" y="535" width="50" height="50"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Task_DetermineQuantitativeAspects" bpmnElement="Task_DetermineQuantitativeAspects">
+        <dc:Bounds x="100" y="630" width="180" height="70"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Task_DefinePrimaryRequirements" bpmnElement="Task_DefinePrimaryRequirements">
+        <dc:Bounds x="320" y="630" width="160" height="70"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Task_DefineSecondaryRequirements" bpmnElement="Task_DefineSecondaryRequirements">
+        <dc:Bounds x="520" y="630" width="160" height="70"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Task_DefineTertiaryRequirements" bpmnElement="Task_DefineTertiaryRequirements">
+        <dc:Bounds x="720" y="630" width="160" height="70"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Task_DefineGrossRequirements" bpmnElement="Task_DefineGrossRequirements">
+        <dc:Bounds x="920" y="630" width="160" height="70"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Task_DefineNetRequirements" bpmnElement="Task_DefineNetRequirements">
+        <dc:Bounds x="1120" y="630" width="160" height="70"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Task_CompileFinalRequirementsDoc" bpmnElement="Task_CompileFinalRequirementsDoc">
+        <dc:Bounds x="1320" y="630" width="180" height="70"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_EndEvent_ReqDetCompleted" bpmnElement="EndEvent_ReqDetCompleted">
+        <dc:Bounds x="1540" y="648" width="36" height="36"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1510" y="688" width="96" height="40"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="Edge_Flow_StartToDecideMethod" bpmnElement="Flow_StartToDecideMethod">
+        <di:waypoint x="136" y="98"/>
+        <di:waypoint x="186" y="98"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Flow_DecideMethodToGateway" bpmnElement="Flow_DecideMethodToGateway">
+        <di:waypoint x="366" y="98"/>
+        <di:waypoint x="416" y="101"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Flow_ToProgramOriented" bpmnElement="Flow_ToProgramOriented">
+        <di:waypoint x="441" y="126"/>
+        <di:waypoint x="441" y="255"/>
+        <di:waypoint x="260" y="255"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="330" y="180" width="100" height="14"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Flow_DefineSalesToDeriveReqs" bpmnElement="Flow_DefineSalesToDeriveReqs">
+        <di:waypoint x="260" y="255"/>
+        <di:waypoint x="300" y="255"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Flow_ProgramOrientedToMerge" bpmnElement="Flow_ProgramOrientedToMerge">
+        <di:waypoint x="460" y="255"/>
+        <di:waypoint x="1025" y="255"/>
+        <di:waypoint x="1025" y="310"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Flow_ToConsumptionOriented" bpmnElement="Flow_ToConsumptionOriented">
+        <di:waypoint x="466" y="101"/>
+        <di:waypoint x="580" y="101"/>
+        <di:waypoint x="580" y="220"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="480" y="150" width="120" height="14"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Flow_PastConsumptionToDemandForecast" bpmnElement="Flow_PastConsumptionToDemandForecast">
+        <di:waypoint x="580" y="290"/>
+        <di:waypoint x="580" y="310"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Flow_DemandForecastToForecastValues" bpmnElement="Flow_DemandForecastToForecastValues">
+        <di:waypoint x="580" y="380"/>
+        <di:waypoint x="580" y="400"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Flow_ConsumptionOrientedToMerge" bpmnElement="Flow_ConsumptionOrientedToMerge">
+        <di:waypoint x="580" y="470"/>
+        <di:waypoint x="580" y="335"/>
+        <di:waypoint x="1000" y="335"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Flow_ToEstimates" bpmnElement="Flow_ToEstimates">
+        <di:waypoint x="441" y="76"/>
+        <di:waypoint x="441" y="50"/>
+        <di:waypoint x="780" y="50"/>
+        <di:waypoint x="780" y="220"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="580" y="55" width="120" height="14"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Flow_DecideEstimateToGateway" bpmnElement="Flow_DecideEstimateToGateway">
+        <di:waypoint x="780" y="290"/>
+        <di:waypoint x="780" y="310"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Flow_ToAnalogousEstimate" bpmnElement="Flow_ToAnalogousEstimate">
+        <di:waypoint x="755" y="335"/>
+        <di:waypoint x="700" y="335"/>
+        <di:waypoint x="700" y="380"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Flow_AnalogousToMergeEstimate" bpmnElement="Flow_AnalogousToMergeEstimate">
+        <di:waypoint x="700" y="450"/>
+        <di:waypoint x="700" y="425"/>
+        <di:waypoint x="755" y="425"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Flow_ToIntuitiveEstimate" bpmnElement="Flow_ToIntuitiveEstimate">
+        <di:waypoint x="805" y="335"/>
+        <di:waypoint x="900" y="335"/>
+        <di:waypoint x="900" y="380"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Flow_IntuitiveToMergeEstimate" bpmnElement="Flow_IntuitiveToMergeEstimate">
+        <di:waypoint x="900" y="450"/>
+        <di:waypoint x="900" y="425"/>
+        <di:waypoint x="805" y="425"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Flow_EstimatesToMerge" bpmnElement="Flow_EstimatesToMerge">
+        <di:waypoint x="780" y="450"/>
+        <di:waypoint x="780" y="335"/>
+        <di:waypoint x="1000" y="335"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Flow_MergeToConsolidate" bpmnElement="Flow_MergeToConsolidate">
+        <di:waypoint x="1025" y="360"/>
+        <di:waypoint x="1025" y="555"/>
+        <di:waypoint x="280" y="555"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Flow_ConsolidateToQual" bpmnElement="Flow_ConsolidateToQual">
+        <di:waypoint x="280" y="555"/>
+        <di:waypoint x="320" y="555"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Flow_QualToParallelMatQualStart" bpmnElement="Flow_QualToParallelMatQualStart">
+        <di:waypoint x="500" y="555"/>
+        <di:waypoint x="540" y="560"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Flow_ParallelStartToDefineMaterials" bpmnElement="Flow_ParallelStartToDefineMaterials">
+        <di:waypoint x="565" y="535"/>
+        <di:waypoint x="565" y="535"/>
+        <di:waypoint x="630" y="535"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Flow_DefineMaterialsToParallelEnd" bpmnElement="Flow_DefineMaterialsToParallelEnd">
+        <di:waypoint x="790" y="535"/>
+        <di:waypoint x="1010" y="535"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Flow_ParallelStartToDefineQuality" bpmnElement="Flow_ParallelStartToDefineQuality">
+        <di:waypoint x="565" y="585"/>
+        <di:waypoint x="565" y="625"/>
+        <di:waypoint x="630" y="625"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Flow_DefineQualityToGatewayQualityLevel" bpmnElement="Flow_DefineQualityToGatewayQualityLevel">
+        <di:waypoint x="790" y="625"/>
+        <di:waypoint x="830" y="630"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Flow_ToBestQuality" bpmnElement="Flow_ToBestQuality">
+        <di:waypoint x="855" y="605"/>
+        <di:waypoint x="855" y="580"/>
+        <di:waypoint x="945" y="580"/>
+        <di:waypoint x="945" y="605"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Flow_ToAverageQuality" bpmnElement="Flow_ToAverageQuality">
+        <di:waypoint x="880" y="630"/>
+        <di:waypoint x="920" y="630"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Flow_ToMinimumQuality" bpmnElement="Flow_ToMinimumQuality">
+        <di:waypoint x="855" y="655"/>
+        <di:waypoint x="855" y="680"/>
+        <di:waypoint x="945" y="680"/>
+        <di:waypoint x="945" y="655"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Flow_QualityLevelDefinedToParallelEnd" bpmnElement="Flow_QualityLevelDefinedToParallelEnd">
+        <di:waypoint x="970" y="630"/>
+        <di:waypoint x="1035" y="630"/>
+        <di:waypoint x="1035" y="585"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Flow_ParallelEndToQuant" bpmnElement="Flow_ParallelEndToQuant">
+        <di:waypoint x="1035" y="585"/>
+        <di:waypoint x="1035" y="665"/>
+        <di:waypoint x="280" y="665"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Flow_QuantToPrimaryReq" bpmnElement="Flow_QuantToPrimaryReq">
+        <di:waypoint x="280" y="665"/>
+        <di:waypoint x="320" y="665"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Flow_PrimaryToSecondaryReq" bpmnElement="Flow_PrimaryToSecondaryReq">
+        <di:waypoint x="480" y="665"/>
+        <di:waypoint x="520" y="665"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Flow_SecondaryToTertiaryReq" bpmnElement="Flow_SecondaryToTertiaryReq">
+        <di:waypoint x="680" y="665"/>
+        <di:waypoint x="720" y="665"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Flow_TertiaryToGrossReq" bpmnElement="Flow_TertiaryToGrossReq">
+        <di:waypoint x="880" y="665"/>
+        <di:waypoint x="920" y="665"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Flow_GrossToNetReq" bpmnElement="Flow_GrossToNetReq">
+        <di:waypoint x="1080" y="665"/>
+        <di:waypoint x="1120" y="665"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Flow_NetToCompile" bpmnElement="Flow_NetToCompile">
+        <di:waypoint x="1280" y="665"/>
+        <di:waypoint x="1320" y="665"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Flow_CompileToEnd" bpmnElement="Flow_CompileToEnd">
+        <di:waypoint x="1500" y="665"/>
+        <di:waypoint x="1540" y="666"/>
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</semantic:definitions>

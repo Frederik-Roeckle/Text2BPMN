@@ -1,25 +1,28 @@
-from graphs import baseline
-from graphs import react
+from graphs import baseline,react,two_agent_graph
 from utils import render_BPMN
 import json
 #from models import MistralLLM
 from models import OpenAILLM
+from models import GeminiLLM
 import config
+from langsmith import traceable
 
 GRAPH_MAP = {
     "base_line": baseline.build_graph,
+    "two_agent_graph": two_agent_graph.build_graph,
     "react": react.build_graph
 }
 
-
+@traceable
 def main():
-    config.set_model(OpenAILLM(model="gpt-4o-mini",temperature=0))
+    #config.set_model(OpenAILLM(model="gpt-4.1-mini",temperature=0))
+    config.set_model(GeminiLLM(model="gemini-2.5-pro-preview-05-06", temperature=0))
 
     #input_path = "data/test_cases/example_test_case.jsonl"
-    input_path = "data/test_cases/short_bpmn_process.txt"
+    input_path = "data/test_cases/wu_wien.json"
 
     #output_path = "data/test_cases/example_test_case_with_answers.jsonl"
-    output_path = "data/test_cases/baseline.bpmn"
+    #output_path = "data/bpmn/baseline.bpmn"
     
     # TODO: Define logic that the output is appended to the original file
 
@@ -47,24 +50,23 @@ def main():
     # Process the input file with the base_line graph
     print("Processing graph: base_line")    
 
-    
+    with open(input_path, 'r') as file:
+        data = json.load(file)
     modified_lines = []
     # Read the input lines
-    with open(input_path, "r") as f:
-        for line in f:
-            line = line.strip()  # Remove any leading/trailing whitespace
-            if not line:  # Skip empty lines
-                continue
-            result = GRAPH_MAP["base_line"]().invoke({"messages": line})
-            modified_lines.append(result["messages"][-1].content)
-    
+    #with open(input_path, "r") as f:
+    #    file_content = f.read().strip()
+    for i in range(len(data)):
+        print(f"Processing process description {i+1} of {len(data)}")
+        result = GRAPH_MAP["base_line"]().invoke({"messages": data[i]['text']})
+        final_message = result["messages"][-1].content
     # Write the modified lines back as plain text
-    with open(output_path, "w") as f:
-        for item in modified_lines:
-            f.write(item + "\n")
+        output_path = f"data/bpmn/baseline_fiveshot_full{i}.bpmn"
+        with open(output_path, "w") as f:
+            f.write(final_message + "\n")
     
-    print(f"Results written to {output_path}")
-    render_BPMN("data/test_cases/baseline.bpmn","data/img/baseline.png")
+        print(f"Results written to {output_path}")
+        render_BPMN(f"data/bpmn/baseline_fiveshot_full{i}.bpmn",f"data/img/baseline_fiveshot_full{i}.png")
 
 
 if __name__ == "__main__":

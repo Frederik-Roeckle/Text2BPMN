@@ -1,0 +1,722 @@
+<?xml version="1.0" standalone="yes"?>
+<semantic:definitions id="P2P_Process_Definition"
+    targetNamespace="http://example.com/bpmn/p2p"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:semantic="http://www.omg.org/spec/BPMN/20100524/MODEL"
+    xmlns:di="http://www.omg.org/spec/DD/20100524/DI"
+    xmlns:dc="http://www.omg.org/spec/DD/20100524/DC"
+    xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI">
+
+  <semantic:collaboration id="collab_p2p">
+    <semantic:participant id="participant_company" name="Company P2P Operations" processRef="companyP2PProcess"/>
+    <semantic:participant id="participant_vendor" name="Vendor" processRef="vendorProcess"/>
+  </semantic:collaboration>
+
+  <semantic:process id="companyP2PProcess" isExecutable="true">
+    <semantic:laneSet id="companyLaneSet">
+      <semantic:lane id="requestorLane" name="Requestor">
+        <semantic:flowNodeRef>start_event_1</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_1</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_2</semantic:flowNodeRef>
+        <semantic:flowNodeRef>gateway_1</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_3</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_6</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_7</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_10</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_15</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_16</semantic:flowNodeRef>
+        <semantic:flowNodeRef>gateway_5</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_17</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_18</semantic:flowNodeRef>
+        <semantic:flowNodeRef>join_1</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_19</semantic:flowNodeRef>
+        <semantic:flowNodeRef>parallel_join_1</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_20</semantic:flowNodeRef>
+        <semantic:flowNodeRef>gateway_6</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_21</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_24</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_25</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_26</semantic:flowNodeRef>
+      </semantic:lane>
+      <semantic:lane id="hodLane" name="Heads of Departments">
+        <semantic:flowNodeRef>task_4</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_5</semantic:flowNodeRef>
+        <semantic:flowNodeRef>gateway_2</semantic:flowNodeRef>
+      </semantic:lane>
+      <semantic:lane id="poApproversLane" name="PO Approvers">
+        <semantic:flowNodeRef>task_8</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_9</semantic:flowNodeRef>
+        <semantic:flowNodeRef>gateway_3</semantic:flowNodeRef>
+      </semantic:lane>
+      <semantic:lane id="apTeamLane" name="Accounts Payable Team">
+        <semantic:flowNodeRef>task_27</semantic:flowNodeRef>
+        <semantic:flowNodeRef>gateway_7</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_28</semantic:flowNodeRef>
+        <semantic:flowNodeRef>end_event_main</semantic:flowNodeRef>
+      </semantic:lane>
+    </semantic:laneSet>
+
+    <semantic:startEvent id="start_event_1" name="Process Start">
+      <semantic:outgoing>flow_start_to_task1</semantic:outgoing>
+    </semantic:startEvent>
+    <semantic:task id="task_1" name="Determine Business Requirements &amp; Needs">
+      <semantic:incoming>flow_start_to_task1</semantic:incoming>
+      <semantic:incoming>flow_g1_to_task1</semantic:incoming>
+      <semantic:incoming>flow_g2_to_task1_declined</semantic:incoming>
+      <semantic:incoming>flow_g2_to_task1_rejected</semantic:incoming>
+      <semantic:incoming>flow_g3_to_task1</semantic:incoming>
+      <semantic:outgoing>flow_task1_to_task2</semantic:outgoing>
+    </semantic:task>
+    <semantic:task id="task_2" name="Request to Issue Purchase Requisition (PR)">
+      <semantic:incoming>flow_task1_to_task2</semantic:incoming>
+      <semantic:outgoing>flow_task2_to_g1</semantic:outgoing>
+    </semantic:task>
+    <semantic:exclusiveGateway id="gateway_1" name="PR Issuance Approved by Requestor?">
+      <semantic:incoming>flow_task2_to_g1</semantic:incoming>
+      <semantic:outgoing>flow_g1_to_task3</semantic:outgoing>
+      <semantic:outgoing>flow_g1_to_task1</semantic:outgoing>
+    </semantic:exclusiveGateway>
+    <semantic:task id="task_3" name="Issue Purchase Requisition (PR)">
+      <semantic:incoming>flow_g1_to_task3</semantic:incoming>
+      <semantic:outgoing>flow_task3_to_task4</semantic:outgoing>
+    </semantic:task>
+    <semantic:task id="task_4" name="Review PR (Needs, Budget, Form)">
+      <semantic:incoming>flow_task3_to_task4</semantic:incoming>
+      <semantic:outgoing>flow_task4_to_task5</semantic:outgoing>
+    </semantic:task>
+    <semantic:task id="task_5" name="Document &amp; Submit PR Decision">
+      <semantic:incoming>flow_task4_to_task5</semantic:incoming>
+      <semantic:outgoing>flow_task5_to_g2</semantic:outgoing>
+    </semantic:task>
+    <semantic:exclusiveGateway id="gateway_2" name="PR Decision by HoD">
+      <semantic:incoming>flow_task5_to_g2</semantic:incoming>
+      <semantic:outgoing>flow_g2_to_task6</semantic:outgoing>
+      <semantic:outgoing>flow_g2_to_task1_declined</semantic:outgoing>
+      <semantic:outgoing>flow_g2_to_task1_rejected</semantic:outgoing>
+    </semantic:exclusiveGateway>
+    <semantic:task id="task_6" name="Create Purchase Order (PO)">
+      <semantic:incoming>flow_g2_to_task6</semantic:incoming>
+      <semantic:outgoing>flow_task6_to_task7</semantic:outgoing>
+    </semantic:task>
+    <semantic:task id="task_7" name="Submit PO for Approval">
+      <semantic:incoming>flow_task6_to_task7</semantic:incoming>
+      <semantic:outgoing>flow_task7_to_task8</semantic:outgoing>
+    </semantic:task>
+    <semantic:task id="task_8" name="Review PO Specifications">
+      <semantic:incoming>flow_task7_to_task8</semantic:incoming>
+      <semantic:outgoing>flow_task8_to_task9</semantic:outgoing>
+    </semantic:task>
+    <semantic:task id="task_9" name="Document &amp; Submit PO Decision">
+      <semantic:incoming>flow_task8_to_task9</semantic:incoming>
+      <semantic:outgoing>flow_task9_to_g3</semantic:outgoing>
+    </semantic:task>
+    <semantic:exclusiveGateway id="gateway_3" name="PO Decision by PO Approvers">
+      <semantic:incoming>flow_task9_to_g3</semantic:incoming>
+      <semantic:outgoing>flow_g3_to_task10</semantic:outgoing>
+      <semantic:outgoing>flow_g3_to_task1</semantic:outgoing>
+    </semantic:exclusiveGateway>
+    <semantic:task id="task_10" name="Dispatch Approved PO to Vendor">
+      <semantic:incoming>flow_g3_to_task10</semantic:incoming>
+      <semantic:incoming>flow_task15_to_task10</semantic:incoming>
+      <semantic:outgoing>flow_task10_to_task11</semantic:outgoing>
+    </semantic:task>
+    <semantic:task id="task_15" name="Search for a New Vendor">
+      <semantic:incoming>flow_g4_to_task15</semantic:incoming>
+      <semantic:outgoing>flow_task15_to_task10</semantic:outgoing>
+    </semantic:task>
+    <semantic:task id="task_16" name="Receive Agreed Goods/Services">
+      <semantic:incoming>flow_task13_to_task16</semantic:incoming>
+      <semantic:outgoing>flow_task16_to_g5</semantic:outgoing>
+    </semantic:task>
+    <semantic:exclusiveGateway id="gateway_5" name="Receipt Type?">
+      <semantic:incoming>flow_task16_to_g5</semantic:incoming>
+      <semantic:outgoing>flow_g5_to_task17</semantic:outgoing>
+      <semantic:outgoing>flow_g5_to_task18</semantic:outgoing>
+    </semantic:exclusiveGateway>
+    <semantic:task id="task_17" name="Issue Goods Receipt (GR)">
+      <semantic:incoming>flow_g5_to_task17</semantic:incoming>
+      <semantic:outgoing>flow_task17_to_join1</semantic:outgoing>
+    </semantic:task>
+    <semantic:task id="task_18" name="Issue Service Entry Sheet (SES)">
+      <semantic:incoming>flow_g5_to_task18</semantic:incoming>
+      <semantic:outgoing>flow_task18_to_join1</semantic:outgoing>
+    </semantic:task>
+    <semantic:exclusiveGateway id="join_1" name="Merge GR/SES Path">
+      <semantic:incoming>flow_task17_to_join1</semantic:incoming>
+      <semantic:incoming>flow_task18_to_join1</semantic:incoming>
+      <semantic:outgoing>flow_join1_to_paralleljoin1</semantic:outgoing>
+    </semantic:exclusiveGateway>
+    <semantic:task id="task_19" name="Receive Invoice from Vendor">
+      <semantic:incoming>flow_task14_to_task19</semantic:incoming>
+      <semantic:outgoing>flow_task19_to_paralleljoin1</semantic:outgoing>
+    </semantic:task>
+    <semantic:parallelGateway id="parallel_join_1" name="Synchronize GR/SES and Invoice">
+      <semantic:incoming>flow_join1_to_paralleljoin1</semantic:incoming>
+      <semantic:incoming>flow_task19_to_paralleljoin1</semantic:incoming>
+      <semantic:outgoing>flow_paralleljoin1_to_task20</semantic:outgoing>
+    </semantic:parallelGateway>
+    <semantic:task id="task_20" name="Perform Three-Way Match">
+      <semantic:incoming>flow_paralleljoin1_to_task20</semantic:incoming>
+      <semantic:incoming>flow_task24_to_task20</semantic:incoming>
+      <semantic:outgoing>flow_task20_to_g6</semantic:outgoing>
+    </semantic:task>
+    <semantic:exclusiveGateway id="gateway_6" name="Invoice Correct?">
+      <semantic:incoming>flow_task20_to_g6</semantic:incoming>
+      <semantic:outgoing>flow_g6_to_task21</semantic:outgoing>
+      <semantic:outgoing>flow_g6_to_task25</semantic:outgoing>
+    </semantic:exclusiveGateway>
+    <semantic:task id="task_21" name="Return Invoice to Vendor for Correction">
+      <semantic:incoming>flow_g6_to_task21</semantic:incoming>
+      <semantic:outgoing>flow_task21_to_task22</semantic:outgoing>
+    </semantic:task>
+    <semantic:task id="task_24" name="Receive Corrected Invoice">
+      <semantic:incoming>flow_task23_to_task24</semantic:incoming>
+      <semantic:outgoing>flow_task24_to_task20</semantic:outgoing>
+    </semantic:task>
+    <semantic:task id="task_25" name="Post Invoice in SAP">
+      <semantic:incoming>flow_g6_to_task25</semantic:incoming>
+      <semantic:outgoing>flow_task25_to_task26</semantic:outgoing>
+    </semantic:task>
+    <semantic:task id="task_26" name="Send Invoice to AP Team">
+      <semantic:incoming>flow_task25_to_task26</semantic:incoming>
+      <semantic:outgoing>flow_task26_to_task27</semantic:outgoing>
+    </semantic:task>
+    <semantic:task id="task_27" name="Decide on Payment Method">
+      <semantic:incoming>flow_task26_to_task27</semantic:incoming>
+      <semantic:outgoing>flow_task27_to_g7</semantic:outgoing>
+    </semantic:task>
+    <semantic:exclusiveGateway id="gateway_7" name="Payment Method Choice">
+      <semantic:incoming>flow_task27_to_g7</semantic:incoming>
+      <semantic:outgoing>flow_g7_to_task28_full</semantic:outgoing>
+      <semantic:outgoing>flow_g7_to_task28_install</semantic:outgoing>
+    </semantic:exclusiveGateway>
+    <semantic:task id="task_28" name="Perform Payment to Vendor">
+      <semantic:incoming>flow_g7_to_task28_full</semantic:incoming>
+      <semantic:incoming>flow_g7_to_task28_install</semantic:incoming>
+      <semantic:outgoing>flow_task28_to_end</semantic:outgoing>
+    </semantic:task>
+    <semantic:endEvent id="end_event_main" name="Process Successfully Completed">
+      <semantic:incoming>flow_task28_to_end</semantic:incoming>
+    </semantic:endEvent>
+
+    <semantic:sequenceFlow id="flow_start_to_task1" sourceRef="start_event_1" targetRef="task_1"/>
+    <semantic:sequenceFlow id="flow_task1_to_task2" sourceRef="task_1" targetRef="task_2"/>
+    <semantic:sequenceFlow id="flow_task2_to_g1" sourceRef="task_2" targetRef="gateway_1"/>
+    <semantic:sequenceFlow id="flow_g1_to_task3" name="Approved by Requestor" sourceRef="gateway_1" targetRef="task_3"/>
+    <semantic:sequenceFlow id="flow_g1_to_task1" name="Not Approved by Requestor" sourceRef="gateway_1" targetRef="task_1"/>
+    <semantic:sequenceFlow id="flow_task3_to_task4" sourceRef="task_3" targetRef="task_4"/>
+    <semantic:sequenceFlow id="flow_task4_to_task5" sourceRef="task_4" targetRef="task_5"/>
+    <semantic:sequenceFlow id="flow_task5_to_g2" sourceRef="task_5" targetRef="gateway_2"/>
+    <semantic:sequenceFlow id="flow_g2_to_task6" name="PR Approved by HoD" sourceRef="gateway_2" targetRef="task_6"/>
+    <semantic:sequenceFlow id="flow_g2_to_task1_declined" name="PR Declined by HoD" sourceRef="gateway_2" targetRef="task_1"/>
+    <semantic:sequenceFlow id="flow_g2_to_task1_rejected" name="PR Rejected (Incomplete) by HoD" sourceRef="gateway_2" targetRef="task_1"/>
+    <semantic:sequenceFlow id="flow_task6_to_task7" sourceRef="task_6" targetRef="task_7"/>
+    <semantic:sequenceFlow id="flow_task7_to_task8" sourceRef="task_7" targetRef="task_8"/>
+    <semantic:sequenceFlow id="flow_task8_to_task9" sourceRef="task_8" targetRef="task_9"/>
+    <semantic:sequenceFlow id="flow_task9_to_g3" sourceRef="task_9" targetRef="gateway_3"/>
+    <semantic:sequenceFlow id="flow_g3_to_task10" name="PO Approved" sourceRef="gateway_3" targetRef="task_10"/>
+    <semantic:sequenceFlow id="flow_g3_to_task1" name="PO Rejected" sourceRef="gateway_3" targetRef="task_1"/>
+    <semantic:sequenceFlow id="flow_task10_to_task11" sourceRef="task_10" targetRef="task_11"/>
+    <semantic:sequenceFlow id="flow_g4_to_task15" name="PO Rejected by Vendor" sourceRef="gateway_4" targetRef="task_15"/>
+    <semantic:sequenceFlow id="flow_task15_to_task10" sourceRef="task_15" targetRef="task_10"/>
+    <semantic:sequenceFlow id="flow_task13_to_task16" sourceRef="task_13" targetRef="task_16"/>
+    <semantic:sequenceFlow id="flow_task16_to_g5" sourceRef="task_16" targetRef="gateway_5"/>
+    <semantic:sequenceFlow id="flow_g5_to_task17" name="Goods Received" sourceRef="gateway_5" targetRef="task_17"/>
+    <semantic:sequenceFlow id="flow_g5_to_task18" name="Service Received" sourceRef="gateway_5" targetRef="task_18"/>
+    <semantic:sequenceFlow id="flow_task17_to_join1" sourceRef="task_17" targetRef="join_1"/>
+    <semantic:sequenceFlow id="flow_task18_to_join1" sourceRef="task_18" targetRef="join_1"/>
+    <semantic:sequenceFlow id="flow_join1_to_paralleljoin1" sourceRef="join_1" targetRef="parallel_join_1"/>
+    <semantic:sequenceFlow id="flow_task14_to_task19" sourceRef="task_14" targetRef="task_19"/>
+    <semantic:sequenceFlow id="flow_task19_to_paralleljoin1" sourceRef="task_19" targetRef="parallel_join_1"/>
+    <semantic:sequenceFlow id="flow_paralleljoin1_to_task20" sourceRef="parallel_join_1" targetRef="task_20"/>
+    <semantic:sequenceFlow id="flow_task20_to_g6" sourceRef="task_20" targetRef="gateway_6"/>
+    <semantic:sequenceFlow id="flow_g6_to_task21" name="Invoice Wrong" sourceRef="gateway_6" targetRef="task_21"/>
+    <semantic:sequenceFlow id="flow_task21_to_task22" sourceRef="task_21" targetRef="task_22"/>
+    <semantic:sequenceFlow id="flow_task23_to_task24" sourceRef="task_23" targetRef="task_24"/>
+    <semantic:sequenceFlow id="flow_task24_to_task20" sourceRef="task_24" targetRef="task_20"/>
+    <semantic:sequenceFlow id="flow_g6_to_task25" name="Invoice Correct" sourceRef="gateway_6" targetRef="task_25"/>
+    <semantic:sequenceFlow id="flow_task25_to_task26" sourceRef="task_25" targetRef="task_26"/>
+    <semantic:sequenceFlow id="flow_task26_to_task27" sourceRef="task_26" targetRef="task_27"/>
+    <semantic:sequenceFlow id="flow_task27_to_g7" sourceRef="task_27" targetRef="gateway_7"/>
+    <semantic:sequenceFlow id="flow_g7_to_task28_full" name="Payment in Full" sourceRef="gateway_7" targetRef="task_28"/>
+    <semantic:sequenceFlow id="flow_g7_to_task28_install" name="Payment in Installments" sourceRef="gateway_7" targetRef="task_28"/>
+    <semantic:sequenceFlow id="flow_task28_to_end" sourceRef="task_28" targetRef="end_event_main"/>
+  </semantic:process>
+
+  <semantic:process id="vendorProcess" isExecutable="true">
+     <semantic:laneSet id="vendorLaneSet">
+        <semantic:lane id="vendorOpsLane" name="Vendor Operations">
+            <semantic:flowNodeRef>task_11</semantic:flowNodeRef>
+            <semantic:flowNodeRef>task_12</semantic:flowNodeRef>
+            <semantic:flowNodeRef>gateway_4</semantic:flowNodeRef>
+            <semantic:flowNodeRef>task_13</semantic:flowNodeRef>
+            <semantic:flowNodeRef>task_14</semantic:flowNodeRef>
+            <semantic:flowNodeRef>end_event_vendor_reject</semantic:flowNodeRef>
+            <semantic:flowNodeRef>task_22</semantic:flowNodeRef>
+            <semantic:flowNodeRef>task_23</semantic:flowNodeRef>
+            <semantic:flowNodeRef>end_event_vendor_invoice_correction</semantic:flowNodeRef>
+        </semantic:lane>
+    </semantic:laneSet>
+    <semantic:task id="task_11" name="Evaluate PO">
+      <semantic:incoming>flow_task10_to_task11</semantic:incoming>
+      <semantic:outgoing>flow_task11_to_task12</semantic:outgoing>
+    </semantic:task>
+    <semantic:task id="task_12" name="Document PO Decision to Requestor">
+      <semantic:incoming>flow_task11_to_task12</semantic:incoming>
+      <semantic:outgoing>flow_task12_to_g4</semantic:outgoing>
+    </semantic:task>
+    <semantic:exclusiveGateway id="gateway_4" name="Vendor PO Decision">
+      <semantic:incoming>flow_task12_to_g4</semantic:incoming>
+      <semantic:outgoing>flow_g4_to_task13_approved</semantic:outgoing>
+      <semantic:outgoing>flow_g4_to_task13_negotiated</semantic:outgoing>
+      <semantic:outgoing>flow_g4_to_end_vendor_reject</semantic:outgoing>
+      <semantic:outgoing>flow_g4_to_task15</semantic:outgoing>
+    </semantic:exclusiveGateway>
+    <semantic:task id="task_13" name="Deliver Agreed Goods/Services">
+      <semantic:incoming>flow_g4_to_task13_approved</semantic:incoming>
+      <semantic:incoming>flow_g4_to_task13_negotiated</semantic:incoming>
+      <semantic:outgoing>flow_task13_to_task14</semantic:outgoing>
+      <semantic:outgoing>flow_task13_to_task16</semantic:outgoing>
+    </semantic:task>
+    <semantic:task id="task_14" name="Send Invoice for Delivery">
+      <semantic:incoming>flow_task13_to_task14</semantic:incoming>
+      <semantic:outgoing>flow_task14_to_task19</semantic:outgoing>
+    </semantic:task>
+    <semantic:endEvent id="end_event_vendor_reject" name="Vendor Process Ends (PO Rejected)">
+      <semantic:incoming>flow_g4_to_end_vendor_reject</semantic:incoming>
+    </semantic:endEvent>
+    <semantic:task id="task_22" name="Correct Invoice">
+      <semantic:incoming>flow_task21_to_task22</semantic:incoming>
+      <semantic:outgoing>flow_task22_to_task23</semantic:outgoing>
+    </semantic:task>
+    <semantic:task id="task_23" name="Send Corrected Invoice to Requestor">
+      <semantic:incoming>flow_task22_to_task23</semantic:incoming>
+      <semantic:outgoing>flow_task23_to_end_vendor_invoice</semantic:outgoing>
+      <semantic:outgoing>flow_task23_to_task24</semantic:outgoing>
+    </semantic:task>
+    <semantic:endEvent id="end_event_vendor_invoice_correction" name="Vendor Process Ends (Invoice Corrected)">
+      <semantic:incoming>flow_task23_to_end_vendor_invoice</semantic:incoming>
+    </semantic:endEvent>
+
+    <semantic:sequenceFlow id="flow_task11_to_task12" sourceRef="task_11" targetRef="task_12"/>
+    <semantic:sequenceFlow id="flow_task12_to_g4" sourceRef="task_12" targetRef="gateway_4"/>
+    <semantic:sequenceFlow id="flow_g4_to_task13_approved" name="PO Approved by Vendor" sourceRef="gateway_4" targetRef="task_13"/>
+    <semantic:sequenceFlow id="flow_g4_to_task13_negotiated" name="PO Negotiated by Vendor" sourceRef="gateway_4" targetRef="task_13"/>
+    <semantic:sequenceFlow id="flow_task13_to_task14" sourceRef="task_13" targetRef="task_14"/>
+    <semantic:sequenceFlow id="flow_g4_to_end_vendor_reject" name="PO Rejected by Vendor" sourceRef="gateway_4" targetRef="end_event_vendor_reject"/>
+    <semantic:sequenceFlow id="flow_task22_to_task23" sourceRef="task_22" targetRef="task_23"/>
+    <semantic:sequenceFlow id="flow_task23_to_end_vendor_invoice" sourceRef="task_23" targetRef="end_event_vendor_invoice_correction"/>
+  </semantic:process>
+
+  <bpmndi:BPMNDiagram id="BPMNDiagram_P2P" name="Purchase to Pay Diagram" resolution="96.0">
+    <bpmndi:BPMNPlane bpmnElement="collab_p2p">
+      <bpmndi:BPMNShape id="participant_company_shape" bpmnElement="participant_company" isHorizontal="true">
+        <dc:Bounds x="20" y="20" width="2000" height="1000"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="requestorLane_shape" bpmnElement="requestorLane" isHorizontal="true">
+        <dc:Bounds x="50" y="20" width="1970" height="250"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="hodLane_shape" bpmnElement="hodLane" isHorizontal="true">
+        <dc:Bounds x="50" y="270" width="1970" height="250"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="poApproversLane_shape" bpmnElement="poApproversLane" isHorizontal="true">
+        <dc:Bounds x="50" y="520" width="1970" height="250"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="apTeamLane_shape" bpmnElement="apTeamLane" isHorizontal="true">
+        <dc:Bounds x="50" y="770" width="1970" height="250"/>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="participant_vendor_shape" bpmnElement="participant_vendor" isHorizontal="true">
+        <dc:Bounds x="20" y="1040" width="2000" height="300"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="vendorOpsLane_shape" bpmnElement="vendorOpsLane" isHorizontal="true">
+        <dc:Bounds x="50" y="1040" width="1970" height="300"/>
+      </bpmndi:BPMNShape>
+
+      <!-- Requestor Lane Elements -->
+      <bpmndi:BPMNShape id="start_event_1_shape" bpmnElement="start_event_1">
+        <dc:Bounds x="100" y="122" width="36" height="36"/>
+        <bpmndi:BPMNLabel><dc:Bounds x="80" y="163" width="76" height="14"/></bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="task_1_shape" bpmnElement="task_1">
+        <dc:Bounds x="186" y="100" width="160" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="task_2_shape" bpmnElement="task_2">
+        <dc:Bounds x="396" y="100" width="160" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="gateway_1_shape" bpmnElement="gateway_1" isMarkerVisible="true">
+        <dc:Bounds x="606" y="115" width="50" height="50"/>
+        <bpmndi:BPMNLabel><dc:Bounds x="580" y="170" width="100" height="28"/></bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="task_3_shape" bpmnElement="task_3">
+        <dc:Bounds x="706" y="100" width="160" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="task_6_shape" bpmnElement="task_6">
+        <dc:Bounds x="706" y="20" width="160" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="task_7_shape" bpmnElement="task_7">
+        <dc:Bounds x="916" y="20" width="160" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="task_10_shape" bpmnElement="task_10">
+        <dc:Bounds x="706" y="190" width="160" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="task_15_shape" bpmnElement="task_15">
+        <dc:Bounds x="916" y="190" width="160" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="task_16_shape" bpmnElement="task_16">
+        <dc:Bounds x="1126" y="100" width="160" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="gateway_5_shape" bpmnElement="gateway_5" isMarkerVisible="true">
+        <dc:Bounds x="1336" y="115" width="50" height="50"/>
+        <bpmndi:BPMNLabel><dc:Bounds x="1320" y="170" width="80" height="14"/></bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="task_17_shape" bpmnElement="task_17">
+        <dc:Bounds x="1436" y="40" width="160" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="task_18_shape" bpmnElement="task_18">
+        <dc:Bounds x="1436" y="190" width="160" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="join_1_shape" bpmnElement="join_1" isMarkerVisible="true">
+        <dc:Bounds x="1646" y="115" width="50" height="50"/>
+        <bpmndi:BPMNLabel><dc:Bounds x="1620" y="170" width="100" height="14"/></bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="task_19_shape" bpmnElement="task_19">
+        <dc:Bounds x="1126" y="190" width="160" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="parallel_join_1_shape" bpmnElement="parallel_join_1" isMarkerVisible="true">
+        <dc:Bounds x="1746" y="115" width="50" height="50"/>
+        <bpmndi:BPMNLabel><dc:Bounds x="1720" y="170" width="100" height="28"/></bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="task_20_shape" bpmnElement="task_20">
+        <dc:Bounds x="1846" y="100" width="160" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="gateway_6_shape" bpmnElement="gateway_6" isMarkerVisible="true">
+        <dc:Bounds x="100" y="345" width="50" height="50"/> <!-- Moved to avoid overlap -->
+        <bpmndi:BPMNLabel><dc:Bounds x="80" y="400" width="90" height="14"/></bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="task_21_shape" bpmnElement="task_21">
+        <dc:Bounds x="200" y="330" width="160" height="80"/> <!-- Moved to avoid overlap -->
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="task_24_shape" bpmnElement="task_24">
+        <dc:Bounds x="410" y="330" width="160" height="80"/> <!-- Moved to avoid overlap -->
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="task_25_shape" bpmnElement="task_25">
+        <dc:Bounds x="200" y="430" width="160" height="80"/> <!-- Moved to avoid overlap -->
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="task_26_shape" bpmnElement="task_26">
+        <dc:Bounds x="410" y="430" width="160" height="80"/> <!-- Moved to avoid overlap -->
+      </bpmndi:BPMNShape>
+
+      <!-- Heads of Departments Lane Elements -->
+      <bpmndi:BPMNShape id="task_4_shape" bpmnElement="task_4">
+        <dc:Bounds x="706" y="350" width="160" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="task_5_shape" bpmnElement="task_5">
+        <dc:Bounds x="916" y="350" width="160" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="gateway_2_shape" bpmnElement="gateway_2" isMarkerVisible="true">
+        <dc:Bounds x="1126" y="365" width="50" height="50"/>
+        <bpmndi:BPMNLabel><dc:Bounds x="1100" y="420" width="100" height="14"/></bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <!-- PO Approvers Lane Elements -->
+      <bpmndi:BPMNShape id="task_8_shape" bpmnElement="task_8">
+        <dc:Bounds x="916" y="600" width="160" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="task_9_shape" bpmnElement="task_9">
+        <dc:Bounds x="1126" y="600" width="160" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="gateway_3_shape" bpmnElement="gateway_3" isMarkerVisible="true">
+        <dc:Bounds x="1336" y="615" width="50" height="50"/>
+        <bpmndi:BPMNLabel><dc:Bounds x="1310" y="670" width="100" height="28"/></bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <!-- Accounts Payable Team Lane Elements -->
+      <bpmndi:BPMNShape id="task_27_shape" bpmnElement="task_27">
+        <dc:Bounds x="620" y="850" width="160" height="80"/> <!-- Moved to avoid overlap -->
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="gateway_7_shape" bpmnElement="gateway_7" isMarkerVisible="true">
+        <dc:Bounds x="830" y="865" width="50" height="50"/> <!-- Moved to avoid overlap -->
+        <bpmndi:BPMNLabel><dc:Bounds x="800" y="920" width="110" height="28"/></bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="task_28_shape" bpmnElement="task_28">
+        <dc:Bounds x="930" y="850" width="160" height="80"/> <!-- Moved to avoid overlap -->
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="end_event_main_shape" bpmnElement="end_event_main">
+        <dc:Bounds x="1140" y="872" width="36" height="36"/> <!-- Moved to avoid overlap -->
+        <bpmndi:BPMNLabel><dc:Bounds x="1110" y="913" width="96" height="28"/></bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <!-- Vendor Operations Lane Elements -->
+      <bpmndi:BPMNShape id="task_11_shape" bpmnElement="task_11">
+        <dc:Bounds x="706" y="1140" width="160" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="task_12_shape" bpmnElement="task_12">
+        <dc:Bounds x="916" y="1140" width="160" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="gateway_4_shape" bpmnElement="gateway_4" isMarkerVisible="true">
+        <dc:Bounds x="1126" y="1155" width="50" height="50"/>
+        <bpmndi:BPMNLabel><dc:Bounds x="1100" y="1210" width="100" height="14"/></bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="task_13_shape" bpmnElement="task_13">
+        <dc:Bounds x="1226" y="1080" width="160" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="task_14_shape" bpmnElement="task_14">
+        <dc:Bounds x="1436" y="1080" width="160" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="end_event_vendor_reject_shape" bpmnElement="end_event_vendor_reject">
+        <dc:Bounds x="1226" y="1232" width="36" height="36"/>
+        <bpmndi:BPMNLabel><dc:Bounds x="1200" y="1273" width="88" height="28"/></bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="task_22_shape" bpmnElement="task_22">
+        <dc:Bounds x="200" y="1140" width="160" height="80"/> <!-- Moved to avoid overlap -->
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="task_23_shape" bpmnElement="task_23">
+        <dc:Bounds x="410" y="1140" width="160" height="80"/> <!-- Moved to avoid overlap -->
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="end_event_vendor_invoice_correction_shape" bpmnElement="end_event_vendor_invoice_correction">
+        <dc:Bounds x="620" y="1162" width="36" height="36"/> <!-- Moved to avoid overlap -->
+        <bpmndi:BPMNLabel><dc:Bounds x="590" y="1203" width="96" height="40"/></bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <!-- Sequence Flows -->
+      <bpmndi:BPMNEdge id="flow_start_to_task1_edge" bpmnElement="flow_start_to_task1">
+        <di:waypoint x="136" y="140"/>
+        <di:waypoint x="186" y="140"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_task1_to_task2_edge" bpmnElement="flow_task1_to_task2">
+        <di:waypoint x="346" y="140"/>
+        <di:waypoint x="396" y="140"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_task2_to_g1_edge" bpmnElement="flow_task2_to_g1">
+        <di:waypoint x="556" y="140"/>
+        <di:waypoint x="606" y="140"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_g1_to_task3_edge" bpmnElement="flow_g1_to_task3">
+        <di:waypoint x="656" y="140"/>
+        <di:waypoint x="706" y="140"/>
+        <bpmndi:BPMNLabel><dc:Bounds x="660" y="115" width="80" height="28"/></bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_g1_to_task1_edge" bpmnElement="flow_g1_to_task1">
+        <di:waypoint x="631" y="165"/>
+        <di:waypoint x="631" y="220"/>
+        <di:waypoint x="266" y="220"/>
+        <di:waypoint x="266" y="180"/>
+        <bpmndi:BPMNLabel><dc:Bounds x="420" y="225" width="80" height="28"/></bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_task3_to_task4_edge" bpmnElement="flow_task3_to_task4">
+        <di:waypoint x="786" y="180"/>
+        <di:waypoint x="786" y="350"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_task4_to_task5_edge" bpmnElement="flow_task4_to_task5">
+        <di:waypoint x="866" y="390"/>
+        <di:waypoint x="916" y="390"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_task5_to_g2_edge" bpmnElement="flow_task5_to_g2">
+        <di:waypoint x="1076" y="390"/>
+        <di:waypoint x="1126" y="390"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_g2_to_task6_edge" bpmnElement="flow_g2_to_task6">
+        <di:waypoint x="1151" y="365"/>
+        <di:waypoint x="1151" y="60"/>
+        <di:waypoint x="866" y="60"/>
+        <bpmndi:BPMNLabel><dc:Bounds x="1000" y="35" width="80" height="28"/></bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_g2_to_task1_declined_edge" bpmnElement="flow_g2_to_task1_declined">
+        <di:waypoint x="1176" y="390"/>
+        <di:waypoint x="1200" y="390"/>
+        <di:waypoint x="1200" y="250"/>
+        <di:waypoint x="266" y="250"/>
+        <di:waypoint x="266" y="180"/>
+        <bpmndi:BPMNLabel><dc:Bounds x="700" y="255" width="80" height="28"/></bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_g2_to_task1_rejected_edge" bpmnElement="flow_g2_to_task1_rejected">
+        <di:waypoint x="1151" y="415"/>
+        <di:waypoint x="1151" y="450"/>
+        <di:waypoint x="266" y="450"/>
+        <di:waypoint x="266" y="180"/>
+        <bpmndi:BPMNLabel><dc:Bounds x="650" y="455" width="100" height="40"/></bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_task6_to_task7_edge" bpmnElement="flow_task6_to_task7">
+        <di:waypoint x="866" y="60"/>
+        <di:waypoint x="916" y="60"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_task7_to_task8_edge" bpmnElement="flow_task7_to_task8">
+        <di:waypoint x="996" y="100"/>
+        <di:waypoint x="996" y="600"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_task8_to_task9_edge" bpmnElement="flow_task8_to_task9">
+        <di:waypoint x="1076" y="640"/>
+        <di:waypoint x="1126" y="640"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_task9_to_g3_edge" bpmnElement="flow_task9_to_g3">
+        <di:waypoint x="1286" y="640"/>
+        <di:waypoint x="1336" y="640"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_g3_to_task10_edge" bpmnElement="flow_g3_to_task10">
+        <di:waypoint x="1361" y="615"/>
+        <di:waypoint x="1361" y="230"/>
+        <di:waypoint x="866" y="230"/>
+        <bpmndi:BPMNLabel><dc:Bounds x="1100" y="400" width="80" height="14"/></bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_g3_to_task1_edge" bpmnElement="flow_g3_to_task1">
+        <di:waypoint x="1386" y="640"/>
+        <di:waypoint x="1420" y="640"/>
+        <di:waypoint x="1420" y="280"/>
+        <di:waypoint x="266" y="280"/>
+        <di:waypoint x="266" y="180"/>
+        <bpmndi:BPMNLabel><dc:Bounds x="800" y="285" width="80" height="14"/></bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_task10_to_task11_edge" bpmnElement="flow_task10_to_task11">
+        <di:waypoint x="786" y="270"/>
+        <di:waypoint x="786" y="1140"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_task11_to_task12_edge" bpmnElement="flow_task11_to_task12">
+        <di:waypoint x="866" y="1180"/>
+        <di:waypoint x="916" y="1180"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_task12_to_g4_edge" bpmnElement="flow_task12_to_g4">
+        <di:waypoint x="1076" y="1180"/>
+        <di:waypoint x="1126" y="1180"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_g4_to_task13_approved_edge" bpmnElement="flow_g4_to_task13_approved">
+        <di:waypoint x="1176" y="1180"/>
+        <di:waypoint x="1226" y="1120"/>
+        <bpmndi:BPMNLabel><dc:Bounds x="1180" y="1140" width="80" height="28"/></bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_g4_to_task13_negotiated_edge" bpmnElement="flow_g4_to_task13_negotiated">
+        <di:waypoint x="1151" y="1155"/>
+        <di:waypoint x="1226" y="1120"/>
+        <bpmndi:BPMNLabel><dc:Bounds x="1160" y="1100" width="80" height="28"/></bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_task13_to_task14_edge" bpmnElement="flow_task13_to_task14">
+        <di:waypoint x="1386" y="1120"/>
+        <di:waypoint x="1436" y="1120"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_g4_to_end_vendor_reject_edge" bpmnElement="flow_g4_to_end_vendor_reject">
+        <di:waypoint x="1151" y="1205"/>
+        <di:waypoint x="1226" y="1250"/>
+        <bpmndi:BPMNLabel><dc:Bounds x="1160" y="1230" width="80" height="28"/></bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_g4_to_task15_edge" bpmnElement="flow_g4_to_task15">
+        <di:waypoint x="1176" y="1180"/>
+        <di:waypoint x="1200" y="1180"/>
+        <di:waypoint x="1200" y="230"/>
+        <di:waypoint x="1076" y="230"/>
+        <bpmndi:BPMNLabel><dc:Bounds x="1180" y="600" width="80" height="28"/></bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_task15_to_task10_edge" bpmnElement="flow_task15_to_task10">
+        <di:waypoint x="916" y="230"/>
+        <di:waypoint x="866" y="230"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_task13_to_task16_edge" bpmnElement="flow_task13_to_task16">
+        <di:waypoint x="1306" y="1080"/>
+        <di:waypoint x="1306" y="180"/>
+        <di:waypoint x="1286" y="140"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_task16_to_g5_edge" bpmnElement="flow_task16_to_g5">
+        <di:waypoint x="1286" y="140"/>
+        <di:waypoint x="1336" y="140"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_g5_to_task17_edge" bpmnElement="flow_g5_to_task17">
+        <di:waypoint x="1361" y="115"/>
+        <di:waypoint x="1436" y="80"/>
+        <bpmndi:BPMNLabel><dc:Bounds x="1370" y="85" width="80" height="14"/></bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_g5_to_task18_edge" bpmnElement="flow_g5_to_task18">
+        <di:waypoint x="1361" y="165"/>
+        <di:waypoint x="1436" y="230"/>
+        <bpmndi:BPMNLabel><dc:Bounds x="1370" y="195" width="80" height="14"/></bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_task17_to_join1_edge" bpmnElement="flow_task17_to_join1">
+        <di:waypoint x="1596" y="80"/>
+        <di:waypoint x="1671" y="115"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_task18_to_join1_edge" bpmnElement="flow_task18_to_join1">
+        <di:waypoint x="1596" y="230"/>
+        <di:waypoint x="1671" y="165"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_join1_to_paralleljoin1_edge" bpmnElement="flow_join1_to_paralleljoin1">
+        <di:waypoint x="1696" y="140"/>
+        <di:waypoint x="1746" y="140"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_task14_to_task19_edge" bpmnElement="flow_task14_to_task19">
+        <di:waypoint x="1516" y="1080"/>
+        <di:waypoint x="1516" y="230"/>
+        <di:waypoint x="1286" y="230"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_task19_to_paralleljoin1_edge" bpmnElement="flow_task19_to_paralleljoin1">
+        <di:waypoint x="1286" y="230"/>
+        <di:waypoint x="1746" y="140"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_paralleljoin1_to_task20_edge" bpmnElement="flow_paralleljoin1_to_task20">
+        <di:waypoint x="1796" y="140"/>
+        <di:waypoint x="1846" y="140"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_task20_to_g6_edge" bpmnElement="flow_task20_to_g6">
+        <di:waypoint x="1926" y="180"/>
+        <di:waypoint x="1926" y="370"/>
+        <di:waypoint x="150" y="370"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_g6_to_task21_edge" bpmnElement="flow_g6_to_task21">
+        <di:waypoint x="125" y="395"/>
+        <di:waypoint x="200" y="370"/>
+        <bpmndi:BPMNLabel><dc:Bounds x="135" y="400" width="80" height="14"/></bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_task21_to_task22_edge" bpmnElement="flow_task21_to_task22">
+        <di:waypoint x="280" y="410"/>
+        <di:waypoint x="280" y="1140"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_task22_to_task23_edge" bpmnElement="flow_task22_to_task23">
+        <di:waypoint x="360" y="1180"/>
+        <di:waypoint x="410" y="1180"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_task23_to_end_vendor_invoice_edge" bpmnElement="flow_task23_to_end_vendor_invoice">
+        <di:waypoint x="570" y="1180"/>
+        <di:waypoint x="620" y="1180"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_task23_to_task24_edge" bpmnElement="flow_task23_to_task24">
+        <di:waypoint x="490" y="1140"/>
+        <di:waypoint x="490" y="410"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_task24_to_task20_edge" bpmnElement="flow_task24_to_task20">
+        <di:waypoint x="570" y="370"/>
+        <di:waypoint x="1846" y="140"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_g6_to_task25_edge" bpmnElement="flow_g6_to_task25">
+        <di:waypoint x="125" y="345"/>
+        <di:waypoint x="200" y="470"/>
+        <bpmndi:BPMNLabel><dc:Bounds x="135" y="410" width="80" height="14"/></bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_task25_to_task26_edge" bpmnElement="flow_task25_to_task26">
+        <di:waypoint x="360" y="470"/>
+        <di:waypoint x="410" y="470"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_task26_to_task27_edge" bpmnElement="flow_task26_to_task27">
+        <di:waypoint x="490" y="510"/>
+        <di:waypoint x="490" y="890"/>
+        <di:waypoint x="620" y="890"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_task27_to_g7_edge" bpmnElement="flow_task27_to_g7">
+        <di:waypoint x="780" y="890"/>
+        <di:waypoint x="830" y="890"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_g7_to_task28_full_edge" bpmnElement="flow_g7_to_task28_full">
+        <di:waypoint x="880" y="890"/>
+        <di:waypoint x="930" y="890"/>
+        <bpmndi:BPMNLabel><dc:Bounds x="885" y="865" width="80" height="14"/></bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_g7_to_task28_install_edge" bpmnElement="flow_g7_to_task28_install">
+        <di:waypoint x="855" y="915"/>
+        <di:waypoint x="855" y="930"/>
+        <di:waypoint x="930" y="890"/>
+        <bpmndi:BPMNLabel><dc:Bounds x="860" y="935" width="80" height="28"/></bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_task28_to_end_edge" bpmnElement="flow_task28_to_end">
+        <di:waypoint x="1090" y="890"/>
+        <di:waypoint x="1140" y="890"/>
+      </bpmndi:BPMNEdge>
+
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</semantic:definitions>

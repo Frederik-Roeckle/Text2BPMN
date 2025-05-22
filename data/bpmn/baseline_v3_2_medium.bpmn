@@ -1,0 +1,203 @@
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" id="Definitions_1" targetNamespace="http://bpmn.io/schema/bpmn">
+  <bpmn:collaboration id="Collaboration_1">
+    <bpmn:participant id="Participant_InvoiceApproval" name="Invoice Approval Process" processRef="Process_InvoiceApproval" />
+  </bpmn:collaboration>
+  <bpmn:process id="Process_InvoiceApproval" isExecutable="false">
+    <bpmn:laneSet id="LaneSet_1">
+      <bpmn:lane id="Lane_ProcessHandler" name="Process Handler">
+        <bpmn:flowNodeRef>StartEvent_InvoiceReceived</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_SendFor1stApproval</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Gateway_1stDecision</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_SendFor2ndApproval</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Gateway_2ndDecision</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>EndEvent_ApprovalObtained</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>EndEvent_Rejected1st</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>EndEvent_Rejected2nd</bpmn:flowNodeRef>
+      </bpmn:lane>
+      <bpmn:lane id="Lane_1stApprover" name="1st Approver">
+        <bpmn:flowNodeRef>Task_Perform1stApproval</bpmn:flowNodeRef>
+      </bpmn:lane>
+      <bpmn:lane id="Lane_2ndApprover" name="2nd Approver">
+        <bpmn:flowNodeRef>Task_Perform2ndApproval</bpmn:flowNodeRef>
+      </bpmn:lane>
+    </bpmn:laneSet>
+    <bpmn:startEvent id="StartEvent_InvoiceReceived" name="Invoice Received">
+      <bpmn:outgoing>Flow_Start_to_Send1st</bpmn:outgoing>
+    </bpmn:startEvent>
+    <bpmn:task id="Task_SendFor1stApproval" name="Send Invoice for 1st Stage Approval">
+      <bpmn:incoming>Flow_Start_to_Send1st</bpmn:incoming>
+      <bpmn:outgoing>Flow_Send1st_to_Perform1st</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:task id="Task_Perform1stApproval" name="Perform 1st Stage Approval">
+      <bpmn:incoming>Flow_Send1st_to_Perform1st</bpmn:incoming>
+      <bpmn:outgoing>Flow_Perform1st_to_GW1</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:exclusiveGateway id="Gateway_1stDecision" name="1st Stage Decision?">
+      <bpmn:incoming>Flow_Perform1st_to_GW1</bpmn:incoming>
+      <bpmn:outgoing>Flow_GW1_Approved</bpmn:outgoing>
+      <bpmn:outgoing>Flow_GW1_Rejected</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:task id="Task_SendFor2ndApproval" name="Send Invoice for 2nd Stage Approval">
+      <bpmn:incoming>Flow_GW1_Approved</bpmn:incoming>
+      <bpmn:outgoing>Flow_Send2nd_to_Perform2nd</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:task id="Task_Perform2ndApproval" name="Perform 2nd Stage Approval">
+      <bpmn:incoming>Flow_Send2nd_to_Perform2nd</bpmn:incoming>
+      <bpmn:outgoing>Flow_Perform2nd_to_GW2</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:exclusiveGateway id="Gateway_2ndDecision" name="2nd Stage Decision?">
+      <bpmn:incoming>Flow_Perform2nd_to_GW2</bpmn:incoming>
+      <bpmn:outgoing>Flow_GW2_Approved</bpmn:outgoing>
+      <bpmn:outgoing>Flow_GW2_Rejected</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:endEvent id="EndEvent_ApprovalObtained" name="Signature/Approval Obtained">
+      <bpmn:incoming>Flow_GW2_Approved</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:endEvent id="EndEvent_Rejected1st" name="Request Rejected (1st Stage)">
+      <bpmn:incoming>Flow_GW1_Rejected</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:endEvent id="EndEvent_Rejected2nd" name="Request Rejected (2nd Stage)">
+      <bpmn:incoming>Flow_GW2_Rejected</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:sequenceFlow id="Flow_Start_to_Send1st" sourceRef="StartEvent_InvoiceReceived" targetRef="Task_SendFor1stApproval" />
+    <bpmn:sequenceFlow id="Flow_Send1st_to_Perform1st" sourceRef="Task_SendFor1stApproval" targetRef="Task_Perform1stApproval" />
+    <bpmn:sequenceFlow id="Flow_Perform1st_to_GW1" sourceRef="Task_Perform1stApproval" targetRef="Gateway_1stDecision" />
+    <bpmn:sequenceFlow id="Flow_GW1_Approved" name="Approved" sourceRef="Gateway_1stDecision" targetRef="Task_SendFor2ndApproval" />
+    <bpmn:sequenceFlow id="Flow_GW1_Rejected" name="Rejected" sourceRef="Gateway_1stDecision" targetRef="EndEvent_Rejected1st" />
+    <bpmn:sequenceFlow id="Flow_Send2nd_to_Perform2nd" sourceRef="Task_SendFor2ndApproval" targetRef="Task_Perform2ndApproval" />
+    <bpmn:sequenceFlow id="Flow_Perform2nd_to_GW2" sourceRef="Task_Perform2ndApproval" targetRef="Gateway_2ndDecision" />
+    <bpmn:sequenceFlow id="Flow_GW2_Approved" name="Approved" sourceRef="Gateway_2ndDecision" targetRef="EndEvent_ApprovalObtained" />
+    <bpmn:sequenceFlow id="Flow_GW2_Rejected" name="Rejected" sourceRef="Gateway_2ndDecision" targetRef="EndEvent_Rejected2nd" />
+  </bpmn:process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_1">
+    <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="Collaboration_1">
+      <bpmndi:BPMNShape id="Participant_InvoiceApproval_di" bpmnElement="Participant_InvoiceApproval" isHorizontal="true">
+        <dc:Bounds x="40" y="10" width="1460" height="450" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Lane_ProcessHandler_di" bpmnElement="Lane_ProcessHandler" isHorizontal="true">
+        <dc:Bounds x="70" y="10" width="1430" height="150" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Lane_1stApprover_di" bpmnElement="Lane_1stApprover" isHorizontal="true">
+        <dc:Bounds x="70" y="160" width="1430" height="150" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Lane_2ndApprover_di" bpmnElement="Lane_2ndApprover" isHorizontal="true">
+        <dc:Bounds x="70" y="310" width="1430" height="150" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="StartEvent_InvoiceReceived_di" bpmnElement="StartEvent_InvoiceReceived">
+        <dc:Bounds x="100" y="82" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="83" y="125" width="71" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_SendFor1stApproval_di" bpmnElement="Task_SendFor1stApproval">
+        <dc:Bounds x="200" y="60" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_Perform1stApproval_di" bpmnElement="Task_Perform1stApproval">
+        <dc:Bounds x="350" y="230" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gateway_1stDecision_di" bpmnElement="Gateway_1stDecision" isMarkerVisible="true">
+        <dc:Bounds x="550" y="75" width="50" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="532" y="45" width="87" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_SendFor2ndApproval_di" bpmnElement="Task_SendFor2ndApproval">
+        <dc:Bounds x="700" y="60" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_Perform2ndApproval_di" bpmnElement="Task_Perform2ndApproval">
+        <dc:Bounds x="850" y="380" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gateway_2ndDecision_di" bpmnElement="Gateway_2ndDecision" isMarkerVisible="true">
+        <dc:Bounds x="1050" y="75" width="50" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1032" y="45" width="87" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="EndEvent_ApprovalObtained_di" bpmnElement="EndEvent_ApprovalObtained">
+        <dc:Bounds x="1250" y="82" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1223" y="125" width="90" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="EndEvent_Rejected1st_di" bpmnElement="EndEvent_Rejected1st">
+        <dc:Bounds x="700" y="162" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="673" y="205" width="90" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="EndEvent_Rejected2nd_di" bpmnElement="EndEvent_Rejected2nd">
+        <dc:Bounds x="1250" y="162" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1223" y="205" width="90" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="Flow_Start_to_Send1st_di" bpmnElement="Flow_Start_to_Send1st">
+        <di:waypoint x="136" y="100" />
+        <di:waypoint x="200" y="100" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_Send1st_to_Perform1st_di" bpmnElement="Flow_Send1st_to_Perform1st">
+        <di:waypoint x="250" y="140" />
+        <di:waypoint x="250" y="270" />
+        <di:waypoint x="350" y="270" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_Perform1st_to_GW1_di" bpmnElement="Flow_Perform1st_to_GW1">
+        <di:waypoint x="450" y="270" />
+        <di:waypoint x="500" y="270" />
+        <di:waypoint x="500" y="100" />
+        <di:waypoint x="550" y="100" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_GW1_Approved_di" bpmnElement="Flow_GW1_Approved">
+        <di:waypoint x="600" y="100" />
+        <di:waypoint x="700" y="100" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="630" y="82" width="47" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_GW1_Rejected_di" bpmnElement="Flow_GW1_Rejected">
+        <di:waypoint x="575" y="125" />
+        <di:waypoint x="575" y="180" />
+        <di:waypoint x="700" y="180" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="618" y="163" width="44" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_Send2nd_to_Perform2nd_di" bpmnElement="Flow_Send2nd_to_Perform2nd">
+        <di:waypoint x="750" y="140" />
+        <di:waypoint x="750" y="420" />
+        <di:waypoint x="850" y="420" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_Perform2nd_to_GW2_di" bpmnElement="Flow_Perform2nd_to_GW2">
+        <di:waypoint x="950" y="420" />
+        <di:waypoint x="1000" y="420" />
+        <di:waypoint x="1000" y="100" />
+        <di:waypoint x="1050" y="100" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_GW2_Approved_di" bpmnElement="Flow_GW2_Approved">
+        <di:waypoint x="1100" y="100" />
+        <di:waypoint x="1250" y="100" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1155" y="82" width="47" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_GW2_Rejected_di" bpmnElement="Flow_GW2_Rejected">
+        <di:waypoint x="1075" y="125" />
+        <di:waypoint x="1075" y="180" />
+        <di:waypoint x="1250" y="180" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1143" y="163" width="44" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</bpmn:definitions>
+```

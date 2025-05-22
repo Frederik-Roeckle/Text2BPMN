@@ -1,0 +1,855 @@
+<?xml version="1.0" standalone="yes"?>
+<semantic:definitions id="DamagesCompensationProcess"
+    targetNamespace="http://example.com/bpmn/damages-compensation"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:semantic="http://www.omg.org/spec/BPMN/20100524/MODEL"
+    xmlns:di="http://www.omg.org/spec/DD/20100524/DI"
+    xmlns:dc="http://www.omg.org/spec/DD/20100524/DC"
+    xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI">
+
+  <semantic:collaboration id="Collab_DamagesCompensation">
+    <semantic:participant id="P_MoJ" name="Ministry of Justice" processRef="Process_DamagesCompensation"/>
+  </semantic:collaboration>
+
+  <semantic:process id="Process_DamagesCompensation" isExecutable="true">
+    <semantic:laneSet id="LaneSet_MoJ">
+      <semantic:lane id="L_Lawyer" name="Responsible Lawyer">
+        <semantic:flowNodeRef>SE_Start</semantic:flowNodeRef>
+        <semantic:flowNodeRef>T_DetLiab</semantic:flowNodeRef>
+        <semantic:flowNodeRef>T_DefDmg</semantic:flowNodeRef>
+        <semantic:flowNodeRef>G_DmgType</semantic:flowNodeRef>
+        <semantic:flowNodeRef>T_DetFinLoss</semantic:flowNodeRef>
+        <semantic:flowNodeRef>G_FinLossType</semantic:flowNodeRef>
+        <semantic:flowNodeRef>T_PosDmg</semantic:flowNodeRef>
+        <semantic:flowNodeRef>T_LostProfit</semantic:flowNodeRef>
+        <semantic:flowNodeRef>M_FinLossType</semantic:flowNodeRef>
+        <semantic:flowNodeRef>T_DetImmLoss</semantic:flowNodeRef>
+        <semantic:flowNodeRef>G_ImmLossType</semantic:flowNodeRef>
+        <semantic:flowNodeRef>T_PainComp</semantic:flowNodeRef>
+        <semantic:flowNodeRef>T_ValSpecPref</semantic:flowNodeRef>
+        <semantic:flowNodeRef>M_ImmLossType</semantic:flowNodeRef>
+        <semantic:flowNodeRef>M_DmgTypeDefined</semantic:flowNodeRef>
+        <semantic:flowNodeRef>T_DefCaus</semantic:flowNodeRef>
+        <semantic:flowNodeRef>T_ChkEquiv</semantic:flowNodeRef>
+        <semantic:flowNodeRef>G_Equiv</semantic:flowNodeRef>
+        <semantic:flowNodeRef>EE_EquivFail</semantic:flowNodeRef>
+        <semantic:flowNodeRef>T_ChkAdeq</semantic:flowNodeRef>
+        <semantic:flowNodeRef>G_Adeq</semantic:flowNodeRef>
+        <semantic:flowNodeRef>EE_AdeqFail</semantic:flowNodeRef>
+        <semantic:flowNodeRef>T_ChkIlleg</semantic:flowNodeRef>
+        <semantic:flowNodeRef>T_DetIllegType</semantic:flowNodeRef>
+        <semantic:flowNodeRef>G_IllegType</semantic:flowNodeRef>
+        <semantic:flowNodeRef>T_BreachLaw</semantic:flowNodeRef>
+        <semantic:flowNodeRef>T_ViolMorals</semantic:flowNodeRef>
+        <semantic:flowNodeRef>M_IllegType</semantic:flowNodeRef>
+        <semantic:flowNodeRef>T_ChkFault</semantic:flowNodeRef>
+        <semantic:flowNodeRef>T_ChkAccess</semantic:flowNodeRef>
+        <semantic:flowNodeRef>T_DiffIntensity</semantic:flowNodeRef>
+        <semantic:flowNodeRef>G_Intensity</semantic:flowNodeRef>
+        <semantic:flowNodeRef>T_Intent</semantic:flowNodeRef>
+        <semantic:flowNodeRef>T_DetNegType</semantic:flowNodeRef>
+        <semantic:flowNodeRef>G_NegType</semantic:flowNodeRef>
+        <semantic:flowNodeRef>T_GrossNeg</semantic:flowNodeRef>
+        <semantic:flowNodeRef>T_SlightNeg</semantic:flowNodeRef>
+        <semantic:flowNodeRef>M_NegType</semantic:flowNodeRef>
+        <semantic:flowNodeRef>M_FaultDets</semantic:flowNodeRef>
+      </semantic:lane>
+      <semantic:lane id="L_Judge" name="Responsible Judge">
+        <semantic:flowNodeRef>T_DecideExtent</semantic:flowNodeRef>
+        <semantic:flowNodeRef>G_CompDmgType</semantic:flowNodeRef>
+        <semantic:flowNodeRef>T_DetExtFin</semantic:flowNodeRef>
+        <semantic:flowNodeRef>G_FaultFin</semantic:flowNodeRef>
+        <semantic:flowNodeRef>T_ReplMarketVal</semantic:flowNodeRef>
+        <semantic:flowNodeRef>T_CompDmgProfit</semantic:flowNodeRef>
+        <semantic:flowNodeRef>M_FinCompDet</semantic:flowNodeRef>
+        <semantic:flowNodeRef>T_DetExtImm</semantic:flowNodeRef>
+        <semantic:flowNodeRef>G_ImmCompOutcome</semantic:flowNodeRef>
+        <semantic:flowNodeRef>T_AwardPain</semantic:flowNodeRef>
+        <semantic:flowNodeRef>T_AwardVSP</semantic:flowNodeRef>
+        <semantic:flowNodeRef>EE_ImmDeny</semantic:flowNodeRef>
+        <semantic:flowNodeRef>M_ImmCompAward</semantic:flowNodeRef>
+        <semantic:flowNodeRef>M_CompFinal</semantic:flowNodeRef>
+        <semantic:flowNodeRef>EE_Success</semantic:flowNodeRef>
+      </semantic:lane>
+    </semantic:laneSet>
+
+    <!-- Lawyer Lane Elements -->
+    <semantic:startEvent id="SE_Start" name="Begin Damages Compensation Check">
+      <semantic:outgoing>SF_Start_To_DetLiab</semantic:outgoing>
+    </semantic:startEvent>
+    <semantic:task id="T_DetLiab" name="Determine Liability Type (using §1311 ABGB &amp; System)">
+      <semantic:incoming>SF_Start_To_DetLiab</semantic:incoming>
+      <semantic:outgoing>SF_DetLiab_To_DefDmg</semantic:outgoing>
+    </semantic:task>
+    <semantic:task id="T_DefDmg" name="Define Damage Type">
+      <semantic:incoming>SF_DetLiab_To_DefDmg</semantic:incoming>
+      <semantic:outgoing>SF_DefDmg_To_GDmgType</semantic:outgoing>
+    </semantic:task>
+    <semantic:exclusiveGateway id="G_DmgType" name="Damage Type Identified?">
+      <semantic:incoming>SF_DefDmg_To_GDmgType</semantic:incoming>
+      <semantic:outgoing>SF_FinLoss</semantic:outgoing>
+      <semantic:outgoing>SF_ImmLoss</semantic:outgoing>
+    </semantic:exclusiveGateway>
+
+    <semantic:task id="T_DetFinLoss" name="Determine Financial Loss Type">
+      <semantic:incoming>SF_FinLoss</semantic:incoming>
+      <semantic:outgoing>SF_DetFinLoss_To_GFinLossType</semantic:outgoing>
+    </semantic:task>
+    <semantic:exclusiveGateway id="G_FinLossType" name="Financial Loss Category?">
+      <semantic:incoming>SF_DetFinLoss_To_GFinLossType</semantic:incoming>
+      <semantic:outgoing>SF_PosDmg</semantic:outgoing>
+      <semantic:outgoing>SF_LostProfit</semantic:outgoing>
+    </semantic:exclusiveGateway>
+    <semantic:task id="T_PosDmg" name="Identify Positive Damage">
+      <semantic:incoming>SF_PosDmg</semantic:incoming>
+      <semantic:outgoing>SF_PosDmg_To_MFinLossType</semantic:outgoing>
+    </semantic:task>
+    <semantic:task id="T_LostProfit" name="Identify Lost Profit">
+      <semantic:incoming>SF_LostProfit</semantic:incoming>
+      <semantic:outgoing>SF_LostProfit_To_MFinLossType</semantic:outgoing>
+    </semantic:task>
+    <semantic:exclusiveGateway id="M_FinLossType" name="Financial Loss Categorized">
+      <semantic:incoming>SF_PosDmg_To_MFinLossType</semantic:incoming>
+      <semantic:incoming>SF_LostProfit_To_MFinLossType</semantic:incoming>
+      <semantic:outgoing>SF_MFinLossType_To_MDmgTypeDefined</semantic:outgoing>
+    </semantic:exclusiveGateway>
+
+    <semantic:task id="T_DetImmLoss" name="Determine Immaterial Damage Type">
+      <semantic:incoming>SF_ImmLoss</semantic:incoming>
+      <semantic:outgoing>SF_DetImmLoss_To_GImmLossType</semantic:outgoing>
+    </semantic:task>
+    <semantic:exclusiveGateway id="G_ImmLossType" name="Immaterial Damage Category?">
+      <semantic:incoming>SF_DetImmLoss_To_GImmLossType</semantic:incoming>
+      <semantic:outgoing>SF_PainComp</semantic:outgoing>
+      <semantic:outgoing>SF_ValSpecPref</semantic:outgoing>
+    </semantic:exclusiveGateway>
+    <semantic:task id="T_PainComp" name="Identify Pain Compensation (Bodily Harm)">
+      <semantic:incoming>SF_PainComp</semantic:incoming>
+      <semantic:outgoing>SF_PainComp_To_MImmLossType</semantic:outgoing>
+    </semantic:task>
+    <semantic:task id="T_ValSpecPref" name="Identify Value of Special Preference">
+      <semantic:incoming>SF_ValSpecPref</semantic:incoming>
+      <semantic:outgoing>SF_ValSpecPref_To_MImmLossType</semantic:outgoing>
+    </semantic:task>
+    <semantic:exclusiveGateway id="M_ImmLossType" name="Immaterial Damage Categorized">
+      <semantic:incoming>SF_PainComp_To_MImmLossType</semantic:incoming>
+      <semantic:incoming>SF_ValSpecPref_To_MImmLossType</semantic:incoming>
+      <semantic:outgoing>SF_MImmLossType_To_MDmgTypeDefined</semantic:outgoing>
+    </semantic:exclusiveGateway>
+
+    <semantic:exclusiveGateway id="M_DmgTypeDefined" name="Damage Type Definition Complete">
+      <semantic:incoming>SF_MFinLossType_To_MDmgTypeDefined</semantic:incoming>
+      <semantic:incoming>SF_MImmLossType_To_MDmgTypeDefined</semantic:incoming>
+      <semantic:outgoing>SF_MDmgTypeDefined_To_DefCaus</semantic:outgoing>
+    </semantic:exclusiveGateway>
+
+    <semantic:task id="T_DefCaus" name="Define Causality">
+      <semantic:incoming>SF_MDmgTypeDefined_To_DefCaus</semantic:incoming>
+      <semantic:outgoing>SF_DefCaus_To_ChkEquiv</semantic:outgoing>
+    </semantic:task>
+    <semantic:task id="T_ChkEquiv" name="Check Equivalence">
+      <semantic:incoming>SF_DefCaus_To_ChkEquiv</semantic:incoming>
+      <semantic:outgoing>SF_ChkEquiv_To_GEquiv</semantic:outgoing>
+    </semantic:task>
+    <semantic:exclusiveGateway id="G_Equiv" name="Equivalence Condition Met?">
+      <semantic:incoming>SF_ChkEquiv_To_GEquiv</semantic:incoming>
+      <semantic:outgoing>SF_EquivYes</semantic:outgoing>
+      <semantic:outgoing>SF_EquivNo</semantic:outgoing>
+    </semantic:exclusiveGateway>
+    <semantic:endEvent id="EE_EquivFail" name="End: Compensation Not Granted (Equivalence Failure)">
+      <semantic:incoming>SF_EquivNo</semantic:incoming>
+    </semantic:endEvent>
+
+    <semantic:task id="T_ChkAdeq" name="Check Adequacy">
+      <semantic:incoming>SF_EquivYes</semantic:incoming>
+      <semantic:outgoing>SF_ChkAdeq_To_GAdeq</semantic:outgoing>
+    </semantic:task>
+    <semantic:exclusiveGateway id="G_Adeq" name="Adequacy Condition Met?">
+      <semantic:incoming>SF_ChkAdeq_To_GAdeq</semantic:incoming>
+      <semantic:outgoing>SF_AdeqYes</semantic:outgoing>
+      <semantic:outgoing>SF_AdeqNo</semantic:outgoing>
+    </semantic:exclusiveGateway>
+    <semantic:endEvent id="EE_AdeqFail" name="End: Compensation Not Granted (Adequacy Failure)">
+      <semantic:incoming>SF_AdeqNo</semantic:incoming>
+    </semantic:endEvent>
+
+    <semantic:task id="T_ChkIlleg" name="Check Illegality">
+      <semantic:incoming>SF_AdeqYes</semantic:incoming>
+      <semantic:outgoing>SF_ChkIlleg_To_DetIllegType</semantic:outgoing>
+    </semantic:task>
+    <semantic:task id="T_DetIllegType" name="Determine Illegality Type">
+      <semantic:incoming>SF_ChkIlleg_To_DetIllegType</semantic:incoming>
+      <semantic:outgoing>SF_DetIllegType_To_GIllegType</semantic:outgoing>
+    </semantic:task>
+    <semantic:exclusiveGateway id="G_IllegType" name="Illegality Type Identified?">
+      <semantic:incoming>SF_DetIllegType_To_GIllegType</semantic:incoming>
+      <semantic:outgoing>SF_BreachLaw</semantic:outgoing>
+      <semantic:outgoing>SF_ViolMorals</semantic:outgoing>
+    </semantic:exclusiveGateway>
+    <semantic:task id="T_BreachLaw" name="Identify Breach of Law">
+      <semantic:incoming>SF_BreachLaw</semantic:incoming>
+      <semantic:outgoing>SF_BreachLaw_To_MIllegType</semantic:outgoing>
+    </semantic:task>
+    <semantic:task id="T_ViolMorals" name="Identify Violation of Good Morals">
+      <semantic:incoming>SF_ViolMorals</semantic:incoming>
+      <semantic:outgoing>SF_ViolMorals_To_MIllegType</semantic:outgoing>
+    </semantic:task>
+    <semantic:exclusiveGateway id="M_IllegType" name="Illegality Type Determined">
+      <semantic:incoming>SF_BreachLaw_To_MIllegType</semantic:incoming>
+      <semantic:incoming>SF_ViolMorals_To_MIllegType</semantic:incoming>
+      <semantic:outgoing>SF_MIllegType_To_ChkFault</semantic:outgoing>
+    </semantic:exclusiveGateway>
+
+    <semantic:task id="T_ChkFault" name="Check Fault">
+      <semantic:incoming>SF_MIllegType_To_ChkFault</semantic:incoming>
+      <semantic:outgoing>SF_ChkFault_To_ChkAccess</semantic:outgoing>
+    </semantic:task>
+    <semantic:task id="T_ChkAccess" name="Check Accessibility of Damaging Behavior">
+      <semantic:incoming>SF_ChkFault_To_ChkAccess</semantic:incoming>
+      <semantic:outgoing>SF_ChkAccess_To_DiffIntensity</semantic:outgoing>
+    </semantic:task>
+    <semantic:task id="T_DiffIntensity" name="Differentiate Fault Intensity">
+      <semantic:incoming>SF_ChkAccess_To_DiffIntensity</semantic:incoming>
+      <semantic:outgoing>SF_DiffIntensity_To_GIntensity</semantic:outgoing>
+    </semantic:task>
+    <semantic:exclusiveGateway id="G_Intensity" name="Fault Intensity?">
+      <semantic:incoming>SF_DiffIntensity_To_GIntensity</semantic:incoming>
+      <semantic:outgoing>SF_Intent</semantic:outgoing>
+      <semantic:outgoing>SF_Negligence</semantic:outgoing>
+    </semantic:exclusiveGateway>
+    <semantic:task id="T_Intent" name="Identify Intent">
+      <semantic:incoming>SF_Intent</semantic:incoming>
+      <semantic:outgoing>SF_Intent_To_MFaultDets</semantic:outgoing>
+    </semantic:task>
+    <semantic:task id="T_DetNegType" name="Determine Negligence Type">
+      <semantic:incoming>SF_Negligence</semantic:incoming>
+      <semantic:outgoing>SF_DetNegType_To_GNegType</semantic:outgoing>
+    </semantic:task>
+    <semantic:exclusiveGateway id="G_NegType" name="Negligence Category?">
+      <semantic:incoming>SF_DetNegType_To_GNegType</semantic:incoming>
+      <semantic:outgoing>SF_GrossNeg</semantic:outgoing>
+      <semantic:outgoing>SF_SlightNeg</semantic:outgoing>
+    </semantic:exclusiveGateway>
+    <semantic:task id="T_GrossNeg" name="Identify Gross Negligence">
+      <semantic:incoming>SF_GrossNeg</semantic:incoming>
+      <semantic:outgoing>SF_GrossNeg_To_MNegType</semantic:outgoing>
+    </semantic:task>
+    <semantic:task id="T_SlightNeg" name="Identify Slight Negligence">
+      <semantic:incoming>SF_SlightNeg</semantic:incoming>
+      <semantic:outgoing>SF_SlightNeg_To_MNegType</semantic:outgoing>
+    </semantic:task>
+    <semantic:exclusiveGateway id="M_NegType" name="Negligence Type Determined">
+      <semantic:incoming>SF_GrossNeg_To_MNegType</semantic:incoming>
+      <semantic:incoming>SF_SlightNeg_To_MNegType</semantic:incoming>
+      <semantic:outgoing>SF_MNegType_To_MFaultDets</semantic:outgoing>
+    </semantic:exclusiveGateway>
+    <semantic:exclusiveGateway id="M_FaultDets" name="Fault Details Determined">
+      <semantic:incoming>SF_Intent_To_MFaultDets</semantic:incoming>
+      <semantic:incoming>SF_MNegType_To_MFaultDets</semantic:incoming>
+      <semantic:outgoing>SF_MFaultDets_To_DecideExtent</semantic:outgoing>
+    </semantic:exclusiveGateway>
+
+    <!-- Judge Lane Elements -->
+    <semantic:task id="T_DecideExtent" name="Decide Compensation Extent">
+      <semantic:incoming>SF_MFaultDets_To_DecideExtent</semantic:incoming>
+      <semantic:outgoing>SF_DecideExtent_To_GCompDmgType</semantic:outgoing>
+    </semantic:task>
+    <semantic:exclusiveGateway id="G_CompDmgType" name="Original Damage Type for Compensation?">
+      <semantic:incoming>SF_DecideExtent_To_GCompDmgType</semantic:incoming>
+      <semantic:outgoing>SF_CompFinLoss</semantic:outgoing>
+      <semantic:outgoing>SF_CompImmLoss</semantic:outgoing>
+    </semantic:exclusiveGateway>
+
+    <semantic:task id="T_DetExtFin" name="Determine Extent for Financial Loss">
+      <semantic:incoming>SF_CompFinLoss</semantic:incoming>
+      <semantic:outgoing>SF_DetExtFin_To_GFaultFin</semantic:outgoing>
+    </semantic:task>
+    <semantic:exclusiveGateway id="G_FaultFin" name="Fault Level for Financial Loss?">
+      <semantic:incoming>SF_DetExtFin_To_GFaultFin</semantic:incoming>
+      <semantic:outgoing>SF_FinSlight</semantic:outgoing>
+      <semantic:outgoing>SF_FinGrossIntent</semantic:outgoing>
+    </semantic:exclusiveGateway>
+    <semantic:task id="T_ReplMarketVal" name="Consider Replacement of Market Value">
+      <semantic:incoming>SF_FinSlight</semantic:incoming>
+      <semantic:outgoing>SF_ReplMarketVal_To_MFinCompDet</semantic:outgoing>
+    </semantic:task>
+    <semantic:task id="T_CompDmgProfit" name="Consider Compensation for Damage &amp; Lost Profit">
+      <semantic:incoming>SF_FinGrossIntent</semantic:incoming>
+      <semantic:outgoing>SF_CompDmgProfit_To_MFinCompDet</semantic:outgoing>
+    </semantic:task>
+    <semantic:exclusiveGateway id="M_FinCompDet" name="Financial Loss Compensation Determined">
+      <semantic:incoming>SF_ReplMarketVal_To_MFinCompDet</semantic:incoming>
+      <semantic:incoming>SF_CompDmgProfit_To_MFinCompDet</semantic:incoming>
+      <semantic:outgoing>SF_MFinCompDet_To_MCompFinal</semantic:outgoing>
+    </semantic:exclusiveGateway>
+
+    <semantic:task id="T_DetExtImm" name="Determine Extent for Immaterial Damage">
+      <semantic:incoming>SF_CompImmLoss</semantic:incoming>
+      <semantic:outgoing>SF_DetExtImm_To_GImmCompOutcome</semantic:outgoing>
+    </semantic:task>
+    <semantic:exclusiveGateway id="G_ImmCompOutcome" name="Immaterial Damage Compensation Outcome?">
+      <semantic:incoming>SF_DetExtImm_To_GImmCompOutcome</semantic:incoming>
+      <semantic:outgoing>SF_AwardPain</semantic:outgoing>
+      <semantic:outgoing>SF_AwardVSP</semantic:outgoing>
+      <semantic:outgoing>SF_DenyImm</semantic:outgoing>
+    </semantic:exclusiveGateway>
+    <semantic:task id="T_AwardPain" name="Award Pain Compensation (Full Satisfaction)">
+      <semantic:incoming>SF_AwardPain</semantic:incoming>
+      <semantic:outgoing>SF_AwardPain_To_MImmCompAward</semantic:outgoing>
+    </semantic:task>
+    <semantic:task id="T_AwardVSP" name="Award Value of Special Preference Compensation (Full Satisfaction)">
+      <semantic:incoming>SF_AwardVSP</semantic:incoming>
+      <semantic:outgoing>SF_AwardVSP_To_MImmCompAward</semantic:outgoing>
+    </semantic:task>
+    <semantic:endEvent id="EE_ImmDeny" name="End: Compensation Not Granted (Immaterial - No Satisfaction)">
+      <semantic:incoming>SF_DenyImm</semantic:incoming>
+    </semantic:endEvent>
+    <semantic:exclusiveGateway id="M_ImmCompAward" name="Immaterial Damage Compensation Awarded">
+      <semantic:incoming>SF_AwardPain_To_MImmCompAward</semantic:incoming>
+      <semantic:incoming>SF_AwardVSP_To_MImmCompAward</semantic:incoming>
+      <semantic:outgoing>SF_MImmCompAward_To_MCompFinal</semantic:outgoing>
+    </semantic:exclusiveGateway>
+
+    <semantic:exclusiveGateway id="M_CompFinal" name="Compensation Extent Finalized">
+      <semantic:incoming>SF_MFinCompDet_To_MCompFinal</semantic:incoming>
+      <semantic:incoming>SF_MImmCompAward_To_MCompFinal</semantic:incoming>
+      <semantic:outgoing>SF_MCompFinal_To_EESuccess</semantic:outgoing>
+    </semantic:exclusiveGateway>
+    <semantic:endEvent id="EE_Success" name="End: Entitlement to Damages Compensation Successfully Checked">
+      <semantic:incoming>SF_MCompFinal_To_EESuccess</semantic:incoming>
+    </semantic:endEvent>
+
+    <!-- Sequence Flows -->
+    <semantic:sequenceFlow id="SF_Start_To_DetLiab" sourceRef="SE_Start" targetRef="T_DetLiab"/>
+    <semantic:sequenceFlow id="SF_DetLiab_To_DefDmg" sourceRef="T_DetLiab" targetRef="T_DefDmg"/>
+    <semantic:sequenceFlow id="SF_DefDmg_To_GDmgType" sourceRef="T_DefDmg" targetRef="G_DmgType"/>
+    <semantic:sequenceFlow id="SF_FinLoss" name="Financial Loss" sourceRef="G_DmgType" targetRef="T_DetFinLoss"/>
+    <semantic:sequenceFlow id="SF_ImmLoss" name="Immaterial Damage" sourceRef="G_DmgType" targetRef="T_DetImmLoss"/>
+    <semantic:sequenceFlow id="SF_DetFinLoss_To_GFinLossType" sourceRef="T_DetFinLoss" targetRef="G_FinLossType"/>
+    <semantic:sequenceFlow id="SF_PosDmg" name="Positive Damage" sourceRef="G_FinLossType" targetRef="T_PosDmg"/>
+    <semantic:sequenceFlow id="SF_LostProfit" name="Lost Profit" sourceRef="G_FinLossType" targetRef="T_LostProfit"/>
+    <semantic:sequenceFlow id="SF_PosDmg_To_MFinLossType" sourceRef="T_PosDmg" targetRef="M_FinLossType"/>
+    <semantic:sequenceFlow id="SF_LostProfit_To_MFinLossType" sourceRef="T_LostProfit" targetRef="M_FinLossType"/>
+    <semantic:sequenceFlow id="SF_MFinLossType_To_MDmgTypeDefined" sourceRef="M_FinLossType" targetRef="M_DmgTypeDefined"/>
+    <semantic:sequenceFlow id="SF_DetImmLoss_To_GImmLossType" sourceRef="T_DetImmLoss" targetRef="G_ImmLossType"/>
+    <semantic:sequenceFlow id="SF_PainComp" name="Pain Compensation" sourceRef="G_ImmLossType" targetRef="T_PainComp"/>
+    <semantic:sequenceFlow id="SF_ValSpecPref" name="Value of Special Preference" sourceRef="G_ImmLossType" targetRef="T_ValSpecPref"/>
+    <semantic:sequenceFlow id="SF_PainComp_To_MImmLossType" sourceRef="T_PainComp" targetRef="M_ImmLossType"/>
+    <semantic:sequenceFlow id="SF_ValSpecPref_To_MImmLossType" sourceRef="T_ValSpecPref" targetRef="M_ImmLossType"/>
+    <semantic:sequenceFlow id="SF_MImmLossType_To_MDmgTypeDefined" sourceRef="M_ImmLossType" targetRef="M_DmgTypeDefined"/>
+    <semantic:sequenceFlow id="SF_MDmgTypeDefined_To_DefCaus" sourceRef="M_DmgTypeDefined" targetRef="T_DefCaus"/>
+    <semantic:sequenceFlow id="SF_DefCaus_To_ChkEquiv" sourceRef="T_DefCaus" targetRef="T_ChkEquiv"/>
+    <semantic:sequenceFlow id="SF_ChkEquiv_To_GEquiv" sourceRef="T_ChkEquiv" targetRef="G_Equiv"/>
+    <semantic:sequenceFlow id="SF_EquivYes" name="Yes, Equivalence Confirmed" sourceRef="G_Equiv" targetRef="T_ChkAdeq"/>
+    <semantic:sequenceFlow id="SF_EquivNo" name="No, Equivalence Not Confirmed" sourceRef="G_Equiv" targetRef="EE_EquivFail"/>
+    <semantic:sequenceFlow id="SF_ChkAdeq_To_GAdeq" sourceRef="T_ChkAdeq" targetRef="G_Adeq"/>
+    <semantic:sequenceFlow id="SF_AdeqYes" name="Yes, Adequacy Confirmed" sourceRef="G_Adeq" targetRef="T_ChkIlleg"/>
+    <semantic:sequenceFlow id="SF_AdeqNo" name="No, Adequacy Not Confirmed" sourceRef="G_Adeq" targetRef="EE_AdeqFail"/>
+    <semantic:sequenceFlow id="SF_ChkIlleg_To_DetIllegType" sourceRef="T_ChkIlleg" targetRef="T_DetIllegType"/>
+    <semantic:sequenceFlow id="SF_DetIllegType_To_GIllegType" sourceRef="T_DetIllegType" targetRef="G_IllegType"/>
+    <semantic:sequenceFlow id="SF_BreachLaw" name="Breach of Law" sourceRef="G_IllegType" targetRef="T_BreachLaw"/>
+    <semantic:sequenceFlow id="SF_ViolMorals" name="Violation of Good Morals" sourceRef="G_IllegType" targetRef="T_ViolMorals"/>
+    <semantic:sequenceFlow id="SF_BreachLaw_To_MIllegType" sourceRef="T_BreachLaw" targetRef="M_IllegType"/>
+    <semantic:sequenceFlow id="SF_ViolMorals_To_MIllegType" sourceRef="T_ViolMorals" targetRef="M_IllegType"/>
+    <semantic:sequenceFlow id="SF_MIllegType_To_ChkFault" sourceRef="M_IllegType" targetRef="T_ChkFault"/>
+    <semantic:sequenceFlow id="SF_ChkFault_To_ChkAccess" sourceRef="T_ChkFault" targetRef="T_ChkAccess"/>
+    <semantic:sequenceFlow id="SF_ChkAccess_To_DiffIntensity" sourceRef="T_ChkAccess" targetRef="T_DiffIntensity"/>
+    <semantic:sequenceFlow id="SF_DiffIntensity_To_GIntensity" sourceRef="T_DiffIntensity" targetRef="G_Intensity"/>
+    <semantic:sequenceFlow id="SF_Intent" name="Intentional Damage" sourceRef="G_Intensity" targetRef="T_Intent"/>
+    <semantic:sequenceFlow id="SF_Negligence" name="Negligence" sourceRef="G_Intensity" targetRef="T_DetNegType"/>
+    <semantic:sequenceFlow id="SF_Intent_To_MFaultDets" sourceRef="T_Intent" targetRef="M_FaultDets"/>
+    <semantic:sequenceFlow id="SF_DetNegType_To_GNegType" sourceRef="T_DetNegType" targetRef="G_NegType"/>
+    <semantic:sequenceFlow id="SF_GrossNeg" name="Gross Negligence" sourceRef="G_NegType" targetRef="T_GrossNeg"/>
+    <semantic:sequenceFlow id="SF_SlightNeg" name="Slight Negligence" sourceRef="G_NegType" targetRef="T_SlightNeg"/>
+    <semantic:sequenceFlow id="SF_GrossNeg_To_MNegType" sourceRef="T_GrossNeg" targetRef="M_NegType"/>
+    <semantic:sequenceFlow id="SF_SlightNeg_To_MNegType" sourceRef="T_SlightNeg" targetRef="M_NegType"/>
+    <semantic:sequenceFlow id="SF_MNegType_To_MFaultDets" sourceRef="M_NegType" targetRef="M_FaultDets"/>
+    <semantic:sequenceFlow id="SF_MFaultDets_To_DecideExtent" sourceRef="M_FaultDets" targetRef="T_DecideExtent"/>
+    <semantic:sequenceFlow id="SF_DecideExtent_To_GCompDmgType" sourceRef="T_DecideExtent" targetRef="G_CompDmgType"/>
+    <semantic:sequenceFlow id="SF_CompFinLoss" name="Financial Loss Compensation" sourceRef="G_CompDmgType" targetRef="T_DetExtFin"/>
+    <semantic:sequenceFlow id="SF_CompImmLoss" name="Immaterial Damage Compensation" sourceRef="G_CompDmgType" targetRef="T_DetExtImm"/>
+    <semantic:sequenceFlow id="SF_DetExtFin_To_GFaultFin" sourceRef="T_DetExtFin" targetRef="G_FaultFin"/>
+    <semantic:sequenceFlow id="SF_FinSlight" name="Slight Negligence" sourceRef="G_FaultFin" targetRef="T_ReplMarketVal"/>
+    <semantic:sequenceFlow id="SF_FinGrossIntent" name="Gross Negligence/Intent" sourceRef="G_FaultFin" targetRef="T_CompDmgProfit"/>
+    <semantic:sequenceFlow id="SF_ReplMarketVal_To_MFinCompDet" sourceRef="T_ReplMarketVal" targetRef="M_FinCompDet"/>
+    <semantic:sequenceFlow id="SF_CompDmgProfit_To_MFinCompDet" sourceRef="T_CompDmgProfit" targetRef="M_FinCompDet"/>
+    <semantic:sequenceFlow id="SF_MFinCompDet_To_MCompFinal" sourceRef="M_FinCompDet" targetRef="M_CompFinal"/>
+    <semantic:sequenceFlow id="SF_DetExtImm_To_GImmCompOutcome" sourceRef="T_DetExtImm" targetRef="G_ImmCompOutcome"/>
+    <semantic:sequenceFlow id="SF_AwardPain" name="Award Pain Compensation" sourceRef="G_ImmCompOutcome" targetRef="T_AwardPain"/>
+    <semantic:sequenceFlow id="SF_AwardVSP" name="Award Value of Special Preference" sourceRef="G_ImmCompOutcome" targetRef="T_AwardVSP"/>
+    <semantic:sequenceFlow id="SF_DenyImm" name="Deny Immaterial Compensation" sourceRef="G_ImmCompOutcome" targetRef="EE_ImmDeny"/>
+    <semantic:sequenceFlow id="SF_AwardPain_To_MImmCompAward" sourceRef="T_AwardPain" targetRef="M_ImmCompAward"/>
+    <semantic:sequenceFlow id="SF_AwardVSP_To_MImmCompAward" sourceRef="T_AwardVSP" targetRef="M_ImmCompAward"/>
+    <semantic:sequenceFlow id="SF_MImmCompAward_To_MCompFinal" sourceRef="M_ImmCompAward" targetRef="M_CompFinal"/>
+    <semantic:sequenceFlow id="SF_MCompFinal_To_EESuccess" sourceRef="M_CompFinal" targetRef="EE_Success"/>
+
+  </semantic:process>
+
+  <bpmndi:BPMNDiagram id="BPMNDiagram_DamagesCompensation" name="Damages Compensation Diagram" resolution="96.0">
+    <bpmndi:BPMNPlane bpmnElement="Collab_DamagesCompensation">
+      <bpmndi:BPMNShape id="P_MoJ_shape" bpmnElement="P_MoJ" isHorizontal="true">
+        <dc:Bounds x="20" y="20" width="5200" height="540"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="L_Lawyer_shape" bpmnElement="L_Lawyer" isHorizontal="true">
+        <dc:Bounds x="20" y="20" width="5200" height="280"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="L_Judge_shape" bpmnElement="L_Judge" isHorizontal="true">
+        <dc:Bounds x="20" y="300" width="5200" height="260"/>
+      </bpmndi:BPMNShape>
+
+      <!-- Lawyer Shapes -->
+      <bpmndi:BPMNShape id="SE_Start_shape" bpmnElement="SE_Start">
+        <dc:Bounds x="100" y="102" width="36" height="36"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="T_DetLiab_shape" bpmnElement="T_DetLiab">
+        <dc:Bounds x="200" y="80" width="200" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="T_DefDmg_shape" bpmnElement="T_DefDmg">
+        <dc:Bounds x="450" y="90" width="100" height="60"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="G_DmgType_shape" bpmnElement="G_DmgType" isMarkerVisible="true">
+        <dc:Bounds x="600" y="95" width="50" height="50"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="T_DetFinLoss_shape" bpmnElement="T_DetFinLoss">
+        <dc:Bounds x="700" y="40" width="150" height="60"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="G_FinLossType_shape" bpmnElement="G_FinLossType" isMarkerVisible="true">
+        <dc:Bounds x="900" y="45" width="50" height="50"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="T_PosDmg_shape" bpmnElement="T_PosDmg">
+        <dc:Bounds x="1000" y="10" width="130" height="50"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="T_LostProfit_shape" bpmnElement="T_LostProfit">
+        <dc:Bounds x="1000" y="80" width="130" height="50"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="M_FinLossType_shape" bpmnElement="M_FinLossType" isMarkerVisible="true">
+        <dc:Bounds x="1180" y="45" width="50" height="50"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="T_DetImmLoss_shape" bpmnElement="T_DetImmLoss">
+        <dc:Bounds x="700" y="150" width="150" height="60"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="G_ImmLossType_shape" bpmnElement="G_ImmLossType" isMarkerVisible="true">
+        <dc:Bounds x="900" y="155" width="50" height="50"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="T_PainComp_shape" bpmnElement="T_PainComp">
+        <dc:Bounds x="1000" y="120" width="150" height="50"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="T_ValSpecPref_shape" bpmnElement="T_ValSpecPref">
+        <dc:Bounds x="1000" y="190" width="150" height="50"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="M_ImmLossType_shape" bpmnElement="M_ImmLossType" isMarkerVisible="true">
+        <dc:Bounds x="1180" y="155" width="50" height="50"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="M_DmgTypeDefined_shape" bpmnElement="M_DmgTypeDefined" isMarkerVisible="true">
+        <dc:Bounds x="1300" y="95" width="50" height="50"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="T_DefCaus_shape" bpmnElement="T_DefCaus">
+        <dc:Bounds x="1400" y="90" width="100" height="60"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="T_ChkEquiv_shape" bpmnElement="T_ChkEquiv">
+        <dc:Bounds x="1550" y="90" width="100" height="60"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="G_Equiv_shape" bpmnElement="G_Equiv" isMarkerVisible="true">
+        <dc:Bounds x="1700" y="95" width="50" height="50"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="EE_EquivFail_shape" bpmnElement="EE_EquivFail">
+        <dc:Bounds x="1707" y="192" width="36" height="36"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="T_ChkAdeq_shape" bpmnElement="T_ChkAdeq">
+        <dc:Bounds x="1800" y="90" width="100" height="60"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="G_Adeq_shape" bpmnElement="G_Adeq" isMarkerVisible="true">
+        <dc:Bounds x="1950" y="95" width="50" height="50"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="EE_AdeqFail_shape" bpmnElement="EE_AdeqFail">
+        <dc:Bounds x="1957" y="192" width="36" height="36"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="T_ChkIlleg_shape" bpmnElement="T_ChkIlleg">
+        <dc:Bounds x="2050" y="90" width="100" height="60"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="T_DetIllegType_shape" bpmnElement="T_DetIllegType">
+        <dc:Bounds x="2200" y="90" width="130" height="60"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="G_IllegType_shape" bpmnElement="G_IllegType" isMarkerVisible="true">
+        <dc:Bounds x="2380" y="95" width="50" height="50"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="T_BreachLaw_shape" bpmnElement="T_BreachLaw">
+        <dc:Bounds x="2480" y="40" width="150" height="50"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="T_ViolMorals_shape" bpmnElement="T_ViolMorals">
+        <dc:Bounds x="2480" y="150" width="150" height="50"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="M_IllegType_shape" bpmnElement="M_IllegType" isMarkerVisible="true">
+        <dc:Bounds x="2680" y="95" width="50" height="50"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="T_ChkFault_shape" bpmnElement="T_ChkFault">
+        <dc:Bounds x="2780" y="90" width="100" height="60"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="T_ChkAccess_shape" bpmnElement="T_ChkAccess">
+        <dc:Bounds x="2930" y="80" width="120" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="T_DiffIntensity_shape" bpmnElement="T_DiffIntensity">
+        <dc:Bounds x="3100" y="90" width="130" height="60"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="G_Intensity_shape" bpmnElement="G_Intensity" isMarkerVisible="true">
+        <dc:Bounds x="3280" y="95" width="50" height="50"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="T_Intent_shape" bpmnElement="T_Intent">
+        <dc:Bounds x="3380" y="40" width="100" height="50"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="T_DetNegType_shape" bpmnElement="T_DetNegType">
+        <dc:Bounds x="3380" y="150" width="150" height="60"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="G_NegType_shape" bpmnElement="G_NegType" isMarkerVisible="true">
+        <dc:Bounds x="3580" y="155" width="50" height="50"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="T_GrossNeg_shape" bpmnElement="T_GrossNeg">
+        <dc:Bounds x="3680" y="120" width="150" height="50"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="T_SlightNeg_shape" bpmnElement="T_SlightNeg">
+        <dc:Bounds x="3680" y="190" width="150" height="50"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="M_NegType_shape" bpmnElement="M_NegType" isMarkerVisible="true">
+        <dc:Bounds x="3880" y="155" width="50" height="50"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="M_FaultDets_shape" bpmnElement="M_FaultDets" isMarkerVisible="true">
+        <dc:Bounds x="3980" y="95" width="50" height="50"/>
+      </bpmndi:BPMNShape>
+
+      <!-- Judge Shapes -->
+      <bpmndi:BPMNShape id="T_DecideExtent_shape" bpmnElement="T_DecideExtent">
+        <dc:Bounds x="4100" y="360" width="150" height="60"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="G_CompDmgType_shape" bpmnElement="G_CompDmgType" isMarkerVisible="true">
+        <dc:Bounds x="4300" y="365" width="50" height="50"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="T_DetExtFin_shape" bpmnElement="T_DetExtFin">
+        <dc:Bounds x="4400" y="300" width="150" height="60"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="G_FaultFin_shape" bpmnElement="G_FaultFin" isMarkerVisible="true">
+        <dc:Bounds x="4600" y="305" width="50" height="50"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="T_ReplMarketVal_shape" bpmnElement="T_ReplMarketVal">
+        <dc:Bounds x="4700" y="270" width="150" height="50"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="T_CompDmgProfit_shape" bpmnElement="T_CompDmgProfit">
+        <dc:Bounds x="4700" y="340" width="150" height="60"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="M_FinCompDet_shape" bpmnElement="M_FinCompDet" isMarkerVisible="true">
+        <dc:Bounds x="4900" y="305" width="50" height="50"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="T_DetExtImm_shape" bpmnElement="T_DetExtImm">
+        <dc:Bounds x="4400" y="430" width="150" height="60"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="G_ImmCompOutcome_shape" bpmnElement="G_ImmCompOutcome" isMarkerVisible="true">
+        <dc:Bounds x="4600" y="435" width="50" height="50"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="T_AwardPain_shape" bpmnElement="T_AwardPain">
+        <dc:Bounds x="4700" y="380" width="180" height="50"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="T_AwardVSP_shape" bpmnElement="T_AwardVSP">
+        <dc:Bounds x="4700" y="440" width="180" height="60"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="EE_ImmDeny_shape" bpmnElement="EE_ImmDeny">
+        <dc:Bounds x="4772" y="512" width="36" height="36"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="M_ImmCompAward_shape" bpmnElement="M_ImmCompAward" isMarkerVisible="true">
+        <dc:Bounds x="4930" y="415" width="50" height="50"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="M_CompFinal_shape" bpmnElement="M_CompFinal" isMarkerVisible="true">
+        <dc:Bounds x="5030" y="365" width="50" height="50"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="EE_Success_shape" bpmnElement="EE_Success">
+        <dc:Bounds x="5130" y="372" width="36" height="36"/>
+      </bpmndi:BPMNShape>
+
+      <!-- Edges -->
+      <bpmndi:BPMNEdge id="SF_Start_To_DetLiab_edge" bpmnElement="SF_Start_To_DetLiab">
+        <di:waypoint x="136" y="120"/>
+        <di:waypoint x="200" y="120"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="SF_DetLiab_To_DefDmg_edge" bpmnElement="SF_DetLiab_To_DefDmg">
+        <di:waypoint x="400" y="120"/>
+        <di:waypoint x="450" y="120"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="SF_DefDmg_To_GDmgType_edge" bpmnElement="SF_DefDmg_To_GDmgType">
+        <di:waypoint x="550" y="120"/>
+        <di:waypoint x="600" y="120"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="SF_FinLoss_edge" bpmnElement="SF_FinLoss">
+        <di:waypoint x="625" y="95"/>
+        <di:waypoint x="625" y="70"/>
+        <di:waypoint x="700" y="70"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="SF_ImmLoss_edge" bpmnElement="SF_ImmLoss">
+        <di:waypoint x="625" y="145"/>
+        <di:waypoint x="625" y="180"/>
+        <di:waypoint x="700" y="180"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="SF_DetFinLoss_To_GFinLossType_edge" bpmnElement="SF_DetFinLoss_To_GFinLossType">
+        <di:waypoint x="850" y="70"/>
+        <di:waypoint x="900" y="70"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="SF_PosDmg_edge" bpmnElement="SF_PosDmg">
+        <di:waypoint x="925" y="45"/>
+        <di:waypoint x="925" y="35"/>
+        <di:waypoint x="1000" y="35"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="SF_LostProfit_edge" bpmnElement="SF_LostProfit">
+        <di:waypoint x="925" y="95"/>
+        <di:waypoint x="925" y="105"/>
+        <di:waypoint x="1000" y="105"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="SF_PosDmg_To_MFinLossType_edge" bpmnElement="SF_PosDmg_To_MFinLossType">
+        <di:waypoint x="1130" y="35"/>
+        <di:waypoint x="1205" y="35"/>
+        <di:waypoint x="1205" y="45"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="SF_LostProfit_To_MFinLossType_edge" bpmnElement="SF_LostProfit_To_MFinLossType">
+        <di:waypoint x="1130" y="105"/>
+        <di:waypoint x="1205" y="105"/>
+        <di:waypoint x="1205" y="95"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="SF_MFinLossType_To_MDmgTypeDefined_edge" bpmnElement="SF_MFinLossType_To_MDmgTypeDefined">
+        <di:waypoint x="1230" y="70"/>
+        <di:waypoint x="1325" y="70"/>
+        <di:waypoint x="1325" y="95"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="SF_DetImmLoss_To_GImmLossType_edge" bpmnElement="SF_DetImmLoss_To_GImmLossType">
+        <di:waypoint x="850" y="180"/>
+        <di:waypoint x="900" y="180"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="SF_PainComp_edge" bpmnElement="SF_PainComp">
+        <di:waypoint x="925" y="155"/>
+        <di:waypoint x="925" y="145"/>
+        <di:waypoint x="1000" y="145"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="SF_ValSpecPref_edge" bpmnElement="SF_ValSpecPref">
+        <di:waypoint x="925" y="205"/>
+        <di:waypoint x="925" y="215"/>
+        <di:waypoint x="1000" y="215"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="SF_PainComp_To_MImmLossType_edge" bpmnElement="SF_PainComp_To_MImmLossType">
+        <di:waypoint x="1150" y="145"/>
+        <di:waypoint x="1205" y="145"/>
+        <di:waypoint x="1205" y="155"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="SF_ValSpecPref_To_MImmLossType_edge" bpmnElement="SF_ValSpecPref_To_MImmLossType">
+        <di:waypoint x="1150" y="215"/>
+        <di:waypoint x="1205" y="215"/>
+        <di:waypoint x="1205" y="205"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="SF_MImmLossType_To_MDmgTypeDefined_edge" bpmnElement="SF_MImmLossType_To_MDmgTypeDefined">
+        <di:waypoint x="1230" y="180"/>
+        <di:waypoint x="1325" y="180"/>
+        <di:waypoint x="1325" y="145"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="SF_MDmgTypeDefined_To_DefCaus_edge" bpmnElement="SF_MDmgTypeDefined_To_DefCaus">
+        <di:waypoint x="1350" y="120"/>
+        <di:waypoint x="1400" y="120"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="SF_DefCaus_To_ChkEquiv_edge" bpmnElement="SF_DefCaus_To_ChkEquiv">
+        <di:waypoint x="1500" y="120"/>
+        <di:waypoint x="1550" y="120"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="SF_ChkEquiv_To_GEquiv_edge" bpmnElement="SF_ChkEquiv_To_GEquiv">
+        <di:waypoint x="1650" y="120"/>
+        <di:waypoint x="1700" y="120"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="SF_EquivYes_edge" bpmnElement="SF_EquivYes">
+        <di:waypoint x="1750" y="120"/>
+        <di:waypoint x="1800" y="120"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="SF_EquivNo_edge" bpmnElement="SF_EquivNo">
+        <di:waypoint x="1725" y="145"/>
+        <di:waypoint x="1725" y="192"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="SF_ChkAdeq_To_GAdeq_edge" bpmnElement="SF_ChkAdeq_To_GAdeq">
+        <di:waypoint x="1900" y="120"/>
+        <di:waypoint x="1950" y="120"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="SF_AdeqYes_edge" bpmnElement="SF_AdeqYes">
+        <di:waypoint x="2000" y="120"/>
+        <di:waypoint x="2050" y="120"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="SF_AdeqNo_edge" bpmnElement="SF_AdeqNo">
+        <di:waypoint x="1975" y="145"/>
+        <di:waypoint x="1975" y="192"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="SF_ChkIlleg_To_DetIllegType_edge" bpmnElement="SF_ChkIlleg_To_DetIllegType">
+        <di:waypoint x="2150" y="120"/>
+        <di:waypoint x="2200" y="120"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="SF_DetIllegType_To_GIllegType_edge" bpmnElement="SF_DetIllegType_To_GIllegType">
+        <di:waypoint x="2330" y="120"/>
+        <di:waypoint x="2380" y="120"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="SF_BreachLaw_edge" bpmnElement="SF_BreachLaw">
+        <di:waypoint x="2405" y="95"/>
+        <di:waypoint x="2405" y="65"/>
+        <di:waypoint x="2480" y="65"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="SF_ViolMorals_edge" bpmnElement="SF_ViolMorals">
+        <di:waypoint x="2405" y="145"/>
+        <di:waypoint x="2405" y="175"/>
+        <di:waypoint x="2480" y="175"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="SF_BreachLaw_To_MIllegType_edge" bpmnElement="SF_BreachLaw_To_MIllegType">
+        <di:waypoint x="2630" y="65"/>
+        <di:waypoint x="2705" y="65"/>
+        <di:waypoint x="2705" y="95"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="SF_ViolMorals_To_MIllegType_edge" bpmnElement="SF_ViolMorals_To_MIllegType">
+        <di:waypoint x="2630" y="175"/>
+        <di:waypoint x="2705" y="175"/>
+        <di:waypoint x="2705" y="145"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="SF_MIllegType_To_ChkFault_edge" bpmnElement="SF_MIllegType_To_ChkFault">
+        <di:waypoint x="2730" y="120"/>
+        <di:waypoint x="2780" y="120"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="SF_ChkFault_To_ChkAccess_edge" bpmnElement="SF_ChkFault_To_ChkAccess">
+        <di:waypoint x="2880" y="120"/>
+        <di:waypoint x="2930" y="120"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="SF_ChkAccess_To_DiffIntensity_edge" bpmnElement="SF_ChkAccess_To_DiffIntensity">
+        <di:waypoint x="3050" y="120"/>
+        <di:waypoint x="3100" y="120"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="SF_DiffIntensity_To_GIntensity_edge" bpmnElement="SF_DiffIntensity_To_GIntensity">
+        <di:waypoint x="3230" y="120"/>
+        <di:waypoint x="3280" y="120"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="SF_Intent_edge" bpmnElement="SF_Intent">
+        <di:waypoint x="3305" y="95"/>
+        <di:waypoint x="3305" y="65"/>
+        <di:waypoint x="3380" y="65"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="SF_Negligence_edge" bpmnElement="SF_Negligence">
+        <di:waypoint x="3305" y="145"/>
+        <di:waypoint x="3305" y="180"/>
+        <di:waypoint x="3380" y="180"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="SF_Intent_To_MFaultDets_edge" bpmnElement="SF_Intent_To_MFaultDets">
+        <di:waypoint x="3480" y="65"/>
+        <di:waypoint x="4005" y="65"/>
+        <di:waypoint x="4005" y="95"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="SF_DetNegType_To_GNegType_edge" bpmnElement="SF_DetNegType_To_GNegType">
+        <di:waypoint x="3530" y="180"/>
+        <di:waypoint x="3580" y="180"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="SF_GrossNeg_edge" bpmnElement="SF_GrossNeg">
+        <di:waypoint x="3605" y="155"/>
+        <di:waypoint x="3605" y="145"/>
+        <di:waypoint x="3680" y="145"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="SF_SlightNeg_edge" bpmnElement="SF_SlightNeg">
+        <di:waypoint x="3605" y="205"/>
+        <di:waypoint x="3605" y="215"/>
+        <di:waypoint x="3680" y="215"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="SF_GrossNeg_To_MNegType_edge" bpmnElement="SF_GrossNeg_To_MNegType">
+        <di:waypoint x="3830" y="145"/>
+        <di:waypoint x="3905" y="145"/>
+        <di:waypoint x="3905" y="155"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="SF_SlightNeg_To_MNegType_edge" bpmnElement="SF_SlightNeg_To_MNegType">
+        <di:waypoint x="3830" y="215"/>
+        <di:waypoint x="3905" y="215"/>
+        <di:waypoint x="3905" y="205"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="SF_MNegType_To_MFaultDets_edge" bpmnElement="SF_MNegType_To_MFaultDets">
+        <di:waypoint x="3930" y="180"/>
+        <di:waypoint x="4005" y="180"/>
+        <di:waypoint x="4005" y="145"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="SF_MFaultDets_To_DecideExtent_edge" bpmnElement="SF_MFaultDets_To_DecideExtent">
+        <di:waypoint x="4005" y="145"/>
+        <di:waypoint x="4005" y="390"/>
+        <di:waypoint x="4100" y="390"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="SF_DecideExtent_To_GCompDmgType_edge" bpmnElement="SF_DecideExtent_To_GCompDmgType">
+        <di:waypoint x="4250" y="390"/>
+        <di:waypoint x="4300" y="390"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="SF_CompFinLoss_edge" bpmnElement="SF_CompFinLoss">
+        <di:waypoint x="4325" y="365"/>
+        <di:waypoint x="4325" y="330"/>
+        <di:waypoint x="4400" y="330"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="SF_CompImmLoss_edge" bpmnElement="SF_CompImmLoss">
+        <di:waypoint x="4325" y="415"/>
+        <di:waypoint x="4325" y="460"/>
+        <di:waypoint x="4400" y="460"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="SF_DetExtFin_To_GFaultFin_edge" bpmnElement="SF_DetExtFin_To_GFaultFin">
+        <di:waypoint x="4550" y="330"/>
+        <di:waypoint x="4600" y="330"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="SF_FinSlight_edge" bpmnElement="SF_FinSlight">
+        <di:waypoint x="4625" y="305"/>
+        <di:waypoint x="4625" y="295"/>
+        <di:waypoint x="4700" y="295"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="SF_FinGrossIntent_edge" bpmnElement="SF_FinGrossIntent">
+        <di:waypoint x="4625" y="355"/>
+        <di:waypoint x="4625" y="370"/>
+        <di:waypoint x="4700" y="370"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="SF_ReplMarketVal_To_MFinCompDet_edge" bpmnElement="SF_ReplMarketVal_To_MFinCompDet">
+        <di:waypoint x="4850" y="295"/>
+        <di:waypoint x="4925" y="295"/>
+        <di:waypoint x="4925" y="305"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="SF_CompDmgProfit_To_MFinCompDet_edge" bpmnElement="SF_CompDmgProfit_To_MFinCompDet">
+        <di:waypoint x="4850" y="370"/>
+        <di:waypoint x="4925" y="370"/>
+        <di:waypoint x="4925" y="355"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="SF_MFinCompDet_To_MCompFinal_edge" bpmnElement="SF_MFinCompDet_To_MCompFinal">
+        <di:waypoint x="4950" y="330"/>
+        <di:waypoint x="5055" y="330"/>
+        <di:waypoint x="5055" y="365"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="SF_DetExtImm_To_GImmCompOutcome_edge" bpmnElement="SF_DetExtImm_To_GImmCompOutcome">
+        <di:waypoint x="4550" y="460"/>
+        <di:waypoint x="4600" y="460"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="SF_AwardPain_edge" bpmnElement="SF_AwardPain">
+        <di:waypoint x="4625" y="435"/>
+        <di:waypoint x="4625" y="405"/>
+        <di:waypoint x="4700" y="405"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="SF_AwardVSP_edge" bpmnElement="SF_AwardVSP">
+        <di:waypoint x="4650" y="460"/> <!-- Straight from gateway center -->
+        <di:waypoint x="4700" y="470"/> <!-- Adjusted y for T_AwardVSP -->
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="SF_DenyImm_edge" bpmnElement="SF_DenyImm">
+        <di:waypoint x="4625" y="485"/>
+        <di:waypoint x="4625" y="530"/>
+        <di:waypoint x="4772" y="530"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="SF_AwardPain_To_MImmCompAward_edge" bpmnElement="SF_AwardPain_To_MImmCompAward">
+        <di:waypoint x="4880" y="405"/>
+        <di:waypoint x="4955" y="405"/>
+        <di:waypoint x="4955" y="415"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="SF_AwardVSP_To_MImmCompAward_edge" bpmnElement="SF_AwardVSP_To_MImmCompAward">
+        <di:waypoint x="4880" y="470"/>
+        <di:waypoint x="4955" y="470"/>
+        <di:waypoint x="4955" y="465"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="SF_MImmCompAward_To_MCompFinal_edge" bpmnElement="SF_MImmCompAward_To_MCompFinal">
+        <di:waypoint x="4980" y="440"/>
+        <di:waypoint x="5055" y="440"/>
+        <di:waypoint x="5055" y="415"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="SF_MCompFinal_To_EESuccess_edge" bpmnElement="SF_MCompFinal_To_EESuccess">
+        <di:waypoint x="5080" y="390"/>
+        <di:waypoint x="5130" y="390"/>
+      </bpmndi:BPMNEdge>
+
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</semantic:definitions>

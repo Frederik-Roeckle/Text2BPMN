@@ -1,0 +1,173 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<semantic:definitions xmlns:semantic="http://www.omg.org/spec/BPMN/20100524/MODEL"
+                      xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI"
+                      xmlns:dc="http://www.omg.org/spec/DD/20100524/DC"
+                      xmlns:di="http://www.omg.org/spec/DD/20100524/DI"
+                      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                      id="OfferProcessDefinitions"
+                      targetNamespace="http://example.com/bpmn/offer-process">
+
+  <semantic:collaboration id="collab_offer_process">
+    <semantic:participant id="participant_sales_dept" name="Sales Department" processRef="process_offer_creation"/>
+  </semantic:collaboration>
+
+  <semantic:process id="process_offer_creation" isExecutable="true">
+    <semantic:laneSet id="laneset_sales_dept">
+      <semantic:lane id="lane_commercial_manager" name="Commercial Manager">
+        <semantic:flowNodeRef>id_start_offer_required</semantic:flowNodeRef>
+        <semantic:flowNodeRef>id_task_feasibility_check</semantic:flowNodeRef>
+        <semantic:flowNodeRef>id_gateway_is_feasible</semantic:flowNodeRef>
+        <semantic:flowNodeRef>id_task_inform_customer</semantic:flowNodeRef>
+        <semantic:flowNodeRef>id_end_not_feasible</semantic:flowNodeRef>
+        <semantic:flowNodeRef>id_task_check_personnel</semantic:flowNodeRef>
+      </semantic:lane>
+      <semantic:lane id="lane_commercial_employee" name="Commercial Employee">
+        <semantic:flowNodeRef>id_task_create_offer</semantic:flowNodeRef>
+        <semantic:flowNodeRef>id_end_offer_created</semantic:flowNodeRef>
+      </semantic:lane>
+    </semantic:laneSet>
+
+    <semantic:startEvent id="id_start_offer_required" name="Offer Requirement Received">
+      <semantic:outgoing>flow1</semantic:outgoing>
+    </semantic:startEvent>
+
+    <semantic:task id="id_task_feasibility_check" name="Perform Feasibility Check">
+      <semantic:incoming>flow1</semantic:incoming>
+      <semantic:outgoing>flow2</semantic:outgoing>
+    </semantic:task>
+
+    <semantic:exclusiveGateway id="id_gateway_is_feasible" name="Is Offer Feasible?">
+      <semantic:incoming>flow2</semantic:incoming>
+      <semantic:outgoing>flow3</semantic:outgoing> <!-- Not Feasible -->
+      <semantic:outgoing>flow5</semantic:outgoing> <!-- Feasible -->
+    </semantic:exclusiveGateway>
+
+    <semantic:task id="id_task_inform_customer" name="Inform Customer of Non-Feasibility">
+      <semantic:incoming>flow3</semantic:incoming>
+      <semantic:outgoing>flow4</semantic:outgoing>
+    </semantic:task>
+
+    <semantic:endEvent id="id_end_not_feasible" name="Process Ended (Not Feasible)">
+      <semantic:incoming>flow4</semantic:incoming>
+    </semantic:endEvent>
+
+    <semantic:task id="id_task_check_personnel" name="Check Personnel Needs and Availability">
+      <semantic:incoming>flow5</semantic:incoming>
+      <semantic:outgoing>flow6</semantic:outgoing>
+    </semantic:task>
+
+    <semantic:task id="id_task_create_offer" name="Create Offer">
+      <semantic:incoming>flow6</semantic:incoming>
+      <semantic:outgoing>flow7</semantic:outgoing>
+    </semantic:task>
+
+    <semantic:endEvent id="id_end_offer_created" name="Process Ended (Offer Created)">
+      <semantic:incoming>flow7</semantic:incoming>
+    </semantic:endEvent>
+
+    <semantic:sequenceFlow id="flow1" sourceRef="id_start_offer_required" targetRef="id_task_feasibility_check"/>
+    <semantic:sequenceFlow id="flow2" sourceRef="id_task_feasibility_check" targetRef="id_gateway_is_feasible"/>
+    <semantic:sequenceFlow id="flow3" name="Not Feasible" sourceRef="id_gateway_is_feasible" targetRef="id_task_inform_customer"/>
+    <semantic:sequenceFlow id="flow4" sourceRef="id_task_inform_customer" targetRef="id_end_not_feasible"/>
+    <semantic:sequenceFlow id="flow5" name="Feasible" sourceRef="id_gateway_is_feasible" targetRef="id_task_check_personnel"/>
+    <semantic:sequenceFlow id="flow6" sourceRef="id_task_check_personnel" targetRef="id_task_create_offer"/>
+    <semantic:sequenceFlow id="flow7" sourceRef="id_task_create_offer" targetRef="id_end_offer_created"/>
+
+  </semantic:process>
+
+  <bpmndi:BPMNDiagram id="BPMNDiagram_OfferProcess">
+    <bpmndi:BPMNPlane bpmnElement="collab_offer_process">
+      <bpmndi:BPMNShape id="shape_participant_sales_dept" bpmnElement="participant_sales_dept" isHorizontal="true">
+        <dc:Bounds x="10" y="10" width="1100" height="480"/>
+        <bpmndi:BPMNLabel/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_lane_commercial_manager" bpmnElement="lane_commercial_manager" isHorizontal="true">
+        <dc:Bounds x="40" y="10" width="1070" height="230"/>
+        <bpmndi:BPMNLabel/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_lane_commercial_employee" bpmnElement="lane_commercial_employee" isHorizontal="true">
+        <dc:Bounds x="40" y="240" width="1070" height="230"/>
+        <bpmndi:BPMNLabel/>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="shape_start_offer_required" bpmnElement="id_start_offer_required">
+        <dc:Bounds x="80" y="110" width="36" height="36"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="60" y="151" width="76" height="40"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_task_feasibility_check" bpmnElement="id_task_feasibility_check">
+        <dc:Bounds x="180" y="90" width="180" height="80"/>
+        <bpmndi:BPMNLabel/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_gateway_is_feasible" bpmnElement="id_gateway_is_feasible" isMarkerVisible="true">
+        <dc:Bounds x="410" y="105" width="50" height="50"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="395" y="160" width="80" height="27"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_task_inform_customer" bpmnElement="id_task_inform_customer">
+        <dc:Bounds x="510" y="150" width="200" height="80"/>
+        <bpmndi:BPMNLabel/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_end_not_feasible" bpmnElement="id_end_not_feasible">
+        <dc:Bounds x="760" y="172" width="36" height="36"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="740" y="213" width="78" height="40"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_task_check_personnel" bpmnElement="id_task_check_personnel">
+        <dc:Bounds x="510" y="90" width="220" height="80"/>
+        <bpmndi:BPMNLabel/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_task_create_offer" bpmnElement="id_task_create_offer">
+        <dc:Bounds x="600" y="320" width="180" height="80"/>
+        <bpmndi:BPMNLabel/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_end_offer_created" bpmnElement="id_end_offer_created">
+        <dc:Bounds x="830" y="338" width="36" height="36"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="810" y="379" width="77" height="40"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNEdge id="edge_flow1" bpmnElement="flow1">
+        <di:waypoint x="116" y="128"/>
+        <di:waypoint x="180" y="130"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow2" bpmnElement="flow2">
+        <di:waypoint x="360" y="130"/>
+        <di:waypoint x="410" y="130"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow3" bpmnElement="flow3">
+        <di:waypoint x="435" y="155"/> <!-- gateway bottom center -->
+        <di:waypoint x="435" y="190"/>
+        <di:waypoint x="510" y="190"/> <!-- task_inform_customer left center -->
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="440" y="165" width="65" height="14"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow4" bpmnElement="flow4">
+        <di:waypoint x="710" y="190"/> <!-- task_inform_customer right center -->
+        <di:waypoint x="760" y="190"/> <!-- end_event_not_feasible left center -->
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow5" bpmnElement="flow5">
+        <di:waypoint x="460" y="130"/> <!-- gateway right center -->
+        <di:waypoint x="510" y="130"/> <!-- task_check_personnel left center -->
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="465" y="105" width="40" height="14"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow6" bpmnElement="flow6">
+        <di:waypoint x="620" y="170"/> <!-- task_check_personnel bottom center -->
+        <di:waypoint x="620" y="240"/> <!-- lane boundary -->
+        <di:waypoint x="690" y="240"/> <!-- lane boundary, aligned with target task -->
+        <di:waypoint x="690" y="320"/> <!-- task_create_offer top center -->
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow7" bpmnElement="flow7">
+        <di:waypoint x="780" y="360"/> <!-- task_create_offer right center -->
+        <di:waypoint x="830" y="356"/> <!-- end_event_offer_created left center -->
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</semantic:definitions>

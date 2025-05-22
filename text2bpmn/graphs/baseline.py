@@ -2,9 +2,10 @@ from langgraph.graph import StateGraph, MessagesState, START, END
 from agents import NormalAgent
 from config import get_model
 from agents import NormalAgent
+from langsmith import traceable
 
 
-
+@traceable
 def build_graph():
     """
     Build as graph that uses only one agent to create the output.
@@ -22,7 +23,8 @@ def build_graph():
 
     baseline = NormalAgent(
         model=get_model(),
-        system_message="data/promts/baseline_prompt.txt",
+        system_message="data/promts/baseline_prompt_few.txt",
+        few_shot_examples="data/examples/five_shot_examples.json",
         step="baseline"
     )
 

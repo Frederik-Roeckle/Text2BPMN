@@ -1,0 +1,827 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<semantic:definitions xmlns:semantic="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" id="Definitions_1" targetNamespace="http://example.com/bpmn">
+  <semantic:collaboration id="Collab_Main">
+    <semantic:participant id="Participant_Ministry" name="Ministry of Justice" processRef="Process_Ministry"/>
+  </semantic:collaboration>
+  <semantic:process id="Process_Ministry" isExecutable="false">
+    <semantic:laneSet id="LaneSet_Ministry">
+      <semantic:lane id="Lane_Lawyer" name="Lawyer">
+        <semantic:flowNodeRef>StartEvent_CheckEntitlement</semantic:flowNodeRef>
+        <semantic:flowNodeRef>Task_DetermineLiabilityType</semantic:flowNodeRef>
+        <semantic:flowNodeRef>Gateway_IsFaultLiability</semantic:flowNodeRef>
+        <semantic:flowNodeRef>Task_DefineDamageType</semantic:flowNodeRef>
+        <semantic:flowNodeRef>Gateway_DamageType</semantic:flowNodeRef>
+        <semantic:flowNodeRef>Task_DetermineFinancialLossType</semantic:flowNodeRef>
+        <semantic:flowNodeRef>Gateway_FinancialLossType</semantic:flowNodeRef>
+        <semantic:flowNodeRef>Task_DetermineImmaterialDamageType</semantic:flowNodeRef>
+        <semantic:flowNodeRef>Gateway_ImmaterialDamageType</semantic:flowNodeRef>
+        <semantic:flowNodeRef>Gateway_MergeDamageDetails</semantic:flowNodeRef>
+        <semantic:flowNodeRef>Task_CheckEquivalence</semantic:flowNodeRef>
+        <semantic:flowNodeRef>Gateway_IsEquivalenceMet</semantic:flowNodeRef>
+        <semantic:flowNodeRef>EndEvent_NotGranted_Equivalence</semantic:flowNodeRef>
+        <semantic:flowNodeRef>Task_CheckAdequacy</semantic:flowNodeRef>
+        <semantic:flowNodeRef>Gateway_IsAdequacyMet</semantic:flowNodeRef>
+        <semantic:flowNodeRef>EndEvent_NotGranted_Adequacy</semantic:flowNodeRef>
+        <semantic:flowNodeRef>Task_DetermineIllegalityType</semantic:flowNodeRef>
+        <semantic:flowNodeRef>Gateway_IllegalityType</semantic:flowNodeRef>
+        <semantic:flowNodeRef>Gateway_MergeIllegality</semantic:flowNodeRef>
+        <semantic:flowNodeRef>Task_CheckAccessibility</semantic:flowNodeRef>
+        <semantic:flowNodeRef>Task_DifferentiateFaultIntensity</semantic:flowNodeRef>
+        <semantic:flowNodeRef>Gateway_FaultIntensity</semantic:flowNodeRef>
+        <semantic:flowNodeRef>Task_DetermineNegligenceType</semantic:flowNodeRef>
+        <semantic:flowNodeRef>Gateway_NegligenceType</semantic:flowNodeRef>
+        <semantic:flowNodeRef>Gateway_MergeFaultDetails</semantic:flowNodeRef>
+      </semantic:lane>
+      <semantic:lane id="Lane_Judge" name="Judge">
+        <semantic:flowNodeRef>Task_DecideCompensationExtent</semantic:flowNodeRef>
+        <semantic:flowNodeRef>Gateway_DamageTypeForCompensation</semantic:flowNodeRef>
+        <semantic:flowNodeRef>Task_DetermineFinancialExtent</semantic:flowNodeRef>
+        <semantic:flowNodeRef>Gateway_FinancialNegligenceExtent</semantic:flowNodeRef>
+        <semantic:flowNodeRef>Task_ConsiderMarketValue</semantic:flowNodeRef>
+        <semantic:flowNodeRef>Task_ConsiderDamageAndLostProfit</semantic:flowNodeRef>
+        <semantic:flowNodeRef>Task_DetermineImmaterialExtent</semantic:flowNodeRef>
+        <semantic:flowNodeRef>Gateway_ImmaterialDamageTypeForExtent</semantic:flowNodeRef>
+        <semantic:flowNodeRef>Gateway_PainCompNegligence</semantic:flowNodeRef>
+        <semantic:flowNodeRef>Task_ConsiderPainCompensation</semantic:flowNodeRef>
+        <semantic:flowNodeRef>EndEvent_NotGranted_ImmaterialPain</semantic:flowNodeRef>
+        <semantic:flowNodeRef>Gateway_VSPNegligence</semantic:flowNodeRef>
+        <semantic:flowNodeRef>Task_ConsiderVSPreferenceCompensation</semantic:flowNodeRef>
+        <semantic:flowNodeRef>EndEvent_NotGranted_ImmaterialVSP</semantic:flowNodeRef>
+        <semantic:flowNodeRef>Gateway_MergeCompensationDecisions</semantic:flowNodeRef>
+        <semantic:flowNodeRef>EndEvent_EntitlementChecked</semantic:flowNodeRef>
+      </semantic:lane>
+    </semantic:laneSet>
+    <semantic:dataStore id="DataStore_ProcessingSystem" name="Damages Compensation Processing System"/>
+    <semantic:startEvent id="StartEvent_CheckEntitlement" name="Damages Compensation Entitlement to be Checked">
+      <semantic:outgoing>Flow_StartToDetermineLiability</semantic:outgoing>
+    </semantic:startEvent>
+    <semantic:task id="Task_DetermineLiabilityType" name="Determine type of liability">
+      <semantic:incoming>Flow_StartToDetermineLiability</semantic:incoming>
+      <semantic:outgoing>Flow_DetermineLiabilityToGateway</semantic:outgoing>
+      <semantic:dataOutputAssociation id="DataAssoc_TaskToSystem">
+        <semantic:targetRef>DataStore_ProcessingSystem</semantic:targetRef>
+      </semantic:dataOutputAssociation>
+    </semantic:task>
+    <semantic:exclusiveGateway id="Gateway_IsFaultLiability" name="Liability of Fault?">
+      <semantic:incoming>Flow_DetermineLiabilityToGateway</semantic:incoming>
+      <semantic:outgoing>Flow_FaultLiabilityYes</semantic:outgoing>
+    </semantic:exclusiveGateway>
+    <semantic:task id="Task_DefineDamageType" name="Define type of damage">
+      <semantic:incoming>Flow_FaultLiabilityYes</semantic:incoming>
+      <semantic:outgoing>Flow_DefineDamageToGateway</semantic:outgoing>
+    </semantic:task>
+    <semantic:exclusiveGateway id="Gateway_DamageType" name="Damage Type?">
+      <semantic:incoming>Flow_DefineDamageToGateway</semantic:incoming>
+      <semantic:outgoing>Flow_ToFinancialLoss</semantic:outgoing>
+      <semantic:outgoing>Flow_ToImmaterialDamage</semantic:outgoing>
+    </semantic:exclusiveGateway>
+    <semantic:task id="Task_DetermineFinancialLossType" name="Determine type of financial loss">
+      <semantic:incoming>Flow_ToFinancialLoss</semantic:incoming>
+      <semantic:outgoing>Flow_FinancialLossToTypeGateway</semantic:outgoing>
+    </semantic:task>
+    <semantic:exclusiveGateway id="Gateway_FinancialLossType" name="Financial Loss Type?">
+      <semantic:incoming>Flow_FinancialLossToTypeGateway</semantic:incoming>
+      <semantic:outgoing>Flow_PositiveDamage</semantic:outgoing>
+      <semantic:outgoing>Flow_LostProfit</semantic:outgoing>
+    </semantic:exclusiveGateway>
+    <semantic:task id="Task_DetermineImmaterialDamageType" name="Determine type of immaterial damage">
+      <semantic:incoming>Flow_ToImmaterialDamage</semantic:incoming>
+      <semantic:outgoing>Flow_ImmaterialDamageToTypeGateway</semantic:outgoing>
+    </semantic:task>
+    <semantic:exclusiveGateway id="Gateway_ImmaterialDamageType" name="Immaterial Damage Type?">
+      <semantic:incoming>Flow_ImmaterialDamageToTypeGateway</semantic:incoming>
+      <semantic:outgoing>Flow_PainCompensation</semantic:outgoing>
+      <semantic:outgoing>Flow_ValueOfSpecialPreference</semantic:outgoing>
+    </semantic:exclusiveGateway>
+    <semantic:exclusiveGateway id="Gateway_MergeDamageDetails" name="Merge Damage Details">
+      <semantic:incoming>Flow_PositiveDamage</semantic:incoming>
+      <semantic:incoming>Flow_LostProfit</semantic:incoming>
+      <semantic:incoming>Flow_PainCompensation</semantic:incoming>
+      <semantic:incoming>Flow_ValueOfSpecialPreference</semantic:incoming>
+      <semantic:outgoing>Flow_MergeDamageToEquivalence</semantic:outgoing>
+    </semantic:exclusiveGateway>
+    <semantic:task id="Task_CheckEquivalence" name="Check equivalence">
+      <semantic:incoming>Flow_MergeDamageToEquivalence</semantic:incoming>
+      <semantic:outgoing>Flow_EquivalenceToGateway</semantic:outgoing>
+    </semantic:task>
+    <semantic:exclusiveGateway id="Gateway_IsEquivalenceMet" name="Equivalence Met?">
+      <semantic:incoming>Flow_EquivalenceToGateway</semantic:incoming>
+      <semantic:outgoing>Flow_EquivalenceYes</semantic:outgoing>
+      <semantic:outgoing>Flow_EquivalenceNo</semantic:outgoing>
+    </semantic:exclusiveGateway>
+    <semantic:endEvent id="EndEvent_NotGranted_Equivalence" name="Damages Compensation Not Granted">
+      <semantic:incoming>Flow_EquivalenceNo</semantic:incoming>
+    </semantic:endEvent>
+    <semantic:task id="Task_CheckAdequacy" name="Check adequacy">
+      <semantic:incoming>Flow_EquivalenceYes</semantic:incoming>
+      <semantic:outgoing>Flow_AdequacyToGateway</semantic:outgoing>
+    </semantic:task>
+    <semantic:exclusiveGateway id="Gateway_IsAdequacyMet" name="Adequacy Met?">
+      <semantic:incoming>Flow_AdequacyToGateway</semantic:incoming>
+      <semantic:outgoing>Flow_AdequacyYes</semantic:outgoing>
+      <semantic:outgoing>Flow_AdequacyNo</semantic:outgoing>
+    </semantic:exclusiveGateway>
+    <semantic:endEvent id="EndEvent_NotGranted_Adequacy" name="Damages Compensation Not Granted">
+      <semantic:incoming>Flow_AdequacyNo</semantic:incoming>
+    </semantic:endEvent>
+    <semantic:task id="Task_DetermineIllegalityType" name="Determine illegality type">
+      <semantic:incoming>Flow_AdequacyYes</semantic:incoming>
+      <semantic:outgoing>Flow_IllegalityToGateway</semantic:outgoing>
+    </semantic:task>
+    <semantic:exclusiveGateway id="Gateway_IllegalityType" name="Illegality Type?">
+      <semantic:incoming>Flow_IllegalityToGateway</semantic:incoming>
+      <semantic:outgoing>Flow_BreachOfLaw</semantic:outgoing>
+      <semantic:outgoing>Flow_ViolationOfMorals</semantic:outgoing>
+    </semantic:exclusiveGateway>
+    <semantic:exclusiveGateway id="Gateway_MergeIllegality" name="Merge Illegality Details">
+      <semantic:incoming>Flow_BreachOfLaw</semantic:incoming>
+      <semantic:incoming>Flow_ViolationOfMorals</semantic:incoming>
+      <semantic:outgoing>Flow_MergeIllegalityToAccessibility</semantic:outgoing>
+    </semantic:exclusiveGateway>
+    <semantic:task id="Task_CheckAccessibility" name="Check accessibility of damaging behavior">
+      <semantic:incoming>Flow_MergeIllegalityToAccessibility</semantic:incoming>
+      <semantic:outgoing>Flow_AccessibilityToIntensity</semantic:outgoing>
+    </semantic:task>
+    <semantic:task id="Task_DifferentiateFaultIntensity" name="Differentiate fault intensity">
+      <semantic:incoming>Flow_AccessibilityToIntensity</semantic:incoming>
+      <semantic:outgoing>Flow_IntensityToGateway</semantic:outgoing>
+    </semantic:task>
+    <semantic:exclusiveGateway id="Gateway_FaultIntensity" name="Fault Intensity?">
+      <semantic:incoming>Flow_IntensityToGateway</semantic:incoming>
+      <semantic:outgoing>Flow_Intent</semantic:outgoing>
+      <semantic:outgoing>Flow_Negligence</semantic:outgoing>
+    </semantic:exclusiveGateway>
+    <semantic:task id="Task_DetermineNegligenceType" name="Determine type of negligence">
+      <semantic:incoming>Flow_Negligence</semantic:incoming>
+      <semantic:outgoing>Flow_NegligenceToTypeGateway</semantic:outgoing>
+    </semantic:task>
+    <semantic:exclusiveGateway id="Gateway_NegligenceType" name="Negligence Type?">
+      <semantic:incoming>Flow_NegligenceToTypeGateway</semantic:incoming>
+      <semantic:outgoing>Flow_GrossNegligence</semantic:outgoing>
+      <semantic:outgoing>Flow_SlightNegligence</semantic:outgoing>
+    </semantic:exclusiveGateway>
+    <semantic:exclusiveGateway id="Gateway_MergeFaultDetails" name="Merge Fault Details">
+      <semantic:incoming>Flow_Intent</semantic:incoming>
+      <semantic:incoming>Flow_GrossNegligence</semantic:incoming>
+      <semantic:incoming>Flow_SlightNegligence</semantic:incoming>
+      <semantic:outgoing>Flow_LawyerToJudge</semantic:outgoing>
+    </semantic:exclusiveGateway>
+    <semantic:task id="Task_DecideCompensationExtent" name="Decide on the extent of compensation">
+      <semantic:incoming>Flow_LawyerToJudge</semantic:incoming>
+      <semantic:outgoing>Flow_DecideExtentToDamageTypeGateway</semantic:outgoing>
+    </semantic:task>
+    <semantic:exclusiveGateway id="Gateway_DamageTypeForCompensation" name="Damage Type for Compensation?">
+      <semantic:incoming>Flow_DecideExtentToDamageTypeGateway</semantic:incoming>
+      <semantic:outgoing>Flow_FinancialDamageForComp</semantic:outgoing>
+      <semantic:outgoing>Flow_ImmaterialDamageForComp</semantic:outgoing>
+    </semantic:exclusiveGateway>
+    <semantic:task id="Task_DetermineFinancialExtent" name="Determine extent for financial loss">
+      <semantic:incoming>Flow_FinancialDamageForComp</semantic:incoming>
+      <semantic:outgoing>Flow_FinancialExtentToNegligenceGateway</semantic:outgoing>
+    </semantic:task>
+    <semantic:exclusiveGateway id="Gateway_FinancialNegligenceExtent" name="Extent of Negligence for Financial Loss?">
+      <semantic:incoming>Flow_FinancialExtentToNegligenceGateway</semantic:incoming>
+      <semantic:outgoing>Flow_SlightNegligencePartial</semantic:outgoing>
+      <semantic:outgoing>Flow_GrossNegligenceFull</semantic:outgoing>
+    </semantic:exclusiveGateway>
+    <semantic:task id="Task_ConsiderMarketValue" name="Consider Replacement of objective market value">
+      <semantic:incoming>Flow_SlightNegligencePartial</semantic:incoming>
+      <semantic:outgoing>Flow_MarketValueToMerge</semantic:outgoing>
+    </semantic:task>
+    <semantic:task id="Task_ConsiderDamageAndLostProfit" name="Consider Compensation for damage incurred and lost profit">
+      <semantic:incoming>Flow_GrossNegligenceFull</semantic:incoming>
+      <semantic:outgoing>Flow_DamageProfitToMerge</semantic:outgoing>
+    </semantic:task>
+    <semantic:task id="Task_DetermineImmaterialExtent" name="Determine extent for immaterial damage">
+      <semantic:incoming>Flow_ImmaterialDamageForComp</semantic:incoming>
+      <semantic:outgoing>Flow_ImmaterialExtentToTypeGateway</semantic:outgoing>
+    </semantic:task>
+    <semantic:exclusiveGateway id="Gateway_ImmaterialDamageTypeForExtent" name="Immaterial Damage Type for Extent?">
+      <semantic:incoming>Flow_ImmaterialExtentToTypeGateway</semantic:incoming>
+      <semantic:outgoing>Flow_PainCompForExtent</semantic:outgoing>
+      <semantic:outgoing>Flow_VSPForExtent</semantic:outgoing>
+    </semantic:exclusiveGateway>
+    <semantic:exclusiveGateway id="Gateway_PainCompNegligence" name="Negligence for Pain Compensation?">
+      <semantic:incoming>Flow_PainCompForExtent</semantic:incoming>
+      <semantic:outgoing>Flow_PainCompSlightGrossFull</semantic:outgoing>
+      <semantic:outgoing>Flow_PainCompSlightNo</semantic:outgoing>
+    </semantic:exclusiveGateway>
+    <semantic:task id="Task_ConsiderPainCompensation" name="Consider Pain Compensation">
+      <semantic:incoming>Flow_PainCompSlightGrossFull</semantic:incoming>
+      <semantic:outgoing>Flow_PainCompToMerge</semantic:outgoing>
+    </semantic:task>
+    <semantic:endEvent id="EndEvent_NotGranted_ImmaterialPain" name="Damages Compensation Not Granted">
+      <semantic:incoming>Flow_PainCompSlightNo</semantic:incoming>
+    </semantic:endEvent>
+    <semantic:exclusiveGateway id="Gateway_VSPNegligence" name="Negligence for VSP?">
+      <semantic:incoming>Flow_VSPForExtent</semantic:incoming>
+      <semantic:outgoing>Flow_VSPGrossFull</semantic:outgoing>
+      <semantic:outgoing>Flow_VSPSlightNo</semantic:outgoing>
+    </semantic:exclusiveGateway>
+    <semantic:task id="Task_ConsiderVSPreferenceCompensation" name="Consider Value of special preference compensation">
+      <semantic:incoming>Flow_VSPGrossFull</semantic:incoming>
+      <semantic:outgoing>Flow_VSPToMerge</semantic:outgoing>
+    </semantic:task>
+    <semantic:endEvent id="EndEvent_NotGranted_ImmaterialVSP" name="Damages Compensation Not Granted">
+      <semantic:incoming>Flow_VSPSlightNo</semantic:incoming>
+    </semantic:endEvent>
+    <semantic:exclusiveGateway id="Gateway_MergeCompensationDecisions" name="Merge Compensation Decisions">
+      <semantic:incoming>Flow_MarketValueToMerge</semantic:incoming>
+      <semantic:incoming>Flow_DamageProfitToMerge</semantic:incoming>
+      <semantic:incoming>Flow_PainCompToMerge</semantic:incoming>
+      <semantic:incoming>Flow_VSPToMerge</semantic:incoming>
+      <semantic:outgoing>Flow_MergeCompToFinalEnd</semantic:outgoing>
+    </semantic:exclusiveGateway>
+    <semantic:endEvent id="EndEvent_EntitlementChecked" name="Entitlement to damages compensation successfully checked">
+      <semantic:incoming>Flow_MergeCompToFinalEnd</semantic:incoming>
+    </semantic:endEvent>
+    <semantic:sequenceFlow id="Flow_StartToDetermineLiability" sourceRef="StartEvent_CheckEntitlement" targetRef="Task_DetermineLiabilityType"/>
+    <semantic:sequenceFlow id="Flow_DetermineLiabilityToGateway" sourceRef="Task_DetermineLiabilityType" targetRef="Gateway_IsFaultLiability"/>
+    <semantic:sequenceFlow id="Flow_FaultLiabilityYes" name="Yes (Fault)" sourceRef="Gateway_IsFaultLiability" targetRef="Task_DefineDamageType"/>
+    <semantic:sequenceFlow id="Flow_DefineDamageToGateway" sourceRef="Task_DefineDamageType" targetRef="Gateway_DamageType"/>
+    <semantic:sequenceFlow id="Flow_ToFinancialLoss" name="Financial Loss" sourceRef="Gateway_DamageType" targetRef="Task_DetermineFinancialLossType"/>
+    <semantic:sequenceFlow id="Flow_ToImmaterialDamage" name="Immaterial Damage" sourceRef="Gateway_DamageType" targetRef="Task_DetermineImmaterialDamageType"/>
+    <semantic:sequenceFlow id="Flow_FinancialLossToTypeGateway" sourceRef="Task_DetermineFinancialLossType" targetRef="Gateway_FinancialLossType"/>
+    <semantic:sequenceFlow id="Flow_PositiveDamage" name="Positive Damage" sourceRef="Gateway_FinancialLossType" targetRef="Gateway_MergeDamageDetails"/>
+    <semantic:sequenceFlow id="Flow_LostProfit" name="Lost Profit" sourceRef="Gateway_FinancialLossType" targetRef="Gateway_MergeDamageDetails"/>
+    <semantic:sequenceFlow id="Flow_ImmaterialDamageToTypeGateway" sourceRef="Task_DetermineImmaterialDamageType" targetRef="Gateway_ImmaterialDamageType"/>
+    <semantic:sequenceFlow id="Flow_PainCompensation" name="Pain Compensation" sourceRef="Gateway_ImmaterialDamageType" targetRef="Gateway_MergeDamageDetails"/>
+    <semantic:sequenceFlow id="Flow_ValueOfSpecialPreference" name="Value of Special Preference" sourceRef="Gateway_ImmaterialDamageType" targetRef="Gateway_MergeDamageDetails"/>
+    <semantic:sequenceFlow id="Flow_MergeDamageToEquivalence" sourceRef="Gateway_MergeDamageDetails" targetRef="Task_CheckEquivalence"/>
+    <semantic:sequenceFlow id="Flow_EquivalenceToGateway" sourceRef="Task_CheckEquivalence" targetRef="Gateway_IsEquivalenceMet"/>
+    <semantic:sequenceFlow id="Flow_EquivalenceYes" name="Yes" sourceRef="Gateway_IsEquivalenceMet" targetRef="Task_CheckAdequacy"/>
+    <semantic:sequenceFlow id="Flow_EquivalenceNo" name="No" sourceRef="Gateway_IsEquivalenceMet" targetRef="EndEvent_NotGranted_Equivalence"/>
+    <semantic:sequenceFlow id="Flow_AdequacyToGateway" sourceRef="Task_CheckAdequacy" targetRef="Gateway_IsAdequacyMet"/>
+    <semantic:sequenceFlow id="Flow_AdequacyYes" name="Yes" sourceRef="Gateway_IsAdequacyMet" targetRef="Task_DetermineIllegalityType"/>
+    <semantic:sequenceFlow id="Flow_AdequacyNo" name="No" sourceRef="Gateway_IsAdequacyMet" targetRef="EndEvent_NotGranted_Adequacy"/>
+    <semantic:sequenceFlow id="Flow_IllegalityToGateway" sourceRef="Task_DetermineIllegalityType" targetRef="Gateway_IllegalityType"/>
+    <semantic:sequenceFlow id="Flow_BreachOfLaw" name="Breach of Law" sourceRef="Gateway_IllegalityType" targetRef="Gateway_MergeIllegality"/>
+    <semantic:sequenceFlow id="Flow_ViolationOfMorals" name="Violation of Good Morals" sourceRef="Gateway_IllegalityType" targetRef="Gateway_MergeIllegality"/>
+    <semantic:sequenceFlow id="Flow_MergeIllegalityToAccessibility" sourceRef="Gateway_MergeIllegality" targetRef="Task_CheckAccessibility"/>
+    <semantic:sequenceFlow id="Flow_AccessibilityToIntensity" sourceRef="Task_CheckAccessibility" targetRef="Task_DifferentiateFaultIntensity"/>
+    <semantic:sequenceFlow id="Flow_IntensityToGateway" sourceRef="Task_DifferentiateFaultIntensity" targetRef="Gateway_FaultIntensity"/>
+    <semantic:sequenceFlow id="Flow_Intent" name="Intent" sourceRef="Gateway_FaultIntensity" targetRef="Gateway_MergeFaultDetails"/>
+    <semantic:sequenceFlow id="Flow_Negligence" name="Negligence" sourceRef="Gateway_FaultIntensity" targetRef="Task_DetermineNegligenceType"/>
+    <semantic:sequenceFlow id="Flow_NegligenceToTypeGateway" sourceRef="Task_DetermineNegligenceType" targetRef="Gateway_NegligenceType"/>
+    <semantic:sequenceFlow id="Flow_GrossNegligence" name="Gross Negligence" sourceRef="Gateway_NegligenceType" targetRef="Gateway_MergeFaultDetails"/>
+    <semantic:sequenceFlow id="Flow_SlightNegligence" name="Slight Negligence" sourceRef="Gateway_NegligenceType" targetRef="Gateway_MergeFaultDetails"/>
+    <semantic:sequenceFlow id="Flow_LawyerToJudge" sourceRef="Gateway_MergeFaultDetails" targetRef="Task_DecideCompensationExtent"/>
+    <semantic:sequenceFlow id="Flow_DecideExtentToDamageTypeGateway" sourceRef="Task_DecideCompensationExtent" targetRef="Gateway_DamageTypeForCompensation"/>
+    <semantic:sequenceFlow id="Flow_FinancialDamageForComp" name="Financial Loss" sourceRef="Gateway_DamageTypeForCompensation" targetRef="Task_DetermineFinancialExtent"/>
+    <semantic:sequenceFlow id="Flow_ImmaterialDamageForComp" name="Immaterial Damage" sourceRef="Gateway_DamageTypeForCompensation" targetRef="Task_DetermineImmaterialExtent"/>
+    <semantic:sequenceFlow id="Flow_FinancialExtentToNegligenceGateway" sourceRef="Task_DetermineFinancialExtent" targetRef="Gateway_FinancialNegligenceExtent"/>
+    <semantic:sequenceFlow id="Flow_SlightNegligencePartial" name="Slight Negligence (Partial Satisfaction)" sourceRef="Gateway_FinancialNegligenceExtent" targetRef="Task_ConsiderMarketValue"/>
+    <semantic:sequenceFlow id="Flow_GrossNegligenceFull" name="Gross Negligence (Full Satisfaction)" sourceRef="Gateway_FinancialNegligenceExtent" targetRef="Task_ConsiderDamageAndLostProfit"/>
+    <semantic:sequenceFlow id="Flow_MarketValueToMerge" sourceRef="Task_ConsiderMarketValue" targetRef="Gateway_MergeCompensationDecisions"/>
+    <semantic:sequenceFlow id="Flow_DamageProfitToMerge" sourceRef="Task_ConsiderDamageAndLostProfit" targetRef="Gateway_MergeCompensationDecisions"/>
+    <semantic:sequenceFlow id="Flow_ImmaterialExtentToTypeGateway" sourceRef="Task_DetermineImmaterialExtent" targetRef="Gateway_ImmaterialDamageTypeForExtent"/>
+    <semantic:sequenceFlow id="Flow_PainCompForExtent" name="Pain Compensation" sourceRef="Gateway_ImmaterialDamageTypeForExtent" targetRef="Gateway_PainCompNegligence"/>
+    <semantic:sequenceFlow id="Flow_VSPForExtent" name="Value of Special Preference" sourceRef="Gateway_ImmaterialDamageTypeForExtent" targetRef="Gateway_VSPNegligence"/>
+    <semantic:sequenceFlow id="Flow_PainCompSlightGrossFull" name="Slight/Gross (Full Satisfaction)" sourceRef="Gateway_PainCompNegligence" targetRef="Task_ConsiderPainCompensation"/>
+    <semantic:sequenceFlow id="Flow_PainCompSlightNo" name="Slight (No Satisfaction)" sourceRef="Gateway_PainCompNegligence" targetRef="EndEvent_NotGranted_ImmaterialPain"/>
+    <semantic:sequenceFlow id="Flow_PainCompToMerge" sourceRef="Task_ConsiderPainCompensation" targetRef="Gateway_MergeCompensationDecisions"/>
+    <semantic:sequenceFlow id="Flow_VSPGrossFull" name="Gross (Full Satisfaction)" sourceRef="Gateway_VSPNegligence" targetRef="Task_ConsiderVSPreferenceCompensation"/>
+    <semantic:sequenceFlow id="Flow_VSPSlightNo" name="Slight (No Satisfaction)" sourceRef="Gateway_VSPNegligence" targetRef="EndEvent_NotGranted_ImmaterialVSP"/>
+    <semantic:sequenceFlow id="Flow_VSPToMerge" sourceRef="Task_ConsiderVSPreferenceCompensation" targetRef="Gateway_MergeCompensationDecisions"/>
+    <semantic:sequenceFlow id="Flow_MergeCompToFinalEnd" sourceRef="Gateway_MergeCompensationDecisions" targetRef="EndEvent_EntitlementChecked"/>
+  </semantic:process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_Ministry">
+    <bpmndi:BPMNPlane id="BPMNPlane_Ministry" bpmnElement="Collab_Main">
+      <bpmndi:BPMNShape id="Shape_Participant_Ministry" bpmnElement="Participant_Ministry" isHorizontal="true">
+        <dc:Bounds x="30" y="30" width="2800" height="700"/>
+        <bpmndi:BPMNLabel/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Lane_Lawyer" bpmnElement="Lane_Lawyer" isHorizontal="true">
+        <dc:Bounds x="60" y="30" width="2770" height="350"/>
+        <bpmndi:BPMNLabel/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Lane_Judge" bpmnElement="Lane_Judge" isHorizontal="true">
+        <dc:Bounds x="60" y="380" width="2770" height="350"/>
+        <bpmndi:BPMNLabel/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_StartEvent_CheckEntitlement" bpmnElement="StartEvent_CheckEntitlement">
+        <dc:Bounds x="100" y="182" width="36" height="36"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="70" y="223" width="96" height="54"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Task_DetermineLiabilityType" bpmnElement="Task_DetermineLiabilityType">
+        <dc:Bounds x="186" y="170" width="100" height="60"/>
+        <bpmndi:BPMNLabel/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_DataStore_ProcessingSystem" bpmnElement="DataStore_ProcessingSystem">
+        <dc:Bounds x="206" y="80" width="60" height="60"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="186" y="145" width="100" height="27"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="Edge_DataAssoc_TaskToSystem" bpmnElement="DataAssoc_TaskToSystem">
+        <di:waypoint x="236" y="170"/>
+        <di:waypoint x="236" y="140"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="Shape_Gateway_IsFaultLiability" bpmnElement="Gateway_IsFaultLiability" isMarkerVisible="true">
+        <dc:Bounds x="336" y="177" width="50" height="50"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="316" y="232" width="90" height="14"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Task_DefineDamageType" bpmnElement="Task_DefineDamageType">
+        <dc:Bounds x="436" y="170" width="100" height="60"/>
+        <bpmndi:BPMNLabel/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Gateway_DamageType" bpmnElement="Gateway_DamageType" isMarkerVisible="true">
+        <dc:Bounds x="586" y="177" width="50" height="50"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="571" y="232" width="80" height="14"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Task_DetermineFinancialLossType" bpmnElement="Task_DetermineFinancialLossType">
+        <dc:Bounds x="686" y="100" width="100" height="60"/>
+        <bpmndi:BPMNLabel/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Gateway_FinancialLossType" bpmnElement="Gateway_FinancialLossType" isMarkerVisible="true">
+        <dc:Bounds x="836" y="107" width="50" height="50"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="816" y="162" width="90" height="14"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Task_DetermineImmaterialDamageType" bpmnElement="Task_DetermineImmaterialDamageType">
+        <dc:Bounds x="686" y="240" width="100" height="60"/>
+        <bpmndi:BPMNLabel/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Gateway_ImmaterialDamageType" bpmnElement="Gateway_ImmaterialDamageType" isMarkerVisible="true">
+        <dc:Bounds x="836" y="247" width="50" height="50"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="816" y="302" width="90" height="27"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Gateway_MergeDamageDetails" bpmnElement="Gateway_MergeDamageDetails" isMarkerVisible="true">
+        <dc:Bounds x="936" y="177" width="50" height="50"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="916" y="232" width="90" height="27"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Task_CheckEquivalence" bpmnElement="Task_CheckEquivalence">
+        <dc:Bounds x="1036" y="170" width="100" height="60"/>
+        <bpmndi:BPMNLabel/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Gateway_IsEquivalenceMet" bpmnElement="Gateway_IsEquivalenceMet" isMarkerVisible="true">
+        <dc:Bounds x="1186" y="177" width="50" height="50"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1166" y="232" width="90" height="14"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_EndEvent_NotGranted_Equivalence" bpmnElement="EndEvent_NotGranted_Equivalence">
+        <dc:Bounds x="1193" y="272" width="36" height="36"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1163" y="313" width="96" height="27"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Task_CheckAdequacy" bpmnElement="Task_CheckAdequacy">
+        <dc:Bounds x="1286" y="170" width="100" height="60"/>
+        <bpmndi:BPMNLabel/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Gateway_IsAdequacyMet" bpmnElement="Gateway_IsAdequacyMet" isMarkerVisible="true">
+        <dc:Bounds x="1436" y="177" width="50" height="50"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1416" y="232" width="90" height="14"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_EndEvent_NotGranted_Adequacy" bpmnElement="EndEvent_NotGranted_Adequacy">
+        <dc:Bounds x="1443" y="272" width="36" height="36"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1413" y="313" width="96" height="27"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Task_DetermineIllegalityType" bpmnElement="Task_DetermineIllegalityType">
+        <dc:Bounds x="1536" y="170" width="100" height="60"/>
+        <bpmndi:BPMNLabel/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Gateway_IllegalityType" bpmnElement="Gateway_IllegalityType" isMarkerVisible="true">
+        <dc:Bounds x="1686" y="177" width="50" height="50"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1666" y="232" width="90" height="14"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Gateway_MergeIllegality" bpmnElement="Gateway_MergeIllegality" isMarkerVisible="true">
+        <dc:Bounds x="1786" y="177" width="50" height="50"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1766" y="232" width="90" height="27"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Task_CheckAccessibility" bpmnElement="Task_CheckAccessibility">
+        <dc:Bounds x="1886" y="170" width="100" height="60"/>
+        <bpmndi:BPMNLabel/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Task_DifferentiateFaultIntensity" bpmnElement="Task_DifferentiateFaultIntensity">
+        <dc:Bounds x="2036" y="170" width="100" height="60"/>
+        <bpmndi:BPMNLabel/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Gateway_FaultIntensity" bpmnElement="Gateway_FaultIntensity" isMarkerVisible="true">
+        <dc:Bounds x="2186" y="177" width="50" height="50"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="2166" y="232" width="90" height="14"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Task_DetermineNegligenceType" bpmnElement="Task_DetermineNegligenceType">
+        <dc:Bounds x="2286" y="240" width="100" height="60"/>
+        <bpmndi:BPMNLabel/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Gateway_NegligenceType" bpmnElement="Gateway_NegligenceType" isMarkerVisible="true">
+        <dc:Bounds x="2436" y="247" width="50" height="50"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="2416" y="302" width="90" height="14"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Gateway_MergeFaultDetails" bpmnElement="Gateway_MergeFaultDetails" isMarkerVisible="true">
+        <dc:Bounds x="2536" y="177" width="50" height="50"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="2516" y="232" width="90" height="27"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Task_DecideCompensationExtent" bpmnElement="Task_DecideCompensationExtent">
+        <dc:Bounds x="186" y="520" width="100" height="60"/>
+        <bpmndi:BPMNLabel/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Gateway_DamageTypeForCompensation" bpmnElement="Gateway_DamageTypeForCompensation" isMarkerVisible="true">
+        <dc:Bounds x="336" y="527" width="50" height="50"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="316" y="582" width="90" height="27"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Task_DetermineFinancialExtent" bpmnElement="Task_DetermineFinancialExtent">
+        <dc:Bounds x="436" y="450" width="100" height="60"/>
+        <bpmndi:BPMNLabel/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Gateway_FinancialNegligenceExtent" bpmnElement="Gateway_FinancialNegligenceExtent" isMarkerVisible="true">
+        <dc:Bounds x="586" y="457" width="50" height="50"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="566" y="512" width="90" height="40"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Task_ConsiderMarketValue" bpmnElement="Task_ConsiderMarketValue">
+        <dc:Bounds x="686" y="400" width="100" height="60"/>
+        <bpmndi:BPMNLabel/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Task_ConsiderDamageAndLostProfit" bpmnElement="Task_ConsiderDamageAndLostProfit">
+        <dc:Bounds x="686" y="500" width="100" height="60"/>
+        <bpmndi:BPMNLabel/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Task_DetermineImmaterialExtent" bpmnElement="Task_DetermineImmaterialExtent">
+        <dc:Bounds x="436" y="600" width="100" height="60"/>
+        <bpmndi:BPMNLabel/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Gateway_ImmaterialDamageTypeForExtent" bpmnElement="Gateway_ImmaterialDamageTypeForExtent" isMarkerVisible="true">
+        <dc:Bounds x="586" y="607" width="50" height="50"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="566" y="662" width="90" height="40"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Gateway_PainCompNegligence" bpmnElement="Gateway_PainCompNegligence" isMarkerVisible="true">
+        <dc:Bounds x="736" y="557" width="50" height="50"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="716" y="612" width="90" height="40"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Task_ConsiderPainCompensation" bpmnElement="Task_ConsiderPainCompensation">
+        <dc:Bounds x="836" y="520" width="100" height="60"/>
+        <bpmndi:BPMNLabel/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_EndEvent_NotGranted_ImmaterialPain" bpmnElement="EndEvent_NotGranted_ImmaterialPain">
+        <dc:Bounds x="843" y="622" width="36" height="36"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="813" y="663" width="96" height="27"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Gateway_VSPNegligence" bpmnElement="Gateway_VSPNegligence" isMarkerVisible="true">
+        <dc:Bounds x="736" y="657" width="50" height="50"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="716" y="712" width="90" height="27"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Task_ConsiderVSPreferenceCompensation" bpmnElement="Task_ConsiderVSPreferenceCompensation">
+        <dc:Bounds x="836" y="620" width="100" height="60"/>
+        <bpmndi:BPMNLabel/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_EndEvent_NotGranted_ImmaterialVSP" bpmnElement="EndEvent_NotGranted_ImmaterialVSP">
+        <dc:Bounds x="843" y="722" width="36" height="36"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="813" y="763" width="96" height="27"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Gateway_MergeCompensationDecisions" bpmnElement="Gateway_MergeCompensationDecisions" isMarkerVisible="true">
+        <dc:Bounds x="1036" y="527" width="50" height="50"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1016" y="582" width="90" height="40"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_EndEvent_EntitlementChecked" bpmnElement="EndEvent_EntitlementChecked">
+        <dc:Bounds x="1136" y="534" width="36" height="36"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1106" y="575" width="96" height="54"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="Edge_Flow_StartToDetermineLiability" bpmnElement="Flow_StartToDetermineLiability">
+        <di:waypoint x="136" y="200"/>
+        <di:waypoint x="186" y="200"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Flow_DetermineLiabilityToGateway" bpmnElement="Flow_DetermineLiabilityToGateway">
+        <di:waypoint x="286" y="200"/>
+        <di:waypoint x="336" y="202"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Flow_FaultLiabilityYes" bpmnElement="Flow_FaultLiabilityYes">
+        <di:waypoint x="386" y="202"/>
+        <di:waypoint x="436" y="200"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="389" y="182" width="58" height="14"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Flow_DefineDamageToGateway" bpmnElement="Flow_DefineDamageToGateway">
+        <di:waypoint x="536" y="200"/>
+        <di:waypoint x="586" y="202"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Flow_ToFinancialLoss" bpmnElement="Flow_ToFinancialLoss">
+        <di:waypoint x="611" y="177"/>
+        <di:waypoint x="611" y="130"/>
+        <di:waypoint x="686" y="130"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="614" y="148" width="70" height="14"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Flow_ToImmaterialDamage" bpmnElement="Flow_ToImmaterialDamage">
+        <di:waypoint x="611" y="227"/>
+        <di:waypoint x="611" y="270"/>
+        <di:waypoint x="686" y="270"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="614" y="243" width="70" height="27"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Flow_FinancialLossToTypeGateway" bpmnElement="Flow_FinancialLossToTypeGateway">
+        <di:waypoint x="786" y="130"/>
+        <di:waypoint x="836" y="132"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Flow_PositiveDamage" bpmnElement="Flow_PositiveDamage">
+        <di:waypoint x="886" y="132"/>
+        <di:waypoint x="961" y="132"/>
+        <di:waypoint x="961" y="177"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="889" y="112" width="70" height="14"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Flow_LostProfit" bpmnElement="Flow_LostProfit">
+        <di:waypoint x="861" y="157"/>
+        <di:waypoint x="861" y="202"/>
+        <di:waypoint x="936" y="202"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="874" y="173" width="58" height="14"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Flow_ImmaterialDamageToTypeGateway" bpmnElement="Flow_ImmaterialDamageToTypeGateway">
+        <di:waypoint x="786" y="270"/>
+        <di:waypoint x="836" y="272"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Flow_PainCompensation" bpmnElement="Flow_PainCompensation">
+        <di:waypoint x="861" y="247"/>
+        <di:waypoint x="861" y="202"/>
+        <di:waypoint x="936" y="202"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="864" y="220" width="70" height="27"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Flow_ValueOfSpecialPreference" bpmnElement="Flow_ValueOfSpecialPreference">
+        <di:waypoint x="886" y="272"/>
+        <di:waypoint x="961" y="272"/>
+        <di:waypoint x="961" y="227"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="889" y="275" width="70" height="40"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Flow_MergeDamageToEquivalence" bpmnElement="Flow_MergeDamageToEquivalence">
+        <di:waypoint x="986" y="202"/>
+        <di:waypoint x="1036" y="200"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Flow_EquivalenceToGateway" bpmnElement="Flow_EquivalenceToGateway">
+        <di:waypoint x="1136" y="200"/>
+        <di:waypoint x="1186" y="202"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Flow_EquivalenceYes" bpmnElement="Flow_EquivalenceYes">
+        <di:waypoint x="1236" y="202"/>
+        <di:waypoint x="1286" y="200"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1254" y="182" width="20" height="14"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Flow_EquivalenceNo" bpmnElement="Flow_EquivalenceNo">
+        <di:waypoint x="1211" y="227"/>
+        <di:waypoint x="1211" y="272"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1214" y="243" width="18" height="14"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Flow_AdequacyToGateway" bpmnElement="Flow_AdequacyToGateway">
+        <di:waypoint x="1386" y="200"/>
+        <di:waypoint x="1436" y="202"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Flow_AdequacyYes" bpmnElement="Flow_AdequacyYes">
+        <di:waypoint x="1486" y="202"/>
+        <di:waypoint x="1536" y="200"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1504" y="182" width="20" height="14"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Flow_AdequacyNo" bpmnElement="Flow_AdequacyNo">
+        <di:waypoint x="1461" y="227"/>
+        <di:waypoint x="1461" y="272"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1464" y="243" width="18" height="14"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Flow_IllegalityToGateway" bpmnElement="Flow_IllegalityToGateway">
+        <di:waypoint x="1636" y="200"/>
+        <di:waypoint x="1686" y="202"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Flow_BreachOfLaw" bpmnElement="Flow_BreachOfLaw">
+        <di:waypoint x="1711" y="177"/>
+        <di:waypoint x="1711" y="152"/>
+        <di:waypoint x="1811" y="152"/>
+        <di:waypoint x="1811" y="177"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1714" y="132" width="70" height="14"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Flow_ViolationOfMorals" bpmnElement="Flow_ViolationOfMorals">
+        <di:waypoint x="1711" y="227"/>
+        <di:waypoint x="1711" y="252"/>
+        <di:waypoint x="1811" y="252"/>
+        <di:waypoint x="1811" y="227"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1714" y="255" width="70" height="27"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Flow_MergeIllegalityToAccessibility" bpmnElement="Flow_MergeIllegalityToAccessibility">
+        <di:waypoint x="1836" y="202"/>
+        <di:waypoint x="1886" y="200"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Flow_AccessibilityToIntensity" bpmnElement="Flow_AccessibilityToIntensity">
+        <di:waypoint x="1986" y="200"/>
+        <di:waypoint x="2036" y="200"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Flow_IntensityToGateway" bpmnElement="Flow_IntensityToGateway">
+        <di:waypoint x="2136" y="200"/>
+        <di:waypoint x="2186" y="202"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Flow_Intent" bpmnElement="Flow_Intent">
+        <di:waypoint x="2236" y="202"/>
+        <di:waypoint x="2536" y="202"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="2379" y="182" width="34" height="14"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Flow_Negligence" bpmnElement="Flow_Negligence">
+        <di:waypoint x="2211" y="227"/>
+        <di:waypoint x="2211" y="270"/>
+        <di:waypoint x="2286" y="270"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="2214" y="243" width="58" height="14"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Flow_NegligenceToTypeGateway" bpmnElement="Flow_NegligenceToTypeGateway">
+        <di:waypoint x="2386" y="270"/>
+        <di:waypoint x="2436" y="272"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Flow_GrossNegligence" bpmnElement="Flow_GrossNegligence">
+        <di:waypoint x="2461" y="247"/>
+        <di:waypoint x="2461" y="202"/>
+        <di:waypoint x="2536" y="202"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="2464" y="220" width="70" height="27"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Flow_SlightNegligence" bpmnElement="Flow_SlightNegligence">
+        <di:waypoint x="2486" y="272"/>
+        <di:waypoint x="2561" y="272"/>
+        <di:waypoint x="2561" y="227"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="2489" y="275" width="70" height="27"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Flow_LawyerToJudge" bpmnElement="Flow_LawyerToJudge">
+        <di:waypoint x="2561" y="227"/>
+        <di:waypoint x="2561" y="550"/>
+        <di:waypoint x="286" y="550"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Flow_DecideExtentToDamageTypeGateway" bpmnElement="Flow_DecideExtentToDamageTypeGateway">
+        <di:waypoint x="286" y="550"/>
+        <di:waypoint x="336" y="552"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Flow_FinancialDamageForComp" bpmnElement="Flow_FinancialDamageForComp">
+        <di:waypoint x="361" y="527"/>
+        <di:waypoint x="361" y="480"/>
+        <di:waypoint x="436" y="480"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="364" y="498" width="70" height="14"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Flow_ImmaterialDamageForComp" bpmnElement="Flow_ImmaterialDamageForComp">
+        <di:waypoint x="361" y="577"/>
+        <di:waypoint x="361" y="630"/>
+        <di:waypoint x="436" y="630"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="364" y="598" width="70" height="27"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Flow_FinancialExtentToNegligenceGateway" bpmnElement="Flow_FinancialExtentToNegligenceGateway">
+        <di:waypoint x="536" y="480"/>
+        <di:waypoint x="586" y="482"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Flow_SlightNegligencePartial" bpmnElement="Flow_SlightNegligencePartial">
+        <di:waypoint x="611" y="457"/>
+        <di:waypoint x="611" y="430"/>
+        <di:waypoint x="686" y="430"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="614" y="408" width="70" height="40"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Flow_GrossNegligenceFull" bpmnElement="Flow_GrossNegligenceFull">
+        <di:waypoint x="611" y="507"/>
+        <di:waypoint x="611" y="530"/>
+        <di:waypoint x="686" y="530"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="614" y="533" width="70" height="40"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Flow_MarketValueToMerge" bpmnElement="Flow_MarketValueToMerge">
+        <di:waypoint x="786" y="430"/>
+        <di:waypoint x="1061" y="430"/>
+        <di:waypoint x="1061" y="527"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Flow_DamageProfitToMerge" bpmnElement="Flow_DamageProfitToMerge">
+        <di:waypoint x="786" y="530"/>
+        <di:waypoint x="1036" y="530"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Flow_ImmaterialExtentToTypeGateway" bpmnElement="Flow_ImmaterialExtentToTypeGateway">
+        <di:waypoint x="536" y="630"/>
+        <di:waypoint x="586" y="632"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Flow_PainCompForExtent" bpmnElement="Flow_PainCompForExtent">
+        <di:waypoint x="611" y="607"/>
+        <di:waypoint x="611" y="582"/>
+        <di:waypoint x="736" y="582"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="614" y="585" width="70" height="27"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Flow_VSPForExtent" bpmnElement="Flow_VSPForExtent">
+        <di:waypoint x="611" y="657"/>
+        <di:waypoint x="611" y="682"/>
+        <di:waypoint x="736" y="682"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="614" y="685" width="70" height="40"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Flow_PainCompSlightGrossFull" bpmnElement="Flow_PainCompSlightGrossFull">
+        <di:waypoint x="786" y="582"/>
+        <di:waypoint x="836" y="550"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="789" y="555" width="70" height="40"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Flow_PainCompSlightNo" bpmnElement="Flow_PainCompSlightNo">
+        <di:waypoint x="761" y="607"/>
+        <di:waypoint x="761" y="640"/>
+        <di:waypoint x="843" y="640"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="764" y="613" width="70" height="40"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Flow_PainCompToMerge" bpmnElement="Flow_PainCompToMerge">
+        <di:waypoint x="936" y="550"/>
+        <di:waypoint x="1036" y="552"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Flow_VSPGrossFull" bpmnElement="Flow_VSPGrossFull">
+        <di:waypoint x="786" y="682"/>
+        <di:waypoint x="836" y="650"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="789" y="655" width="70" height="40"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Flow_VSPSlightNo" bpmnElement="Flow_VSPSlightNo">
+        <di:waypoint x="761" y="707"/>
+        <di:waypoint x="761" y="740"/>
+        <di:waypoint x="843" y="740"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="764" y="713" width="70" height="40"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Flow_VSPToMerge" bpmnElement="Flow_VSPToMerge">
+        <di:waypoint x="936" y="650"/>
+        <di:waypoint x="1061" y="650"/>
+        <di:waypoint x="1061" y="577"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Flow_MergeCompToFinalEnd" bpmnElement="Flow_MergeCompToFinalEnd">
+        <di:waypoint x="1086" y="552"/>
+        <di:waypoint x="1136" y="552"/>
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</semantic:definitions>

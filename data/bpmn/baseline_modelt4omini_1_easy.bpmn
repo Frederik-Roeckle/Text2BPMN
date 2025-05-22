@@ -1,0 +1,203 @@
+<?xml version="1.0" standalone="yes"?>
+<semantic:definitions id="HiringProcess"
+    targetNamespace="http://example.com/bpmn/hiring-process"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:semantic="http://www.omg.org/spec/BPMN/20100524/MODEL"
+    xmlns:di="http://www.omg.org/spec/DD/20100524/DI"
+    xmlns:dc="http://www.omg.org/spec/DD/20100524/DC"
+    xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI">
+
+  <semantic:collaboration id="collab_hiringProcess">
+    <semantic:participant id="participant_hiringManager" name="Hiring Manager" processRef="hiringProcess"/>
+    <semantic:participant id="participant_humanResources" name="Human Resources" processRef="hiringProcess"/>
+  </semantic:collaboration>
+
+  <semantic:process id="hiringProcess" isExecutable="true">
+    <semantic:laneSet id="laneSet">
+      <semantic:lane id="hiringManagerLane" name="Hiring Manager">
+        <semantic:flowNodeRef>start</semantic:flowNodeRef>
+        <semantic:flowNodeRef>createJobAdvertisement</semantic:flowNodeRef>
+        <semantic:flowNodeRef>decideOnCandidate</semantic:flowNodeRef>
+        <semantic:flowNodeRef>contactHRForPayroll</semantic:flowNodeRef>
+        <semantic:flowNodeRef>end</semantic:flowNodeRef>
+      </semantic:lane>
+      <semantic:lane id="humanResourcesLane" name="Human Resources">
+        <semantic:flowNodeRef>findCandidates</semantic:flowNodeRef>
+        <semantic:flowNodeRef>inviteInterviewers</semantic:flowNodeRef>
+        <semantic:flowNodeRef>conductInterviews</semantic:flowNodeRef>
+        <semantic:flowNodeRef>sendOfferContract</semantic:flowNodeRef>
+        <semantic:flowNodeRef>receiveSignedContract</semantic:flowNodeRef>
+      </semantic:lane>
+    </semantic:laneSet>
+
+    <semantic:startEvent id="start" name="Start Hiring Process">
+      <semantic:outgoing>flow1</semantic:outgoing>
+    </semantic:startEvent>
+
+    <semantic:task id="createJobAdvertisement" name="Create Job Advertisement">
+      <semantic:incoming>flow1</semantic:incoming>
+      <semantic:outgoing>flow2</semantic:outgoing>
+    </semantic:task>
+
+    <semantic:task id="findCandidates" name="Find Best Candidates">
+      <semantic:incoming>flow2</semantic:incoming>
+      <semantic:outgoing>flow3</semantic:outgoing>
+    </semantic:task>
+
+    <semantic:task id="inviteInterviewers" name="Invite Interviewers">
+      <semantic:incoming>flow3</semantic:incoming>
+      <semantic:outgoing>flow4</semantic:outgoing>
+    </semantic:task>
+
+    <semantic:task id="conductInterviews" name="Conduct Interviews">
+      <semantic:incoming>flow4</semantic:incoming>
+      <semantic:outgoing>flow5</semantic:outgoing>
+    </semantic:task>
+
+    <semantic:exclusiveGateway id="decideOnCandidate" name="Decide on Suitable Candidate">
+      <semantic:incoming>flow5</semantic:incoming>
+      <semantic:outgoing>flow6</semantic:outgoing>
+      <semantic:outgoing>flow7</semantic:outgoing>
+    </semantic:exclusiveGateway>
+
+    <semantic:task id="contactHRForPayroll" name="Contact HR for Payroll Setup">
+      <semantic:incoming>flow6</semantic:incoming>
+      <semantic:outgoing>flow8</semantic:outgoing>
+    </semantic:task>
+
+    <semantic:task id="sendOfferContract" name="Send Offer/Contract to Candidate">
+      <semantic:incoming>flow8</semantic:incoming>
+      <semantic:outgoing>flow9</semantic:outgoing>
+    </semantic:task>
+
+    <semantic:endEvent id="end" name="End Hiring Process">
+      <semantic:incoming>flow9</semantic:incoming>
+      <semantic:incoming>flow10</semantic:incoming>
+    </semantic:endEvent>
+
+    <semantic:task id="receiveSignedContract" name="Receive Signed Contract">
+      <semantic:incoming>flow10</semantic:incoming>
+      <semantic:outgoing>flow11</semantic:outgoing>
+    </semantic:task>
+
+    <semantic:sequenceFlow id="flow1" sourceRef="start" targetRef="createJobAdvertisement"/>
+    <semantic:sequenceFlow id="flow2" sourceRef="createJobAdvertisement" targetRef="findCandidates"/>
+    <semantic:sequenceFlow id="flow3" sourceRef="findCandidates" targetRef="inviteInterviewers"/>
+    <semantic:sequenceFlow id="flow4" sourceRef="inviteInterviewers" targetRef="conductInterviews"/>
+    <semantic:sequenceFlow id="flow5" sourceRef="conductInterviews" targetRef="decideOnCandidate"/>
+    <semantic:sequenceFlow id="flow6" sourceRef="decideOnCandidate" targetRef="contactHRForPayroll"/>
+    <semantic:sequenceFlow id="flow7" sourceRef="decideOnCandidate" targetRef="findCandidates"/>
+    <semantic:sequenceFlow id="flow8" sourceRef="contactHRForPayroll" targetRef="sendOfferContract"/>
+    <semantic:sequenceFlow id="flow9" sourceRef="sendOfferContract" targetRef="end"/>
+    <semantic:sequenceFlow id="flow10" sourceRef="receiveSignedContract" targetRef="end"/>
+    <semantic:sequenceFlow id="flow11" sourceRef="sendOfferContract" targetRef="receiveSignedContract"/>
+
+  </semantic:process>
+
+  <bpmndi:BPMNDiagram id="BPMNDiagram_hiringProcess" name="Hiring Process Diagram" resolution="96.0">
+    <bpmndi:BPMNPlane bpmnElement="collab_hiringProcess">
+      <bpmndi:BPMNShape id="participant_hiringManager_shape" bpmnElement="participant_hiringManager" isHorizontal="true">
+        <dc:Bounds x="20" y="20" width="800" height="250"/>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="participant_humanResources_shape" bpmnElement="participant_humanResources" isHorizontal="true">
+        <dc:Bounds x="20" y="280" width="800" height="250"/>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="start_shape" bpmnElement="start">
+        <dc:Bounds x="100" y="100" width="36" height="36"/>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="createJobAdvertisement_shape" bpmnElement="createJobAdvertisement">
+        <dc:Bounds x="180" y="90" width="150" height="56"/>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="findCandidates_shape" bpmnElement="findCandidates">
+        <dc:Bounds x="360" y="90" width="150" height="56"/>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="inviteInterviewers_shape" bpmnElement="inviteInterviewers">
+        <dc:Bounds x="540" y="90" width="150" height="56"/>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="conductInterviews_shape" bpmnElement="conductInterviews">
+        <dc:Bounds x="720" y="90" width="150" height="56"/>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="decideOnCandidate_shape" bpmnElement="decideOnCandidate" isMarkerVisible="true">
+        <dc:Bounds x="900" y="95" width="50" height="50"/>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="contactHRForPayroll_shape" bpmnElement="contactHRForPayroll">
+        <dc:Bounds x="980" y="90" width="150" height="56"/>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="sendOfferContract_shape" bpmnElement="sendOfferContract">
+        <dc:Bounds x="1160" y="90" width="150" height="56"/>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="receiveSignedContract_shape" bpmnElement="receiveSignedContract">
+        <dc:Bounds x="1340" y="90" width="150" height="56"/>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="end_shape" bpmnElement="end">
+        <dc:Bounds x="1500" y="100" width="36" height="36"/>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNEdge id="flow1_edge" bpmnElement="flow1">
+        <di:waypoint x="136" y="118"/>
+        <di:waypoint x="180" y="118"/>
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="flow2_edge" bpmnElement="flow2">
+        <di:waypoint x="330" y="118"/>
+        <di:waypoint x="360" y="118"/>
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="flow3_edge" bpmnElement="flow3">
+        <di:waypoint x="510" y="118"/>
+        <di:waypoint x="540" y="118"/>
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="flow4_edge" bpmnElement="flow4">
+        <di:waypoint x="690" y="118"/>
+        <di:waypoint x="720" y="118"/>
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="flow5_edge" bpmnElement="flow5">
+        <di:waypoint x="870" y="118"/>
+        <di:waypoint x="900" y="120"/>
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="flow6_edge" bpmnElement="flow6">
+        <di:waypoint x="950" y="120"/>
+        <di:waypoint x="980" y="118"/>
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="flow7_edge" bpmnElement="flow7">
+        <di:waypoint x="950" y="120"/>
+        <di:waypoint x="360" y="120"/>
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="flow8_edge" bpmnElement="flow8">
+        <di:waypoint x="1130" y="118"/>
+        <di:waypoint x="1160" y="118"/>
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="flow9_edge" bpmnElement="flow9">
+        <di:waypoint x="1310" y="118"/>
+        <di:waypoint x="1340" y="118"/>
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="flow10_edge" bpmnElement="flow10">
+        <di:waypoint x="1490" y="118"/>
+        <di:waypoint x="1500" y="118"/>
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="flow11_edge" bpmnElement="flow11">
+        <di:waypoint x="1310" y="118"/>
+        <di:waypoint x="1340" y="118"/>
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</semantic:definitions>

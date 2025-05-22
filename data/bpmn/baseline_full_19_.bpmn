@@ -1,0 +1,257 @@
+<?xml version="1.0" standalone="yes"?>
+<semantic:definitions id="definitions_BOMCreation"
+    targetNamespace="http://example.com/bpmn/bom-creation"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:semantic="http://www.omg.org/spec/BPMN/20100524/MODEL"
+    xmlns:di="http://www.omg.org/spec/DD/20100524/DI"
+    xmlns:dc="http://www.omg.org/spec/DD/20100524/DC"
+    xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI">
+
+  <semantic:collaboration id="collab_BOMCreation">
+    <semantic:participant id="participant_PMDept" name="Plant Maintenance Department" processRef="process_BOMCreation"/>
+  </semantic:collaboration>
+
+  <semantic:process id="process_BOMCreation" isExecutable="true">
+    <semantic:laneSet id="laneSet_PM">
+      <semantic:lane id="lane_PMDepartment" name="Plant Maintenance (PM) Department">
+        <semantic:flowNodeRef>startEvent_BOMCreationInitiated</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_IdentifySpareParts</semantic:flowNodeRef>
+        <semantic:flowNodeRef>gateway_IsAsset</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_RequestMaterialType</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_CreateMaterialBOM</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_CreateEquipmentBOM</semantic:flowNodeRef>
+        <semantic:flowNodeRef>gateway_MergeBOMType</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_CheckMaterialNumberExistence</semantic:flowNodeRef>
+        <semantic:flowNodeRef>gateway_MaterialNumberAvailable</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_AddAvailableMaterialNumber</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_RequestMaterialNumbers</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_AddReceivedMaterialNumbers</semantic:flowNodeRef>
+        <semantic:flowNodeRef>gateway_MergeMaterialNumbers</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_SendExcelForCheck</semantic:flowNodeRef>
+        <semantic:flowNodeRef>endEvent_BOMStageCompleted</semantic:flowNodeRef>
+      </semantic:lane>
+    </semantic:laneSet>
+
+    <semantic:startEvent id="startEvent_BOMCreationInitiated" name="BOM Creation Initiated">
+      <semantic:outgoing>flow_StartToIdentify</semantic:outgoing>
+    </semantic:startEvent>
+    <semantic:task id="task_IdentifySpareParts" name="Identify Main Spare Parts">
+      <semantic:incoming>flow_StartToIdentify</semantic:incoming>
+      <semantic:outgoing>flow_IdentifyToAssetCheck</semantic:outgoing>
+    </semantic:task>
+    <semantic:exclusiveGateway id="gateway_IsAsset" name="Equipment is Asset?">
+      <semantic:incoming>flow_IdentifyToAssetCheck</semantic:incoming>
+      <semantic:outgoing>flow_NotAsset</semantic:outgoing>
+      <semantic:outgoing>flow_IsAsset</semantic:outgoing>
+    </semantic:exclusiveGateway>
+    <semantic:task id="task_RequestMaterialType" name="Request Material Type for BOM Header">
+      <semantic:incoming>flow_NotAsset</semantic:incoming>
+      <semantic:outgoing>flow_RequestToCreateMaterialBOM</semantic:outgoing>
+    </semantic:task>
+    <semantic:task id="task_CreateMaterialBOM" name="Create Material BOM">
+      <semantic:incoming>flow_RequestToCreateMaterialBOM</semantic:incoming>
+      <semantic:outgoing>flow_MaterialBOMToMerge</semantic:outgoing>
+    </semantic:task>
+    <semantic:task id="task_CreateEquipmentBOM" name="Create Equipment BOM">
+      <semantic:incoming>flow_IsAsset</semantic:incoming>
+      <semantic:outgoing>flow_EquipmentBOMToMerge</semantic:outgoing>
+    </semantic:task>
+    <semantic:exclusiveGateway id="gateway_MergeBOMType" name="BOM Type Decided">
+      <semantic:incoming>flow_MaterialBOMToMerge</semantic:incoming>
+      <semantic:incoming>flow_EquipmentBOMToMerge</semantic:incoming>
+      <semantic:outgoing>flow_MergeToMaterialCheck</semantic:outgoing>
+    </semantic:exclusiveGateway>
+    <semantic:task id="task_CheckMaterialNumberExistence" name="Check Material Number Existence for Spare Parts">
+      <semantic:incoming>flow_MergeToMaterialCheck</semantic:incoming>
+      <semantic:outgoing>flow_CheckToAvailableCheck</semantic:outgoing>
+    </semantic:task>
+    <semantic:exclusiveGateway id="gateway_MaterialNumberAvailable" name="Material Number Available?">
+      <semantic:incoming>flow_CheckToAvailableCheck</semantic:incoming>
+      <semantic:outgoing>flow_NumberAvailable</semantic:outgoing>
+      <semantic:outgoing>flow_NumberNotAvailable</semantic:outgoing>
+    </semantic:exclusiveGateway>
+    <semantic:task id="task_AddAvailableMaterialNumber" name="Add Material Number to Excel Template">
+      <semantic:incoming>flow_NumberAvailable</semantic:incoming>
+      <semantic:outgoing>flow_AvailableToMergeNumbers</semantic:outgoing>
+    </semantic:task>
+    <semantic:task id="task_RequestMaterialNumbers" name="Request Material Numbers">
+      <semantic:incoming>flow_NumberNotAvailable</semantic:incoming>
+      <semantic:outgoing>flow_RequestToReceivedNumbers</semantic:outgoing>
+    </semantic:task>
+    <semantic:task id="task_AddReceivedMaterialNumbers" name="Add Received Material Numbers to Excel Template">
+      <semantic:incoming>flow_RequestToReceivedNumbers</semantic:incoming>
+      <semantic:outgoing>flow_ReceivedToMergeNumbers</semantic:outgoing>
+    </semantic:task>
+    <semantic:exclusiveGateway id="gateway_MergeMaterialNumbers" name="Material Numbers Added">
+      <semantic:incoming>flow_AvailableToMergeNumbers</semantic:incoming>
+      <semantic:incoming>flow_ReceivedToMergeNumbers</semantic:incoming>
+      <semantic:outgoing>flow_MergeNumbersToSend</semantic:outgoing>
+    </semantic:exclusiveGateway>
+    <semantic:task id="task_SendExcelForCheck" name="Send Filled Excel Template for Technical Check">
+      <semantic:incoming>flow_MergeNumbersToSend</semantic:incoming>
+      <semantic:outgoing>flow_SendToEnd</semantic:outgoing>
+    </semantic:task>
+    <semantic:endEvent id="endEvent_BOMStageCompleted" name="BOM Creation Stage Completed">
+      <semantic:incoming>flow_SendToEnd</semantic:incoming>
+    </semantic:endEvent>
+
+    <semantic:sequenceFlow id="flow_StartToIdentify" sourceRef="startEvent_BOMCreationInitiated" targetRef="task_IdentifySpareParts"/>
+    <semantic:sequenceFlow id="flow_IdentifyToAssetCheck" sourceRef="task_IdentifySpareParts" targetRef="gateway_IsAsset"/>
+    <semantic:sequenceFlow id="flow_NotAsset" name="No" sourceRef="gateway_IsAsset" targetRef="task_RequestMaterialType"/>
+    <semantic:sequenceFlow id="flow_RequestToCreateMaterialBOM" sourceRef="task_RequestMaterialType" targetRef="task_CreateMaterialBOM"/>
+    <semantic:sequenceFlow id="flow_IsAsset" name="Yes" sourceRef="gateway_IsAsset" targetRef="task_CreateEquipmentBOM"/>
+    <semantic:sequenceFlow id="flow_MaterialBOMToMerge" sourceRef="task_CreateMaterialBOM" targetRef="gateway_MergeBOMType"/>
+    <semantic:sequenceFlow id="flow_EquipmentBOMToMerge" sourceRef="task_CreateEquipmentBOM" targetRef="gateway_MergeBOMType"/>
+    <semantic:sequenceFlow id="flow_MergeToMaterialCheck" sourceRef="gateway_MergeBOMType" targetRef="task_CheckMaterialNumberExistence"/>
+    <semantic:sequenceFlow id="flow_CheckToAvailableCheck" sourceRef="task_CheckMaterialNumberExistence" targetRef="gateway_MaterialNumberAvailable"/>
+    <semantic:sequenceFlow id="flow_NumberAvailable" name="Yes" sourceRef="gateway_MaterialNumberAvailable" targetRef="task_AddAvailableMaterialNumber"/>
+    <semantic:sequenceFlow id="flow_NumberNotAvailable" name="No" sourceRef="gateway_MaterialNumberAvailable" targetRef="task_RequestMaterialNumbers"/>
+    <semantic:sequenceFlow id="flow_RequestToReceivedNumbers" sourceRef="task_RequestMaterialNumbers" targetRef="task_AddReceivedMaterialNumbers"/>
+    <semantic:sequenceFlow id="flow_AvailableToMergeNumbers" sourceRef="task_AddAvailableMaterialNumber" targetRef="gateway_MergeMaterialNumbers"/>
+    <semantic:sequenceFlow id="flow_ReceivedToMergeNumbers" sourceRef="task_AddReceivedMaterialNumbers" targetRef="gateway_MergeMaterialNumbers"/>
+    <semantic:sequenceFlow id="flow_MergeNumbersToSend" sourceRef="gateway_MergeMaterialNumbers" targetRef="task_SendExcelForCheck"/>
+    <semantic:sequenceFlow id="flow_SendToEnd" sourceRef="task_SendExcelForCheck" targetRef="endEvent_BOMStageCompleted"/>
+  </semantic:process>
+
+  <bpmndi:BPMNDiagram id="BPMNDiagram_BOMCreation" name="BOM Creation Diagram" resolution="96.0">
+    <bpmndi:BPMNPlane bpmnElement="collab_BOMCreation">
+      <bpmndi:BPMNShape id="participant_PMDept_shape" bpmnElement="participant_PMDept" isHorizontal="true">
+        <dc:Bounds x="20" y="20" width="1900" height="500"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="lane_PMDepartment_shape" bpmnElement="lane_PMDepartment" isHorizontal="true">
+        <dc:Bounds x="50" y="20" width="1870" height="500"/>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="startEvent_BOMCreationInitiated_shape" bpmnElement="startEvent_BOMCreationInitiated">
+        <dc:Bounds x="100" y="292" width="36" height="36"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="task_IdentifySpareParts_shape" bpmnElement="task_IdentifySpareParts">
+        <dc:Bounds x="180" y="270" width="120" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="gateway_IsAsset_shape" bpmnElement="gateway_IsAsset" isMarkerVisible="true">
+        <dc:Bounds x="350" y="285" width="50" height="50"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="task_RequestMaterialType_shape" bpmnElement="task_RequestMaterialType">
+        <dc:Bounds x="450" y="150" width="120" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="task_CreateMaterialBOM_shape" bpmnElement="task_CreateMaterialBOM">
+        <dc:Bounds x="620" y="150" width="120" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="task_CreateEquipmentBOM_shape" bpmnElement="task_CreateEquipmentBOM">
+        <dc:Bounds x="620" y="390" width="120" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="gateway_MergeBOMType_shape" bpmnElement="gateway_MergeBOMType" isMarkerVisible="true">
+        <dc:Bounds x="790" y="285" width="50" height="50"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="task_CheckMaterialNumberExistence_shape" bpmnElement="task_CheckMaterialNumberExistence">
+        <dc:Bounds x="910" y="270" width="120" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="gateway_MaterialNumberAvailable_shape" bpmnElement="gateway_MaterialNumberAvailable" isMarkerVisible="true">
+        <dc:Bounds x="1080" y="285" width="50" height="50"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="task_AddAvailableMaterialNumber_shape" bpmnElement="task_AddAvailableMaterialNumber">
+        <dc:Bounds x="1180" y="150" width="120" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="task_RequestMaterialNumbers_shape" bpmnElement="task_RequestMaterialNumbers">
+        <dc:Bounds x="1180" y="390" width="120" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="task_AddReceivedMaterialNumbers_shape" bpmnElement="task_AddReceivedMaterialNumbers">
+        <dc:Bounds x="1350" y="390" width="120" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="gateway_MergeMaterialNumbers_shape" bpmnElement="gateway_MergeMaterialNumbers" isMarkerVisible="true">
+        <dc:Bounds x="1520" y="285" width="50" height="50"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="task_SendExcelForCheck_shape" bpmnElement="task_SendExcelForCheck">
+        <dc:Bounds x="1620" y="270" width="120" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="endEvent_BOMStageCompleted_shape" bpmnElement="endEvent_BOMStageCompleted">
+        <dc:Bounds x="1790" y="292" width="36" height="36"/>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNEdge id="flow_StartToIdentify_edge" bpmnElement="flow_StartToIdentify">
+        <di:waypoint x="136" y="310"/>
+        <di:waypoint x="180" y="310"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_IdentifyToAssetCheck_edge" bpmnElement="flow_IdentifyToAssetCheck">
+        <di:waypoint x="300" y="310"/>
+        <di:waypoint x="350" y="310"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_NotAsset_edge" bpmnElement="flow_NotAsset">
+        <di:waypoint x="375" y="285"/>
+        <di:waypoint x="375" y="190"/>
+        <di:waypoint x="450" y="190"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="385" y="235" width="20" height="14"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_RequestToCreateMaterialBOM_edge" bpmnElement="flow_RequestToCreateMaterialBOM">
+        <di:waypoint x="570" y="190"/>
+        <di:waypoint x="620" y="190"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_IsAsset_edge" bpmnElement="flow_IsAsset">
+        <di:waypoint x="375" y="335"/>
+        <di:waypoint x="375" y="430"/>
+        <di:waypoint x="620" y="430"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="385" y="380" width="25" height="14"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_MaterialBOMToMerge_edge" bpmnElement="flow_MaterialBOMToMerge">
+        <di:waypoint x="740" y="190"/>
+        <di:waypoint x="790" y="190"/>
+        <di:waypoint x="790" y="310"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_EquipmentBOMToMerge_edge" bpmnElement="flow_EquipmentBOMToMerge">
+        <di:waypoint x="740" y="430"/>
+        <di:waypoint x="790" y="430"/>
+        <di:waypoint x="790" y="310"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_MergeToMaterialCheck_edge" bpmnElement="flow_MergeToMaterialCheck">
+        <di:waypoint x="840" y="310"/>
+        <di:waypoint x="910" y="310"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_CheckToAvailableCheck_edge" bpmnElement="flow_CheckToAvailableCheck">
+        <di:waypoint x="1030" y="310"/>
+        <di:waypoint x="1080" y="310"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_NumberAvailable_edge" bpmnElement="flow_NumberAvailable">
+        <di:waypoint x="1105" y="285"/>
+        <di:waypoint x="1105" y="190"/>
+        <di:waypoint x="1180" y="190"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1115" y="235" width="25" height="14"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_NumberNotAvailable_edge" bpmnElement="flow_NumberNotAvailable">
+        <di:waypoint x="1105" y="335"/>
+        <di:waypoint x="1105" y="430"/>
+        <di:waypoint x="1180" y="430"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1115" y="380" width="20" height="14"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_RequestToReceivedNumbers_edge" bpmnElement="flow_RequestToReceivedNumbers">
+        <di:waypoint x="1300" y="430"/>
+        <di:waypoint x="1350" y="430"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_AvailableToMergeNumbers_edge" bpmnElement="flow_AvailableToMergeNumbers">
+        <di:waypoint x="1300" y="190"/>
+        <di:waypoint x="1520" y="190"/>
+        <di:waypoint x="1520" y="310"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_ReceivedToMergeNumbers_edge" bpmnElement="flow_ReceivedToMergeNumbers">
+        <di:waypoint x="1470" y="430"/>
+        <di:waypoint x="1520" y="430"/>
+        <di:waypoint x="1520" y="310"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_MergeNumbersToSend_edge" bpmnElement="flow_MergeNumbersToSend">
+        <di:waypoint x="1570" y="310"/>
+        <di:waypoint x="1620" y="310"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_SendToEnd_edge" bpmnElement="flow_SendToEnd">
+        <di:waypoint x="1740" y="310"/>
+        <di:waypoint x="1790" y="310"/>
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</semantic:definitions>

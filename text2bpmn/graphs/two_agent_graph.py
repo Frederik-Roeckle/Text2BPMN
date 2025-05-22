@@ -2,9 +2,10 @@ from langgraph.graph import StateGraph, MessagesState, START, END
 from agents import NormalAgent
 from config import get_model
 from agents import NormalAgent
+from langsmith import traceable
 
 
-
+@traceable
 def build_graph():
     """
     Build as graph that uses only one agent to create the output.
@@ -28,7 +29,8 @@ def build_graph():
 
     create_xml = NormalAgent(
         model=get_model(),
-        system_message="data/promts/create_xml_prompt.txt",
+        system_message="data/promts/create_xml_prompt_few.txt",
+        few_shot_examples="data/examples/five_shot_examples.json",
         step="xml"
     )
 
@@ -38,7 +40,7 @@ def build_graph():
 
     builder.add_edge(START, "extract")
     builder.add_edge("extract", "create_xml")
-    builder.add_edge("extract", END)
+    builder.add_edge("create_xml", END)
 
     return builder.compile()
 

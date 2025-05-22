@@ -1,0 +1,262 @@
+<?xml version="1.0" standalone="yes"?>
+<semantic:definitions id="definitions_bookLendingProcess"
+    targetNamespace="http://example.com/bpmn/bookLending"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:semantic="http://www.omg.org/spec/BPMN/20100524/MODEL"
+    xmlns:di="http://www.omg.org/spec/DD/20100524/DI"
+    xmlns:dc="http://www.omg.org/spec/DD/20100524/DC"
+    xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI">
+
+  <semantic:collaboration id="collab_bookLending">
+    <semantic:participant id="participant_studentPool" name="Book Lending Process" processRef="process_studentBookLending"/>
+  </semantic:collaboration>
+
+  <semantic:process id="process_studentBookLending" isExecutable="true">
+    <semantic:laneSet id="laneSet_student">
+      <semantic:lane id="lane_student" name="Student">
+        <semantic:flowNodeRef>start_lendingNeed</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_requestLending</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_receiveStatus</semantic:flowNodeRef>
+        <semantic:flowNodeRef>gw_bookAvailable</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_submitOrder</semantic:flowNodeRef>
+        <semantic:flowNodeRef>gw_loanDuration</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_requestHold</semantic:flowNodeRef>
+        <semantic:flowNodeRef>timer_waitTwoWeeks</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_receiveAvailability</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_getBook</semantic:flowNodeRef>
+        <semantic:flowNodeRef>end_bookLent</semantic:flowNodeRef>
+        <semantic:flowNodeRef>end_requestCancelled</semantic:flowNodeRef>
+      </semantic:lane>
+    </semantic:laneSet>
+
+    <semantic:startEvent id="start_lendingNeed" name="Book Lending Need Identified">
+      <semantic:outgoing>flow_start_to_requestLending</semantic:outgoing>
+    </semantic:startEvent>
+
+    <semantic:task id="task_requestLending" name="Request Book Lending">
+      <semantic:incoming>flow_start_to_requestLending</semantic:incoming>
+      <semantic:outgoing>flow_requestLending_to_receiveStatus</semantic:outgoing>
+    </semantic:task>
+
+    <semantic:task id="task_receiveStatus" name="Receive Book Status Reply">
+      <semantic:incoming>flow_requestLending_to_receiveStatus</semantic:incoming>
+      <semantic:outgoing>flow_receiveStatus_to_gwBookAvailable</semantic:outgoing>
+    </semantic:task>
+
+    <semantic:exclusiveGateway id="gw_bookAvailable" name="Book Available?">
+      <semantic:incoming>flow_receiveStatus_to_gwBookAvailable</semantic:incoming>
+      <semantic:outgoing>flow_gwBookAvailable_to_submitOrder</semantic:outgoing>
+      <semantic:outgoing>flow_gwBookAvailable_to_gwLoanDuration</semantic:outgoing>
+    </semantic:exclusiveGateway>
+
+    <semantic:task id="task_submitOrder" name="Submit Lending Order">
+      <semantic:incoming>flow_gwBookAvailable_to_submitOrder</semantic:incoming>
+      <semantic:outgoing>flow_submitOrder_to_endBookLent</semantic:outgoing>
+    </semantic:task>
+
+    <semantic:exclusiveGateway id="gw_loanDuration" name="Evaluate Loan Duration">
+      <semantic:incoming>flow_gwBookAvailable_to_gwLoanDuration</semantic:incoming>
+      <semantic:outgoing>flow_gwLoanDuration_to_endCancelled</semantic:outgoing>
+      <semantic:outgoing>flow_gwLoanDuration_to_requestHold</semantic:outgoing>
+    </semantic:exclusiveGateway>
+
+    <semantic:task id="task_requestHold" name="Request to Hold Book">
+      <semantic:incoming>flow_gwLoanDuration_to_requestHold</semantic:incoming>
+      <semantic:outgoing>flow_requestHold_to_timerWait</semantic:outgoing>
+    </semantic:task>
+
+    <semantic:intermediateCatchEvent id="timer_waitTwoWeeks" name="Wait 2 Weeks">
+      <semantic:incoming>flow_requestHold_to_timerWait</semantic:incoming>
+      <semantic:outgoing>flow_timerWait_to_receiveAvailability</semantic:outgoing>
+      <semantic:timerEventDefinition>
+        <semantic:timeDuration xsi:type="semantic:tFormalExpression">P14D</semantic:timeDuration>
+      </semantic:timerEventDefinition>
+    </semantic:intermediateCatchEvent>
+
+    <semantic:task id="task_receiveAvailability" name="Receive Book Availability Update">
+      <semantic:incoming>flow_timerWait_to_receiveAvailability</semantic:incoming>
+      <semantic:outgoing>flow_receiveAvailability_to_getBook</semantic:outgoing>
+    </semantic:task>
+
+    <semantic:task id="task_getBook" name="Get Book">
+      <semantic:incoming>flow_receiveAvailability_to_getBook</semantic:incoming>
+      <semantic:outgoing>flow_getBook_to_endBookLent</semantic:outgoing>
+    </semantic:task>
+
+    <semantic:endEvent id="end_bookLent" name="Book Lent">
+      <semantic:incoming>flow_submitOrder_to_endBookLent</semantic:incoming>
+      <semantic:incoming>flow_getBook_to_endBookLent</semantic:incoming>
+    </semantic:endEvent>
+
+    <semantic:endEvent id="end_requestCancelled" name="Request Cancelled">
+      <semantic:incoming>flow_gwLoanDuration_to_endCancelled</semantic:incoming>
+    </semantic:endEvent>
+
+    <semantic:sequenceFlow id="flow_start_to_requestLending" sourceRef="start_lendingNeed" targetRef="task_requestLending"/>
+    <semantic:sequenceFlow id="flow_requestLending_to_receiveStatus" sourceRef="task_requestLending" targetRef="task_receiveStatus"/>
+    <semantic:sequenceFlow id="flow_receiveStatus_to_gwBookAvailable" sourceRef="task_receiveStatus" targetRef="gw_bookAvailable"/>
+    <semantic:sequenceFlow id="flow_gwBookAvailable_to_submitOrder" name="Available" sourceRef="gw_bookAvailable" targetRef="task_submitOrder"/>
+    <semantic:sequenceFlow id="flow_submitOrder_to_endBookLent" sourceRef="task_submitOrder" targetRef="end_bookLent"/>
+    <semantic:sequenceFlow id="flow_gwBookAvailable_to_gwLoanDuration" name="Unavailable/On Loan" sourceRef="gw_bookAvailable" targetRef="gw_loanDuration"/>
+    <semantic:sequenceFlow id="flow_gwLoanDuration_to_endCancelled" name="On Loan for 1 Month" sourceRef="gw_loanDuration" targetRef="end_requestCancelled"/>
+    <semantic:sequenceFlow id="flow_gwLoanDuration_to_requestHold" name="On Loan for 2 Weeks" sourceRef="gw_loanDuration" targetRef="task_requestHold"/>
+    <semantic:sequenceFlow id="flow_requestHold_to_timerWait" sourceRef="task_requestHold" targetRef="timer_waitTwoWeeks"/>
+    <semantic:sequenceFlow id="flow_timerWait_to_receiveAvailability" sourceRef="timer_waitTwoWeeks" targetRef="task_receiveAvailability"/>
+    <semantic:sequenceFlow id="flow_receiveAvailability_to_getBook" sourceRef="task_receiveAvailability" targetRef="task_getBook"/>
+    <semantic:sequenceFlow id="flow_getBook_to_endBookLent" sourceRef="task_getBook" targetRef="end_bookLent"/>
+  </semantic:process>
+
+  <bpmndi:BPMNDiagram id="BPMNDiagram_bookLendingProcess">
+    <bpmndi:BPMNPlane bpmnElement="collab_bookLending">
+      <bpmndi:BPMNShape id="participant_studentPool_shape" bpmnElement="participant_studentPool" isHorizontal="true">
+        <dc:Bounds x="20" y="20" width="1550" height="430"/> 
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="lane_student_shape" bpmnElement="lane_student" isHorizontal="true">
+        <dc:Bounds x="50" y="20" width="1520" height="430"/>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="start_lendingNeed_shape" bpmnElement="start_lendingNeed">
+        <dc:Bounds x="100" y="182" width="36" height="36"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="70" y="223" width="96" height="40"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="task_requestLending_shape" bpmnElement="task_requestLending">
+        <dc:Bounds x="200" y="160" width="100" height="80"/>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="task_receiveStatus_shape" bpmnElement="task_receiveStatus">
+        <dc:Bounds x="370" y="160" width="100" height="80"/>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="gw_bookAvailable_shape" bpmnElement="gw_bookAvailable" isMarkerVisible="true">
+        <dc:Bounds x="540" y="175" width="50" height="50"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="520" y="230" width="90" height="14"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="task_submitOrder_shape" bpmnElement="task_submitOrder">
+        <dc:Bounds x="700" y="80" width="100" height="80"/>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="gw_loanDuration_shape" bpmnElement="gw_loanDuration" isMarkerVisible="true">
+        <dc:Bounds x="700" y="270" width="50" height="50"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="680" y="325" width="90" height="28"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="task_requestHold_shape" bpmnElement="task_requestHold">
+        <dc:Bounds x="850" y="255" width="100" height="80"/>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="timer_waitTwoWeeks_shape" bpmnElement="timer_waitTwoWeeks">
+        <dc:Bounds x="1020" y="277" width="36" height="36"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1000" y="318" width="76" height="14"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="task_receiveAvailability_shape" bpmnElement="task_receiveAvailability">
+        <dc:Bounds x="1120" y="255" width="100" height="80"/>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="task_getBook_shape" bpmnElement="task_getBook">
+        <dc:Bounds x="1290" y="255" width="100" height="80"/>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="end_bookLent_shape" bpmnElement="end_bookLent">
+        <dc:Bounds x="1460" y="182" width="36" height="36"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1440" y="223" width="76" height="14"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="end_requestCancelled_shape" bpmnElement="end_requestCancelled">
+        <dc:Bounds x="850" y="350" width="36" height="36"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="830" y="391" width="76" height="28"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNEdge id="flow_start_to_requestLending_edge" bpmnElement="flow_start_to_requestLending">
+        <di:waypoint x="136" y="200"/>
+        <di:waypoint x="200" y="200"/>
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="flow_requestLending_to_receiveStatus_edge" bpmnElement="flow_requestLending_to_receiveStatus">
+        <di:waypoint x="300" y="200"/>
+        <di:waypoint x="370" y="200"/>
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="flow_receiveStatus_to_gwBookAvailable_edge" bpmnElement="flow_receiveStatus_to_gwBookAvailable">
+        <di:waypoint x="470" y="200"/>
+        <di:waypoint x="540" y="200"/>
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="flow_gwBookAvailable_to_submitOrder_edge" bpmnElement="flow_gwBookAvailable_to_submitOrder">
+        <di:waypoint x="565" y="175"/>
+        <di:waypoint x="565" y="120"/>
+        <di:waypoint x="700" y="120"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="570" y="145" width="50" height="14"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="flow_submitOrder_to_endBookLent_edge" bpmnElement="flow_submitOrder_to_endBookLent">
+        <di:waypoint x="800" y="120"/>
+        <di:waypoint x="1478" y="120"/>
+        <di:waypoint x="1478" y="182"/> 
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="flow_gwBookAvailable_to_gwLoanDuration_edge" bpmnElement="flow_gwBookAvailable_to_gwLoanDuration">
+        <di:waypoint x="565" y="225"/>
+        <di:waypoint x="565" y="295"/>
+        <di:waypoint x="700" y="295"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="570" y="255" width="110" height="28"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="flow_gwLoanDuration_to_endCancelled_edge" bpmnElement="flow_gwLoanDuration_to_endCancelled">
+        <di:waypoint x="725" y="320"/>
+        <di:waypoint x="725" y="368"/>
+        <di:waypoint x="850" y="368"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="730" y="340" width="80" height="28"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="flow_gwLoanDuration_to_requestHold_edge" bpmnElement="flow_gwLoanDuration_to_requestHold">
+        <di:waypoint x="750" y="295"/>
+        <di:waypoint x="850" y="295"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="760" y="275" width="80" height="28"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="flow_requestHold_to_timerWait_edge" bpmnElement="flow_requestHold_to_timerWait">
+        <di:waypoint x="950" y="295"/>
+        <di:waypoint x="1020" y="295"/>
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="flow_timerWait_to_receiveAvailability_edge" bpmnElement="flow_timerWait_to_receiveAvailability">
+        <di:waypoint x="1056" y="295"/>
+        <di:waypoint x="1120" y="295"/>
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="flow_receiveAvailability_to_getBook_edge" bpmnElement="flow_receiveAvailability_to_getBook">
+        <di:waypoint x="1220" y="295"/>
+        <di:waypoint x="1290" y="295"/>
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="flow_getBook_to_endBookLent_edge" bpmnElement="flow_getBook_to_endBookLent">
+        <di:waypoint x="1390" y="295"/>
+        <di:waypoint x="1478" y="295"/>
+        <di:waypoint x="1478" y="218"/>
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</semantic:definitions>

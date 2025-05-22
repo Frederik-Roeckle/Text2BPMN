@@ -1,0 +1,707 @@
+xml
+<?xml version="1.0" standalone="yes"?>
+<semantic:definitions id="MarketingCampaignProcess"
+    targetNamespace="http://example.com/bpmn/marketing-campaign"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:semantic="http://www.omg.org/spec/BPMN/20100524/MODEL"
+    xmlns:di="http://www.omg.org/spec/DD/20100524/DI"
+    xmlns:dc="http://www.omg.org/spec/DD/20100524/DC"
+    xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI">
+
+  <semantic:collaboration id="collab_marketing_campaign">
+    <semantic:participant id="participant_marketing_campaign_management" name="Marketing Campaign Management" processRef="marketingCampaignProcess"/>
+  </semantic:collaboration>
+
+  <semantic:process id="marketingCampaignProcess" isExecutable="true">
+    <semantic:laneSet id="laneSet_marketing_campaign">
+      <semantic:lane id="lane_marketing_manager" name="Marketing Manager">
+        <semantic:flowNodeRef>task_1_define_plan</semantic:flowNodeRef>
+      </semantic:lane>
+      <semantic:lane id="lane_marketing_sales_department" name="Marketing &amp; Sales Department">
+        <semantic:flowNodeRef>start_event_request_received</semantic:flowNodeRef>
+        <semantic:flowNodeRef>gateway_parallel_split_details</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_2_define_goals</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_3_set_budget</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_4_determine_audience</semantic:flowNodeRef>
+        <semantic:flowNodeRef>gateway_parallel_join_details</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_5_plan_measures</semantic:flowNodeRef>
+        <semantic:flowNodeRef>gateway_exclusive_choose_measure</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_6_trade_fairs</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_7_publish_internet</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_8_online_marketing</semantic:flowNodeRef>
+        <semantic:flowNodeRef>gateway_exclusive_join_measure</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_9_evaluate_activities</semantic:flowNodeRef>
+        <semantic:flowNodeRef>end_event_activities_evaluated</semantic:flowNodeRef>
+      </semantic:lane>
+    </semantic:laneSet>
+
+    <semantic:startEvent id="start_event_request_received" name="Marketing Campaign Request Received">
+      <semantic:outgoing>flow_start_to_define_plan</semantic:outgoing>
+    </semantic:startEvent>
+
+    <semantic:task id="task_1_define_plan" name="Define Marketing Plan">
+      <semantic:incoming>flow_start_to_define_plan</semantic:incoming>
+      <semantic:outgoing>flow_define_plan_to_split_details</semantic:outgoing>
+    </semantic:task>
+
+    <semantic:parallelGateway id="gateway_parallel_split_details" name="Split for Campaign Details Definition">
+      <semantic:incoming>flow_define_plan_to_split_details</semantic:incoming>
+      <semantic:outgoing>flow_split_to_define_goals</semantic:outgoing>
+      <semantic:outgoing>flow_split_to_set_budget</semantic:outgoing>
+      <semantic:outgoing>flow_split_to_determine_audience</semantic:outgoing>
+    </semantic:parallelGateway>
+
+    <semantic:task id="task_2_define_goals" name="Define Campaign Goals">
+      <semantic:incoming>flow_split_to_define_goals</semantic:incoming>
+      <semantic:outgoing>flow_define_goals_to_join_details</semantic:outgoing>
+    </semantic:task>
+
+    <semantic:task id="task_3_set_budget" name="Set Budget">
+      <semantic:incoming>flow_split_to_set_budget</semantic:incoming>
+      <semantic:outgoing>flow_set_budget_to_join_details</semantic:outgoing>
+    </semantic:task>
+
+    <semantic:task id="task_4_determine_audience" name="Determine Target Audience">
+      <semantic:incoming>flow_split_to_determine_audience</semantic:incoming>
+      <semantic:outgoing>flow_determine_audience_to_join_details</semantic:outgoing>
+    </semantic:task>
+
+    <semantic:parallelGateway id="gateway_parallel_join_details" name="Join Campaign Details Defined">
+      <semantic:incoming>flow_define_goals_to_join_details</semantic:incoming>
+      <semantic:incoming>flow_set_budget_to_join_details</semantic:incoming>
+      <semantic:incoming>flow_determine_audience_to_join_details</semantic:incoming>
+      <semantic:outgoing>flow_join_details_to_plan_measures</semantic:outgoing>
+    </semantic:parallelGateway>
+
+    <semantic:task id="task_5_plan_measures" name="Plan Campaign Measures">
+      <semantic:incoming>flow_join_details_to_plan_measures</semantic:incoming>
+      <semantic:outgoing>flow_plan_measures_to_choose_measure</semantic:outgoing>
+    </semantic:task>
+
+    <semantic:exclusiveGateway id="gateway_exclusive_choose_measure" name="Choose Campaign Measure">
+      <semantic:incoming>flow_plan_measures_to_choose_measure</semantic:incoming>
+      <semantic:outgoing>flow_choose_to_trade_fairs</semantic:outgoing>
+      <semantic:outgoing>flow_choose_to_publish_internet</semantic:outgoing>
+      <semantic:outgoing>flow_choose_to_online_marketing</semantic:outgoing>
+    </semantic:exclusiveGateway>
+
+    <semantic:task id="task_6_trade_fairs" name="Introduce Products on Trade Fairs">
+      <semantic:incoming>flow_choose_to_trade_fairs</semantic:incoming>
+      <semantic:outgoing>flow_trade_fairs_to_join_measure</semantic:outgoing>
+    </semantic:task>
+
+    <semantic:task id="task_7_publish_internet" name="Publish Products on the Internet">
+      <semantic:incoming>flow_choose_to_publish_internet</semantic:incoming>
+      <semantic:outgoing>flow_publish_internet_to_join_measure</semantic:outgoing>
+    </semantic:task>
+
+    <semantic:task id="task_8_online_marketing" name="Introduce Products in Online-Marketing">
+      <semantic:incoming>flow_choose_to_online_marketing</semantic:incoming>
+      <semantic:outgoing>flow_online_marketing_to_join_measure</semantic:outgoing>
+    </semantic:task>
+
+    <semantic:exclusiveGateway id="gateway_exclusive_join_measure" name="Join Chosen Measure">
+      <semantic:incoming>flow_trade_fairs_to_join_measure</semantic:incoming>
+      <semantic:incoming>flow_publish_internet_to_join_measure</semantic:incoming>
+      <semantic:incoming>flow_online_marketing_to_join_measure</semantic:incoming>
+      <semantic:outgoing>flow_join_measure_to_evaluate_activities</semantic:outgoing>
+    </semantic:exclusiveGateway>
+
+    <semantic:task id="task_9_evaluate_activities" name="Evaluate Marketing Activities">
+      <semantic:incoming>flow_join_measure_to_evaluate_activities</semantic:incoming>
+      <semantic:outgoing>flow_evaluate_activities_to_end</semantic:outgoing>
+    </semantic:task>
+
+    <semantic:endEvent id="end_event_activities_evaluated" name="Marketing Activities Successfully Evaluated">
+      <semantic:incoming>flow_evaluate_activities_to_end</semantic:incoming>
+    </semantic:endEvent>
+
+    <semantic:sequenceFlow id="flow_start_to_define_plan" sourceRef="start_event_request_received" targetRef="task_1_define_plan"/>
+    <semantic:sequenceFlow id="flow_define_plan_to_split_details" sourceRef="task_1_define_plan" targetRef="gateway_parallel_split_details"/>
+    <semantic:sequenceFlow id="flow_split_to_define_goals" sourceRef="gateway_parallel_split_details" targetRef="task_2_define_goals"/>
+    <semantic:sequenceFlow id="flow_split_to_set_budget" sourceRef="gateway_parallel_split_details" targetRef="task_3_set_budget"/>
+    <semantic:sequenceFlow id="flow_split_to_determine_audience" sourceRef="gateway_parallel_split_details" targetRef="task_4_determine_audience"/>
+    <semantic:sequenceFlow id="flow_define_goals_to_join_details" sourceRef="task_2_define_goals" targetRef="gateway_parallel_join_details"/>
+    <semantic:sequenceFlow id="flow_set_budget_to_join_details" sourceRef="task_3_set_budget" targetRef="gateway_parallel_join_details"/>
+    <semantic:sequenceFlow id="flow_determine_audience_to_join_details" sourceRef="task_4_determine_audience" targetRef="gateway_parallel_join_details"/>
+    <semantic:sequenceFlow id="flow_join_details_to_plan_measures" sourceRef="gateway_parallel_join_details" targetRef="task_5_plan_measures"/>
+    <semantic:sequenceFlow id="flow_plan_measures_to_choose_measure" sourceRef="task_5_plan_measures" targetRef="gateway_exclusive_choose_measure"/>
+    <semantic:sequenceFlow id="flow_choose_to_trade_fairs" name="Choose Trade Fairs" sourceRef="gateway_exclusive_choose_measure" targetRef="task_6_trade_fairs"/>
+    <semantic:sequenceFlow id="flow_choose_to_publish_internet" name="Choose Internet Publishing" sourceRef="gateway_exclusive_choose_measure" targetRef="task_7_publish_internet"/>
+    <semantic:sequenceFlow id="flow_choose_to_online_marketing" name="Choose Online-Marketing" sourceRef="gateway_exclusive_choose_measure" targetRef="task_8_online_marketing"/>
+    <semantic:sequenceFlow id="flow_trade_fairs_to_join_measure" sourceRef="task_6_trade_fairs" targetRef="gateway_exclusive_join_measure"/>
+    <semantic:sequenceFlow id="flow_publish_internet_to_join_measure" sourceRef="task_7_publish_internet" targetRef="gateway_exclusive_join_measure"/>
+    <semantic:sequenceFlow id="flow_online_marketing_to_join_measure" sourceRef="task_8_online_marketing" targetRef="gateway_exclusive_join_measure"/>
+    <semantic:sequenceFlow id="flow_join_measure_to_evaluate_activities" sourceRef="gateway_exclusive_join_measure" targetRef="task_9_evaluate_activities"/>
+    <semantic:sequenceFlow id="flow_evaluate_activities_to_end" sourceRef="task_9_evaluate_activities" targetRef="end_event_activities_evaluated"/>
+
+  </semantic:process>
+
+  <bpmndi:BPMNDiagram id="BPMNDiagram_marketing_campaign" name="Marketing Campaign Diagram" resolution="96.0">
+    <bpmndi:BPMNPlane bpmnElement="collab_marketing_campaign">
+      <bpmndi:BPMNShape id="participant_marketing_campaign_management_shape" bpmnElement="participant_marketing_campaign_management" isHorizontal="true">
+        <dc:Bounds x="20" y="20" width="1300" height="650"/>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="lane_marketing_manager_shape" bpmnElement="lane_marketing_manager" isHorizontal="true">
+        <dc:Bounds x="50" y="20" width="1270" height="150"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="lane_marketing_sales_department_shape" bpmnElement="lane_marketing_sales_department" isHorizontal="true">
+        <dc:Bounds x="50" y="170" width="1270" height="500"/>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="start_event_request_received_shape" bpmnElement="start_event_request_received">
+        <dc:Bounds x="100" y="200" width="36" height="36"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="70" y="240" width="96" height="40"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="task_1_define_plan_shape" bpmnElement="task_1_define_plan">
+        <dc:Bounds x="100" y="70" width="100" height="60"/>
+         <bpmndi:BPMNLabel>
+          <dc:Bounds x="105" y="75" width="90" height="50"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="gateway_parallel_split_details_shape" bpmnElement="gateway_parallel_split_details" isMarkerVisible="true">
+        <dc:Bounds x="280" y="200" width="50" height="50"/>
+         <bpmndi:BPMNLabel>
+          <dc:Bounds x="250" y="255" width="110" height="40"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="task_2_define_goals_shape" bpmnElement="task_2_define_goals">
+        <dc:Bounds x="400" y="200" width="100" height="60"/>
+         <bpmndi:BPMNLabel>
+          <dc:Bounds x="405" y="205" width="90" height="50"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="task_3_set_budget_shape" bpmnElement="task_3_set_budget">
+        <dc:Bounds x="400" y="300" width="100" height="60"/>
+         <bpmndi:BPMNLabel>
+          <dc:Bounds x="405" y="305" width="90" height="50"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="task_4_determine_audience_shape" bpmnElement="task_4_determine_audience">
+        <dc:Bounds x="400" y="400" width="100" height="60"/>
+         <bpmndi:BPMNLabel>
+          <dc:Bounds x="405" y="405" width="90" height="50"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="gateway_parallel_join_details_shape" bpmnElement="gateway_parallel_join_details" isMarkerVisible="true">
+        <dc:Bounds x="570" y="300" width="50" height="50"/>
+         <bpmndi:BPMNLabel>
+          <dc:Bounds x="540" y="355" width="110" height="40"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="task_5_plan_measures_shape" bpmnElement="task_5_plan_measures">
+        <dc:Bounds x="690" y="300" width="100" height="60"/>
+         <bpmndi:BPMNLabel>
+          <dc:Bounds x="695" y="305" width="90" height="50"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="gateway_exclusive_choose_measure_shape" bpmnElement="gateway_exclusive_choose_measure" isMarkerVisible="true">
+        <dc:Bounds x="860" y="300" width="50" height="50"/>
+         <bpmndi:BPMNLabel>
+          <dc:Bounds x="830" y="355" width="110" height="40"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="task_6_trade_fairs_shape" bpmnElement="task_6_trade_fairs">
+        <dc:Bounds x="980" y="200" width="100" height="60"/>
+         <bpmndi:BPMNLabel>
+          <dc:Bounds x="985" y="205" width="90" height="50"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="task_7_publish_internet_shape" bpmnElement="task_7_publish_internet">
+        <dc:Bounds x="980" y="300" width="100" height="60"/>
+         <bpmndi:BPMNLabel>
+          <dc:Bounds x="985" y="305" width="90" height="50"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="task_8_online_marketing_shape" bpmnElement="task_8_online_marketing">
+        <dc:Bounds x="980" y="400" width="100" height="60"/>
+         <bpmndi:BPMNLabel>
+          <dc:Bounds x="985" y="405" width="90" height="50"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="gateway_exclusive_join_measure_shape" bpmnElement="gateway_exclusive_join_measure" isMarkerVisible="true">
+        <dc:Bounds x="1150" y="300" width="50" height="50"/>
+         <bpmndi:BPMNLabel>
+          <dc:Bounds x="1120" y="355" width="110" height="40"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="task_9_evaluate_activities_shape" bpmnElement="task_9_evaluate_activities">
+        <dc:Bounds x="1000" y="500" width="100" height="60"/>
+         <bpmndi:BPMNLabel>
+          <dc:Bounds x="1005" y="505" width="90" height="50"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="end_event_activities_evaluated_shape" bpmnElement="end_event_activities_evaluated">
+        <dc:Bounds x="1032" y="600" width="36" height="36"/>
+         <bpmndi:BPMNLabel>
+          <dc:Bounds x="1002" y="640" width="96" height="40"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNEdge id="flow_start_to_define_plan_edge" bpmnElement="flow_start_to_define_plan">
+        <di:waypoint x="118" y="200"/>
+        <di:waypoint x="118" y="130"/>
+        <di:waypoint x="150" y="130"/>
+        <di:waypoint x="150" y="100"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_define_plan_to_split_details_edge" bpmnElement="flow_define_plan_to_split_details">
+        <di:waypoint x="150" y="100"/>
+        <di:waypoint x="150" y="225"/>
+        <di:waypoint x="280" y="225"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_split_to_define_goals_edge" bpmnElement="flow_split_to_define_goals">
+        <di:waypoint x="330" y="225"/>
+        <di:waypoint x="400" y="230"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_split_to_set_budget_edge" bpmnElement="flow_split_to_set_budget">
+        <di:waypoint x="305" y="250"/>
+        <di:waypoint x="305" y="330"/>
+        <di:waypoint x="400" y="330"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_split_to_determine_audience_edge" bpmnElement="flow_split_to_determine_audience">
+        <di:waypoint x="305" y="250"/>
+        <di:waypoint x="305" y="430"/>
+        <di:waypoint x="400" y="430"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_define_goals_to_join_details_edge" bpmnElement="flow_define_goals_to_join_details">
+        <di:waypoint x="500" y="230"/>
+        <di:waypoint x="595" y="230"/>
+        <di:waypoint x="595" y="300"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_set_budget_to_join_details_edge" bpmnElement="flow_set_budget_to_join_details">
+        <di:waypoint x="500" y="330"/>
+        <di:waypoint x="570" y="325"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_determine_audience_to_join_details_edge" bpmnElement="flow_determine_audience_to_join_details">
+        <di:waypoint x="500" y="430"/>
+        <di:waypoint x="595" y="430"/>
+        <di:waypoint x="595" y="350"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_join_details_to_plan_measures_edge" bpmnElement="flow_join_details_to_plan_measures">
+        <di:waypoint x="620" y="325"/>
+        <di:waypoint x="690" y="330"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_plan_measures_to_choose_measure_edge" bpmnElement="flow_plan_measures_to_choose_measure">
+        <di:waypoint x="790" y="330"/>
+        <di:waypoint x="860" y="325"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_choose_to_trade_fairs_edge" bpmnElement="flow_choose_to_trade_fairs">
+        <di:waypoint x="885" y="300"/>
+        <di:waypoint x="885" y="230"/>
+        <di:waypoint x="980" y="230"/>
+         <bpmndi:BPMNLabel>
+          <dc:Bounds x="890" y="200" width="80" height="25"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_choose_to_publish_internet_edge" bpmnElement="flow_choose_to_publish_internet">
+        <di:waypoint x="910" y="325"/>
+        <di:waypoint x="980" y="330"/>
+         <bpmndi:BPMNLabel>
+          <dc:Bounds x="915" y="335" width="80" height="40"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_choose_to_online_marketing_edge" bpmnElement="flow_choose_to_online_marketing">
+        <di:waypoint x="885" y="350"/>
+        <di:waypoint x="885" y="430"/>
+        <di:waypoint x="980" y="430"/>
+         <bpmndi:BPMNLabel>
+          <dc:Bounds x="890" y="435" width="80" height="40"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_trade_fairs_to_join_measure_edge" bpmnElement="flow_trade_fairs_to_join_measure">
+        <di:waypoint x="1080" y="230"/>
+        <di:waypoint x="1175" y="230"/>
+        <di:waypoint x="1175" y="300"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_publish_internet_to_join_measure_edge" bpmnElement="flow_publish_internet_to_join_measure">
+        <di:waypoint x="1080" y="330"/>
+        <di:waypoint x="1150" y="325"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_online_marketing_to_join_measure_edge" bpmnElement="flow_online_marketing_to_join_measure">
+        <di:waypoint x="1080" y="430"/>
+        <di:waypoint x="1175" y="430"/>
+        <di:waypoint x="1175" y="350"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_join_measure_to_evaluate_activities_edge" bpmnElement="flow_join_measure_to_evaluate_activities">
+        <di:waypoint x="1175" y="350"/>
+        <di:waypoint x="1175" y="530"/>
+        <di:waypoint x="1100" y="530"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_evaluate_activities_to_end_edge" bpmnElement="flow_evaluate_activities_to_end">
+        <di:waypoint x="1050" y="560"/>
+        <di:waypoint x="1050" y="600"/>
+      </bpmndi:BPMNEdge>
+
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</semantic:definitions>
+```<?xml version="1.0" standalone="yes"?>
+<semantic:definitions id="MarketingCampaignProcess"
+    targetNamespace="http://example.com/bpmn/marketing-campaign"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:semantic="http://www.omg.org/spec/BPMN/20100524/MODEL"
+    xmlns:di="http://www.omg.org/spec/DD/20100524/DI"
+    xmlns:dc="http://www.omg.org/spec/DD/20100524/DC"
+    xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI">
+
+  <semantic:collaboration id="collab_marketing_campaign">
+    <semantic:participant id="participant_marketing_campaign_management" name="Marketing Campaign Management" processRef="marketingCampaignProcess"/>
+  </semantic:collaboration>
+
+  <semantic:process id="marketingCampaignProcess" isExecutable="true">
+    <semantic:laneSet id="laneSet_marketing_campaign">
+      <semantic:lane id="lane_marketing_manager" name="Marketing Manager">
+        <semantic:flowNodeRef>task_1_define_plan</semantic:flowNodeRef>
+      </semantic:lane>
+      <semantic:lane id="lane_marketing_sales_department" name="Marketing &amp; Sales Department">
+        <semantic:flowNodeRef>start_event_request_received</semantic:flowNodeRef>
+        <semantic:flowNodeRef>gateway_parallel_split_details</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_2_define_goals</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_3_set_budget</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_4_determine_audience</semantic:flowNodeRef>
+        <semantic:flowNodeRef>gateway_parallel_join_details</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_5_plan_measures</semantic:flowNodeRef>
+        <semantic:flowNodeRef>gateway_exclusive_choose_measure</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_6_trade_fairs</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_7_publish_internet</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_8_online_marketing</semantic:flowNodeRef>
+        <semantic:flowNodeRef>gateway_exclusive_join_measure</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_9_evaluate_activities</semantic:flowNodeRef>
+        <semantic:flowNodeRef>end_event_activities_evaluated</semantic:flowNodeRef>
+      </semantic:lane>
+    </semantic:laneSet>
+
+    <semantic:startEvent id="start_event_request_received" name="Marketing Campaign Request Received">
+      <semantic:outgoing>flow_start_to_define_plan</semantic:outgoing>
+    </semantic:startEvent>
+
+    <semantic:task id="task_1_define_plan" name="Define Marketing Plan">
+      <semantic:incoming>flow_start_to_define_plan</semantic:incoming>
+      <semantic:outgoing>flow_define_plan_to_split_details</semantic:outgoing>
+    </semantic:task>
+
+    <semantic:parallelGateway id="gateway_parallel_split_details" name="Split for Campaign Details Definition">
+      <semantic:incoming>flow_define_plan_to_split_details</semantic:incoming>
+      <semantic:outgoing>flow_split_to_define_goals</semantic:outgoing>
+      <semantic:outgoing>flow_split_to_set_budget</semantic:outgoing>
+      <semantic:outgoing>flow_split_to_determine_audience</semantic:outgoing>
+    </semantic:parallelGateway>
+
+    <semantic:task id="task_2_define_goals" name="Define Campaign Goals">
+      <semantic:incoming>flow_split_to_define_goals</semantic:incoming>
+      <semantic:outgoing>flow_define_goals_to_join_details</semantic:outgoing>
+    </semantic:task>
+
+    <semantic:task id="task_3_set_budget" name="Set Budget">
+      <semantic:incoming>flow_split_to_set_budget</semantic:incoming>
+      <semantic:outgoing>flow_set_budget_to_join_details</semantic:outgoing>
+    </semantic:task>
+
+    <semantic:task id="task_4_determine_audience" name="Determine Target Audience">
+      <semantic:incoming>flow_split_to_determine_audience</semantic:incoming>
+      <semantic:outgoing>flow_determine_audience_to_join_details</semantic:outgoing>
+    </semantic:task>
+
+    <semantic:parallelGateway id="gateway_parallel_join_details" name="Join Campaign Details Defined">
+      <semantic:incoming>flow_define_goals_to_join_details</semantic:incoming>
+      <semantic:incoming>flow_set_budget_to_join_details</semantic:incoming>
+      <semantic:incoming>flow_determine_audience_to_join_details</semantic:incoming>
+      <semantic:outgoing>flow_join_details_to_plan_measures</semantic:outgoing>
+    </semantic:parallelGateway>
+
+    <semantic:task id="task_5_plan_measures" name="Plan Campaign Measures">
+      <semantic:incoming>flow_join_details_to_plan_measures</semantic:incoming>
+      <semantic:outgoing>flow_plan_measures_to_choose_measure</semantic:outgoing>
+    </semantic:task>
+
+    <semantic:exclusiveGateway id="gateway_exclusive_choose_measure" name="Choose Campaign Measure">
+      <semantic:incoming>flow_plan_measures_to_choose_measure</semantic:incoming>
+      <semantic:outgoing>flow_choose_to_trade_fairs</semantic:outgoing>
+      <semantic:outgoing>flow_choose_to_publish_internet</semantic:outgoing>
+      <semantic:outgoing>flow_choose_to_online_marketing</semantic:outgoing>
+    </semantic:exclusiveGateway>
+
+    <semantic:task id="task_6_trade_fairs" name="Introduce Products on Trade Fairs">
+      <semantic:incoming>flow_choose_to_trade_fairs</semantic:incoming>
+      <semantic:outgoing>flow_trade_fairs_to_join_measure</semantic:outgoing>
+    </semantic:task>
+
+    <semantic:task id="task_7_publish_internet" name="Publish Products on the Internet">
+      <semantic:incoming>flow_choose_to_publish_internet</semantic:incoming>
+      <semantic:outgoing>flow_publish_internet_to_join_measure</semantic:outgoing>
+    </semantic:task>
+
+    <semantic:task id="task_8_online_marketing" name="Introduce Products in Online-Marketing">
+      <semantic:incoming>flow_choose_to_online_marketing</semantic:incoming>
+      <semantic:outgoing>flow_online_marketing_to_join_measure</semantic:outgoing>
+    </semantic:task>
+
+    <semantic:exclusiveGateway id="gateway_exclusive_join_measure" name="Join Chosen Measure">
+      <semantic:incoming>flow_trade_fairs_to_join_measure</semantic:incoming>
+      <semantic:incoming>flow_publish_internet_to_join_measure</semantic:incoming>
+      <semantic:incoming>flow_online_marketing_to_join_measure</semantic:incoming>
+      <semantic:outgoing>flow_join_measure_to_evaluate_activities</semantic:outgoing>
+    </semantic:exclusiveGateway>
+
+    <semantic:task id="task_9_evaluate_activities" name="Evaluate Marketing Activities">
+      <semantic:incoming>flow_join_measure_to_evaluate_activities</semantic:incoming>
+      <semantic:outgoing>flow_evaluate_activities_to_end</semantic:outgoing>
+    </semantic:task>
+
+    <semantic:endEvent id="end_event_activities_evaluated" name="Marketing Activities Successfully Evaluated">
+      <semantic:incoming>flow_evaluate_activities_to_end</semantic:incoming>
+    </semantic:endEvent>
+
+    <semantic:sequenceFlow id="flow_start_to_define_plan" sourceRef="start_event_request_received" targetRef="task_1_define_plan"/>
+    <semantic:sequenceFlow id="flow_define_plan_to_split_details" sourceRef="task_1_define_plan" targetRef="gateway_parallel_split_details"/>
+    <semantic:sequenceFlow id="flow_split_to_define_goals" sourceRef="gateway_parallel_split_details" targetRef="task_2_define_goals"/>
+    <semantic:sequenceFlow id="flow_split_to_set_budget" sourceRef="gateway_parallel_split_details" targetRef="task_3_set_budget"/>
+    <semantic:sequenceFlow id="flow_split_to_determine_audience" sourceRef="gateway_parallel_split_details" targetRef="task_4_determine_audience"/>
+    <semantic:sequenceFlow id="flow_define_goals_to_join_details" sourceRef="task_2_define_goals" targetRef="gateway_parallel_join_details"/>
+    <semantic:sequenceFlow id="flow_set_budget_to_join_details" sourceRef="task_3_set_budget" targetRef="gateway_parallel_join_details"/>
+    <semantic:sequenceFlow id="flow_determine_audience_to_join_details" sourceRef="task_4_determine_audience" targetRef="gateway_parallel_join_details"/>
+    <semantic:sequenceFlow id="flow_join_details_to_plan_measures" sourceRef="gateway_parallel_join_details" targetRef="task_5_plan_measures"/>
+    <semantic:sequenceFlow id="flow_plan_measures_to_choose_measure" sourceRef="task_5_plan_measures" targetRef="gateway_exclusive_choose_measure"/>
+    <semantic:sequenceFlow id="flow_choose_to_trade_fairs" name="Choose Trade Fairs" sourceRef="gateway_exclusive_choose_measure" targetRef="task_6_trade_fairs"/>
+    <semantic:sequenceFlow id="flow_choose_to_publish_internet" name="Choose Internet Publishing" sourceRef="gateway_exclusive_choose_measure" targetRef="task_7_publish_internet"/>
+    <semantic:sequenceFlow id="flow_choose_to_online_marketing" name="Choose Online-Marketing" sourceRef="gateway_exclusive_choose_measure" targetRef="task_8_online_marketing"/>
+    <semantic:sequenceFlow id="flow_trade_fairs_to_join_measure" sourceRef="task_6_trade_fairs" targetRef="gateway_exclusive_join_measure"/>
+    <semantic:sequenceFlow id="flow_publish_internet_to_join_measure" sourceRef="task_7_publish_internet" targetRef="gateway_exclusive_join_measure"/>
+    <semantic:sequenceFlow id="flow_online_marketing_to_join_measure" sourceRef="task_8_online_marketing" targetRef="gateway_exclusive_join_measure"/>
+    <semantic:sequenceFlow id="flow_join_measure_to_evaluate_activities" sourceRef="gateway_exclusive_join_measure" targetRef="task_9_evaluate_activities"/>
+    <semantic:sequenceFlow id="flow_evaluate_activities_to_end" sourceRef="task_9_evaluate_activities" targetRef="end_event_activities_evaluated"/>
+
+  </semantic:process>
+
+  <bpmndi:BPMNDiagram id="BPMNDiagram_marketing_campaign" name="Marketing Campaign Diagram" resolution="96.0">
+    <bpmndi:BPMNPlane bpmnElement="collab_marketing_campaign">
+      <bpmndi:BPMNShape id="participant_marketing_campaign_management_shape" bpmnElement="participant_marketing_campaign_management" isHorizontal="true">
+        <dc:Bounds x="20" y="20" width="1300" height="650"/>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="lane_marketing_manager_shape" bpmnElement="lane_marketing_manager" isHorizontal="true">
+        <dc:Bounds x="50" y="20" width="1270" height="150"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="lane_marketing_sales_department_shape" bpmnElement="lane_marketing_sales_department" isHorizontal="true">
+        <dc:Bounds x="50" y="170" width="1270" height="500"/>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="start_event_request_received_shape" bpmnElement="start_event_request_received">
+        <dc:Bounds x="100" y="200" width="36" height="36"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="70" y="240" width="96" height="40"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="task_1_define_plan_shape" bpmnElement="task_1_define_plan">
+        <dc:Bounds x="100" y="70" width="100" height="60"/>
+         <bpmndi:BPMNLabel>
+          <dc:Bounds x="105" y="75" width="90" height="50"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="gateway_parallel_split_details_shape" bpmnElement="gateway_parallel_split_details" isMarkerVisible="true">
+        <dc:Bounds x="280" y="200" width="50" height="50"/>
+         <bpmndi:BPMNLabel>
+          <dc:Bounds x="250" y="255" width="110" height="40"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="task_2_define_goals_shape" bpmnElement="task_2_define_goals">
+        <dc:Bounds x="400" y="200" width="100" height="60"/>
+         <bpmndi:BPMNLabel>
+          <dc:Bounds x="405" y="205" width="90" height="50"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="task_3_set_budget_shape" bpmnElement="task_3_set_budget">
+        <dc:Bounds x="400" y="300" width="100" height="60"/>
+         <bpmndi:BPMNLabel>
+          <dc:Bounds x="405" y="305" width="90" height="50"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="task_4_determine_audience_shape" bpmnElement="task_4_determine_audience">
+        <dc:Bounds x="400" y="400" width="100" height="60"/>
+         <bpmndi:BPMNLabel>
+          <dc:Bounds x="405" y="405" width="90" height="50"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="gateway_parallel_join_details_shape" bpmnElement="gateway_parallel_join_details" isMarkerVisible="true">
+        <dc:Bounds x="570" y="300" width="50" height="50"/>
+         <bpmndi:BPMNLabel>
+          <dc:Bounds x="540" y="355" width="110" height="40"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="task_5_plan_measures_shape" bpmnElement="task_5_plan_measures">
+        <dc:Bounds x="690" y="300" width="100" height="60"/>
+         <bpmndi:BPMNLabel>
+          <dc:Bounds x="695" y="305" width="90" height="50"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="gateway_exclusive_choose_measure_shape" bpmnElement="gateway_exclusive_choose_measure" isMarkerVisible="true">
+        <dc:Bounds x="860" y="300" width="50" height="50"/>
+         <bpmndi:BPMNLabel>
+          <dc:Bounds x="830" y="355" width="110" height="40"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="task_6_trade_fairs_shape" bpmnElement="task_6_trade_fairs">
+        <dc:Bounds x="980" y="200" width="100" height="60"/>
+         <bpmndi:BPMNLabel>
+          <dc:Bounds x="985" y="205" width="90" height="50"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="task_7_publish_internet_shape" bpmnElement="task_7_publish_internet">
+        <dc:Bounds x="980" y="300" width="100" height="60"/>
+         <bpmndi:BPMNLabel>
+          <dc:Bounds x="985" y="305" width="90" height="50"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="task_8_online_marketing_shape" bpmnElement="task_8_online_marketing">
+        <dc:Bounds x="980" y="400" width="100" height="60"/>
+         <bpmndi:BPMNLabel>
+          <dc:Bounds x="985" y="405" width="90" height="50"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="gateway_exclusive_join_measure_shape" bpmnElement="gateway_exclusive_join_measure" isMarkerVisible="true">
+        <dc:Bounds x="1150" y="300" width="50" height="50"/>
+         <bpmndi:BPMNLabel>
+          <dc:Bounds x="1120" y="355" width="110" height="40"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="task_9_evaluate_activities_shape" bpmnElement="task_9_evaluate_activities">
+        <dc:Bounds x="1000" y="500" width="100" height="60"/>
+         <bpmndi:BPMNLabel>
+          <dc:Bounds x="1005" y="505" width="90" height="50"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="end_event_activities_evaluated_shape" bpmnElement="end_event_activities_evaluated">
+        <dc:Bounds x="1032" y="600" width="36" height="36"/>
+         <bpmndi:BPMNLabel>
+          <dc:Bounds x="1002" y="640" width="96" height="40"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNEdge id="flow_start_to_define_plan_edge" bpmnElement="flow_start_to_define_plan">
+        <di:waypoint x="118" y="200"/>
+        <di:waypoint x="118" y="130"/>
+        <di:waypoint x="150" y="130"/>
+        <di:waypoint x="150" y="100"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_define_plan_to_split_details_edge" bpmnElement="flow_define_plan_to_split_details">
+        <di:waypoint x="150" y="100"/>
+        <di:waypoint x="150" y="225"/>
+        <di:waypoint x="280" y="225"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_split_to_define_goals_edge" bpmnElement="flow_split_to_define_goals">
+        <di:waypoint x="330" y="225"/>
+        <di:waypoint x="400" y="230"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_split_to_set_budget_edge" bpmnElement="flow_split_to_set_budget">
+        <di:waypoint x="305" y="250"/>
+        <di:waypoint x="305" y="330"/>
+        <di:waypoint x="400" y="330"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_split_to_determine_audience_edge" bpmnElement="flow_split_to_determine_audience">
+        <di:waypoint x="305" y="250"/>
+        <di:waypoint x="305" y="430"/>
+        <di:waypoint x="400" y="430"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_define_goals_to_join_details_edge" bpmnElement="flow_define_goals_to_join_details">
+        <di:waypoint x="500" y="230"/>
+        <di:waypoint x="595" y="230"/>
+        <di:waypoint x="595" y="300"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_set_budget_to_join_details_edge" bpmnElement="flow_set_budget_to_join_details">
+        <di:waypoint x="500" y="330"/>
+        <di:waypoint x="570" y="325"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_determine_audience_to_join_details_edge" bpmnElement="flow_determine_audience_to_join_details">
+        <di:waypoint x="500" y="430"/>
+        <di:waypoint x="595" y="430"/>
+        <di:waypoint x="595" y="350"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_join_details_to_plan_measures_edge" bpmnElement="flow_join_details_to_plan_measures">
+        <di:waypoint x="620" y="325"/>
+        <di:waypoint x="690" y="330"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_plan_measures_to_choose_measure_edge" bpmnElement="flow_plan_measures_to_choose_measure">
+        <di:waypoint x="790" y="330"/>
+        <di:waypoint x="860" y="325"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_choose_to_trade_fairs_edge" bpmnElement="flow_choose_to_trade_fairs">
+        <di:waypoint x="885" y="300"/>
+        <di:waypoint x="885" y="230"/>
+        <di:waypoint x="980" y="230"/>
+         <bpmndi:BPMNLabel>
+          <dc:Bounds x="890" y="200" width="80" height="25"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_choose_to_publish_internet_edge" bpmnElement="flow_choose_to_publish_internet">
+        <di:waypoint x="910" y="325"/>
+        <di:waypoint x="980" y="330"/>
+         <bpmndi:BPMNLabel>
+          <dc:Bounds x="915" y="335" width="80" height="40"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_choose_to_online_marketing_edge" bpmnElement="flow_choose_to_online_marketing">
+        <di:waypoint x="885" y="350"/>
+        <di:waypoint x="885" y="430"/>
+        <di:waypoint x="980" y="430"/>
+         <bpmndi:BPMNLabel>
+          <dc:Bounds x="890" y="435" width="80" height="40"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_trade_fairs_to_join_measure_edge" bpmnElement="flow_trade_fairs_to_join_measure">
+        <di:waypoint x="1080" y="230"/>
+        <di:waypoint x="1175" y="230"/>
+        <di:waypoint x="1175" y="300"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_publish_internet_to_join_measure_edge" bpmnElement="flow_publish_internet_to_join_measure">
+        <di:waypoint x="1080" y="330"/>
+        <di:waypoint x="1150" y="325"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_online_marketing_to_join_measure_edge" bpmnElement="flow_online_marketing_to_join_measure">
+        <di:waypoint x="1080" y="430"/>
+        <di:waypoint x="1175" y="430"/>
+        <di:waypoint x="1175" y="350"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_join_measure_to_evaluate_activities_edge" bpmnElement="flow_join_measure_to_evaluate_activities">
+        <di:waypoint x="1175" y="350"/>
+        <di:waypoint x="1175" y="530"/>
+        <di:waypoint x="1100" y="530"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_evaluate_activities_to_end_edge" bpmnElement="flow_evaluate_activities_to_end">
+        <di:waypoint x="1050" y="560"/>
+        <di:waypoint x="1050" y="600"/>
+      </bpmndi:BPMNEdge>
+
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</semantic:definitions>

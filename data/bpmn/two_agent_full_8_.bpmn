@@ -1,0 +1,193 @@
+
+<?xml version="1.0" standalone="yes"?>
+<semantic:definitions id="StockWithdrawalProcess"
+    targetNamespace="http://example.com/bpmn/stock-withdrawal"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:semantic="http://www.omg.org/spec/BPMN/20100524/MODEL"
+    xmlns:di="http://www.omg.org/spec/DD/20100524/DI"
+    xmlns:dc="http://www.omg.org/spec/DD/20100524/DC"
+    xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI">
+
+  <semantic:collaboration id="collab_stock_withdrawal">
+    <semantic:participant id="participant_production_dept" name="Production Department" processRef="process_stock_withdrawal"/>
+  </semantic:collaboration>
+
+  <semantic:process id="process_stock_withdrawal" isExecutable="true">
+    <semantic:laneSet id="lane_set_1">
+      <semantic:lane id="lane_employee" name="Employee">
+        <semantic:flowNodeRef>start_event_1</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_1</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_2</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_3</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_4</semantic:flowNodeRef>
+        <semantic:flowNodeRef>gateway_1</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_5</semantic:flowNodeRef>
+        <semantic:flowNodeRef>end_event_1</semantic:flowNodeRef>
+      </semantic:lane>
+    </semantic:laneSet>
+
+    <semantic:startEvent id="start_event_1" name="Stock Withdrawal Need Identified">
+      <semantic:outgoing>flow_1</semantic:outgoing>
+    </semantic:startEvent>
+
+    <semantic:task id="task_1" name="Determine Required Goods">
+      <semantic:incoming>flow_1</semantic:incoming>
+      <semantic:outgoing>flow_2</semantic:outgoing>
+    </semantic:task>
+
+    <semantic:task id="task_2" name="Select Inventory Management">
+      <semantic:incoming>flow_2</semantic:incoming>
+      <semantic:outgoing>flow_3</semantic:outgoing>
+    </semantic:task>
+
+    <semantic:task id="task_3" name="Enter Document Header Data">
+      <semantic:incoming>flow_3</semantic:incoming>
+      <semantic:outgoing>flow_4</semantic:outgoing>
+    </semantic:task>
+
+    <semantic:task id="task_4" name="Add Line Item and Enter Goods">
+      <semantic:incoming>flow_4</semantic:incoming>
+      <semantic:incoming>flow_6</semantic:incoming>
+      <semantic:outgoing>flow_5</semantic:outgoing>
+    </semantic:task>
+
+    <semantic:exclusiveGateway id="gateway_1" name="More Line Items?">
+      <semantic:incoming>flow_5</semantic:incoming>
+      <semantic:outgoing>flow_6</semantic:outgoing> <!-- Yes -->
+      <semantic:outgoing>flow_7</semantic:outgoing> <!-- No -->
+    </semantic:exclusiveGateway>
+
+    <semantic:task id="task_5" name="Save Goods Issue">
+      <semantic:incoming>flow_7</semantic:incoming>
+      <semantic:outgoing>flow_8</semantic:outgoing>
+    </semantic:task>
+
+    <semantic:endEvent id="end_event_1" name="Posting Successfully Completed">
+      <semantic:incoming>flow_8</semantic:incoming>
+    </semantic:endEvent>
+
+    <semantic:sequenceFlow id="flow_1" sourceRef="start_event_1" targetRef="task_1"/>
+    <semantic:sequenceFlow id="flow_2" sourceRef="task_1" targetRef="task_2"/>
+    <semantic:sequenceFlow id="flow_3" sourceRef="task_2" targetRef="task_3"/>
+    <semantic:sequenceFlow id="flow_4" sourceRef="task_3" targetRef="task_4"/>
+    <semantic:sequenceFlow id="flow_5" sourceRef="task_4" targetRef="gateway_1"/>
+    <semantic:sequenceFlow id="flow_6" name="Yes, Add Another Item" sourceRef="gateway_1" targetRef="task_4"/>
+    <semantic:sequenceFlow id="flow_7" name="No More Items" sourceRef="gateway_1" targetRef="task_5"/>
+    <semantic:sequenceFlow id="flow_8" sourceRef="task_5" targetRef="end_event_1"/>
+  </semantic:process>
+
+  <bpmndi:BPMNDiagram id="BPMNDiagram_StockWithdrawal" name="Stock Withdrawal Diagram" resolution="96.0">
+    <bpmndi:BPMNPlane bpmnElement="collab_stock_withdrawal">
+      <bpmndi:BPMNShape id="participant_production_dept_shape" bpmnElement="participant_production_dept" isHorizontal="true">
+        <dc:Bounds x="40" y="40" width="1320" height="300"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="lane_employee_shape" bpmnElement="lane_employee" isHorizontal="true">
+         <dc:Bounds x="70" y="40" width="1290" height="300"/>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="start_event_1_shape" bpmnElement="start_event_1">
+        <dc:Bounds x="100" y="182" width="36" height="36"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="80" y="223" width="76" height="40" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="task_1_shape" bpmnElement="task_1">
+        <dc:Bounds x="206" y="150" width="120" height="80"/>
+         <bpmndi:BPMNLabel>
+          <dc:Bounds x="216" y="175" width="100" height="40" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="task_2_shape" bpmnElement="task_2">
+        <dc:Bounds x="396" y="150" width="120" height="80"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="406" y="175" width="100" height="40" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="task_3_shape" bpmnElement="task_3">
+        <dc:Bounds x="586" y="150" width="120" height="80"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="596" y="165" width="100" height="50" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="task_4_shape" bpmnElement="task_4">
+        <dc:Bounds x="776" y="150" width="120" height="80"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="786" y="165" width="100" height="50" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="gateway_1_shape" bpmnElement="gateway_1" isMarkerVisible="true">
+        <dc:Bounds x="966" y="165" width="50" height="50"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="946" y="220" width="90" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="task_5_shape" bpmnElement="task_5">
+        <dc:Bounds x="1086" y="150" width="120" height="80"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1096" y="175" width="100" height="40" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="end_event_1_shape" bpmnElement="end_event_1">
+        <dc:Bounds x="1276" y="182" width="36" height="36"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1250" y="223" width="88" height="40" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNEdge id="flow_1_edge" bpmnElement="flow_1">
+        <di:waypoint x="136" y="200"/>
+        <di:waypoint x="206" y="190"/>
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="flow_2_edge" bpmnElement="flow_2">
+        <di:waypoint x="326" y="190"/>
+        <di:waypoint x="396" y="190"/>
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="flow_3_edge" bpmnElement="flow_3">
+        <di:waypoint x="506" y="190"/>
+        <di:waypoint x="586" y="190"/>
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="flow_4_edge" bpmnElement="flow_4">
+        <di:waypoint x="706" y="190"/>
+        <di:waypoint x="776" y="190"/>
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="flow_5_edge" bpmnElement="flow_5">
+        <di:waypoint x="896" y="190"/>
+        <di:waypoint x="966" y="190"/>
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="flow_6_edge" bpmnElement="flow_6">
+        <di:waypoint x="991" y="215"/>
+        <di:waypoint x="991" y="255"/>
+        <di:waypoint x="836" y="255"/>
+        <di:waypoint x="836" y="230"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="870" y="258" width="80" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="flow_7_edge" bpmnElement="flow_7">
+        <di:waypoint x="1016" y="190"/>
+        <di:waypoint x="1086" y="190"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1021" y="168" width="60" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="flow_8_edge" bpmnElement="flow_8">
+        <di:waypoint x="1206" y="190"/>
+        <di:waypoint x="1276" y="200"/>
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</semantic:definitions>

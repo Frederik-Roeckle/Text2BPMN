@@ -1,0 +1,808 @@
+<?xml version="1.0" standalone="yes"?>
+<semantic:definitions id="ProductionProcessDefs"
+    targetNamespace="http://example.com/bpmn/production-process"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:semantic="http://www.omg.org/spec/BPMN/20100524/MODEL"
+    xmlns:di="http://www.omg.org/spec/DD/20100524/DI"
+    xmlns:dc="http://www.omg.org/spec/DD/20100524/DC"
+    xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI">
+
+  <semantic:collaboration id="collab_ProductionProcess">
+    <semantic:participant id="participant_ProductionDepartment" name="Production Department" processRef="process_Production"/>
+  </semantic:collaboration>
+
+  <semantic:process id="process_Production" isExecutable="true">
+    <semantic:laneSet id="laneSet_Production">
+      <semantic:lane id="lane_ProductionManager" name="Production Manager">
+        <semantic:flowNodeRef>startEvent_OrderRequestReceived</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_ReleaseProdOrderInSAP</semantic:flowNodeRef>
+        <semantic:flowNodeRef>exclusiveGateway_OrderReleaseDecision</semantic:flowNodeRef>
+        <semantic:flowNodeRef>callActivity_CheckProdOrderLogs</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_SaveReleasingProcess</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_ConfirmProdOrder</semantic:flowNodeRef>
+        <semantic:flowNodeRef>exclusiveGateway_ConfirmationMethod</semantic:flowNodeRef>
+        <semantic:flowNodeRef>exclusiveGateway_ManualConfirmationType</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_EnterOrderNoForProgressConfirm</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_SpecifyConfirmTypeProgress</semantic:flowNodeRef>
+        <semantic:flowNodeRef>exclusiveGateway_JoinManualConfirmTypes</semantic:flowNodeRef>
+        <semantic:flowNodeRef>exclusiveGateway_JoinConfirmMethods</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_SaveConfirmationProcess</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_PostProdOrderConfirmation</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_PostSettlement</semantic:flowNodeRef>
+        <semantic:flowNodeRef>parallelGateway_DefineSettlementParamsFork</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_DefineOrderNoForSettlement</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_DefinePeriodForSettlement</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_DeselectTestRunForSettlement</semantic:flowNodeRef>
+        <semantic:flowNodeRef>parallelGateway_DefineSettlementParamsJoin</semantic:flowNodeRef>
+        <semantic:flowNodeRef>callActivity_CheckSettledCosts</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_CheckQuantityAndEvaluation</semantic:flowNodeRef>
+        <semantic:flowNodeRef>endEvent_OrderProcessedSuccessfully</semantic:flowNodeRef>
+      </semantic:lane>
+      <semantic:lane id="lane_ProductionAssistant" name="Production Assistant">
+        <semantic:flowNodeRef>task_WithdrawMaterialsFromStock</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_PostGoodsIssueMIGO</semantic:flowNodeRef>
+        <semantic:flowNodeRef>parallelGateway_DefineGIParamsFork</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_DefineMovementType261</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_SpecifyPlantStorageAreaForGI</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_EnterOrderNoForGI</semantic:flowNodeRef>
+        <semantic:flowNodeRef>parallelGateway_DefineGIParamsJoin</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_SaveGoodsIssueProcess</semantic:flowNodeRef>
+        <semantic:flowNodeRef>callActivity_CheckActualCosts</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_PostGoodsReceiptInWarehouse</semantic:flowNodeRef>
+        <semantic:flowNodeRef>parallelGateway_DefineGRParamsFork</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_DefineMovementType101</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_SpecifyProdOrderForGR</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_IndicatePlantStorageAreaForGR</semantic:flowNodeRef>
+        <semantic:flowNodeRef>parallelGateway_DefineGRParamsJoin</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_SaveGoodsReceiptProcess</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_ComputeOverheadsActualCosts</semantic:flowNodeRef>
+        <semantic:flowNodeRef>exclusiveGateway_OverheadProcessingType</semantic:flowNodeRef>
+        <semantic:flowNodeRef>exclusiveGateway_JoinOverheadProcessingTypes</semantic:flowNodeRef>
+        <semantic:flowNodeRef>parallelGateway_SpecifyOverheadParamsFork</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_SpecifyOrderPeriodForOverheads</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_SetTestRunFieldForOverheads</semantic:flowNodeRef>
+        <semantic:flowNodeRef>parallelGateway_SpecifyOverheadParamsJoin</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_ExecuteOverheadCalculation</semantic:flowNodeRef>
+        <semantic:flowNodeRef>callActivity_CheckOverheadSurcharge</semantic:flowNodeRef>
+      </semantic:lane>
+    </semantic:laneSet>
+
+    <!-- Production Manager Lane Elements -->
+    <semantic:startEvent id="startEvent_OrderRequestReceived" name="Production Order Request Received">
+      <semantic:outgoing>flow_StartToReleaseOrder</semantic:outgoing>
+    </semantic:startEvent>
+    <semantic:task id="task_ReleaseProdOrderInSAP" name="Release Production Order in SAP ERP">
+      <semantic:incoming>flow_StartToReleaseOrder</semantic:incoming>
+      <semantic:outgoing>flow_ReleaseOrderToDecision</semantic:outgoing>
+    </semantic:task>
+    <semantic:exclusiveGateway id="exclusiveGateway_OrderReleaseDecision" name="Order Release Successful?">
+      <semantic:incoming>flow_ReleaseOrderToDecision</semantic:incoming>
+      <semantic:outgoing>flow_OrderReleased</semantic:outgoing>
+      <semantic:outgoing>flow_OrderNotReleased</semantic:outgoing>
+    </semantic:exclusiveGateway>
+    <semantic:callActivity id="callActivity_CheckProdOrderLogs" name="Check Production Order Logs" calledElement="process_CheckingProductionOrder">
+      <semantic:incoming>flow_OrderNotReleased</semantic:incoming>
+      <semantic:outgoing>flow_CheckLogsToSaveRelease</semantic:outgoing>
+    </semantic:callActivity>
+    <semantic:task id="task_SaveReleasingProcess" name="Save Releasing Process">
+      <semantic:incoming>flow_OrderReleased</semantic:incoming>
+      <semantic:incoming>flow_CheckLogsToSaveRelease</semantic:incoming>
+      <semantic:outgoing>flow_SaveReleaseToWithdrawMaterials</semantic:outgoing>
+    </semantic:task>
+
+    <semantic:task id="task_ConfirmProdOrder" name="Confirm Production Order">
+      <semantic:incoming>flow_SaveGIToConfirmOrder</semantic:incoming>
+      <semantic:outgoing>flow_ConfirmOrderToMethodDecision</semantic:outgoing>
+    </semantic:task>
+    <semantic:exclusiveGateway id="exclusiveGateway_ConfirmationMethod" name="Confirmation Method?">
+      <semantic:incoming>flow_ConfirmOrderToMethodDecision</semantic:incoming>
+      <semantic:outgoing>flow_MethodExternalPDC</semantic:outgoing>
+      <semantic:outgoing>flow_MethodManual</semantic:outgoing>
+    </semantic:exclusiveGateway>
+    <semantic:exclusiveGateway id="exclusiveGateway_ManualConfirmationType" name="Manual Confirmation Type?">
+      <semantic:incoming>flow_MethodManual</semantic:incoming>
+      <semantic:outgoing>flow_ManualTypeTimeTicket</semantic:outgoing>
+      <semantic:outgoing>flow_ManualTypeTimeEvent</semantic:outgoing>
+      <semantic:outgoing>flow_ManualTypeCollective</semantic:outgoing>
+      <semantic:outgoing>flow_ManualTypeProgress</semantic:outgoing>
+    </semantic:exclusiveGateway>
+    <semantic:task id="task_EnterOrderNoForProgressConfirm" name="Enter Order No. for Progress Confirmation">
+      <semantic:incoming>flow_ManualTypeProgress</semantic:incoming>
+      <semantic:outgoing>flow_EnterOrderToSpecifyType</semantic:outgoing>
+    </semantic:task>
+    <semantic:task id="task_SpecifyConfirmTypeProgress" name="Specify Confirmation Type for Progress">
+      <semantic:incoming>flow_EnterOrderToSpecifyType</semantic:incoming>
+      <semantic:outgoing>flow_SpecifyTypeToJoinManual</semantic:outgoing>
+    </semantic:task>
+    <semantic:exclusiveGateway id="exclusiveGateway_JoinManualConfirmTypes" name="Join Manual Confirmation Paths">
+      <semantic:incoming>flow_ManualTypeTimeTicket</semantic:incoming>
+      <semantic:incoming>flow_ManualTypeTimeEvent</semantic:incoming>
+      <semantic:incoming>flow_ManualTypeCollective</semantic:incoming>
+      <semantic:incoming>flow_SpecifyTypeToJoinManual</semantic:incoming>
+      <semantic:outgoing>flow_JoinManualToJoinMethods</semantic:outgoing>
+    </semantic:exclusiveGateway>
+    <semantic:exclusiveGateway id="exclusiveGateway_JoinConfirmMethods" name="Join Confirmation Methods">
+      <semantic:incoming>flow_MethodExternalPDC</semantic:incoming>
+      <semantic:incoming>flow_JoinManualToJoinMethods</semantic:incoming>
+      <semantic:outgoing>flow_JoinMethodsToSaveConfirm</semantic:outgoing>
+    </semantic:exclusiveGateway>
+    <semantic:task id="task_SaveConfirmationProcess" name="Save Confirmation Process">
+      <semantic:incoming>flow_JoinMethodsToSaveConfirm</semantic:incoming>
+      <semantic:outgoing>flow_SaveConfirmToPostConfirm</semantic:outgoing>
+    </semantic:task>
+    <semantic:task id="task_PostProdOrderConfirmation" name="Post Production Order Confirmation">
+      <semantic:incoming>flow_SaveConfirmToPostConfirm</semantic:incoming>
+      <semantic:outgoing>flow_PostConfirmToCheckActualCosts</semantic:outgoing>
+    </semantic:task>
+
+    <semantic:task id="task_PostSettlement" name="Post Settlement">
+      <semantic:incoming>flow_CheckOverheadToPostSettlement</semantic:incoming>
+      <semantic:outgoing>flow_PostSettlementToDefineParams</semantic:outgoing>
+    </semantic:task>
+    <semantic:parallelGateway id="parallelGateway_DefineSettlementParamsFork" name="Define Settlement Parameters Fork">
+      <semantic:incoming>flow_PostSettlementToDefineParams</semantic:incoming>
+      <semantic:outgoing>flow_ForkToDefineOrderNoSettlement</semantic:outgoing>
+      <semantic:outgoing>flow_ForkToDefinePeriodSettlement</semantic:outgoing>
+      <semantic:outgoing>flow_ForkToDeselectTestRunSettlement</semantic:outgoing>
+    </semantic:parallelGateway>
+    <semantic:task id="task_DefineOrderNoForSettlement" name="Define Order Number for Settlement">
+      <semantic:incoming>flow_ForkToDefineOrderNoSettlement</semantic:incoming>
+      <semantic:outgoing>flow_DefineOrderNoToJoinSettlement</semantic:outgoing>
+    </semantic:task>
+    <semantic:task id="task_DefinePeriodForSettlement" name="Define Period for Settlement">
+      <semantic:incoming>flow_ForkToDefinePeriodSettlement</semantic:incoming>
+      <semantic:outgoing>flow_DefinePeriodToJoinSettlement</semantic:outgoing>
+    </semantic:task>
+    <semantic:task id="task_DeselectTestRunForSettlement" name="Deselect 'Test Run' for Settlement">
+      <semantic:incoming>flow_ForkToDeselectTestRunSettlement</semantic:incoming>
+      <semantic:outgoing>flow_DeselectTestRunToJoinSettlement</semantic:outgoing>
+    </semantic:task>
+    <semantic:parallelGateway id="parallelGateway_DefineSettlementParamsJoin" name="Define Settlement Parameters Join">
+      <semantic:incoming>flow_DefineOrderNoToJoinSettlement</semantic:incoming>
+      <semantic:incoming>flow_DefinePeriodToJoinSettlement</semantic:incoming>
+      <semantic:incoming>flow_DeselectTestRunToJoinSettlement</semantic:incoming>
+      <semantic:outgoing>flow_JoinSettlementToCheckSettled</semantic:outgoing>
+    </semantic:parallelGateway>
+    <semantic:callActivity id="callActivity_CheckSettledCosts" name="Check Settled Costs via Cost Analysis" calledElement="process_CheckingProductionOrder">
+      <semantic:incoming>flow_JoinSettlementToCheckSettled</semantic:incoming>
+      <semantic:outgoing>flow_CheckSettledToFinalCheck</semantic:outgoing>
+    </semantic:callActivity>
+    <semantic:task id="task_CheckQuantityAndEvaluation" name="Check Quantity Produced and Evaluation">
+      <semantic:incoming>flow_CheckSettledToFinalCheck</semantic:incoming>
+      <semantic:outgoing>flow_FinalCheckToEnd</semantic:outgoing>
+    </semantic:task>
+    <semantic:endEvent id="endEvent_OrderProcessedSuccessfully" name="Production Order Processed Successfully">
+      <semantic:incoming>flow_FinalCheckToEnd</semantic:incoming>
+    </semantic:endEvent>
+
+    <!-- Production Assistant Lane Elements -->
+    <semantic:task id="task_WithdrawMaterialsFromStock" name="Withdraw Materials from Stock">
+      <semantic:incoming>flow_SaveReleaseToWithdrawMaterials</semantic:incoming>
+      <semantic:outgoing>flow_WithdrawToPostGI</semantic:outgoing>
+    </semantic:task>
+    <semantic:task id="task_PostGoodsIssueMIGO" name="Post Goods Issue (MIGO) in System">
+      <semantic:incoming>flow_WithdrawToPostGI</semantic:incoming>
+      <semantic:outgoing>flow_PostGIToDefineGIParams</semantic:outgoing>
+    </semantic:task>
+    <semantic:parallelGateway id="parallelGateway_DefineGIParamsFork" name="Define Goods Issue Parameters Fork">
+      <semantic:incoming>flow_PostGIToDefineGIParams</semantic:incoming>
+      <semantic:outgoing>flow_ForkToDefineMovementType261</semantic:outgoing>
+      <semantic:outgoing>flow_ForkToSpecifyPlantStorageGI</semantic:outgoing>
+      <semantic:outgoing>flow_ForkToEnterOrderNoGI</semantic:outgoing>
+    </semantic:parallelGateway>
+    <semantic:task id="task_DefineMovementType261" name="Define Movement Type 261">
+      <semantic:incoming>flow_ForkToDefineMovementType261</semantic:incoming>
+      <semantic:outgoing>flow_DefineMovementTypeToJoinGI</semantic:outgoing>
+    </semantic:task>
+    <semantic:task id="task_SpecifyPlantStorageAreaForGI" name="Specify Plant and Storage Area for GI">
+      <semantic:incoming>flow_ForkToSpecifyPlantStorageGI</semantic:incoming>
+      <semantic:outgoing>flow_SpecifyPlantToJoinGI</semantic:outgoing>
+    </semantic:task>
+    <semantic:task id="task_EnterOrderNoForGI" name="Enter Order Number for GI">
+      <semantic:incoming>flow_ForkToEnterOrderNoGI</semantic:incoming>
+      <semantic:outgoing>flow_EnterOrderNoToJoinGI</semantic:outgoing>
+    </semantic:task>
+    <semantic:parallelGateway id="parallelGateway_DefineGIParamsJoin" name="Define Goods Issue Parameters Join">
+      <semantic:incoming>flow_DefineMovementTypeToJoinGI</semantic:incoming>
+      <semantic:incoming>flow_SpecifyPlantToJoinGI</semantic:incoming>
+      <semantic:incoming>flow_EnterOrderNoToJoinGI</semantic:incoming>
+      <semantic:outgoing>flow_JoinGIToSaveGI</semantic:outgoing>
+    </semantic:parallelGateway>
+    <semantic:task id="task_SaveGoodsIssueProcess" name="Save Goods Issue Process">
+      <semantic:incoming>flow_JoinGIToSaveGI</semantic:incoming>
+      <semantic:outgoing>flow_SaveGIToConfirmOrder</semantic:outgoing>
+    </semantic:task>
+
+    <semantic:callActivity id="callActivity_CheckActualCosts" name="Check Actual Costs via Cost Analysis" calledElement="process_CheckingProductionOrder">
+      <semantic:incoming>flow_PostConfirmToCheckActualCosts</semantic:incoming>
+      <semantic:outgoing>flow_CheckActualCostsToPostGR</semantic:outgoing>
+    </semantic:callActivity>
+    <semantic:task id="task_PostGoodsReceiptInWarehouse" name="Post Goods Receipt in Warehouse">
+      <semantic:incoming>flow_CheckActualCostsToPostGR</semantic:incoming>
+      <semantic:outgoing>flow_PostGRToDefineGRParams</semantic:outgoing>
+    </semantic:task>
+    <semantic:parallelGateway id="parallelGateway_DefineGRParamsFork" name="Define Goods Receipt Parameters Fork">
+      <semantic:incoming>flow_PostGRToDefineGRParams</semantic:incoming>
+      <semantic:outgoing>flow_ForkToDefineMovementType101</semantic:outgoing>
+      <semantic:outgoing>flow_ForkToSpecifyProdOrderGR</semantic:outgoing>
+      <semantic:outgoing>flow_ForkToIndicatePlantStorageGR</semantic:outgoing>
+    </semantic:parallelGateway>
+    <semantic:task id="task_DefineMovementType101" name="Define Movement Type 101 for GR">
+      <semantic:incoming>flow_ForkToDefineMovementType101</semantic:incoming>
+      <semantic:outgoing>flow_DefineMovementTypeGRToJoinGR</semantic:outgoing>
+    </semantic:task>
+    <semantic:task id="task_SpecifyProdOrderForGR" name="Specify Production Order for GR">
+      <semantic:incoming>flow_ForkToSpecifyProdOrderGR</semantic:incoming>
+      <semantic:outgoing>flow_SpecifyProdOrderToJoinGR</semantic:outgoing>
+    </semantic:task>
+    <semantic:task id="task_IndicatePlantStorageAreaForGR" name="Indicate Plant and Storage Area for GR">
+      <semantic:incoming>flow_ForkToIndicatePlantStorageGR</semantic:incoming>
+      <semantic:outgoing>flow_IndicatePlantGRToJoinGR</semantic:outgoing>
+    </semantic:task>
+    <semantic:parallelGateway id="parallelGateway_DefineGRParamsJoin" name="Define Goods Receipt Parameters Join">
+      <semantic:incoming>flow_DefineMovementTypeGRToJoinGR</semantic:incoming>
+      <semantic:incoming>flow_SpecifyProdOrderToJoinGR</semantic:incoming>
+      <semantic:incoming>flow_IndicatePlantGRToJoinGR</semantic:incoming>
+      <semantic:outgoing>flow_JoinGRToSaveGR</semantic:outgoing>
+    </semantic:parallelGateway>
+    <semantic:task id="task_SaveGoodsReceiptProcess" name="Save Goods Receipt Process">
+      <semantic:incoming>flow_JoinGRToSaveGR</semantic:incoming>
+      <semantic:outgoing>flow_SaveGRToComputeOverheads</semantic:outgoing>
+    </semantic:task>
+
+    <semantic:task id="task_ComputeOverheadsActualCosts" name="Compute Overheads in Actual Costs">
+      <semantic:incoming>flow_SaveGRToComputeOverheads</semantic:incoming>
+      <semantic:outgoing>flow_ComputeOverheadsToProcessingType</semantic:outgoing>
+    </semantic:task>
+    <semantic:exclusiveGateway id="exclusiveGateway_OverheadProcessingType" name="Overhead Processing Type?">
+      <semantic:incoming>flow_ComputeOverheadsToProcessingType</semantic:incoming>
+      <semantic:outgoing>flow_OverheadTypeIndividual</semantic:outgoing>
+      <semantic:outgoing>flow_OverheadTypeCollective</semantic:outgoing>
+    </semantic:exclusiveGateway>
+    <semantic:exclusiveGateway id="exclusiveGateway_JoinOverheadProcessingTypes" name="Join Overhead Processing Types">
+      <semantic:incoming>flow_OverheadTypeIndividual</semantic:incoming>
+      <semantic:incoming>flow_OverheadTypeCollective</semantic:incoming>
+      <semantic:outgoing>flow_JoinOverheadTypesToSpecifyParams</semantic:outgoing>
+    </semantic:exclusiveGateway>
+    <semantic:parallelGateway id="parallelGateway_SpecifyOverheadParamsFork" name="Specify Overhead Parameters Fork">
+      <semantic:incoming>flow_JoinOverheadTypesToSpecifyParams</semantic:incoming>
+      <semantic:outgoing>flow_ForkToSpecifyOrderPeriodOverhead</semantic:outgoing>
+      <semantic:outgoing>flow_ForkToSetTestRunOverhead</semantic:outgoing>
+    </semantic:parallelGateway>
+    <semantic:task id="task_SpecifyOrderPeriodForOverheads" name="Specify Order Number/Period for Overheads">
+      <semantic:incoming>flow_ForkToSpecifyOrderPeriodOverhead</semantic:incoming>
+      <semantic:outgoing>flow_SpecifyOrderPeriodToJoinOverhead</semantic:outgoing>
+    </semantic:task>
+    <semantic:task id="task_SetTestRunFieldForOverheads" name="Set 'Test Run' Field for Overheads">
+      <semantic:incoming>flow_ForkToSetTestRunOverhead</semantic:incoming>
+      <semantic:outgoing>flow_SetTestRunToJoinOverhead</semantic:outgoing>
+    </semantic:task>
+    <semantic:parallelGateway id="parallelGateway_SpecifyOverheadParamsJoin" name="Specify Overhead Parameters Join">
+      <semantic:incoming>flow_SpecifyOrderPeriodToJoinOverhead</semantic:incoming>
+      <semantic:incoming>flow_SetTestRunToJoinOverhead</semantic:incoming>
+      <semantic:outgoing>flow_JoinOverheadParamsToExecute</semantic:outgoing>
+    </semantic:parallelGateway>
+    <semantic:task id="task_ExecuteOverheadCalculation" name="Execute Overhead Calculation">
+      <semantic:incoming>flow_JoinOverheadParamsToExecute</semantic:incoming>
+      <semantic:outgoing>flow_ExecuteOverheadToCheckSurcharge</semantic:outgoing>
+    </semantic:task>
+    <semantic:callActivity id="callActivity_CheckOverheadSurcharge" name="Check Overhead Surcharge via Cost Analysis" calledElement="process_CheckingProductionOrder">
+      <semantic:incoming>flow_ExecuteOverheadToCheckSurcharge</semantic:incoming>
+      <semantic:outgoing>flow_CheckOverheadToPostSettlement</semantic:outgoing>
+    </semantic:callActivity>
+
+    <!-- Sequence Flows -->
+    <semantic:sequenceFlow id="flow_StartToReleaseOrder" sourceRef="startEvent_OrderRequestReceived" targetRef="task_ReleaseProdOrderInSAP"/>
+    <semantic:sequenceFlow id="flow_ReleaseOrderToDecision" sourceRef="task_ReleaseProdOrderInSAP" targetRef="exclusiveGateway_OrderReleaseDecision"/>
+    <semantic:sequenceFlow id="flow_OrderReleased" name="Order Released" sourceRef="exclusiveGateway_OrderReleaseDecision" targetRef="task_SaveReleasingProcess"/>
+    <semantic:sequenceFlow id="flow_OrderNotReleased" name="Order Not Released" sourceRef="exclusiveGateway_OrderReleaseDecision" targetRef="callActivity_CheckProdOrderLogs"/>
+    <semantic:sequenceFlow id="flow_CheckLogsToSaveRelease" sourceRef="callActivity_CheckProdOrderLogs" targetRef="task_SaveReleasingProcess"/>
+    <semantic:sequenceFlow id="flow_SaveReleaseToWithdrawMaterials" sourceRef="task_SaveReleasingProcess" targetRef="task_WithdrawMaterialsFromStock"/>
+
+    <semantic:sequenceFlow id="flow_WithdrawToPostGI" sourceRef="task_WithdrawMaterialsFromStock" targetRef="task_PostGoodsIssueMIGO"/>
+    <semantic:sequenceFlow id="flow_PostGIToDefineGIParams" sourceRef="task_PostGoodsIssueMIGO" targetRef="parallelGateway_DefineGIParamsFork"/>
+    <semantic:sequenceFlow id="flow_ForkToDefineMovementType261" sourceRef="parallelGateway_DefineGIParamsFork" targetRef="task_DefineMovementType261"/>
+    <semantic:sequenceFlow id="flow_ForkToSpecifyPlantStorageGI" sourceRef="parallelGateway_DefineGIParamsFork" targetRef="task_SpecifyPlantStorageAreaForGI"/>
+    <semantic:sequenceFlow id="flow_ForkToEnterOrderNoGI" sourceRef="parallelGateway_DefineGIParamsFork" targetRef="task_EnterOrderNoForGI"/>
+    <semantic:sequenceFlow id="flow_DefineMovementTypeToJoinGI" sourceRef="task_DefineMovementType261" targetRef="parallelGateway_DefineGIParamsJoin"/>
+    <semantic:sequenceFlow id="flow_SpecifyPlantToJoinGI" sourceRef="task_SpecifyPlantStorageAreaForGI" targetRef="parallelGateway_DefineGIParamsJoin"/>
+    <semantic:sequenceFlow id="flow_EnterOrderNoToJoinGI" sourceRef="task_EnterOrderNoForGI" targetRef="parallelGateway_DefineGIParamsJoin"/>
+    <semantic:sequenceFlow id="flow_JoinGIToSaveGI" sourceRef="parallelGateway_DefineGIParamsJoin" targetRef="task_SaveGoodsIssueProcess"/>
+    <semantic:sequenceFlow id="flow_SaveGIToConfirmOrder" sourceRef="task_SaveGoodsIssueProcess" targetRef="task_ConfirmProdOrder"/>
+
+    <semantic:sequenceFlow id="flow_ConfirmOrderToMethodDecision" sourceRef="task_ConfirmProdOrder" targetRef="exclusiveGateway_ConfirmationMethod"/>
+    <semantic:sequenceFlow id="flow_MethodExternalPDC" name="External PDC" sourceRef="exclusiveGateway_ConfirmationMethod" targetRef="exclusiveGateway_JoinConfirmMethods"/>
+    <semantic:sequenceFlow id="flow_MethodManual" name="Manual" sourceRef="exclusiveGateway_ConfirmationMethod" targetRef="exclusiveGateway_ManualConfirmationType"/>
+    <semantic:sequenceFlow id="flow_ManualTypeTimeTicket" name="Time Ticket" sourceRef="exclusiveGateway_ManualConfirmationType" targetRef="exclusiveGateway_JoinManualConfirmTypes"/>
+    <semantic:sequenceFlow id="flow_ManualTypeTimeEvent" name="Time Event" sourceRef="exclusiveGateway_ManualConfirmationType" targetRef="exclusiveGateway_JoinManualConfirmTypes"/>
+    <semantic:sequenceFlow id="flow_ManualTypeCollective" name="Collective Entry" sourceRef="exclusiveGateway_ManualConfirmationType" targetRef="exclusiveGateway_JoinManualConfirmTypes"/>
+    <semantic:sequenceFlow id="flow_ManualTypeProgress" name="Progress Confirmation" sourceRef="exclusiveGateway_ManualConfirmationType" targetRef="task_EnterOrderNoForProgressConfirm"/>
+    <semantic:sequenceFlow id="flow_EnterOrderToSpecifyType" sourceRef="task_EnterOrderNoForProgressConfirm" targetRef="task_SpecifyConfirmTypeProgress"/>
+    <semantic:sequenceFlow id="flow_SpecifyTypeToJoinManual" sourceRef="task_SpecifyConfirmTypeProgress" targetRef="exclusiveGateway_JoinManualConfirmTypes"/>
+    <semantic:sequenceFlow id="flow_JoinManualToJoinMethods" sourceRef="exclusiveGateway_JoinManualConfirmTypes" targetRef="exclusiveGateway_JoinConfirmMethods"/>
+    <semantic:sequenceFlow id="flow_JoinMethodsToSaveConfirm" sourceRef="exclusiveGateway_JoinConfirmMethods" targetRef="task_SaveConfirmationProcess"/>
+    <semantic:sequenceFlow id="flow_SaveConfirmToPostConfirm" sourceRef="task_SaveConfirmationProcess" targetRef="task_PostProdOrderConfirmation"/>
+    <semantic:sequenceFlow id="flow_PostConfirmToCheckActualCosts" sourceRef="task_PostProdOrderConfirmation" targetRef="callActivity_CheckActualCosts"/>
+
+    <semantic:sequenceFlow id="flow_CheckActualCostsToPostGR" sourceRef="callActivity_CheckActualCosts" targetRef="task_PostGoodsReceiptInWarehouse"/>
+    <semantic:sequenceFlow id="flow_PostGRToDefineGRParams" sourceRef="task_PostGoodsReceiptInWarehouse" targetRef="parallelGateway_DefineGRParamsFork"/>
+    <semantic:sequenceFlow id="flow_ForkToDefineMovementType101" sourceRef="parallelGateway_DefineGRParamsFork" targetRef="task_DefineMovementType101"/>
+    <semantic:sequenceFlow id="flow_ForkToSpecifyProdOrderGR" sourceRef="parallelGateway_DefineGRParamsFork" targetRef="task_SpecifyProdOrderForGR"/>
+    <semantic:sequenceFlow id="flow_ForkToIndicatePlantStorageGR" sourceRef="parallelGateway_DefineGRParamsFork" targetRef="task_IndicatePlantStorageAreaForGR"/>
+    <semantic:sequenceFlow id="flow_DefineMovementTypeGRToJoinGR" sourceRef="task_DefineMovementType101" targetRef="parallelGateway_DefineGRParamsJoin"/>
+    <semantic:sequenceFlow id="flow_SpecifyProdOrderToJoinGR" sourceRef="task_SpecifyProdOrderForGR" targetRef="parallelGateway_DefineGRParamsJoin"/>
+    <semantic:sequenceFlow id="flow_IndicatePlantGRToJoinGR" sourceRef="task_IndicatePlantStorageAreaForGR" targetRef="parallelGateway_DefineGRParamsJoin"/>
+    <semantic:sequenceFlow id="flow_JoinGRToSaveGR" sourceRef="parallelGateway_DefineGRParamsJoin" targetRef="task_SaveGoodsReceiptProcess"/>
+    <semantic:sequenceFlow id="flow_SaveGRToComputeOverheads" sourceRef="task_SaveGoodsReceiptProcess" targetRef="task_ComputeOverheadsActualCosts"/>
+
+    <semantic:sequenceFlow id="flow_ComputeOverheadsToProcessingType" sourceRef="task_ComputeOverheadsActualCosts" targetRef="exclusiveGateway_OverheadProcessingType"/>
+    <semantic:sequenceFlow id="flow_OverheadTypeIndividual" name="Individual Processing" sourceRef="exclusiveGateway_OverheadProcessingType" targetRef="exclusiveGateway_JoinOverheadProcessingTypes"/>
+    <semantic:sequenceFlow id="flow_OverheadTypeCollective" name="Collective Processing" sourceRef="exclusiveGateway_OverheadProcessingType" targetRef="exclusiveGateway_JoinOverheadProcessingTypes"/>
+    <semantic:sequenceFlow id="flow_JoinOverheadTypesToSpecifyParams" sourceRef="exclusiveGateway_JoinOverheadProcessingTypes" targetRef="parallelGateway_SpecifyOverheadParamsFork"/>
+    <semantic:sequenceFlow id="flow_ForkToSpecifyOrderPeriodOverhead" sourceRef="parallelGateway_SpecifyOverheadParamsFork" targetRef="task_SpecifyOrderPeriodForOverheads"/>
+    <semantic:sequenceFlow id="flow_ForkToSetTestRunOverhead" sourceRef="parallelGateway_SpecifyOverheadParamsFork" targetRef="task_SetTestRunFieldForOverheads"/>
+    <semantic:sequenceFlow id="flow_SpecifyOrderPeriodToJoinOverhead" sourceRef="task_SpecifyOrderPeriodForOverheads" targetRef="parallelGateway_SpecifyOverheadParamsJoin"/>
+    <semantic:sequenceFlow id="flow_SetTestRunToJoinOverhead" sourceRef="task_SetTestRunFieldForOverheads" targetRef="parallelGateway_SpecifyOverheadParamsJoin"/>
+    <semantic:sequenceFlow id="flow_JoinOverheadParamsToExecute" sourceRef="parallelGateway_SpecifyOverheadParamsJoin" targetRef="task_ExecuteOverheadCalculation"/>
+    <semantic:sequenceFlow id="flow_ExecuteOverheadToCheckSurcharge" sourceRef="task_ExecuteOverheadCalculation" targetRef="callActivity_CheckOverheadSurcharge"/>
+    <semantic:sequenceFlow id="flow_CheckOverheadToPostSettlement" sourceRef="callActivity_CheckOverheadSurcharge" targetRef="task_PostSettlement"/>
+
+    <semantic:sequenceFlow id="flow_PostSettlementToDefineParams" sourceRef="task_PostSettlement" targetRef="parallelGateway_DefineSettlementParamsFork"/>
+    <semantic:sequenceFlow id="flow_ForkToDefineOrderNoSettlement" sourceRef="parallelGateway_DefineSettlementParamsFork" targetRef="task_DefineOrderNoForSettlement"/>
+    <semantic:sequenceFlow id="flow_ForkToDefinePeriodSettlement" sourceRef="parallelGateway_DefineSettlementParamsFork" targetRef="task_DefinePeriodForSettlement"/>
+    <semantic:sequenceFlow id="flow_ForkToDeselectTestRunSettlement" sourceRef="parallelGateway_DefineSettlementParamsFork" targetRef="task_DeselectTestRunForSettlement"/>
+    <semantic:sequenceFlow id="flow_DefineOrderNoToJoinSettlement" sourceRef="task_DefineOrderNoForSettlement" targetRef="parallelGateway_DefineSettlementParamsJoin"/>
+    <semantic:sequenceFlow id="flow_DefinePeriodToJoinSettlement" sourceRef="task_DefinePeriodForSettlement" targetRef="parallelGateway_DefineSettlementParamsJoin"/>
+    <semantic:sequenceFlow id="flow_DeselectTestRunToJoinSettlement" sourceRef="task_DeselectTestRunForSettlement" targetRef="parallelGateway_DefineSettlementParamsJoin"/>
+    <semantic:sequenceFlow id="flow_JoinSettlementToCheckSettled" sourceRef="parallelGateway_DefineSettlementParamsJoin" targetRef="callActivity_CheckSettledCosts"/>
+    <semantic:sequenceFlow id="flow_CheckSettledToFinalCheck" sourceRef="callActivity_CheckSettledCosts" targetRef="task_CheckQuantityAndEvaluation"/>
+    <semantic:sequenceFlow id="flow_FinalCheckToEnd" sourceRef="task_CheckQuantityAndEvaluation" targetRef="endEvent_OrderProcessedSuccessfully"/>
+
+  </semantic:process>
+
+  <bpmndi:BPMNDiagram id="BPMNDiagram_ProductionProcess">
+    <bpmndi:BPMNPlane bpmnElement="collab_ProductionProcess">
+      <bpmndi:BPMNShape id="shape_participant_ProductionDepartment" bpmnElement="participant_ProductionDepartment" isHorizontal="true">
+        <dc:Bounds x="20" y="20" width="4780" height="660"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_lane_ProductionManager" bpmnElement="lane_ProductionManager" isHorizontal="true">
+        <dc:Bounds x="50" y="20" width="4750" height="330"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_lane_ProductionAssistant" bpmnElement="lane_ProductionAssistant" isHorizontal="true">
+        <dc:Bounds x="50" y="350" width="4750" height="330"/>
+      </bpmndi:BPMNShape>
+
+      <!-- Production Manager Shapes -->
+      <bpmndi:BPMNShape id="shape_startEvent_OrderRequestReceived" bpmnElement="startEvent_OrderRequestReceived">
+        <dc:Bounds x="80" y="167" width="36" height="36"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_task_ReleaseProdOrderInSAP" bpmnElement="task_ReleaseProdOrderInSAP">
+        <dc:Bounds x="170" y="145" width="100" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_exclusiveGateway_OrderReleaseDecision" bpmnElement="exclusiveGateway_OrderReleaseDecision" isMarkerVisible="true">
+        <dc:Bounds x="320" y="160" width="50" height="50"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_callActivity_CheckProdOrderLogs" bpmnElement="callActivity_CheckProdOrderLogs">
+        <dc:Bounds x="420" y="245" width="100" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_task_SaveReleasingProcess" bpmnElement="task_SaveReleasingProcess">
+        <dc:Bounds x="570" y="145" width="100" height="80"/>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="shape_task_ConfirmProdOrder" bpmnElement="task_ConfirmProdOrder">
+        <dc:Bounds x="1220" y="145" width="100" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_exclusiveGateway_ConfirmationMethod" bpmnElement="exclusiveGateway_ConfirmationMethod" isMarkerVisible="true">
+        <dc:Bounds x="1370" y="160" width="50" height="50"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_exclusiveGateway_ManualConfirmationType" bpmnElement="exclusiveGateway_ManualConfirmationType" isMarkerVisible="true">
+        <dc:Bounds x="1470" y="245" width="50" height="50"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_task_EnterOrderNoForProgressConfirm" bpmnElement="task_EnterOrderNoForProgressConfirm">
+        <dc:Bounds x="1570" y="300" width="100" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_task_SpecifyConfirmTypeProgress" bpmnElement="task_SpecifyConfirmTypeProgress">
+        <dc:Bounds x="1720" y="300" width="100" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_exclusiveGateway_JoinManualConfirmTypes" bpmnElement="exclusiveGateway_JoinManualConfirmTypes" isMarkerVisible="true">
+        <dc:Bounds x="1870" y="245" width="50" height="50"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_exclusiveGateway_JoinConfirmMethods" bpmnElement="exclusiveGateway_JoinConfirmMethods" isMarkerVisible="true">
+        <dc:Bounds x="1970" y="160" width="50" height="50"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_task_SaveConfirmationProcess" bpmnElement="task_SaveConfirmationProcess">
+        <dc:Bounds x="2070" y="145" width="100" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_task_PostProdOrderConfirmation" bpmnElement="task_PostProdOrderConfirmation">
+        <dc:Bounds x="2220" y="145" width="100" height="80"/>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="shape_task_PostSettlement" bpmnElement="task_PostSettlement">
+        <dc:Bounds x="3870" y="145" width="100" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_parallelGateway_DefineSettlementParamsFork" bpmnElement="parallelGateway_DefineSettlementParamsFork">
+        <dc:Bounds x="4020" y="160" width="50" height="50"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_task_DefineOrderNoForSettlement" bpmnElement="task_DefineOrderNoForSettlement">
+        <dc:Bounds x="4120" y="70" width="100" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_task_DefinePeriodForSettlement" bpmnElement="task_DefinePeriodForSettlement">
+        <dc:Bounds x="4120" y="145" width="100" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_task_DeselectTestRunForSettlement" bpmnElement="task_DeselectTestRunForSettlement">
+        <dc:Bounds x="4120" y="220" width="100" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_parallelGateway_DefineSettlementParamsJoin" bpmnElement="parallelGateway_DefineSettlementParamsJoin">
+        <dc:Bounds x="4270" y="160" width="50" height="50"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_callActivity_CheckSettledCosts" bpmnElement="callActivity_CheckSettledCosts">
+        <dc:Bounds x="4370" y="145" width="100" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_task_CheckQuantityAndEvaluation" bpmnElement="task_CheckQuantityAndEvaluation">
+        <dc:Bounds x="4520" y="145" width="100" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_endEvent_OrderProcessedSuccessfully" bpmnElement="endEvent_OrderProcessedSuccessfully">
+        <dc:Bounds x="4670" y="167" width="36" height="36"/>
+      </bpmndi:BPMNShape>
+
+      <!-- Production Assistant Shapes -->
+      <bpmndi:BPMNShape id="shape_task_WithdrawMaterialsFromStock" bpmnElement="task_WithdrawMaterialsFromStock">
+        <dc:Bounds x="570" y="475" width="100" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_task_PostGoodsIssueMIGO" bpmnElement="task_PostGoodsIssueMIGO">
+        <dc:Bounds x="720" y="475" width="100" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_parallelGateway_DefineGIParamsFork" bpmnElement="parallelGateway_DefineGIParamsFork">
+        <dc:Bounds x="870" y="490" width="50" height="50"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_task_DefineMovementType261" bpmnElement="task_DefineMovementType261">
+        <dc:Bounds x="970" y="405" width="100" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_task_SpecifyPlantStorageAreaForGI" bpmnElement="task_SpecifyPlantStorageAreaForGI">
+        <dc:Bounds x="970" y="475" width="100" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_task_EnterOrderNoForGI" bpmnElement="task_EnterOrderNoForGI">
+        <dc:Bounds x="970" y="545" width="100" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_parallelGateway_DefineGIParamsJoin" bpmnElement="parallelGateway_DefineGIParamsJoin">
+        <dc:Bounds x="1120" y="490" width="50" height="50"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_task_SaveGoodsIssueProcess" bpmnElement="task_SaveGoodsIssueProcess">
+        <dc:Bounds x="1220" y="475" width="100" height="80"/>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="shape_callActivity_CheckActualCosts" bpmnElement="callActivity_CheckActualCosts">
+        <dc:Bounds x="2220" y="475" width="100" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_task_PostGoodsReceiptInWarehouse" bpmnElement="task_PostGoodsReceiptInWarehouse">
+        <dc:Bounds x="2370" y="475" width="100" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_parallelGateway_DefineGRParamsFork" bpmnElement="parallelGateway_DefineGRParamsFork">
+        <dc:Bounds x="2520" y="490" width="50" height="50"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_task_DefineMovementType101" bpmnElement="task_DefineMovementType101">
+        <dc:Bounds x="2620" y="405" width="100" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_task_SpecifyProdOrderForGR" bpmnElement="task_SpecifyProdOrderForGR">
+        <dc:Bounds x="2620" y="475" width="100" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_task_IndicatePlantStorageAreaForGR" bpmnElement="task_IndicatePlantStorageAreaForGR">
+        <dc:Bounds x="2620" y="545" width="100" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_parallelGateway_DefineGRParamsJoin" bpmnElement="parallelGateway_DefineGRParamsJoin">
+        <dc:Bounds x="2770" y="490" width="50" height="50"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_task_SaveGoodsReceiptProcess" bpmnElement="task_SaveGoodsReceiptProcess">
+        <dc:Bounds x="2870" y="475" width="100" height="80"/>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="shape_task_ComputeOverheadsActualCosts" bpmnElement="task_ComputeOverheadsActualCosts">
+        <dc:Bounds x="3020" y="475" width="100" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_exclusiveGateway_OverheadProcessingType" bpmnElement="exclusiveGateway_OverheadProcessingType" isMarkerVisible="true">
+        <dc:Bounds x="3170" y="490" width="50" height="50"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_exclusiveGateway_JoinOverheadProcessingTypes" bpmnElement="exclusiveGateway_JoinOverheadProcessingTypes" isMarkerVisible="true">
+        <dc:Bounds x="3270" y="490" width="50" height="50"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_parallelGateway_SpecifyOverheadParamsFork" bpmnElement="parallelGateway_SpecifyOverheadParamsFork">
+        <dc:Bounds x="3370" y="490" width="50" height="50"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_task_SpecifyOrderPeriodForOverheads" bpmnElement="task_SpecifyOrderPeriodForOverheads">
+        <dc:Bounds x="3470" y="430" width="100" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_task_SetTestRunFieldForOverheads" bpmnElement="task_SetTestRunFieldForOverheads">
+        <dc:Bounds x="3470" y="550" width="100" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_parallelGateway_SpecifyOverheadParamsJoin" bpmnElement="parallelGateway_SpecifyOverheadParamsJoin">
+        <dc:Bounds x="3620" y="490" width="50" height="50"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_task_ExecuteOverheadCalculation" bpmnElement="task_ExecuteOverheadCalculation">
+        <dc:Bounds x="3720" y="475" width="100" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_callActivity_CheckOverheadSurcharge" bpmnElement="callActivity_CheckOverheadSurcharge">
+        <dc:Bounds x="3870" y="475" width="100" height="80"/>
+      </bpmndi:BPMNShape>
+
+      <!-- Sequence Flow Edges -->
+      <bpmndi:BPMNEdge id="edge_flow_StartToReleaseOrder" bpmnElement="flow_StartToReleaseOrder">
+        <di:waypoint x="116" y="185"/>
+        <di:waypoint x="170" y="185"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_ReleaseOrderToDecision" bpmnElement="flow_ReleaseOrderToDecision">
+        <di:waypoint x="270" y="185"/>
+        <di:waypoint x="320" y="185"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_OrderReleased" bpmnElement="flow_OrderReleased">
+        <di:waypoint x="370" y="185"/>
+        <di:waypoint x="570" y="185"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_OrderNotReleased" bpmnElement="flow_OrderNotReleased">
+        <di:waypoint x="345" y="210"/>
+        <di:waypoint x="345" y="285"/>
+        <di:waypoint x="420" y="285"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_CheckLogsToSaveRelease" bpmnElement="flow_CheckLogsToSaveRelease">
+        <di:waypoint x="520" y="285"/>
+        <di:waypoint x="620" y="285"/>
+        <di:waypoint x="620" y="225"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_SaveReleaseToWithdrawMaterials" bpmnElement="flow_SaveReleaseToWithdrawMaterials">
+        <di:waypoint x="620" y="225"/>
+        <di:waypoint x="620" y="475"/>
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="edge_flow_WithdrawToPostGI" bpmnElement="flow_WithdrawToPostGI">
+        <di:waypoint x="670" y="515"/>
+        <di:waypoint x="720" y="515"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_PostGIToDefineGIParams" bpmnElement="flow_PostGIToDefineGIParams">
+        <di:waypoint x="820" y="515"/>
+        <di:waypoint x="870" y="515"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_ForkToDefineMovementType261" bpmnElement="flow_ForkToDefineMovementType261">
+        <di:waypoint x="895" y="490"/>
+        <di:waypoint x="895" y="445"/>
+        <di:waypoint x="970" y="445"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_ForkToSpecifyPlantStorageGI" bpmnElement="flow_ForkToSpecifyPlantStorageGI">
+        <di:waypoint x="920" y="515"/>
+        <di:waypoint x="970" y="515"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_ForkToEnterOrderNoGI" bpmnElement="flow_ForkToEnterOrderNoGI">
+        <di:waypoint x="895" y="540"/>
+        <di:waypoint x="895" y="585"/>
+        <di:waypoint x="970" y="585"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_DefineMovementTypeToJoinGI" bpmnElement="flow_DefineMovementTypeToJoinGI">
+        <di:waypoint x="1070" y="445"/>
+        <di:waypoint x="1145" y="445"/>
+        <di:waypoint x="1145" y="490"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_SpecifyPlantToJoinGI" bpmnElement="flow_SpecifyPlantToJoinGI">
+        <di:waypoint x="1070" y="515"/>
+        <di:waypoint x="1120" y="515"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_EnterOrderNoToJoinGI" bpmnElement="flow_EnterOrderNoToJoinGI">
+        <di:waypoint x="1070" y="585"/>
+        <di:waypoint x="1145" y="585"/>
+        <di:waypoint x="1145" y="540"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_JoinGIToSaveGI" bpmnElement="flow_JoinGIToSaveGI">
+        <di:waypoint x="1170" y="515"/>
+        <di:waypoint x="1220" y="515"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_SaveGIToConfirmOrder" bpmnElement="flow_SaveGIToConfirmOrder">
+        <di:waypoint x="1270" y="475"/>
+        <di:waypoint x="1270" y="225"/>
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="edge_flow_ConfirmOrderToMethodDecision" bpmnElement="flow_ConfirmOrderToMethodDecision">
+        <di:waypoint x="1320" y="185"/>
+        <di:waypoint x="1370" y="185"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_MethodExternalPDC" bpmnElement="flow_MethodExternalPDC">
+        <di:waypoint x="1395" y="160"/>
+        <di:waypoint x="1395" y="125"/>
+        <di:waypoint x="1995" y="125"/>
+        <di:waypoint x="1995" y="160"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_MethodManual" bpmnElement="flow_MethodManual">
+        <di:waypoint x="1395" y="210"/>
+        <di:waypoint x="1395" y="270"/>
+        <di:waypoint x="1470" y="270"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_ManualTypeTimeTicket" bpmnElement="flow_ManualTypeTimeTicket">
+        <di:waypoint x="1495" y="245"/>
+        <di:waypoint x="1495" y="195"/>
+        <di:waypoint x="1895" y="195"/>
+        <di:waypoint x="1895" y="245"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_ManualTypeTimeEvent" bpmnElement="flow_ManualTypeTimeEvent">
+        <di:waypoint x="1520" y="270"/>
+        <di:waypoint x="1870" y="270"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_ManualTypeCollective" bpmnElement="flow_ManualTypeCollective">
+        <di:waypoint x="1495" y="295"/>
+        <di:waypoint x="1495" y="320"/>
+        <di:waypoint x="1895" y="320"/>
+        <di:waypoint x="1895" y="295"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_ManualTypeProgress" bpmnElement="flow_ManualTypeProgress">
+        <di:waypoint x="1495" y="295"/>
+        <di:waypoint x="1495" y="340"/>
+        <di:waypoint x="1570" y="340"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_EnterOrderToSpecifyType" bpmnElement="flow_EnterOrderToSpecifyType">
+        <di:waypoint x="1670" y="340"/>
+        <di:waypoint x="1720" y="340"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_SpecifyTypeToJoinManual" bpmnElement="flow_SpecifyTypeToJoinManual">
+        <di:waypoint x="1820" y="340"/>
+        <di:waypoint x="1895" y="340"/>
+        <di:waypoint x="1895" y="295"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_JoinManualToJoinMethods" bpmnElement="flow_JoinManualToJoinMethods">
+        <di:waypoint x="1920" y="270"/>
+        <di:waypoint x="1995" y="270"/>
+        <di:waypoint x="1995" y="210"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_JoinMethodsToSaveConfirm" bpmnElement="flow_JoinMethodsToSaveConfirm">
+        <di:waypoint x="2020" y="185"/>
+        <di:waypoint x="2070" y="185"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_SaveConfirmToPostConfirm" bpmnElement="flow_SaveConfirmToPostConfirm">
+        <di:waypoint x="2170" y="185"/>
+        <di:waypoint x="2220" y="185"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_PostConfirmToCheckActualCosts" bpmnElement="flow_PostConfirmToCheckActualCosts">
+        <di:waypoint x="2270" y="225"/>
+        <di:waypoint x="2270" y="475"/>
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="edge_flow_CheckActualCostsToPostGR" bpmnElement="flow_CheckActualCostsToPostGR">
+        <di:waypoint x="2320" y="515"/>
+        <di:waypoint x="2370" y="515"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_PostGRToDefineGRParams" bpmnElement="flow_PostGRToDefineGRParams">
+        <di:waypoint x="2470" y="515"/>
+        <di:waypoint x="2520" y="515"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_ForkToDefineMovementType101" bpmnElement="flow_ForkToDefineMovementType101">
+        <di:waypoint x="2545" y="490"/>
+        <di:waypoint x="2545" y="445"/>
+        <di:waypoint x="2620" y="445"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_ForkToSpecifyProdOrderGR" bpmnElement="flow_ForkToSpecifyProdOrderGR">
+        <di:waypoint x="2570" y="515"/>
+        <di:waypoint x="2620" y="515"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_ForkToIndicatePlantStorageGR" bpmnElement="flow_ForkToIndicatePlantStorageGR">
+        <di:waypoint x="2545" y="540"/>
+        <di:waypoint x="2545" y="585"/>
+        <di:waypoint x="2620" y="585"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_DefineMovementTypeGRToJoinGR" bpmnElement="flow_DefineMovementTypeGRToJoinGR">
+        <di:waypoint x="2720" y="445"/>
+        <di:waypoint x="2795" y="445"/>
+        <di:waypoint x="2795" y="490"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_SpecifyProdOrderToJoinGR" bpmnElement="flow_SpecifyProdOrderToJoinGR">
+        <di:waypoint x="2720" y="515"/>
+        <di:waypoint x="2770" y="515"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_IndicatePlantGRToJoinGR" bpmnElement="flow_IndicatePlantGRToJoinGR">
+        <di:waypoint x="2720" y="585"/>
+        <di:waypoint x="2795" y="585"/>
+        <di:waypoint x="2795" y="540"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_JoinGRToSaveGR" bpmnElement="flow_JoinGRToSaveGR">
+        <di:waypoint x="2820" y="515"/>
+        <di:waypoint x="2870" y="515"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_SaveGRToComputeOverheads" bpmnElement="flow_SaveGRToComputeOverheads">
+        <di:waypoint x="2970" y="515"/>
+        <di:waypoint x="3020" y="515"/>
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="edge_flow_ComputeOverheadsToProcessingType" bpmnElement="flow_ComputeOverheadsToProcessingType">
+        <di:waypoint x="3120" y="515"/>
+        <di:waypoint x="3170" y="515"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_OverheadTypeIndividual" bpmnElement="flow_OverheadTypeIndividual">
+        <di:waypoint x="3195" y="490"/>
+        <di:waypoint x="3195" y="455"/>
+        <di:waypoint x="3295" y="455"/>
+        <di:waypoint x="3295" y="490"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_OverheadTypeCollective" bpmnElement="flow_OverheadTypeCollective">
+        <di:waypoint x="3195" y="540"/>
+        <di:waypoint x="3195" y="575"/>
+        <di:waypoint x="3295" y="575"/>
+        <di:waypoint x="3295" y="540"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_JoinOverheadTypesToSpecifyParams" bpmnElement="flow_JoinOverheadTypesToSpecifyParams">
+        <di:waypoint x="3320" y="515"/>
+        <di:waypoint x="3370" y="515"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_ForkToSpecifyOrderPeriodOverhead" bpmnElement="flow_ForkToSpecifyOrderPeriodOverhead">
+        <di:waypoint x="3395" y="490"/>
+        <di:waypoint x="3395" y="470"/>
+        <di:waypoint x="3470" y="470"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_ForkToSetTestRunOverhead" bpmnElement="flow_ForkToSetTestRunOverhead">
+        <di:waypoint x="3395" y="540"/>
+        <di:waypoint x="3395" y="590"/>
+        <di:waypoint x="3470" y="590"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_SpecifyOrderPeriodToJoinOverhead" bpmnElement="flow_SpecifyOrderPeriodToJoinOverhead">
+        <di:waypoint x="3570" y="470"/>
+        <di:waypoint x="3645" y="470"/>
+        <di:waypoint x="3645" y="490"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_SetTestRunToJoinOverhead" bpmnElement="flow_SetTestRunToJoinOverhead">
+        <di:waypoint x="3570" y="590"/>
+        <di:waypoint x="3645" y="590"/>
+        <di:waypoint x="3645" y="540"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_JoinOverheadParamsToExecute" bpmnElement="flow_JoinOverheadParamsToExecute">
+        <di:waypoint x="3670" y="515"/>
+        <di:waypoint x="3720" y="515"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_ExecuteOverheadToCheckSurcharge" bpmnElement="flow_ExecuteOverheadToCheckSurcharge">
+        <di:waypoint x="3820" y="515"/>
+        <di:waypoint x="3870" y="515"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_CheckOverheadToPostSettlement" bpmnElement="flow_CheckOverheadToPostSettlement">
+        <di:waypoint x="3920" y="475"/>
+        <di:waypoint x="3920" y="225"/>
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="edge_flow_PostSettlementToDefineParams" bpmnElement="flow_PostSettlementToDefineParams">
+        <di:waypoint x="3970" y="185"/>
+        <di:waypoint x="4020" y="185"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_ForkToDefineOrderNoSettlement" bpmnElement="flow_ForkToDefineOrderNoSettlement">
+        <di:waypoint x="4045" y="160"/>
+        <di:waypoint x="4045" y="110"/>
+        <di:waypoint x="4120" y="110"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_ForkToDefinePeriodSettlement" bpmnElement="flow_ForkToDefinePeriodSettlement">
+        <di:waypoint x="4070" y="185"/>
+        <di:waypoint x="4120" y="185"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_ForkToDeselectTestRunSettlement" bpmnElement="flow_ForkToDeselectTestRunSettlement">
+        <di:waypoint x="4045" y="210"/>
+        <di:waypoint x="4045" y="260"/>
+        <di:waypoint x="4120" y="260"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_DefineOrderNoToJoinSettlement" bpmnElement="flow_DefineOrderNoToJoinSettlement">
+        <di:waypoint x="4220" y="110"/>
+        <di:waypoint x="4295" y="110"/>
+        <di:waypoint x="4295" y="160"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_DefinePeriodToJoinSettlement" bpmnElement="flow_DefinePeriodToJoinSettlement">
+        <di:waypoint x="4220" y="185"/>
+        <di:waypoint x="4270" y="185"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_DeselectTestRunToJoinSettlement" bpmnElement="flow_DeselectTestRunToJoinSettlement">
+        <di:waypoint x="4220" y="260"/>
+        <di:waypoint x="4295" y="260"/>
+        <di:waypoint x="4295" y="210"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_JoinSettlementToCheckSettled" bpmnElement="flow_JoinSettlementToCheckSettled">
+        <di:waypoint x="4320" y="185"/>
+        <di:waypoint x="4370" y="185"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_CheckSettledToFinalCheck" bpmnElement="flow_CheckSettledToFinalCheck">
+        <di:waypoint x="4470" y="185"/>
+        <di:waypoint x="4520" y="185"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_FinalCheckToEnd" bpmnElement="flow_FinalCheckToEnd">
+        <di:waypoint x="4620" y="185"/>
+        <di:waypoint x="4670" y="185"/>
+      </bpmndi:BPMNEdge>
+
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</semantic:definitions>

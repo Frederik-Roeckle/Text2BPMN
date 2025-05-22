@@ -1,0 +1,776 @@
+<?xml version="1.0" standalone="yes"?>
+<semantic:definitions id="P2PProcess"
+    targetNamespace="http://example.com/bpmn/p2p-process"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:semantic="http://www.omg.org/spec/BPMN/20100524/MODEL"
+    xmlns:di="http://www.omg.org/spec/DD/20100524/DI"
+    xmlns:dc="http://www.omg.org/spec/DD/20100524/DC"
+    xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI">
+
+  <semantic:collaboration id="collab_p2pProcess">
+    <semantic:participant id="participant_purchasing" name="Purchasing Department" processRef="purchasingProcess"/>
+    <semantic:participant id="participant_heads" name="Heads of Departments" processRef="headsProcess"/>
+    <semantic:participant id="participant_poApprovers" name="PO Approvers" processRef="poApproversProcess"/>
+    <semantic:participant id="participant_vendor" name="Vendor" processRef="vendorProcess"/>
+    <semantic:participant id="participant_apTeam" name="Accounts Payable Team" processRef="apProcess"/>
+  </semantic:collaboration>
+
+  <semantic:process id="purchasingProcess" isExecutable="true">
+    <semantic:laneSet id="laneSetPurchasing">
+      <semantic:lane id="lane_requestor" name="Requestor">
+        <semantic:flowNodeRef>start_defineBusinessNeeds</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_defineBusinessNeeds</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_requestIssuePR</semantic:flowNodeRef>
+        <semantic:flowNodeRef>gateway_prApprovalDecision</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_issuePR</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_submitPRtoHeads</semantic:flowNodeRef>
+        <semantic:flowNodeRef>gateway_headsDecision</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_createPO</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_submitPOtoApprovers</semantic:flowNodeRef>
+        <semantic:flowNodeRef>gateway_poApproversDecision</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_dispatchPOtoVendor</semantic:flowNodeRef>
+        <semantic:flowNodeRef>gateway_vendorDecision</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_receiveGoodsServices</semantic:flowNodeRef>
+        <semantic:flowNodeRef>gateway_goodsOrService</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_issueGoodsReceipt</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_issueServiceEntrySheet</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_receiveInvoice</semantic:flowNodeRef>
+        <semantic:flowNodeRef>gateway_invoiceCheck</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_returnWrongInvoice</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_receiveCorrectedInvoice</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_postInvoiceAndSendToAP</semantic:flowNodeRef>
+        <semantic:flowNodeRef>end_purchasingProcess</semantic:flowNodeRef>
+      </semantic:lane>
+    </semantic:laneSet>
+
+    <semantic:startEvent id="start_defineBusinessNeeds" name="Start: Define Business Requirements & Needs">
+      <semantic:outgoing>flow1</semantic:outgoing>
+    </semantic:startEvent>
+
+    <semantic:task id="task_defineBusinessNeeds" name="Determine and Define Business Requirements & Needs">
+      <semantic:incoming>flow1</semantic:incoming>
+      <semantic:outgoing>flow2</semantic:outgoing>
+    </semantic:task>
+
+    <semantic:task id="task_requestIssuePR" name="Request to Issue Purchase Requisition (PR)">
+      <semantic:incoming>flow2</semantic:incoming>
+      <semantic:outgoing>flow3</semantic:outgoing>
+    </semantic:task>
+
+    <semantic:exclusiveGateway id="gateway_prApprovalDecision" name="Is PR Request Approved?">
+      <semantic:incoming>flow3</semantic:incoming>
+      <semantic:outgoing>flow4</semantic:outgoing>
+      <semantic:outgoing>flow5</semantic:outgoing>
+    </semantic:exclusiveGateway>
+
+    <semantic:task id="task_issuePR" name="Issue Purchase Requisition (PR)">
+      <semantic:incoming>flow4</semantic:incoming>
+      <semantic:outgoing>flow6</semantic:outgoing>
+    </semantic:task>
+
+    <semantic:task id="task_submitPRtoHeads" name="Submit PR to Heads of Departments for Approval">
+      <semantic:incoming>flow6</semantic:incoming>
+      <semantic:outgoing>flow7</semantic:outgoing>
+    </semantic:task>
+
+    <semantic:exclusiveGateway id="gateway_headsDecision" name="Heads of Departments Decision on PR">
+      <semantic:incoming>flow7</semantic:incoming>
+      <semantic:outgoing>flow8</semantic:outgoing>
+      <semantic:outgoing>flow9</semantic:outgoing>
+      <semantic:outgoing>flow10</semantic:outgoing>
+    </semantic:exclusiveGateway>
+
+    <semantic:task id="task_createPO" name="Create Purchase Order (PO)">
+      <semantic:incoming>flow8</semantic:incoming>
+      <semantic:outgoing>flow11</semantic:outgoing>
+    </semantic:task>
+
+    <semantic:task id="task_submitPOtoApprovers" name="Submit PO to PO Approvers for Approval">
+      <semantic:incoming>flow11</semantic:incoming>
+      <semantic:outgoing>flow12</semantic:outgoing>
+    </semantic:task>
+
+    <semantic:exclusiveGateway id="gateway_poApproversDecision" name="PO Approvers Decision">
+      <semantic:incoming>flow12</semantic:incoming>
+      <semantic:outgoing>flow13</semantic:outgoing>
+      <semantic:outgoing>flow14</semantic:outgoing>
+    </semantic:exclusiveGateway>
+
+    <semantic:task id="task_dispatchPOtoVendor" name="Dispatch Approved PO to Vendor">
+      <semantic:incoming>flow13</semantic:incoming>
+      <semantic:outgoing>flow15</semantic:outgoing>
+    </semantic:task>
+
+    <semantic:exclusiveGateway id="gateway_vendorDecision" name="Vendor Decision on PO">
+      <semantic:incoming>flow15</semantic:incoming>
+      <semantic:outgoing>flow16</semantic:outgoing>
+      <semantic:outgoing>flow17</semantic:outgoing>
+      <semantic:outgoing>flow18</semantic:outgoing>
+    </semantic:exclusiveGateway>
+
+    <semantic:task id="task_receiveGoodsServices" name="Receive Agreed Goods/Services">
+      <semantic:incoming>flow16</semantic:incoming>
+      <semantic:outgoing>flow19</semantic:outgoing>
+    </semantic:task>
+
+    <semantic:exclusiveGateway id="gateway_goodsOrService" name="Goods or Service Received?">
+      <semantic:incoming>flow19</semantic:incoming>
+      <semantic:outgoing>flow20</semantic:outgoing>
+      <semantic:outgoing>flow21</semantic:outgoing>
+    </semantic:exclusiveGateway>
+
+    <semantic:task id="task_issueGoodsReceipt" name="Issue Goods Receipt (GR)">
+      <semantic:incoming>flow20</semantic:incoming>
+      <semantic:outgoing>flow22</semantic:outgoing>
+    </semantic:task>
+
+    <semantic:task id="task_issueServiceEntrySheet" name="Issue Service Entry Sheet (SES)">
+      <semantic:incoming>flow21</semantic:incoming>
+      <semantic:outgoing>flow23</semantic:outgoing>
+    </semantic:task>
+
+    <semantic:task id="task_receiveInvoice" name="Receive Invoice from Vendor">
+      <semantic:incoming>flow22</semantic:incoming>
+      <semantic:incoming>flow23</semantic:incoming>
+      <semantic:outgoing>flow24</semantic:outgoing>
+    </semantic:task>
+
+    <semantic:exclusiveGateway id="gateway_invoiceCheck" name="Is Invoice Correct?">
+      <semantic:incoming>flow24</semantic:incoming>
+      <semantic:outgoing>flow25</semantic:outgoing>
+      <semantic:outgoing>flow26</semantic:outgoing>
+    </semantic:exclusiveGateway>
+
+    <semantic:task id="task_returnWrongInvoice" name="Return Wrong Invoice to Vendor for Correction">
+      <semantic:incoming>flow26</semantic:incoming>
+      <semantic:outgoing>flow27</semantic:outgoing>
+    </semantic:task>
+
+    <semantic:task id="task_receiveCorrectedInvoice" name="Receive Corrected Invoice from Vendor">
+      <semantic:incoming>flow27</semantic:incoming>
+      <semantic:outgoing>flow28</semantic:outgoing>
+    </semantic:task>
+
+    <semantic:task id="task_postInvoiceAndSendToAP" name="Post Invoice in SAP and Send to Accounts Payable">
+      <semantic:incoming>flow25</semantic:incoming>
+      <semantic:incoming>flow28</semantic:incoming>
+      <semantic:outgoing>flow29</semantic:outgoing>
+    </semantic:task>
+
+    <semantic:endEvent id="end_purchasingProcess" name="End Purchasing Process">
+      <semantic:incoming>flow9</semantic:incoming>
+      <semantic:incoming>flow10</semantic:incoming>
+      <semantic:incoming>flow14</semantic:incoming>
+      <semantic:incoming>flow17</semantic:incoming>
+      <semantic:incoming>flow18</semantic:incoming>
+      <semantic:incoming>flow29</semantic:incoming>
+    </semantic:endEvent>
+
+    <semantic:sequenceFlow id="flow1" sourceRef="start_defineBusinessNeeds" targetRef="task_defineBusinessNeeds"/>
+    <semantic:sequenceFlow id="flow2" sourceRef="task_defineBusinessNeeds" targetRef="task_requestIssuePR"/>
+    <semantic:sequenceFlow id="flow3" sourceRef="task_requestIssuePR" targetRef="gateway_prApprovalDecision"/>
+    <semantic:sequenceFlow id="flow4" sourceRef="gateway_prApprovalDecision" targetRef="task_issuePR" name="Approved"/>
+    <semantic:sequenceFlow id="flow5" sourceRef="gateway_prApprovalDecision" targetRef="task_defineBusinessNeeds" name="Not Approved"/>
+    <semantic:sequenceFlow id="flow6" sourceRef="task_issuePR" targetRef="task_submitPRtoHeads"/>
+    <semantic:sequenceFlow id="flow7" sourceRef="task_submitPRtoHeads" targetRef="gateway_headsDecision"/>
+    <semantic:sequenceFlow id="flow8" sourceRef="gateway_headsDecision" targetRef="task_createPO" name="Approve PR"/>
+    <semantic:sequenceFlow id="flow9" sourceRef="gateway_headsDecision" targetRef="task_defineBusinessNeeds" name="Decline PR"/>
+    <semantic:sequenceFlow id="flow10" sourceRef="gateway_headsDecision" targetRef="task_defineBusinessNeeds" name="Reject Incomplete PR"/>
+    <semantic:sequenceFlow id="flow11" sourceRef="task_createPO" targetRef="task_submitPOtoApprovers"/>
+    <semantic:sequenceFlow id="flow12" sourceRef="task_submitPOtoApprovers" targetRef="gateway_poApproversDecision"/>
+    <semantic:sequenceFlow id="flow13" sourceRef="gateway_poApproversDecision" targetRef="task_dispatchPOtoVendor" name="Approve PO"/>
+    <semantic:sequenceFlow id="flow14" sourceRef="gateway_poApproversDecision" targetRef="task_defineBusinessNeeds" name="Reject PO"/>
+    <semantic:sequenceFlow id="flow15" sourceRef="task_dispatchPOtoVendor" targetRef="gateway_vendorDecision"/>
+    <semantic:sequenceFlow id="flow16" sourceRef="gateway_vendorDecision" targetRef="task_receiveGoodsServices" name="Approve or Negotiate PO"/>
+    <semantic:sequenceFlow id="flow17" sourceRef="gateway_vendorDecision" targetRef="end_purchasingProcess" name="Reject PO"/>
+    <semantic:sequenceFlow id="flow18" sourceRef="gateway_vendorDecision" targetRef="task_defineBusinessNeeds" name="Vendor Did Not Approve PO"/>
+    <semantic:sequenceFlow id="flow19" sourceRef="task_receiveGoodsServices" targetRef="gateway_goodsOrService"/>
+    <semantic:sequenceFlow id="flow20" sourceRef="gateway_goodsOrService" targetRef="task_issueGoodsReceipt" name="Goods"/>
+    <semantic:sequenceFlow id="flow21" sourceRef="gateway_goodsOrService" targetRef="task_issueServiceEntrySheet" name="Service"/>
+    <semantic:sequenceFlow id="flow22" sourceRef="task_issueGoodsReceipt" targetRef="task_receiveInvoice"/>
+    <semantic:sequenceFlow id="flow23" sourceRef="task_issueServiceEntrySheet" targetRef="task_receiveInvoice"/>
+    <semantic:sequenceFlow id="flow24" sourceRef="task_receiveInvoice" targetRef="gateway_invoiceCheck"/>
+    <semantic:sequenceFlow id="flow25" sourceRef="gateway_invoiceCheck" targetRef="task_postInvoiceAndSendToAP" name="Invoice Correct"/>
+    <semantic:sequenceFlow id="flow26" sourceRef="gateway_invoiceCheck" targetRef="task_returnWrongInvoice" name="Invoice Wrong"/>
+    <semantic:sequenceFlow id="flow27" sourceRef="task_returnWrongInvoice" targetRef="task_receiveCorrectedInvoice"/>
+    <semantic:sequenceFlow id="flow28" sourceRef="task_receiveCorrectedInvoice" targetRef="task_postInvoiceAndSendToAP"/>
+    <semantic:sequenceFlow id="flow29" sourceRef="task_postInvoiceAndSendToAP" targetRef="end_purchasingProcess"/>
+  </semantic:process>
+
+  <semantic:process id="headsProcess" isExecutable="true">
+    <semantic:laneSet id="laneSetHeads">
+      <semantic:lane id="lane_heads" name="Heads of Departments">
+        <semantic:flowNodeRef>task_reviewPR</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_documentDecisionToRequestor</semantic:flowNodeRef>
+        <semantic:flowNodeRef>end_headsProcess</semantic:flowNodeRef>
+      </semantic:lane>
+    </semantic:laneSet>
+
+    <semantic:task id="task_reviewPR" name="Review PR: Evaluate Needs, Verify Budget, Validate Form">
+      <semantic:incoming>flow_headsStart</semantic:incoming>
+      <semantic:outgoing>flow_headsDecision</semantic:outgoing>
+    </semantic:task>
+
+    <semantic:task id="task_documentDecisionToRequestor" name="Document and Submit Final Decision to Requestor">
+      <semantic:incoming>flow_headsDecision</semantic:incoming>
+      <semantic:outgoing>flow_headsEnd</semantic:outgoing>
+    </semantic:task>
+
+    <semantic:endEvent id="end_headsProcess" name="End Heads of Departments Process">
+      <semantic:incoming>flow_headsEnd</semantic:incoming>
+    </semantic:endEvent>
+
+    <semantic:sequenceFlow id="flow_headsStart" sourceRef="task_submitPRtoHeads" targetRef="task_reviewPR"/>
+    <semantic:sequenceFlow id="flow_headsDecision" sourceRef="task_reviewPR" targetRef="task_documentDecisionToRequestor"/>
+    <semantic:sequenceFlow id="flow_headsEnd" sourceRef="task_documentDecisionToRequestor" targetRef="end_headsProcess"/>
+  </semantic:process>
+
+  <semantic:process id="poApproversProcess" isExecutable="true">
+    <semantic:laneSet id="laneSetPOApprovers">
+      <semantic:lane id="lane_poApprovers" name="PO Approvers">
+        <semantic:flowNodeRef>task_reviewPO</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_documentDecisionToRequestorPO</semantic:flowNodeRef>
+        <semantic:flowNodeRef>end_poApproversProcess</semantic:flowNodeRef>
+      </semantic:lane>
+    </semantic:laneSet>
+
+    <semantic:task id="task_reviewPO" name="Review Purchase Order Specifications">
+      <semantic:incoming>flow_poApproversStart</semantic:incoming>
+      <semantic:outgoing>flow_poApproversDecision</semantic:outgoing>
+    </semantic:task>
+
+    <semantic:task id="task_documentDecisionToRequestorPO" name="Document and Submit Final Decision to Requestor">
+      <semantic:incoming>flow_poApproversDecision</semantic:incoming>
+      <semantic:outgoing>flow_poApproversEnd</semantic:outgoing>
+    </semantic:task>
+
+    <semantic:endEvent id="end_poApproversProcess" name="End PO Approvers Process">
+      <semantic:incoming>flow_poApproversEnd</semantic:incoming>
+    </semantic:endEvent>
+
+    <semantic:sequenceFlow id="flow_poApproversStart" sourceRef="task_submitPOtoApprovers" targetRef="task_reviewPO"/>
+    <semantic:sequenceFlow id="flow_poApproversDecision" sourceRef="task_reviewPO" targetRef="task_documentDecisionToRequestorPO"/>
+    <semantic:sequenceFlow id="flow_poApproversEnd" sourceRef="task_documentDecisionToRequestorPO" targetRef="end_poApproversProcess"/>
+  </semantic:process>
+
+  <semantic:process id="vendorProcess" isExecutable="true">
+    <semantic:laneSet id="laneSetVendor">
+      <semantic:lane id="lane_vendor" name="Vendor">
+        <semantic:flowNodeRef>task_evaluatePO</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_documentDecisionToRequestorVendor</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_deliverGoodsServices</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_sendInvoiceForDelivery</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_correctInvoice</semantic:flowNodeRef>
+        <semantic:flowNodeRef>end_vendorProcess</semantic:flowNodeRef>
+      </semantic:lane>
+    </semantic:laneSet>
+
+    <semantic:task id="task_evaluatePO" name="Evaluate Purchase Order">
+      <semantic:incoming>flow_dispatchPOtoVendor</semantic:incoming>
+      <semantic:outgoing>flow_vendorDecision</semantic:outgoing>
+    </semantic:task>
+
+    <semantic:task id="task_documentDecisionToRequestorVendor" name="Document Decision to Requestor">
+      <semantic:incoming>flow_vendorDecision</semantic:incoming>
+      <semantic:outgoing>flow_vendorDecisionOutcome</semantic:outgoing>
+    </semantic:task>
+
+    <semantic:task id="task_deliverGoodsServices" name="Deliver Agreed Goods/Services">
+      <semantic:incoming>flow_vendorDecisionOutcome</semantic:incoming>
+      <semantic:outgoing>flow_sendInvoice</semantic:outgoing>
+    </semantic:task>
+
+    <semantic:task id="task_sendInvoiceForDelivery" name="Send Invoice for Delivery">
+      <semantic:incoming>flow_sendInvoice</semantic:incoming>
+      <semantic:outgoing>flow_endVendorAfterDelivery</semantic:outgoing>
+    </semantic:task>
+
+    <semantic:task id="task_correctInvoice" name="Correct Invoice and Send Back to Requestor">
+      <semantic:incoming>flow_returnWrongInvoice</semantic:incoming>
+      <semantic:outgoing>flow_endVendorAfterCorrection</semantic:outgoing>
+    </semantic:task>
+
+    <semantic:endEvent id="end_vendorProcess" name="End Vendor Process">
+      <semantic:incoming>flow_endVendorAfterDelivery</semantic:incoming>
+      <semantic:incoming>flow_endVendorAfterCorrection</semantic:incoming>
+      <semantic:incoming>flow_vendorRejectPO</semantic:incoming>
+    </semantic:endEvent>
+
+    <semantic:sequenceFlow id="flow_dispatchPOtoVendor" sourceRef="task_dispatchPOtoVendor" targetRef="task_evaluatePO"/>
+    <semantic:sequenceFlow id="flow_vendorDecision" sourceRef="task_evaluatePO" targetRef="task_documentDecisionToRequestorVendor"/>
+    <semantic:sequenceFlow id="flow_vendorDecisionOutcome" sourceRef="task_documentDecisionToRequestorVendor" targetRef="task_deliverGoodsServices" name="Approve or Negotiate PO"/>
+    <semantic:sequenceFlow id="flow_sendInvoice" sourceRef="task_deliverGoodsServices" targetRef="task_sendInvoiceForDelivery"/>
+    <semantic:sequenceFlow id="flow_endVendorAfterDelivery" sourceRef="task_sendInvoiceForDelivery" targetRef="end_vendorProcess"/>
+    <semantic:sequenceFlow id="flow_returnWrongInvoice" sourceRef="task_returnWrongInvoice" targetRef="task_correctInvoice"/>
+    <semantic:sequenceFlow id="flow_endVendorAfterCorrection" sourceRef="task_correctInvoice" targetRef="end_vendorProcess"/>
+    <semantic:sequenceFlow id="flow_vendorRejectPO" sourceRef="gateway_vendorDecision" targetRef="end_vendorProcess" name="Reject PO"/>
+  </semantic:process>
+
+  <semantic:process id="apProcess" isExecutable="true">
+    <semantic:laneSet id="laneSetAP">
+      <semantic:lane id="lane_apProcessor" name="AP Processor">
+        <semantic:flowNodeRef>task_receiveInvoiceAP</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_decidePaymentMethod</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_performPayment</semantic:flowNodeRef>
+        <semantic:flowNodeRef>end_apProcess</semantic:flowNodeRef>
+      </semantic:lane>
+    </semantic:laneSet>
+
+    <semantic:startEvent id="start_apProcess" name="Start AP Process">
+      <semantic:outgoing>flow_apStart</semantic:outgoing>
+    </semantic:startEvent>
+
+    <semantic:task id="task_receiveInvoiceAP" name="Receive Invoice from Requestor">
+      <semantic:incoming>flow_apStart</semantic:incoming>
+      <semantic:outgoing>flow_decidePayment</semantic:outgoing>
+    </semantic:task>
+
+    <semantic:task id="task_decidePaymentMethod" name="Decide Payment Method (Full or Installments)">
+      <semantic:incoming>flow_decidePayment</semantic:incoming>
+      <semantic:outgoing>flow_performPayment</semantic:outgoing>
+    </semantic:task>
+
+    <semantic:task id="task_performPayment" name="Perform Payment to Vendor">
+      <semantic:incoming>flow_performPayment</semantic:incoming>
+      <semantic:outgoing>flow_endAP</semantic:outgoing>
+    </semantic:task>
+
+    <semantic:endEvent id="end_apProcess" name="End Accounts Payable Process">
+      <semantic:incoming>flow_endAP</semantic:incoming>
+    </semantic:endEvent>
+
+    <semantic:sequenceFlow id="flow_apStart" sourceRef="task_postInvoiceAndSendToAP" targetRef="task_receiveInvoiceAP"/>
+    <semantic:sequenceFlow id="flow_decidePayment" sourceRef="task_receiveInvoiceAP" targetRef="task_decidePaymentMethod"/>
+    <semantic:sequenceFlow id="flow_performPayment" sourceRef="task_decidePaymentMethod" targetRef="task_performPayment"/>
+    <semantic:sequenceFlow id="flow_endAP" sourceRef="task_performPayment" targetRef="end_apProcess"/>
+  </semantic:process>
+
+  <bpmndi:BPMNDiagram id="BPMNDiagram_p2pProcess" name="Purchase to Pay Process Diagram" resolution="96.0">
+    <bpmndi:BPMNPlane bpmnElement="collab_p2pProcess">
+
+      <bpmndi:BPMNShape id="participant_purchasing_shape" bpmnElement="participant_purchasing" isHorizontal="true">
+        <dc:Bounds x="20" y="20" width="900" height="400"/>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="participant_heads_shape" bpmnElement="participant_heads" isHorizontal="true">
+        <dc:Bounds x="20" y="440" width="600" height="150"/>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="participant_poApprovers_shape" bpmnElement="participant_poApprovers" isHorizontal="true">
+        <dc:Bounds x="20" y="610" width="600" height="150"/>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="participant_vendor_shape" bpmnElement="participant_vendor" isHorizontal="true">
+        <dc:Bounds x="20" y="780" width="700" height="250"/>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="participant_apTeam_shape" bpmnElement="participant_apTeam" isHorizontal="true">
+        <dc:Bounds x="20" y="1050" width="600" height="150"/>
+      </bpmndi:BPMNShape>
+
+      <!-- Purchasing Department shapes -->
+      <bpmndi:BPMNShape id="start_defineBusinessNeeds_shape" bpmnElement="start_defineBusinessNeeds">
+        <dc:Bounds x="100" y="50" width="36" height="36"/>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="task_defineBusinessNeeds_shape" bpmnElement="task_defineBusinessNeeds">
+        <dc:Bounds x="160" y="40" width="140" height="56"/>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="task_requestIssuePR_shape" bpmnElement="task_requestIssuePR">
+        <dc:Bounds x="320" y="40" width="140" height="56"/>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="gateway_prApprovalDecision_shape" bpmnElement="gateway_prApprovalDecision" isMarkerVisible="true">
+        <dc:Bounds x="490" y="45" width="50" height="50"/>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="task_issuePR_shape" bpmnElement="task_issuePR">
+        <dc:Bounds x="580" y="10" width="140" height="56"/>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="task_submitPRtoHeads_shape" bpmnElement="task_submitPRtoHeads">
+        <dc:Bounds x="580" y="100" width="140" height="56"/>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="gateway_headsDecision_shape" bpmnElement="gateway_headsDecision" isMarkerVisible="true">
+        <dc:Bounds x="760" y="70" width="50" height="50"/>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="task_createPO_shape" bpmnElement="task_createPO">
+        <dc:Bounds x="850" y="40" width="140" height="56"/>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="task_submitPOtoApprovers_shape" bpmnElement="task_submitPOtoApprovers">
+        <dc:Bounds x="850" y="110" width="140" height="56"/>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="gateway_poApproversDecision_shape" bpmnElement="gateway_poApproversDecision" isMarkerVisible="true">
+        <dc:Bounds x="1030" y="80" width="50" height="50"/>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="task_dispatchPOtoVendor_shape" bpmnElement="task_dispatchPOtoVendor">
+        <dc:Bounds x="1120" y="60" width="140" height="56"/>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="gateway_vendorDecision_shape" bpmnElement="gateway_vendorDecision" isMarkerVisible="true">
+        <dc:Bounds x="1310" y="60" width="50" height="50"/>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="task_receiveGoodsServices_shape" bpmnElement="task_receiveGoodsServices">
+        <dc:Bounds x="1410" y="40" width="140" height="56"/>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="gateway_goodsOrService_shape" bpmnElement="gateway_goodsOrService" isMarkerVisible="true">
+        <dc:Bounds x="1570" y="60" width="50" height="50"/>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="task_issueGoodsReceipt_shape" bpmnElement="task_issueGoodsReceipt">
+        <dc:Bounds x="1650" y="10" width="140" height="56"/>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="task_issueServiceEntrySheet_shape" bpmnElement="task_issueServiceEntrySheet">
+        <dc:Bounds x="1650" y="110" width="140" height="56"/>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="task_receiveInvoice_shape" bpmnElement="task_receiveInvoice">
+        <dc:Bounds x="1830" y="60" width="140" height="56"/>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="gateway_invoiceCheck_shape" bpmnElement="gateway_invoiceCheck" isMarkerVisible="true">
+        <dc:Bounds x="2010" y="60" width="50" height="50"/>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="task_returnWrongInvoice_shape" bpmnElement="task_returnWrongInvoice">
+        <dc:Bounds x="2100" y="10" width="160" height="56"/>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="task_receiveCorrectedInvoice_shape" bpmnElement="task_receiveCorrectedInvoice">
+        <dc:Bounds x="2100" y="110" width="160" height="56"/>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="task_postInvoiceAndSendToAP_shape" bpmnElement="task_postInvoiceAndSendToAP">
+        <dc:Bounds x="2300" y="60" width="160" height="56"/>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="end_purchasingProcess_shape" bpmnElement="end_purchasingProcess">
+        <dc:Bounds x="2500" y="60" width="36" height="36"/>
+      </bpmndi:BPMNShape>
+
+      <!-- Heads of Departments shapes -->
+      <bpmndi:BPMNShape id="task_reviewPR_shape" bpmnElement="task_reviewPR">
+        <dc:Bounds x="100" y="470" width="180" height="56"/>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="task_documentDecisionToRequestor_shape" bpmnElement="task_documentDecisionToRequestor">
+        <dc:Bounds x="320" y="470" width="180" height="56"/>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="end_headsProcess_shape" bpmnElement="end_headsProcess">
+        <dc:Bounds x="560" y="480" width="36" height="36"/>
+      </bpmndi:BPMNShape>
+
+      <!-- PO Approvers shapes -->
+      <bpmndi:BPMNShape id="task_reviewPO_shape" bpmnElement="task_reviewPO">
+        <dc:Bounds x="100" y="640" width="180" height="56"/>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="task_documentDecisionToRequestorPO_shape" bpmnElement="task_documentDecisionToRequestorPO">
+        <dc:Bounds x="320" y="640" width="180" height="56"/>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="end_poApproversProcess_shape" bpmnElement="end_poApproversProcess">
+        <dc:Bounds x="560" y="650" width="36" height="36"/>
+      </bpmndi:BPMNShape>
+
+      <!-- Vendor shapes -->
+      <bpmndi:BPMNShape id="task_evaluatePO_shape" bpmnElement="task_evaluatePO">
+        <dc:Bounds x="100" y="810" width="180" height="56"/>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="task_documentDecisionToRequestorVendor_shape" bpmnElement="task_documentDecisionToRequestorVendor">
+        <dc:Bounds x="320" y="810" width="180" height="56"/>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="task_deliverGoodsServices_shape" bpmnElement="task_deliverGoodsServices">
+        <dc:Bounds x="560" y="810" width="180" height="56"/>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="task_sendInvoiceForDelivery_shape" bpmnElement="task_sendInvoiceForDelivery">
+        <dc:Bounds x="800" y="810" width="180" height="56"/>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="task_correctInvoice_shape" bpmnElement="task_correctInvoice">
+        <dc:Bounds x="320" y="900" width="180" height="56"/>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="end_vendorProcess_shape" bpmnElement="end_vendorProcess">
+        <dc:Bounds x="1040" y="840" width="36" height="36"/>
+      </bpmndi:BPMNShape>
+
+      <!-- AP Team shapes -->
+      <bpmndi:BPMNShape id="start_apProcess_shape" bpmnElement="start_apProcess">
+        <dc:Bounds x="100" y="1080" width="36" height="36"/>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="task_receiveInvoiceAP_shape" bpmnElement="task_receiveInvoiceAP">
+        <dc:Bounds x="160" y="1070" width="180" height="56"/>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="task_decidePaymentMethod_shape" bpmnElement="task_decidePaymentMethod">
+        <dc:Bounds x="360" y="1070" width="180" height="56"/>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="task_performPayment_shape" bpmnElement="task_performPayment">
+        <dc:Bounds x="560" y="1070" width="180" height="56"/>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="end_apProcess_shape" bpmnElement="end_apProcess">
+        <dc:Bounds x="780" y="1080" width="36" height="36"/>
+      </bpmndi:BPMNShape>
+
+      <!-- Sequence Flows BPMNEdges -->
+      <bpmndi:BPMNEdge id="flow1_edge" bpmnElement="flow1">
+        <di:waypoint x="136" y="68"/>
+        <di:waypoint x="160" y="68"/>
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="flow2_edge" bpmnElement="flow2">
+        <di:waypoint x="300" y="68"/>
+        <di:waypoint x="320" y="68"/>
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="flow3_edge" bpmnElement="flow3">
+        <di:waypoint x="460" y="68"/>
+        <di:waypoint x="490" y="70"/>
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="flow4_edge" bpmnElement="flow4">
+        <di:waypoint x="540" y="70"/>
+        <di:waypoint x="580" y="38"/>
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="flow5_edge" bpmnElement="flow5">
+        <di:waypoint x="540" y="95"/>
+        <di:waypoint x="160" y="68"/>
+        <di:waypoint x="160" y="68"/>
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="flow6_edge" bpmnElement="flow6">
+        <di:waypoint x="720" y="38"/>
+        <di:waypoint x="580" y="128"/>
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="flow7_edge" bpmnElement="flow7">
+        <di:waypoint x="720" y="128"/>
+        <di:waypoint x="760" y="95"/>
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="flow8_edge" bpmnElement="flow8">
+        <di:waypoint x="810" y="95"/>
+        <di:waypoint x="850" y="68"/>
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="flow9_edge" bpmnElement="flow9">
+        <di:waypoint x="810" y="120"/>
+        <di:waypoint x="160" y="68"/>
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="flow10_edge" bpmnElement="flow10">
+        <di:waypoint x="810" y="145"/>
+        <di:waypoint x="160" y="68"/>
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="flow11_edge" bpmnElement="flow11">
+        <di:waypoint x="990" y="68"/>
+        <di:waypoint x="850" y="138"/>
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="flow12_edge" bpmnElement="flow12">
+        <di:waypoint x="990" y="138"/>
+        <di:waypoint x="1030" y="105"/>
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="flow13_edge" bpmnElement="flow13">
+        <di:waypoint x="1080" y="105"/>
+        <di:waypoint x="1120" y="88"/>
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="flow14_edge" bpmnElement="flow14">
+        <di:waypoint x="1080" y="155"/>
+        <di:waypoint x="160" y="68"/>
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="flow15_edge" bpmnElement="flow15">
+        <di:waypoint x="1260" y="88"/>
+        <di:waypoint x="1310" y="85"/>
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="flow16_edge" bpmnElement="flow16">
+        <di:waypoint x="1360" y="85"/>
+        <di:waypoint x="1410" y="68"/>
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="flow17_edge" bpmnElement="flow17">
+        <di:waypoint x="1360" y="110"/>
+        <di:waypoint x="2500" y="78"/>
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="flow18_edge" bpmnElement="flow18">
+        <di:waypoint x="1360" y="135"/>
+        <di:waypoint x="160" y="68"/>
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="flow19_edge" bpmnElement="flow19">
+        <di:waypoint x="1550" y="68"/>
+        <di:waypoint x="1570" y="85"/>
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="flow20_edge" bpmnElement="flow20">
+        <di:waypoint x="1620" y="85"/>
+        <di:waypoint x="1650" y="38"/>
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="flow21_edge" bpmnElement="flow21">
+        <di:waypoint x="1620" y="110"/>
+        <di:waypoint x="1650" y="138"/>
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="flow22_edge" bpmnElement="flow22">
+        <di:waypoint x="1790" y="38"/>
+        <di:waypoint x="1830" y="88"/>
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="flow23_edge" bpmnElement="flow23">
+        <di:waypoint x="1790" y="138"/>
+        <di:waypoint x="1830" y="88"/>
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="flow24_edge" bpmnElement="flow24">
+        <di:waypoint x="1970" y="88"/>
+        <di:waypoint x="2010" y="85"/>
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="flow25_edge" bpmnElement="flow25">
+        <di:waypoint x="2060" y="85"/>
+        <di:waypoint x="2300" y="88"/>
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="flow26_edge" bpmnElement="flow26">
+        <di:waypoint x="2060" y="110"/>
+        <di:waypoint x="2100" y="38"/>
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="flow27_edge" bpmnElement="flow27">
+        <di:waypoint x="2260" y="38"/>
+        <di:waypoint x="2100" y="138"/>
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="flow28_edge" bpmnElement="flow28">
+        <di:waypoint x="2260" y="138"/>
+        <di:waypoint x="2300" y="88"/>
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="flow29_edge" bpmnElement="flow29">
+        <di:waypoint x="2460" y="88"/>
+        <di:waypoint x="2500" y="78"/>
+      </bpmndi:BPMNEdge>
+
+      <!-- Heads of Departments sequence flows -->
+      <bpmndi:BPMNEdge id="flow_headsStart_edge" bpmnElement="flow_headsStart">
+        <di:waypoint x="720" y="128"/>
+        <di:waypoint x="100" y="498"/>
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="flow_headsDecision_edge" bpmnElement="flow_headsDecision">
+        <di:waypoint x="280" y="498"/>
+        <di:waypoint x="320" y="498"/>
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="flow_headsEnd_edge" bpmnElement="flow_headsEnd">
+        <di:waypoint x="500" y="498"/>
+        <di:waypoint x="560" y="498"/>
+      </bpmndi:BPMNEdge>
+
+      <!-- PO Approvers sequence flows -->
+      <bpmndi:BPMNEdge id="flow_poApproversStart_edge" bpmnElement="flow_poApproversStart">
+        <di:waypoint x="990" y="138"/>
+        <di:waypoint x="100" y="668"/>
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="flow_poApproversDecision_edge" bpmnElement="flow_poApproversDecision">
+        <di:waypoint x="280" y="668"/>
+        <di:waypoint x="320" y="668"/>
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="flow_poApproversEnd_edge" bpmnElement="flow_poApproversEnd">
+        <di:waypoint x="500" y="668"/>
+        <di:waypoint x="560" y="668"/>
+      </bpmndi:BPMNEdge>
+
+      <!-- Vendor sequence flows -->
+      <bpmndi:BPMNEdge id="flow_dispatchPOtoVendor_edge" bpmnElement="flow_dispatchPOtoVendor">
+        <di:waypoint x="1260" y="88"/>
+        <di:waypoint x="100" y="838"/>
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="flow_vendorDecision_edge" bpmnElement="flow_vendorDecision">
+        <di:waypoint x="500" y="838"/>
+        <di:waypoint x="320" y="838"/>
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="flow_vendorDecisionOutcome_edge" bpmnElement="flow_vendorDecisionOutcome">
+        <di:waypoint x="500" y="866"/>
+        <di:waypoint x="560" y="838"/>
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="flow_sendInvoice_edge" bpmnElement="flow_sendInvoice">
+        <di:waypoint x="740" y="838"/>
+        <di:waypoint x="800" y="838"/>
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="flow_endVendorAfterDelivery_edge" bpmnElement="flow_endVendorAfterDelivery">
+        <di:waypoint x="980" y="838"/>
+        <di:waypoint x="1040" y="858"/>
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="flow_returnWrongInvoice_edge" bpmnElement="flow_returnWrongInvoice">
+        <di:waypoint x="2100" y="38"/>
+        <di:waypoint x="500" y="938"/>
+        <di:waypoint x="320" y="938"/>
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="flow_endVendorAfterCorrection_edge" bpmnElement="flow_endVendorAfterCorrection">
+        <di:waypoint x="500" y="966"/>
+        <di:waypoint x="1040" y="858"/>
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="flow_vendorRejectPO_edge" bpmnElement="flow_vendorRejectPO">
+        <di:waypoint x="1360" y="110"/>
+        <di:waypoint x="1040" y="858"/>
+      </bpmndi:BPMNEdge>
+
+      <!-- AP Team sequence flows -->
+      <bpmndi:BPMNEdge id="flow_apStart_edge" bpmnElement="flow_apStart">
+        <di:waypoint x="2460" y="88"/>
+        <di:waypoint x="136" y="1098"/>
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="flow_decidePayment_edge" bpmnElement="flow_decidePayment">
+        <di:waypoint x="340" y="1098"/>
+        <di:waypoint x="360" y="1098"/>
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="flow_performPayment_edge" bpmnElement="flow_performPayment">
+        <di:waypoint x="540" y="1098"/>
+        <di:waypoint x="560" y="1098"/>
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="flow_endAP_edge" bpmnElement="flow_endAP">
+        <di:waypoint x="740" y="1098"/>
+        <di:waypoint x="780" y="1100"/>
+      </bpmndi:BPMNEdge>
+
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</semantic:definitions>

@@ -1,0 +1,435 @@
+<?xml version="1.0" standalone="yes"?>
+<semantic:definitions id="CommitmentInvoiceProcessDefs"
+    targetNamespace="http://example.com/bpmn/commitment-invoice-process"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:semantic="http://www.omg.org/spec/BPMN/20100524/MODEL"
+    xmlns:di="http://www.omg.org/spec/DD/20100524/DI"
+    xmlns:dc="http://www.omg.org/spec/DD/20100524/DC"
+    xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI">
+
+  <semantic:collaboration id="collab_CommitmentInvoice">
+    <semantic:participant id="participant_CommitmentInvoiceProcess" name="Commitment and Invoice Process" processRef="process_CommitmentInvoice"/>
+  </semantic:collaboration>
+
+  <semantic:process id="process_CommitmentInvoice" isExecutable="true">
+    <semantic:laneSet id="laneSet_Main">
+      <semantic:lane id="lane_MonetaryDept" name="Monetary Department">
+        <semantic:flowNodeRef>startEvent_CommitmentInvoiceReceived</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_PostFundsCommitment</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_SaveFundsCommitment</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_ViewCommitmentReport</semantic:flowNodeRef>
+      </semantic:lane>
+      <semantic:lane id="lane_APDept" name="Accounts Payable Department">
+        <semantic:flowNodeRef>task_ReceiveInvoice</semantic:flowNodeRef>
+        <semantic:flowNodeRef>parallelGateway_InitiatePrePosting</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_SpecifyInitialVendorData</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_SpecifyVendorAddress</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_MaintainVendorTaxInfo</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_DefineVendorBankDetails</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_SpecifyVendorFinancials</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_SaveVendorMasterData</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_DefineInitialCCData</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_DefineCCMasterData</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_SaveCostCentre</semantic:flowNodeRef>
+        <semantic:flowNodeRef>parallelGateway_PrerequisitesMet</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_CreatePaymentRequest</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_SaveInvoicePosting</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_DisplayPostedDocument</semantic:flowNodeRef>
+        <semantic:flowNodeRef>exclusiveGateway_IsDocumentParked</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_AssignRequestCategory</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_AssignWorkflowToRequest</semantic:flowNodeRef>
+        <semantic:flowNodeRef>exclusiveGateway_MergeDocStatus</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_DefineFinalPaymentDetails</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_SelectDocumentForPosting</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_ExecuteFinalPosting</semantic:flowNodeRef>
+        <semantic:flowNodeRef>endEvent_ProcessMaintained</semantic:flowNodeRef>
+      </semantic:lane>
+    </semantic:laneSet>
+
+    <!-- Monetary Department Elements -->
+    <semantic:startEvent id="startEvent_CommitmentInvoiceReceived" name="Commitment &amp; Invoice Received">
+      <semantic:outgoing>flow_StartToPostFundsCommitment</semantic:outgoing>
+    </semantic:startEvent>
+    <semantic:task id="task_PostFundsCommitment" name="Post Funds Commitment in SAP">
+      <semantic:incoming>flow_StartToPostFundsCommitment</semantic:incoming>
+      <semantic:outgoing>flow_PostFundsToSaveFunds</semantic:outgoing>
+    </semantic:task>
+    <semantic:task id="task_SaveFundsCommitment" name="Save Funds Commitment Document">
+      <semantic:incoming>flow_PostFundsToSaveFunds</semantic:incoming>
+      <semantic:outgoing>flow_SaveFundsToViewReport</semantic:outgoing>
+    </semantic:task>
+    <semantic:task id="task_ViewCommitmentReport" name="View Posting Report for Commitment">
+      <semantic:incoming>flow_SaveFundsToViewReport</semantic:incoming>
+      <semantic:outgoing>flow_ViewReportToReceiveInvoice</semantic:outgoing>
+    </semantic:task>
+
+    <!-- Accounts Payable Department Elements -->
+    <semantic:task id="task_ReceiveInvoice" name="Receive Invoice from Provider">
+      <semantic:incoming>flow_ViewReportToReceiveInvoice</semantic:incoming>
+      <semantic:outgoing>flow_ReceiveInvoiceToInitiatePrePosting</semantic:outgoing>
+    </semantic:task>
+    <semantic:parallelGateway id="parallelGateway_InitiatePrePosting" name="Initiate Pre-Posting Activities">
+      <semantic:incoming>flow_ReceiveInvoiceToInitiatePrePosting</semantic:incoming>
+      <semantic:outgoing>flow_InitiateToSpecifyInitialVendor</semantic:outgoing>
+      <semantic:outgoing>flow_InitiateToDefineInitialCC</semantic:outgoing>
+    </semantic:parallelGateway>
+
+    <!-- Vendor Master Data Branch -->
+    <semantic:task id="task_SpecifyInitialVendorData" name="Specify Initial Vendor Data">
+      <semantic:incoming>flow_InitiateToSpecifyInitialVendor</semantic:incoming>
+      <semantic:outgoing>flow_SpecifyInitialVendorToAddress</semantic:outgoing>
+    </semantic:task>
+    <semantic:task id="task_SpecifyVendorAddress" name="Specify Vendor Address">
+      <semantic:incoming>flow_SpecifyInitialVendorToAddress</semantic:incoming>
+      <semantic:outgoing>flow_AddressToTaxInfo</semantic:outgoing>
+    </semantic:task>
+    <semantic:task id="task_MaintainVendorTaxInfo" name="Maintain Vendor Tax Information">
+      <semantic:incoming>flow_AddressToTaxInfo</semantic:incoming>
+      <semantic:outgoing>flow_TaxInfoToBankDetails</semantic:outgoing>
+    </semantic:task>
+    <semantic:task id="task_DefineVendorBankDetails" name="Define Vendor Bank Details">
+      <semantic:incoming>flow_TaxInfoToBankDetails</semantic:incoming>
+      <semantic:outgoing>flow_BankDetailsToFinancials</semantic:outgoing>
+    </semantic:task>
+    <semantic:task id="task_SpecifyVendorFinancials" name="Specify Vendor Financial Details">
+      <semantic:incoming>flow_BankDetailsToFinancials</semantic:incoming>
+      <semantic:outgoing>flow_FinancialsToSaveVendor</semantic:outgoing>
+    </semantic:task>
+    <semantic:task id="task_SaveVendorMasterData" name="Save Vendor Master Data">
+      <semantic:incoming>flow_FinancialsToSaveVendor</semantic:incoming>
+      <semantic:outgoing>flow_SaveVendorToPrerequisitesMet</semantic:outgoing>
+    </semantic:task>
+
+    <!-- Cost Centre Branch -->
+    <semantic:task id="task_DefineInitialCCData" name="Define Initial Cost Centre Data">
+      <semantic:incoming>flow_InitiateToDefineInitialCC</semantic:incoming>
+      <semantic:outgoing>flow_DefineInitialCCToMasterData</semantic:outgoing>
+    </semantic:task>
+    <semantic:task id="task_DefineCCMasterData" name="Define Cost Centre Master Data">
+      <semantic:incoming>flow_DefineInitialCCToMasterData</semantic:incoming>
+      <semantic:outgoing>flow_MasterDataToSaveCC</semantic:outgoing>
+    </semantic:task>
+    <semantic:task id="task_SaveCostCentre" name="Save Cost Centre">
+      <semantic:incoming>flow_MasterDataToSaveCC</semantic:incoming>
+      <semantic:outgoing>flow_SaveCCToPrerequisitesMet</semantic:outgoing>
+    </semantic:task>
+
+    <semantic:parallelGateway id="parallelGateway_PrerequisitesMet" name="Prerequisites Met for Invoice Posting">
+      <semantic:incoming>flow_SaveVendorToPrerequisitesMet</semantic:incoming>
+      <semantic:incoming>flow_SaveCCToPrerequisitesMet</semantic:incoming>
+      <semantic:outgoing>flow_PrerequisitesMetToCreatePaymentRequest</semantic:outgoing>
+    </semantic:parallelGateway>
+
+    <semantic:task id="task_CreatePaymentRequest" name="Create Payment Request">
+      <semantic:incoming>flow_PrerequisitesMetToCreatePaymentRequest</semantic:incoming>
+      <semantic:outgoing>flow_CreatePaymentRequestToSaveInvoice</semantic:outgoing>
+    </semantic:task>
+    <semantic:task id="task_SaveInvoicePosting" name="Save Invoice Posting">
+      <semantic:incoming>flow_CreatePaymentRequestToSaveInvoice</semantic:incoming>
+      <semantic:outgoing>flow_SaveInvoiceToDisplayDocument</semantic:outgoing>
+    </semantic:task>
+    <semantic:task id="task_DisplayPostedDocument" name="Display Posted Document">
+      <semantic:incoming>flow_SaveInvoiceToDisplayDocument</semantic:incoming>
+      <semantic:outgoing>flow_DisplayDocumentToIsParkedGateway</semantic:outgoing>
+    </semantic:task>
+    <semantic:exclusiveGateway id="exclusiveGateway_IsDocumentParked" name="Is Document Parked?">
+      <semantic:incoming>flow_DisplayDocumentToIsParkedGateway</semantic:incoming>
+      <semantic:outgoing>flow_IsParkedToAssignRequestCategory</semantic:outgoing> <!-- Yes -->
+      <semantic:outgoing>flow_IsParkedToMergeDocStatus</semantic:outgoing> <!-- No -->
+    </semantic:exclusiveGateway>
+
+    <!-- Parked Document Branch -->
+    <semantic:task id="task_AssignRequestCategory" name="Assign Request Category to FI Doc Type">
+      <semantic:incoming>flow_IsParkedToAssignRequestCategory</semantic:incoming>
+      <semantic:outgoing>flow_AssignRequestCategoryToAssignWorkflow</semantic:outgoing>
+    </semantic:task>
+    <semantic:task id="task_AssignWorkflowToRequest" name="Assign Workflow to Request Type">
+      <semantic:incoming>flow_AssignRequestCategoryToAssignWorkflow</semantic:incoming>
+      <semantic:outgoing>flow_AssignWorkflowToMergeDocStatus</semantic:outgoing>
+    </semantic:task>
+
+    <semantic:exclusiveGateway id="exclusiveGateway_MergeDocStatus" name="Merge Document Status Check">
+      <semantic:incoming>flow_AssignWorkflowToMergeDocStatus</semantic:incoming>
+      <semantic:incoming>flow_IsParkedToMergeDocStatus</semantic:incoming>
+      <semantic:outgoing>flow_MergeDocStatusToDefineFinalDetails</semantic:outgoing>
+    </semantic:exclusiveGateway>
+
+    <semantic:task id="task_DefineFinalPaymentDetails" name="Define Final Payment Posting Details">
+      <semantic:incoming>flow_MergeDocStatusToDefineFinalDetails</semantic:incoming>
+      <semantic:outgoing>flow_DefineFinalDetailsToSelectDocument</semantic:outgoing>
+    </semantic:task>
+    <semantic:task id="task_SelectDocumentForPosting" name="Select Document for Final Posting">
+      <semantic:incoming>flow_DefineFinalDetailsToSelectDocument</semantic:incoming>
+      <semantic:outgoing>flow_SelectDocumentToExecutePosting</semantic:outgoing>
+    </semantic:task>
+    <semantic:task id="task_ExecuteFinalPosting" name="Execute Final Document Posting">
+      <semantic:incoming>flow_SelectDocumentToExecutePosting</semantic:incoming>
+      <semantic:outgoing>flow_ExecutePostingToEnd</semantic:outgoing>
+    </semantic:task>
+    <semantic:endEvent id="endEvent_ProcessMaintained" name="Process Maintained Successfully">
+      <semantic:incoming>flow_ExecutePostingToEnd</semantic:incoming>
+    </semantic:endEvent>
+
+    <!-- Sequence Flows -->
+    <semantic:sequenceFlow id="flow_StartToPostFundsCommitment" sourceRef="startEvent_CommitmentInvoiceReceived" targetRef="task_PostFundsCommitment"/>
+    <semantic:sequenceFlow id="flow_PostFundsToSaveFunds" sourceRef="task_PostFundsCommitment" targetRef="task_SaveFundsCommitment"/>
+    <semantic:sequenceFlow id="flow_SaveFundsToViewReport" sourceRef="task_SaveFundsCommitment" targetRef="task_ViewCommitmentReport"/>
+    <semantic:sequenceFlow id="flow_ViewReportToReceiveInvoice" sourceRef="task_ViewCommitmentReport" targetRef="task_ReceiveInvoice"/>
+    <semantic:sequenceFlow id="flow_ReceiveInvoiceToInitiatePrePosting" sourceRef="task_ReceiveInvoice" targetRef="parallelGateway_InitiatePrePosting"/>
+    <semantic:sequenceFlow id="flow_InitiateToSpecifyInitialVendor" sourceRef="parallelGateway_InitiatePrePosting" targetRef="task_SpecifyInitialVendorData"/>
+    <semantic:sequenceFlow id="flow_SpecifyInitialVendorToAddress" sourceRef="task_SpecifyInitialVendorData" targetRef="task_SpecifyVendorAddress"/>
+    <semantic:sequenceFlow id="flow_AddressToTaxInfo" sourceRef="task_SpecifyVendorAddress" targetRef="task_MaintainVendorTaxInfo"/>
+    <semantic:sequenceFlow id="flow_TaxInfoToBankDetails" sourceRef="task_MaintainVendorTaxInfo" targetRef="task_DefineVendorBankDetails"/>
+    <semantic:sequenceFlow id="flow_BankDetailsToFinancials" sourceRef="task_DefineVendorBankDetails" targetRef="task_SpecifyVendorFinancials"/>
+    <semantic:sequenceFlow id="flow_FinancialsToSaveVendor" sourceRef="task_SpecifyVendorFinancials" targetRef="task_SaveVendorMasterData"/>
+    <semantic:sequenceFlow id="flow_SaveVendorToPrerequisitesMet" sourceRef="task_SaveVendorMasterData" targetRef="parallelGateway_PrerequisitesMet"/>
+    <semantic:sequenceFlow id="flow_InitiateToDefineInitialCC" sourceRef="parallelGateway_InitiatePrePosting" targetRef="task_DefineInitialCCData"/>
+    <semantic:sequenceFlow id="flow_DefineInitialCCToMasterData" sourceRef="task_DefineInitialCCData" targetRef="task_DefineCCMasterData"/>
+    <semantic:sequenceFlow id="flow_MasterDataToSaveCC" sourceRef="task_DefineCCMasterData" targetRef="task_SaveCostCentre"/>
+    <semantic:sequenceFlow id="flow_SaveCCToPrerequisitesMet" sourceRef="task_SaveCostCentre" targetRef="parallelGateway_PrerequisitesMet"/>
+    <semantic:sequenceFlow id="flow_PrerequisitesMetToCreatePaymentRequest" sourceRef="parallelGateway_PrerequisitesMet" targetRef="task_CreatePaymentRequest"/>
+    <semantic:sequenceFlow id="flow_CreatePaymentRequestToSaveInvoice" sourceRef="task_CreatePaymentRequest" targetRef="task_SaveInvoicePosting"/>
+    <semantic:sequenceFlow id="flow_SaveInvoiceToDisplayDocument" sourceRef="task_SaveInvoicePosting" targetRef="task_DisplayPostedDocument"/>
+    <semantic:sequenceFlow id="flow_DisplayDocumentToIsParkedGateway" sourceRef="task_DisplayPostedDocument" targetRef="exclusiveGateway_IsDocumentParked"/>
+    <semantic:sequenceFlow id="flow_IsParkedToAssignRequestCategory" name="Yes, Parked" sourceRef="exclusiveGateway_IsDocumentParked" targetRef="task_AssignRequestCategory"/>
+    <semantic:sequenceFlow id="flow_AssignRequestCategoryToAssignWorkflow" sourceRef="task_AssignRequestCategory" targetRef="task_AssignWorkflowToRequest"/>
+    <semantic:sequenceFlow id="flow_AssignWorkflowToMergeDocStatus" sourceRef="task_AssignWorkflowToRequest" targetRef="exclusiveGateway_MergeDocStatus"/>
+    <semantic:sequenceFlow id="flow_IsParkedToMergeDocStatus" name="No, Not Parked" sourceRef="exclusiveGateway_IsDocumentParked" targetRef="exclusiveGateway_MergeDocStatus"/>
+    <semantic:sequenceFlow id="flow_MergeDocStatusToDefineFinalDetails" sourceRef="exclusiveGateway_MergeDocStatus" targetRef="task_DefineFinalPaymentDetails"/>
+    <semantic:sequenceFlow id="flow_DefineFinalDetailsToSelectDocument" sourceRef="task_DefineFinalPaymentDetails" targetRef="task_SelectDocumentForPosting"/>
+    <semantic:sequenceFlow id="flow_SelectDocumentToExecutePosting" sourceRef="task_SelectDocumentForPosting" targetRef="task_ExecuteFinalPosting"/>
+    <semantic:sequenceFlow id="flow_ExecutePostingToEnd" sourceRef="task_ExecuteFinalPosting" targetRef="endEvent_ProcessMaintained"/>
+  </semantic:process>
+
+  <bpmndi:BPMNDiagram id="BPMNDiagram_CommitmentInvoice" name="Commitment and Invoice Process Diagram" resolution="96.0">
+    <bpmndi:BPMNPlane bpmnElement="collab_CommitmentInvoice">
+      <bpmndi:BPMNShape id="participant_CommitmentInvoiceProcess_shape" bpmnElement="participant_CommitmentInvoiceProcess" isHorizontal="true">
+        <dc:Bounds x="30" y="20" width="2200" height="1400"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="lane_MonetaryDept_shape" bpmnElement="lane_MonetaryDept" isHorizontal="true">
+        <dc:Bounds x="30" y="60" width="2200" height="200"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="lane_APDept_shape" bpmnElement="lane_APDept" isHorizontal="true">
+        <dc:Bounds x="30" y="260" width="2200" height="1160"/>
+      </bpmndi:BPMNShape>
+
+      <!-- Monetary Department Shapes -->
+      <bpmndi:BPMNShape id="startEvent_CommitmentInvoiceReceived_shape" bpmnElement="startEvent_CommitmentInvoiceReceived">
+        <dc:Bounds x="82" y="142" width="36" height="36"/>
+        <bpmndi:BPMNLabel><dc:Bounds x="57" y="183" width="86" height="40" /></bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="task_PostFundsCommitment_shape" bpmnElement="task_PostFundsCommitment">
+        <dc:Bounds x="170" y="120" width="100" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="task_SaveFundsCommitment_shape" bpmnElement="task_SaveFundsCommitment">
+        <dc:Bounds x="350" y="120" width="100" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="task_ViewCommitmentReport_shape" bpmnElement="task_ViewCommitmentReport">
+        <dc:Bounds x="530" y="120" width="100" height="80"/>
+      </bpmndi:BPMNShape>
+
+      <!-- Accounts Payable Department Shapes -->
+      <bpmndi:BPMNShape id="task_ReceiveInvoice_shape" bpmnElement="task_ReceiveInvoice">
+        <dc:Bounds x="60" y="735" width="100" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="parallelGateway_InitiatePrePosting_shape" bpmnElement="parallelGateway_InitiatePrePosting" isMarkerVisible="true">
+        <dc:Bounds x="225" y="750" width="50" height="50"/>
+         <bpmndi:BPMNLabel><dc:Bounds x="200" y="805" width="100" height="40" /></bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="task_SpecifyInitialVendorData_shape" bpmnElement="task_SpecifyInitialVendorData">
+        <dc:Bounds x="350" y="410" width="100" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="task_SpecifyVendorAddress_shape" bpmnElement="task_SpecifyVendorAddress">
+        <dc:Bounds x="350" y="520" width="100" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="task_MaintainVendorTaxInfo_shape" bpmnElement="task_MaintainVendorTaxInfo">
+        <dc:Bounds x="350" y="630" width="100" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="task_DefineVendorBankDetails_shape" bpmnElement="task_DefineVendorBankDetails">
+        <dc:Bounds x="350" y="740" width="100" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="task_SpecifyVendorFinancials_shape" bpmnElement="task_SpecifyVendorFinancials">
+        <dc:Bounds x="350" y="850" width="100" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="task_SaveVendorMasterData_shape" bpmnElement="task_SaveVendorMasterData">
+        <dc:Bounds x="350" y="960" width="100" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="task_DefineInitialCCData_shape" bpmnElement="task_DefineInitialCCData">
+        <dc:Bounds x="350" y="1070" width="100" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="task_DefineCCMasterData_shape" bpmnElement="task_DefineCCMasterData">
+        <dc:Bounds x="350" y="1180" width="100" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="task_SaveCostCentre_shape" bpmnElement="task_SaveCostCentre">
+        <dc:Bounds x="350" y="1290" width="100" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="parallelGateway_PrerequisitesMet_shape" bpmnElement="parallelGateway_PrerequisitesMet" isMarkerVisible="true">
+        <dc:Bounds x="525" y="750" width="50" height="50"/>
+        <bpmndi:BPMNLabel><dc:Bounds x="500" y="805" width="100" height="40" /></bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="task_CreatePaymentRequest_shape" bpmnElement="task_CreatePaymentRequest">
+        <dc:Bounds x="650" y="735" width="100" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="task_SaveInvoicePosting_shape" bpmnElement="task_SaveInvoicePosting">
+        <dc:Bounds x="830" y="735" width="100" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="task_DisplayPostedDocument_shape" bpmnElement="task_DisplayPostedDocument">
+        <dc:Bounds x="1010" y="735" width="100" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="exclusiveGateway_IsDocumentParked_shape" bpmnElement="exclusiveGateway_IsDocumentParked" isMarkerVisible="true">
+        <dc:Bounds x="1190" y="750" width="50" height="50"/>
+        <bpmndi:BPMNLabel><dc:Bounds x="1165" y="805" width="100" height="28" /></bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="task_AssignRequestCategory_shape" bpmnElement="task_AssignRequestCategory">
+        <dc:Bounds x="1300" y="860" width="100" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="task_AssignWorkflowToRequest_shape" bpmnElement="task_AssignWorkflowToRequest">
+        <dc:Bounds x="1300" y="970" width="100" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="exclusiveGateway_MergeDocStatus_shape" bpmnElement="exclusiveGateway_MergeDocStatus" isMarkerVisible="true">
+        <dc:Bounds x="1475" y="750" width="50" height="50"/>
+        <bpmndi:BPMNLabel><dc:Bounds x="1450" y="805" width="100" height="40" /></bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="task_DefineFinalPaymentDetails_shape" bpmnElement="task_DefineFinalPaymentDetails">
+        <dc:Bounds x="1610" y="735" width="100" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="task_SelectDocumentForPosting_shape" bpmnElement="task_SelectDocumentForPosting">
+        <dc:Bounds x="1790" y="735" width="100" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="task_ExecuteFinalPosting_shape" bpmnElement="task_ExecuteFinalPosting">
+        <dc:Bounds x="1970" y="735" width="100" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="endEvent_ProcessMaintained_shape" bpmnElement="endEvent_ProcessMaintained">
+        <dc:Bounds x="2162" y="757" width="36" height="36"/>
+        <bpmndi:BPMNLabel><dc:Bounds x="2137" y="798" width="86" height="40" /></bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <!-- Sequence Flow Edges -->
+      <bpmndi:BPMNEdge id="flow_StartToPostFundsCommitment_edge" bpmnElement="flow_StartToPostFundsCommitment">
+        <di:waypoint x="118" y="160"/>
+        <di:waypoint x="170" y="160"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_PostFundsToSaveFunds_edge" bpmnElement="flow_PostFundsToSaveFunds">
+        <di:waypoint x="270" y="160"/>
+        <di:waypoint x="350" y="160"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_SaveFundsToViewReport_edge" bpmnElement="flow_SaveFundsToViewReport">
+        <di:waypoint x="450" y="160"/>
+        <di:waypoint x="530" y="160"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_ViewReportToReceiveInvoice_edge" bpmnElement="flow_ViewReportToReceiveInvoice">
+        <di:waypoint x="580" y="200"/> <!-- center x of task_ViewCommitmentReport, bottom edge -->
+        <di:waypoint x="580" y="240"/> 
+        <di:waypoint x="110" y="240"/>
+        <di:waypoint x="110" y="735"/> <!-- center x of task_ReceiveInvoice, top edge -->
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_ReceiveInvoiceToInitiatePrePosting_edge" bpmnElement="flow_ReceiveInvoiceToInitiatePrePosting">
+        <di:waypoint x="160" y="775"/>
+        <di:waypoint x="225" y="775"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_InitiateToSpecifyInitialVendor_edge" bpmnElement="flow_InitiateToSpecifyInitialVendor">
+        <di:waypoint x="250" y="750"/> <!-- PG_Split center top -->
+        <di:waypoint x="250" y="450"/>
+        <di:waypoint x="350" y="450"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_SpecifyInitialVendorToAddress_edge" bpmnElement="flow_SpecifyInitialVendorToAddress">
+        <di:waypoint x="400" y="490"/>
+        <di:waypoint x="400" y="520"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_AddressToTaxInfo_edge" bpmnElement="flow_AddressToTaxInfo">
+        <di:waypoint x="400" y="600"/>
+        <di:waypoint x="400" y="630"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_TaxInfoToBankDetails_edge" bpmnElement="flow_TaxInfoToBankDetails">
+        <di:waypoint x="400" y="710"/>
+        <di:waypoint x="400" y="740"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_BankDetailsToFinancials_edge" bpmnElement="flow_BankDetailsToFinancials">
+        <di:waypoint x="400" y="820"/>
+        <di:waypoint x="400" y="850"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_FinancialsToSaveVendor_edge" bpmnElement="flow_FinancialsToSaveVendor">
+        <di:waypoint x="400" y="930"/>
+        <di:waypoint x="400" y="960"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_SaveVendorToPrerequisitesMet_edge" bpmnElement="flow_SaveVendorToPrerequisitesMet">
+        <di:waypoint x="450" y="1000"/>
+        <di:waypoint x="500" y="1000"/>
+        <di:waypoint x="500" y="775"/>
+        <di:waypoint x="525" y="775"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_InitiateToDefineInitialCC_edge" bpmnElement="flow_InitiateToDefineInitialCC">
+        <di:waypoint x="250" y="800"/> <!-- PG_Split center bottom -->
+        <di:waypoint x="250" y="1110"/>
+        <di:waypoint x="350" y="1110"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_DefineInitialCCToMasterData_edge" bpmnElement="flow_DefineInitialCCToMasterData">
+        <di:waypoint x="400" y="1150"/>
+        <di:waypoint x="400" y="1180"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_MasterDataToSaveCC_edge" bpmnElement="flow_MasterDataToSaveCC">
+        <di:waypoint x="400" y="1260"/>
+        <di:waypoint x="400" y="1290"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_SaveCCToPrerequisitesMet_edge" bpmnElement="flow_SaveCCToPrerequisitesMet">
+        <di:waypoint x="450" y="1330"/>
+        <di:waypoint x="500" y="1330"/>
+        <di:waypoint x="500" y="775"/>
+        <di:waypoint x="525" y="775"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_PrerequisitesMetToCreatePaymentRequest_edge" bpmnElement="flow_PrerequisitesMetToCreatePaymentRequest">
+        <di:waypoint x="575" y="775"/>
+        <di:waypoint x="650" y="775"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_CreatePaymentRequestToSaveInvoice_edge" bpmnElement="flow_CreatePaymentRequestToSaveInvoice">
+        <di:waypoint x="750" y="775"/>
+        <di:waypoint x="830" y="775"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_SaveInvoiceToDisplayDocument_edge" bpmnElement="flow_SaveInvoiceToDisplayDocument">
+        <di:waypoint x="930" y="775"/>
+        <di:waypoint x="1010" y="775"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_DisplayDocumentToIsParkedGateway_edge" bpmnElement="flow_DisplayDocumentToIsParkedGateway">
+        <di:waypoint x="1110" y="775"/>
+        <di:waypoint x="1190" y="775"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_IsParkedToAssignRequestCategory_edge" bpmnElement="flow_IsParkedToAssignRequestCategory">
+        <di:waypoint x="1215" y="800"/> <!-- EG_IsParked center bottom -->
+        <di:waypoint x="1215" y="900"/>
+        <di:waypoint x="1300" y="900"/>
+         <bpmndi:BPMNLabel><dc:Bounds x="1220" y="845" width="60" height="20" /></bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_AssignRequestCategoryToAssignWorkflow_edge" bpmnElement="flow_AssignRequestCategoryToAssignWorkflow">
+        <di:waypoint x="1350" y="940"/>
+        <di:waypoint x="1350" y="970"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_AssignWorkflowToMergeDocStatus_edge" bpmnElement="flow_AssignWorkflowToMergeDocStatus">
+        <di:waypoint x="1400" y="1010"/>
+        <di:waypoint x="1450" y="1010"/>
+        <di:waypoint x="1450" y="775"/>
+        <di:waypoint x="1475" y="775"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_IsParkedToMergeDocStatus_edge" bpmnElement="flow_IsParkedToMergeDocStatus">
+        <di:waypoint x="1240" y="775"/> <!-- EG_IsParked right -->
+        <di:waypoint x="1475" y="775"/> <!-- EG_Merge left -->
+        <bpmndi:BPMNLabel><dc:Bounds x="1330" y="750" width="80" height="20" /></bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_MergeDocStatusToDefineFinalDetails_edge" bpmnElement="flow_MergeDocStatusToDefineFinalDetails">
+        <di:waypoint x="1525" y="775"/>
+        <di:waypoint x="1610" y="775"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_DefineFinalDetailsToSelectDocument_edge" bpmnElement="flow_DefineFinalDetailsToSelectDocument">
+        <di:waypoint x="1710" y="775"/>
+        <di:waypoint x="1790" y="775"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_SelectDocumentToExecutePosting_edge" bpmnElement="flow_SelectDocumentToExecutePosting">
+        <di:waypoint x="1890" y="775"/>
+        <di:waypoint x="1970" y="775"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_ExecutePostingToEnd_edge" bpmnElement="flow_ExecutePostingToEnd">
+        <di:waypoint x="2070" y="775"/>
+        <di:waypoint x="2162" y="775"/>
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</semantic:definitions>

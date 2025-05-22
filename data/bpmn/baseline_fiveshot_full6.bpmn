@@ -1,0 +1,186 @@
+<?xml version="1.0" standalone="yes"?>
+<semantic:definitions id="definitions_maintenance_process"
+    targetNamespace="http://example.com/bpmn/maintenance-process"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:semantic="http://www.omg.org/spec/BPMN/20100524/MODEL"
+    xmlns:di="http://www.omg.org/spec/DD/20100524/DI"
+    xmlns:dc="http://www.omg.org/spec/DD/20100524/DC"
+    xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI">
+
+  <semantic:collaboration id="collab_maintenance">
+    <semantic:participant id="participant_maintenance_dept" name="Maintenance Department" processRef="process_maintenance"/>
+  </semantic:collaboration>
+
+  <semantic:process id="process_maintenance" isExecutable="true">
+    <semantic:laneSet id="laneset_maintenance">
+      <semantic:lane id="lane_employee" name="Maintenance Employee">
+        <semantic:flowNodeRef>start_event_failure_reported</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_create_notification</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_create_order</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_plan_work</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_execute_work</semantic:flowNodeRef>
+        <semantic:flowNodeRef>gateway_quality_assessment</semantic:flowNodeRef>
+      </semantic:lane>
+      <semantic:lane id="lane_planner" name="Maintenance Planner">
+        <semantic:flowNodeRef>task_complete_order</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_close_notification</semantic:flowNodeRef>
+        <semantic:flowNodeRef>end_event_process_completed</semantic:flowNodeRef>
+      </semantic:lane>
+    </semantic:laneSet>
+
+    <semantic:startEvent id="start_event_failure_reported" name="Equipment Failure Received">
+      <semantic:outgoing>flow_start_to_create_notification</semantic:outgoing>
+      <semantic:messageEventDefinition id="message_def_failure_report"/>
+    </semantic:startEvent>
+
+    <semantic:task id="task_create_notification" name="Create Maintenance Notification">
+      <semantic:incoming>flow_start_to_create_notification</semantic:incoming>
+      <semantic:outgoing>flow_create_notification_to_create_order</semantic:outgoing>
+    </semantic:task>
+
+    <semantic:task id="task_create_order" name="Create Maintenance Order">
+      <semantic:incoming>flow_create_notification_to_create_order</semantic:incoming>
+      <semantic:outgoing>flow_create_order_to_plan_work</semantic:outgoing>
+    </semantic:task>
+
+    <semantic:task id="task_plan_work" name="Plan Maintenance Work">
+      <semantic:incoming>flow_create_order_to_plan_work</semantic:incoming>
+      <semantic:outgoing>flow_plan_work_to_execute_work</semantic:outgoing>
+    </semantic:task>
+
+    <semantic:task id="task_execute_work" name="Execute Maintenance Work">
+      <semantic:incoming>flow_plan_work_to_execute_work</semantic:incoming>
+      <semantic:incoming>flow_gateway_no_to_execute_work</semantic:incoming>
+      <semantic:outgoing>flow_execute_work_to_gateway</semantic:outgoing>
+    </semantic:task>
+
+    <semantic:exclusiveGateway id="gateway_quality_assessment" name="Quality Assessment Passed?">
+      <semantic:incoming>flow_execute_work_to_gateway</semantic:incoming>
+      <semantic:outgoing>flow_gateway_yes_to_complete_order</semantic:outgoing>
+      <semantic:outgoing>flow_gateway_no_to_execute_work</semantic:outgoing>
+    </semantic:exclusiveGateway>
+
+    <semantic:task id="task_complete_order" name="Complete Maintenance Order">
+      <semantic:incoming>flow_gateway_yes_to_complete_order</semantic:incoming>
+      <semantic:outgoing>flow_complete_order_to_close_notification</semantic:outgoing>
+    </semantic:task>
+
+    <semantic:task id="task_close_notification" name="Close Maintenance Notification">
+      <semantic:incoming>flow_complete_order_to_close_notification</semantic:incoming>
+      <semantic:outgoing>flow_close_notification_to_end</semantic:outgoing>
+    </semantic:task>
+
+    <semantic:endEvent id="end_event_process_completed" name="Maintenance Process Completed">
+      <semantic:incoming>flow_close_notification_to_end</semantic:incoming>
+    </semantic:endEvent>
+
+    <semantic:sequenceFlow id="flow_start_to_create_notification" sourceRef="start_event_failure_reported" targetRef="task_create_notification"/>
+    <semantic:sequenceFlow id="flow_create_notification_to_create_order" sourceRef="task_create_notification" targetRef="task_create_order"/>
+    <semantic:sequenceFlow id="flow_create_order_to_plan_work" sourceRef="task_create_order" targetRef="task_plan_work"/>
+    <semantic:sequenceFlow id="flow_plan_work_to_execute_work" sourceRef="task_plan_work" targetRef="task_execute_work"/>
+    <semantic:sequenceFlow id="flow_execute_work_to_gateway" sourceRef="task_execute_work" targetRef="gateway_quality_assessment"/>
+    <semantic:sequenceFlow id="flow_gateway_yes_to_complete_order" name="Yes" sourceRef="gateway_quality_assessment" targetRef="task_complete_order"/>
+    <semantic:sequenceFlow id="flow_gateway_no_to_execute_work" name="No" sourceRef="gateway_quality_assessment" targetRef="task_execute_work"/>
+    <semantic:sequenceFlow id="flow_complete_order_to_close_notification" sourceRef="task_complete_order" targetRef="task_close_notification"/>
+    <semantic:sequenceFlow id="flow_close_notification_to_end" sourceRef="task_close_notification" targetRef="end_event_process_completed"/>
+  </semantic:process>
+
+  <bpmndi:BPMNDiagram id="BPMNDiagram_maintenance_process">
+    <bpmndi:BPMNPlane bpmnElement="collab_maintenance">
+      <bpmndi:BPMNShape id="shape_participant_maintenance_dept" bpmnElement="participant_maintenance_dept" isHorizontal="true">
+        <dc:Bounds x="20" y="20" width="1360" height="450"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_lane_employee" bpmnElement="lane_employee" isHorizontal="true">
+        <dc:Bounds x="50" y="20" width="1330" height="220"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_lane_planner" bpmnElement="lane_planner" isHorizontal="true">
+        <dc:Bounds x="50" y="240" width="1330" height="230"/>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="shape_start_event_failure_reported" bpmnElement="start_event_failure_reported">
+        <dc:Bounds x="100" y="112" width="36" height="36"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="80" y="153" width="76" height="40"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_task_create_notification" bpmnElement="task_create_notification">
+        <dc:Bounds x="200" y="90" width="100" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_task_create_order" bpmnElement="task_create_order">
+        <dc:Bounds x="360" y="90" width="100" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_task_plan_work" bpmnElement="task_plan_work">
+        <dc:Bounds x="520" y="90" width="100" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_task_execute_work" bpmnElement="task_execute_work">
+        <dc:Bounds x="680" y="90" width="100" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_gateway_quality_assessment" bpmnElement="gateway_quality_assessment" isMarkerVisible="true">
+        <dc:Bounds x="840" y="105" width="50" height="50"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="820" y="160" width="90" height="28"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_task_complete_order" bpmnElement="task_complete_order">
+        <dc:Bounds x="950" y="310" width="100" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_task_close_notification" bpmnElement="task_close_notification">
+        <dc:Bounds x="1110" y="310" width="100" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_end_event_process_completed" bpmnElement="end_event_process_completed">
+        <dc:Bounds x="1270" y="332" width="36" height="36"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1240" y="373" width="96" height="40"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNEdge id="edge_flow_start_to_create_notification" bpmnElement="flow_start_to_create_notification">
+        <di:waypoint x="136" y="130"/>
+        <di:waypoint x="200" y="130"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_create_notification_to_create_order" bpmnElement="flow_create_notification_to_create_order">
+        <di:waypoint x="300" y="130"/>
+        <di:waypoint x="360" y="130"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_create_order_to_plan_work" bpmnElement="flow_create_order_to_plan_work">
+        <di:waypoint x="460" y="130"/>
+        <di:waypoint x="520" y="130"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_plan_work_to_execute_work" bpmnElement="flow_plan_work_to_execute_work">
+        <di:waypoint x="620" y="130"/>
+        <di:waypoint x="680" y="130"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_execute_work_to_gateway" bpmnElement="flow_execute_work_to_gateway">
+        <di:waypoint x="780" y="130"/>
+        <di:waypoint x="840" y="130"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_gateway_yes_to_complete_order" bpmnElement="flow_gateway_yes_to_complete_order">
+        <di:waypoint x="890" y="130"/>
+        <di:waypoint x="920" y="130"/>
+        <di:waypoint x="920" y="350"/>
+        <di:waypoint x="950" y="350"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="925" y="235" width="30" height="14"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_gateway_no_to_execute_work" bpmnElement="flow_gateway_no_to_execute_work">
+        <di:waypoint x="865" y="155"/>
+        <di:waypoint x="865" y="200"/>
+        <di:waypoint x="630" y="200"/>
+        <di:waypoint x="630" y="130"/>
+        <di:waypoint x="680" y="130"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="740" y="205" width="20" height="14"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_complete_order_to_close_notification" bpmnElement="flow_complete_order_to_close_notification">
+        <di:waypoint x="1050" y="350"/>
+        <di:waypoint x="1110" y="350"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_close_notification_to_end" bpmnElement="flow_close_notification_to_end">
+        <di:waypoint x="1210" y="350"/>
+        <di:waypoint x="1270" y="350"/>
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</semantic:definitions>

@@ -1,0 +1,154 @@
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" id="Definitions_1" targetNamespace="http://bpmn.io/schema/bpmn">
+  <bpmn:collaboration id="Collaboration_1">
+    <bpmn:participant id="Participant_SalesDept" name="Sales Department" processRef="Process_SalesDept" />
+  </bpmn:collaboration>
+  <bpmn:process id="Process_SalesDept" isExecutable="false">
+    <bpmn:laneSet id="LaneSet_1">
+      <bpmn:lane id="Lane_CommercialManager" name="Commercial Manager">
+        <bpmn:flowNodeRef>StartEvent_OfferRequired</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_PerformFeasibilityCheck</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Gateway_FeasibilityCheckOutcome</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_InformCustomerNonFeasible</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>EndEvent_ProcessEndedNotFeasible</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_CheckPersonnelAvailability</bpmn:flowNodeRef>
+      </bpmn:lane>
+      <bpmn:lane id="Lane_CommercialEmployee" name="Commercial Employee">
+        <bpmn:flowNodeRef>Task_CreateOffer</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>EndEvent_ProcessEndedOfferCreated</bpmn:flowNodeRef>
+      </bpmn:lane>
+    </bpmn:laneSet>
+    <bpmn:startEvent id="StartEvent_OfferRequired" name="Offer Requirement Received">
+      <bpmn:outgoing>Flow_Start_to_FeasibilityCheck</bpmn:outgoing>
+    </bpmn:startEvent>
+    <bpmn:task id="Task_PerformFeasibilityCheck" name="Perform Feasibility Check">
+      <bpmn:incoming>Flow_Start_to_FeasibilityCheck</bpmn:incoming>
+      <bpmn:outgoing>Flow_FeasibilityCheck_to_Gateway</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:exclusiveGateway id="Gateway_FeasibilityCheckOutcome" name="Feasibility Check Outcome?">
+      <bpmn:incoming>Flow_FeasibilityCheck_to_Gateway</bpmn:incoming>
+      <bpmn:outgoing>Flow_Gateway_to_InformCustomer</bpmn:outgoing>
+      <bpmn:outgoing>Flow_Gateway_to_CheckPersonnel</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:task id="Task_InformCustomerNonFeasible" name="Inform Customer about Non-Feasibility">
+      <bpmn:incoming>Flow_Gateway_to_InformCustomer</bpmn:incoming>
+      <bpmn:outgoing>Flow_InformCustomer_to_EndNotFeasible</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:endEvent id="EndEvent_ProcessEndedNotFeasible" name="Process Ended - Not Feasible">
+      <bpmn:incoming>Flow_InformCustomer_to_EndNotFeasible</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:task id="Task_CheckPersonnelAvailability" name="Check Personnel Needs &amp; Availability">
+      <bpmn:incoming>Flow_Gateway_to_CheckPersonnel</bpmn:incoming>
+      <bpmn:outgoing>Flow_CheckPersonnel_to_CreateOffer</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:task id="Task_CreateOffer" name="Create Offer">
+      <bpmn:incoming>Flow_CheckPersonnel_to_CreateOffer</bpmn:incoming>
+      <bpmn:outgoing>Flow_CreateOffer_to_EndOfferCreated</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:endEvent id="EndEvent_ProcessEndedOfferCreated" name="Process Ended - Offer Created">
+      <bpmn:incoming>Flow_CreateOffer_to_EndOfferCreated</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:sequenceFlow id="Flow_Start_to_FeasibilityCheck" sourceRef="StartEvent_OfferRequired" targetRef="Task_PerformFeasibilityCheck" />
+    <bpmn:sequenceFlow id="Flow_FeasibilityCheck_to_Gateway" sourceRef="Task_PerformFeasibilityCheck" targetRef="Gateway_FeasibilityCheckOutcome" />
+    <bpmn:sequenceFlow id="Flow_Gateway_to_InformCustomer" name="Not Feasible" sourceRef="Gateway_FeasibilityCheckOutcome" targetRef="Task_InformCustomerNonFeasible" />
+    <bpmn:sequenceFlow id="Flow_InformCustomer_to_EndNotFeasible" sourceRef="Task_InformCustomerNonFeasible" targetRef="EndEvent_ProcessEndedNotFeasible" />
+    <bpmn:sequenceFlow id="Flow_Gateway_to_CheckPersonnel" name="Feasible" sourceRef="Gateway_FeasibilityCheckOutcome" targetRef="Task_CheckPersonnelAvailability" />
+    <bpmn:sequenceFlow id="Flow_CheckPersonnel_to_CreateOffer" sourceRef="Task_CheckPersonnelAvailability" targetRef="Task_CreateOffer" />
+    <bpmn:sequenceFlow id="Flow_CreateOffer_to_EndOfferCreated" sourceRef="Task_CreateOffer" targetRef="EndEvent_ProcessEndedOfferCreated" />
+  </bpmn:process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_1">
+    <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="Collaboration_1">
+      <bpmndi:BPMNShape id="Shape_Participant_SalesDept" bpmnElement="Participant_SalesDept" isHorizontal="true">
+        <dc:Bounds x="50" y="50" width="950" height="450" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Lane_CommercialManager" bpmnElement="Lane_CommercialManager" isHorizontal="true">
+        <dc:Bounds x="80" y="50" width="920" height="225" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Lane_CommercialEmployee" bpmnElement="Lane_CommercialEmployee" isHorizontal="true">
+        <dc:Bounds x="80" y="275" width="920" height="225" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_StartEvent_OfferRequired" bpmnElement="StartEvent_OfferRequired">
+        <dc:Bounds x="150" y="142" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="128" y="185" width="85" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Task_PerformFeasibilityCheck" bpmnElement="Task_PerformFeasibilityCheck">
+        <dc:Bounds x="250" y="120" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Gateway_FeasibilityCheckOutcome" bpmnElement="Gateway_FeasibilityCheckOutcome" isMarkerVisible="true">
+        <dc:Bounds x="415" y="135" width="50" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="400" y="192" width="80" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Task_InformCustomerNonFeasible" bpmnElement="Task_InformCustomerNonFeasible">
+        <dc:Bounds x="530" y="70" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_EndEvent_ProcessEndedNotFeasible" bpmnElement="EndEvent_ProcessEndedNotFeasible">
+        <dc:Bounds x="700" y="92" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="678" y="135" width="84" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Task_CheckPersonnelAvailability" bpmnElement="Task_CheckPersonnelAvailability">
+        <dc:Bounds x="530" y="200" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Task_CreateOffer" bpmnElement="Task_CreateOffer">
+        <dc:Bounds x="670" y="340" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_EndEvent_ProcessEndedOfferCreated" bpmnElement="EndEvent_ProcessEndedOfferCreated">
+        <dc:Bounds x="832" y="362" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="810" y="405" width="84" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="Edge_Flow_Start_to_FeasibilityCheck" bpmnElement="Flow_Start_to_FeasibilityCheck">
+        <di:waypoint x="186" y="160" />
+        <di:waypoint x="250" y="160" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Flow_FeasibilityCheck_to_Gateway" bpmnElement="Flow_FeasibilityCheck_to_Gateway">
+        <di:waypoint x="350" y="160" />
+        <di:waypoint x="415" y="160" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Flow_Gateway_to_InformCustomer" bpmnElement="Flow_Gateway_to_InformCustomer">
+        <di:waypoint x="440" y="135" />
+        <di:waypoint x="440" y="110" />
+        <di:waypoint x="530" y="110" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="455" y="93" width="60" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Flow_InformCustomer_to_EndNotFeasible" bpmnElement="Flow_InformCustomer_to_EndNotFeasible">
+        <di:waypoint x="630" y="110" />
+        <di:waypoint x="700" y="110" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Flow_Gateway_to_CheckPersonnel" bpmnElement="Flow_Gateway_to_CheckPersonnel">
+        <di:waypoint x="440" y="185" />
+        <di:waypoint x="440" y="240" />
+        <di:waypoint x="530" y="240" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="460" y="213" width="40" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Flow_CheckPersonnel_to_CreateOffer" bpmnElement="Flow_CheckPersonnel_to_CreateOffer">
+        <di:waypoint x="630" y="280" />
+        <di:waypoint x="720" y="280" />
+        <di:waypoint x="720" y="340" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Flow_CreateOffer_to_EndOfferCreated" bpmnElement="Flow_CreateOffer_to_EndOfferCreated">
+        <di:waypoint x="770" y="380" />
+        <di:waypoint x="832" y="380" />
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</bpmn:definitions>
+```

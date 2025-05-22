@@ -1,0 +1,132 @@
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" id="Definitions_1" targetNamespace="http://bpmn.io/schema/bpmn">
+  <bpmn:process id="Process_InvoiceApproval" isExecutable="false">
+    <bpmn:startEvent id="StartEvent_InvoiceReceived" name="Invoice Received">
+      <bpmn:outgoing>Flow_0w7p1qf</bpmn:outgoing>
+    </bpmn:startEvent>
+    <bpmn:userTask id="Activity_Perform1stApproval" name="Perform 1st Stage Approval">
+      <bpmn:incoming>Flow_0w7p1qf</bpmn:incoming>
+      <bpmn:outgoing>Flow_1q9w2yq</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:exclusiveGateway id="Gateway_1stApprovalDecision" name="1st Stage Approved?">
+      <bpmn:incoming>Flow_1q9w2yq</bpmn:incoming>
+      <bpmn:outgoing>Flow_1stRejected</bpmn:outgoing>
+      <bpmn:outgoing>Flow_1stApproved</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:endEvent id="Event_1stReject" name="Request Rejected (1st Stage)">
+      <bpmn:incoming>Flow_1stRejected</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:userTask id="Activity_Perform2ndApproval" name="Perform 2nd Stage Approval">
+      <bpmn:incoming>Flow_1stApproved</bpmn:incoming>
+      <bpmn:outgoing>Flow_0f0x3z1</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:exclusiveGateway id="Gateway_2ndApprovalDecision" name="2nd Stage Approved?">
+      <bpmn:incoming>Flow_0f0x3z1</bpmn:incoming>
+      <bpmn:outgoing>Flow_2ndRejected</bpmn:outgoing>
+      <bpmn:outgoing>Flow_2ndApproved</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:endEvent id="Event_2ndReject" name="Request Rejected (2nd Stage)">
+      <bpmn:incoming>Flow_2ndRejected</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:endEvent id="Event_FinalApproval" name="Signature/Approval Obtained">
+      <bpmn:incoming>Flow_2ndApproved</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:sequenceFlow id="Flow_0w7p1qf" sourceRef="StartEvent_InvoiceReceived" targetRef="Activity_Perform1stApproval" />
+    <bpmn:sequenceFlow id="Flow_1q9w2yq" sourceRef="Activity_Perform1stApproval" targetRef="Gateway_1stApprovalDecision" />
+    <bpmn:sequenceFlow id="Flow_1stRejected" name="Rejected" sourceRef="Gateway_1stApprovalDecision" targetRef="Event_1stReject" />
+    <bpmn:sequenceFlow id="Flow_1stApproved" name="Approved" sourceRef="Gateway_1stApprovalDecision" targetRef="Activity_Perform2ndApproval" />
+    <bpmn:sequenceFlow id="Flow_0f0x3z1" sourceRef="Activity_Perform2ndApproval" targetRef="Gateway_2ndApprovalDecision" />
+    <bpmn:sequenceFlow id="Flow_2ndRejected" name="Rejected" sourceRef="Gateway_2ndApprovalDecision" targetRef="Event_2ndReject" />
+    <bpmn:sequenceFlow id="Flow_2ndApproved" name="Approved" sourceRef="Gateway_2ndApprovalDecision" targetRef="Event_FinalApproval" />
+  </bpmn:process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_1">
+    <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="Process_InvoiceApproval">
+      <bpmndi:BPMNShape id="_BPMNShape_StartEvent_2" bpmnElement="StartEvent_InvoiceReceived">
+        <dc:Bounds x="179" y="159" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="157" y="202" width="81" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_0w7f8yq_di" bpmnElement="Activity_Perform1stApproval">
+        <dc:Bounds x="270" y="137" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gateway_0u5x3f1_di" bpmnElement="Gateway_1stApprovalDecision" isMarkerVisible="true">
+        <dc:Bounds x="425" y="152" width="50" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="408" y="114.5" width="84" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_1u1y0gq_di" bpmnElement="Event_1stReject">
+        <dc:Bounds x="432" y="252" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="405" y="295" width="90" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_1b0x3z1_di" bpmnElement="Activity_Perform2ndApproval">
+        <dc:Bounds x="530" y="137" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gateway_1f0x3z1_di" bpmnElement="Gateway_2ndApprovalDecision" isMarkerVisible="true">
+        <dc:Bounds x="685" y="152" width="50" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="668" y="114.5" width="84" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_0f0x3z1_di" bpmnElement="Event_2ndReject">
+        <dc:Bounds x="692" y="252" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="665" y="295" width="90" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_1k0x3z1_di" bpmnElement="Event_FinalApproval">
+        <dc:Bounds x="792" y="159" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="767" y="202" width="87" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="Flow_0w7p1qf_di" bpmnElement="Flow_0w7p1qf">
+        <di:waypoint x="215" y="177" />
+        <di:waypoint x="270" y="177" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1q9w2yq_di" bpmnElement="Flow_1q9w2yq">
+        <di:waypoint x="370" y="177" />
+        <di:waypoint x="425" y="177" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1f0x3z1_di" bpmnElement="Flow_1stRejected">
+        <di:waypoint x="450" y="202" />
+        <di:waypoint x="450" y="252" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="454" y="224" width="43" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0f0x3z1_di" bpmnElement="Flow_1stApproved">
+        <di:waypoint x="475" y="177" />
+        <di:waypoint x="530" y="177" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="484" y="159" width="48" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0f0x3z1_di_1" bpmnElement="Flow_0f0x3z1">
+        <di:waypoint x="630" y="177" />
+        <di:waypoint x="685" y="177" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1k0x3z1_di" bpmnElement="Flow_2ndRejected">
+        <di:waypoint x="710" y="202" />
+        <di:waypoint x="710" y="252" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="714" y="224" width="43" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0k0x3z1_di" bpmnElement="Flow_2ndApproved">
+        <di:waypoint x="735" y="177" />
+        <di:waypoint x="792" y="177" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="744" y="159" width="48" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</bpmn:definitions>
+```

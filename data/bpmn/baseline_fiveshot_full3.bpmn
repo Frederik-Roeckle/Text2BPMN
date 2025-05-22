@@ -1,0 +1,270 @@
+<?xml version="1.0" standalone="yes"?>
+<semantic:definitions id="definitions_marketing_campaign"
+    targetNamespace="http://example.com/bpmn/marketing-campaign"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:semantic="http://www.omg.org/spec/BPMN/20100524/MODEL"
+    xmlns:di="http://www.omg.org/spec/DD/20100524/DI"
+    xmlns:dc="http://www.omg.org/spec/DD/20100524/DC"
+    xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI">
+
+  <semantic:collaboration id="collab_marketing_process">
+    <semantic:participant id="participant_marketing_dept" name="Marketing &amp; Sales Department" processRef="process_marketing_campaign"/>
+  </semantic:collaboration>
+
+  <semantic:process id="process_marketing_campaign" isExecutable="true">
+    <semantic:laneSet id="laneSet_marketing">
+      <semantic:lane id="lane_marketing_manager" name="Marketing Manager">
+        <semantic:flowNodeRef>id_se_1</semantic:flowNodeRef>
+        <semantic:flowNodeRef>id_t_1</semantic:flowNodeRef>
+      </semantic:lane>
+      <semantic:lane id="lane_marketing_team" name="Marketing Team">
+        <semantic:flowNodeRef>id_pg_1</semantic:flowNodeRef>
+        <semantic:flowNodeRef>id_t_2</semantic:flowNodeRef>
+        <semantic:flowNodeRef>id_t_3</semantic:flowNodeRef>
+        <semantic:flowNodeRef>id_t_4</semantic:flowNodeRef>
+        <semantic:flowNodeRef>id_pg_2</semantic:flowNodeRef>
+        <semantic:flowNodeRef>id_t_5</semantic:flowNodeRef>
+        <semantic:flowNodeRef>id_xg_1</semantic:flowNodeRef>
+        <semantic:flowNodeRef>id_t_6</semantic:flowNodeRef>
+        <semantic:flowNodeRef>id_t_7</semantic:flowNodeRef>
+        <semantic:flowNodeRef>id_t_8</semantic:flowNodeRef>
+        <semantic:flowNodeRef>id_t_9</semantic:flowNodeRef>
+        <semantic:flowNodeRef>id_ee_1</semantic:flowNodeRef>
+      </semantic:lane>
+    </semantic:laneSet>
+
+    <semantic:startEvent id="id_se_1" name="Receive Marketing Campaign Request">
+      <semantic:outgoing>flow_1</semantic:outgoing>
+    </semantic:startEvent>
+    <semantic:task id="id_t_1" name="Define Marketing Plan">
+      <semantic:incoming>flow_1</semantic:incoming>
+      <semantic:outgoing>flow_2</semantic:outgoing>
+    </semantic:task>
+
+    <semantic:parallelGateway id="id_pg_1" name="Initiate Detailed Planning">
+      <semantic:incoming>flow_2</semantic:incoming>
+      <semantic:outgoing>flow_3</semantic:outgoing>
+      <semantic:outgoing>flow_4</semantic:outgoing>
+      <semantic:outgoing>flow_5</semantic:outgoing>
+    </semantic:parallelGateway>
+    <semantic:task id="id_t_2" name="Define Campaign Goals">
+      <semantic:incoming>flow_3</semantic:incoming>
+      <semantic:outgoing>flow_6</semantic:outgoing>
+    </semantic:task>
+    <semantic:task id="id_t_3" name="Set Campaign Budget">
+      <semantic:incoming>flow_4</semantic:incoming>
+      <semantic:outgoing>flow_7</semantic:outgoing>
+    </semantic:task>
+    <semantic:task id="id_t_4" name="Determine Target Audience">
+      <semantic:incoming>flow_5</semantic:incoming>
+      <semantic:outgoing>flow_8</semantic:outgoing>
+    </semantic:task>
+    <semantic:parallelGateway id="id_pg_2" name="Finalize Plan Details">
+      <semantic:incoming>flow_6</semantic:incoming>
+      <semantic:incoming>flow_7</semantic:incoming>
+      <semantic:incoming>flow_8</semantic:incoming>
+      <semantic:outgoing>flow_9</semantic:outgoing>
+    </semantic:parallelGateway>
+    <semantic:task id="id_t_5" name="Plan Campaign Measures">
+      <semantic:incoming>flow_9</semantic:incoming>
+      <semantic:outgoing>flow_10</semantic:outgoing>
+    </semantic:task>
+    <semantic:exclusiveGateway id="id_xg_1" name="Select Campaign Channel">
+      <semantic:incoming>flow_10</semantic:incoming>
+      <semantic:outgoing>flow_11</semantic:outgoing>
+      <semantic:outgoing>flow_12</semantic:outgoing>
+      <semantic:outgoing>flow_13</semantic:outgoing>
+    </semantic:exclusiveGateway>
+    <semantic:task id="id_t_6" name="Introduce Products on Trade Fairs">
+      <semantic:incoming>flow_11</semantic:incoming>
+      <semantic:outgoing>flow_14</semantic:outgoing>
+    </semantic:task>
+    <semantic:task id="id_t_7" name="Publish Products on Internet">
+      <semantic:incoming>flow_12</semantic:incoming>
+      <semantic:outgoing>flow_15</semantic:outgoing>
+    </semantic:task>
+    <semantic:task id="id_t_8" name="Introduce Products via Online-Marketing">
+      <semantic:incoming>flow_13</semantic:incoming>
+      <semantic:outgoing>flow_16</semantic:outgoing>
+    </semantic:task>
+    <semantic:task id="id_t_9" name="Evaluate Marketing Activities">
+      <semantic:incoming>flow_14</semantic:incoming>
+      <semantic:incoming>flow_15</semantic:incoming>
+      <semantic:incoming>flow_16</semantic:incoming>
+      <semantic:outgoing>flow_17</semantic:outgoing>
+    </semantic:task>
+    <semantic:endEvent id="id_ee_1" name="Conclude Marketing Evaluation">
+      <semantic:incoming>flow_17</semantic:incoming>
+    </semantic:endEvent>
+
+    <semantic:sequenceFlow id="flow_1" sourceRef="id_se_1" targetRef="id_t_1"/>
+    <semantic:sequenceFlow id="flow_2" sourceRef="id_t_1" targetRef="id_pg_1"/>
+    <semantic:sequenceFlow id="flow_3" sourceRef="id_pg_1" targetRef="id_t_2"/>
+    <semantic:sequenceFlow id="flow_4" sourceRef="id_pg_1" targetRef="id_t_3"/>
+    <semantic:sequenceFlow id="flow_5" sourceRef="id_pg_1" targetRef="id_t_4"/>
+    <semantic:sequenceFlow id="flow_6" sourceRef="id_t_2" targetRef="id_pg_2"/>
+    <semantic:sequenceFlow id="flow_7" sourceRef="id_t_3" targetRef="id_pg_2"/>
+    <semantic:sequenceFlow id="flow_8" sourceRef="id_t_4" targetRef="id_pg_2"/>
+    <semantic:sequenceFlow id="flow_9" sourceRef="id_pg_2" targetRef="id_t_5"/>
+    <semantic:sequenceFlow id="flow_10" sourceRef="id_t_5" targetRef="id_xg_1"/>
+    <semantic:sequenceFlow id="flow_11" name="Trade Fairs" sourceRef="id_xg_1" targetRef="id_t_6"/>
+    <semantic:sequenceFlow id="flow_12" name="Internet" sourceRef="id_xg_1" targetRef="id_t_7"/>
+    <semantic:sequenceFlow id="flow_13" name="Online-Marketing" sourceRef="id_xg_1" targetRef="id_t_8"/>
+    <semantic:sequenceFlow id="flow_14" sourceRef="id_t_6" targetRef="id_t_9"/>
+    <semantic:sequenceFlow id="flow_15" sourceRef="id_t_7" targetRef="id_t_9"/>
+    <semantic:sequenceFlow id="flow_16" sourceRef="id_t_8" targetRef="id_t_9"/>
+    <semantic:sequenceFlow id="flow_17" sourceRef="id_t_9" targetRef="id_ee_1"/>
+  </semantic:process>
+
+  <bpmndi:BPMNDiagram id="BPMNDiagram_marketing_campaign">
+    <bpmndi:BPMNPlane bpmnElement="collab_marketing_process">
+      <bpmndi:BPMNShape id="shape_participant_marketing_dept" bpmnElement="participant_marketing_dept" isHorizontal="true">
+        <dc:Bounds x="20" y="20" width="1350" height="570"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_lane_marketing_manager" bpmnElement="lane_marketing_manager" isHorizontal="true">
+        <dc:Bounds x="50" y="20" width="1320" height="150"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_lane_marketing_team" bpmnElement="lane_marketing_team" isHorizontal="true">
+        <dc:Bounds x="50" y="170" width="1320" height="420"/>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="shape_id_se_1" bpmnElement="id_se_1">
+        <dc:Bounds x="100" y="80" width="36" height="36"/>
+        <bpmndi:BPMNLabel><dc:Bounds x="70" y="120" width="96" height="28"/></bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_id_t_1" bpmnElement="id_t_1">
+        <dc:Bounds x="200" y="68" width="100" height="56"/>
+         <bpmndi:BPMNLabel><dc:Bounds x="200" y="73" width="100" height="46"/></bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_id_pg_1" bpmnElement="id_pg_1" isMarkerVisible="true">
+        <dc:Bounds x="350" y="345" width="50" height="50"/>
+        <bpmndi:BPMNLabel><dc:Bounds x="320" y="400" width="110" height="28"/></bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_id_t_2" bpmnElement="id_t_2">
+        <dc:Bounds x="450" y="252" width="100" height="56"/>
+        <bpmndi:BPMNLabel><dc:Bounds x="450" y="257" width="100" height="46"/></bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_id_t_3" bpmnElement="id_t_3">
+        <dc:Bounds x="450" y="342" width="100" height="56"/>
+        <bpmndi:BPMNLabel><dc:Bounds x="450" y="347" width="100" height="46"/></bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_id_t_4" bpmnElement="id_t_4">
+        <dc:Bounds x="450" y="432" width="100" height="56"/>
+        <bpmndi:BPMNLabel><dc:Bounds x="450" y="437" width="100" height="46"/></bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_id_pg_2" bpmnElement="id_pg_2" isMarkerVisible="true">
+        <dc:Bounds x="600" y="345" width="50" height="50"/>
+        <bpmndi:BPMNLabel><dc:Bounds x="570" y="400" width="110" height="28"/></bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_id_t_5" bpmnElement="id_t_5">
+        <dc:Bounds x="700" y="342" width="100" height="56"/>
+        <bpmndi:BPMNLabel><dc:Bounds x="700" y="347" width="100" height="46"/></bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_id_xg_1" bpmnElement="id_xg_1" isMarkerVisible="true">
+        <dc:Bounds x="850" y="345" width="50" height="50"/>
+        <bpmndi:BPMNLabel><dc:Bounds x="820" y="400" width="110" height="28"/></bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_id_t_6" bpmnElement="id_t_6">
+        <dc:Bounds x="950" y="252" width="100" height="56"/>
+        <bpmndi:BPMNLabel><dc:Bounds x="950" y="257" width="100" height="46"/></bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_id_t_7" bpmnElement="id_t_7">
+        <dc:Bounds x="950" y="342" width="100" height="56"/>
+        <bpmndi:BPMNLabel><dc:Bounds x="950" y="347" width="100" height="46"/></bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_id_t_8" bpmnElement="id_t_8">
+        <dc:Bounds x="950" y="432" width="100" height="56"/>
+        <bpmndi:BPMNLabel><dc:Bounds x="950" y="437" width="100" height="46"/></bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_id_t_9" bpmnElement="id_t_9">
+        <dc:Bounds x="1100" y="342" width="100" height="56"/>
+        <bpmndi:BPMNLabel><dc:Bounds x="1100" y="347" width="100" height="46"/></bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_id_ee_1" bpmnElement="id_ee_1">
+        <dc:Bounds x="1250" y="352" width="36" height="36"/>
+        <bpmndi:BPMNLabel><dc:Bounds x="1220" y="392" width="96" height="28"/></bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNEdge id="edge_flow_1" bpmnElement="flow_1">
+        <di:waypoint x="136" y="98"/>
+        <di:waypoint x="200" y="96"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_2" bpmnElement="flow_2">
+        <di:waypoint x="300" y="96"/>
+        <di:waypoint x="375" y="96"/>
+        <di:waypoint x="375" y="345"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_3" bpmnElement="flow_3">
+        <di:waypoint x="375" y="345"/>
+        <di:waypoint x="375" y="280"/>
+        <di:waypoint x="450" y="280"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_4" bpmnElement="flow_4">
+        <di:waypoint x="400" y="370"/>
+        <di:waypoint x="450" y="370"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_5" bpmnElement="flow_5">
+        <di:waypoint x="375" y="395"/>
+        <di:waypoint x="375" y="460"/>
+        <di:waypoint x="450" y="460"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_6" bpmnElement="flow_6">
+        <di:waypoint x="550" y="280"/>
+        <di:waypoint x="625" y="280"/>
+        <di:waypoint x="625" y="345"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_7" bpmnElement="flow_7">
+        <di:waypoint x="550" y="370"/>
+        <di:waypoint x="600" y="370"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_8" bpmnElement="flow_8">
+        <di:waypoint x="550" y="460"/>
+        <di:waypoint x="625" y="460"/>
+        <di:waypoint x="625" y="395"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_9" bpmnElement="flow_9">
+        <di:waypoint x="650" y="370"/>
+        <di:waypoint x="700" y="370"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_10" bpmnElement="flow_10">
+        <di:waypoint x="800" y="370"/>
+        <di:waypoint x="850" y="370"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_11" bpmnElement="flow_11">
+        <di:waypoint x="875" y="345"/>
+        <di:waypoint x="875" y="280"/>
+        <di:waypoint x="950" y="280"/>
+        <bpmndi:BPMNLabel><dc:Bounds x="880" y="300" width="60" height="14"/></bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_12" bpmnElement="flow_12">
+        <di:waypoint x="900" y="370"/>
+        <di:waypoint x="950" y="370"/>
+        <bpmndi:BPMNLabel><dc:Bounds x="905" y="350" width="40" height="14"/></bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_13" bpmnElement="flow_13">
+        <di:waypoint x="875" y="395"/>
+        <di:waypoint x="875" y="460"/>
+        <di:waypoint x="950" y="460"/>
+        <bpmndi:BPMNLabel><dc:Bounds x="880" y="415" width="70" height="28"/></bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_14" bpmnElement="flow_14">
+        <di:waypoint x="1050" y="280"/>
+        <di:waypoint x="1150" y="280"/>
+        <di:waypoint x="1150" y="342"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_15" bpmnElement="flow_15">
+        <di:waypoint x="1050" y="370"/>
+        <di:waypoint x="1100" y="370"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_16" bpmnElement="flow_16">
+        <di:waypoint x="1050" y="460"/>
+        <di:waypoint x="1150" y="460"/>
+        <di:waypoint x="1150" y="398"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_17" bpmnElement="flow_17">
+        <di:waypoint x="1200" y="370"/>
+        <di:waypoint x="1250" y="370"/>
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</semantic:definitions>

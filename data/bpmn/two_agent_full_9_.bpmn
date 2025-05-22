@@ -1,0 +1,257 @@
+
+<?xml version="1.0" encoding="UTF-8"?>
+<semantic:definitions xmlns:semantic="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" id="project_implementation_definitions" targetNamespace="http://example.com/bpmn/project_implementation">
+  <semantic:collaboration id="collab_project_implementation">
+    <semantic:participant id="participant_controlling_dept" name="Controlling Department" processRef="process_project_implementation"/>
+  </semantic:collaboration>
+  <semantic:process id="process_project_implementation" isExecutable="true">
+    <semantic:laneSet id="lane_set_controller">
+      <semantic:lane id="lane_controller" name="Controller">
+        <semantic:flowNodeRef>start_event_order_received</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_plan_project</semantic:flowNodeRef>
+        <semantic:flowNodeRef>pg_planning_split</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_define_budget_plan</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_define_costs</semantic:flowNodeRef>
+        <semantic:flowNodeRef>pg_planning_join</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_obtain_project_budget</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_submit_abr</semantic:flowNodeRef>
+        <semantic:flowNodeRef>gw_budget_approval_check</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_setup_sap</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_run_track_sap</semantic:flowNodeRef>
+        <semantic:flowNodeRef>gw_overdraft_check</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_close_project</semantic:flowNodeRef>
+        <semantic:flowNodeRef>end_event_project_successful</semantic:flowNodeRef>
+      </semantic:lane>
+    </semantic:laneSet>
+    <semantic:startEvent id="start_event_order_received" name="Order Received to Implement Project">
+      <semantic:outgoing>flow_start_to_plan</semantic:outgoing>
+    </semantic:startEvent>
+    <semantic:task id="task_plan_project" name="Plan Project">
+      <semantic:incoming>flow_start_to_plan</semantic:incoming>
+      <semantic:incoming>flow_gwapproval_not_approved</semantic:incoming>
+      <semantic:outgoing>flow_plan_to_pgsplit</semantic:outgoing>
+    </semantic:task>
+    <semantic:parallelGateway id="pg_planning_split" name="Planning Activities Split">
+      <semantic:incoming>flow_plan_to_pgsplit</semantic:incoming>
+      <semantic:outgoing>flow_pgsplit_to_definebudget</semantic:outgoing>
+      <semantic:outgoing>flow_pgsplit_to_definecosts</semantic:outgoing>
+    </semantic:parallelGateway>
+    <semantic:task id="task_define_budget_plan" name="Define Budget Planning (MTP)">
+      <semantic:incoming>flow_pgsplit_to_definebudget</semantic:incoming>
+      <semantic:outgoing>flow_definebudget_to_pgjoin</semantic:outgoing>
+    </semantic:task>
+    <semantic:task id="task_define_costs" name="Define Internal &amp; External Costs">
+      <semantic:incoming>flow_pgsplit_to_definecosts</semantic:incoming>
+      <semantic:outgoing>flow_definecosts_to_pgjoin</semantic:outgoing>
+    </semantic:task>
+    <semantic:parallelGateway id="pg_planning_join" name="Planning Activities Join">
+      <semantic:incoming>flow_definebudget_to_pgjoin</semantic:incoming>
+      <semantic:incoming>flow_definecosts_to_pgjoin</semantic:incoming>
+      <semantic:outgoing>flow_pgjoin_to_obtainbudget</semantic:outgoing>
+    </semantic:parallelGateway>
+    <semantic:task id="task_obtain_project_budget" name="Obtain Budget for Project">
+      <semantic:incoming>flow_pgjoin_to_obtainbudget</semantic:incoming>
+      <semantic:incoming>flow_gwoverdraft_exceeded</semantic:incoming>
+      <semantic:outgoing>flow_obtainbudget_to_submitabr</semantic:outgoing>
+    </semantic:task>
+    <semantic:task id="task_submit_abr" name="Submit Budget Request (ABR)">
+      <semantic:incoming>flow_obtainbudget_to_submitabr</semantic:incoming>
+      <semantic:outgoing>flow_submitabr_to_gwapproval</semantic:outgoing>
+    </semantic:task>
+    <semantic:exclusiveGateway id="gw_budget_approval_check" name="Budget Approved?">
+      <semantic:incoming>flow_submitabr_to_gwapproval</semantic:incoming>
+      <semantic:outgoing>flow_gwapproval_not_approved</semantic:outgoing>
+      <semantic:outgoing>flow_gwapproval_approved</semantic:outgoing>
+    </semantic:exclusiveGateway>
+    <semantic:task id="task_setup_sap" name="Set up Project in SAP">
+      <semantic:incoming>flow_gwapproval_approved</semantic:incoming>
+      <semantic:outgoing>flow_setupsap_to_runsap</semantic:outgoing>
+    </semantic:task>
+    <semantic:task id="task_run_track_sap" name="Run &amp; Track Project in SAP">
+      <semantic:incoming>flow_setupsap_to_runsap</semantic:incoming>
+      <semantic:outgoing>flow_runsap_to_gwoverdraft</semantic:outgoing>
+    </semantic:task>
+    <semantic:exclusiveGateway id="gw_overdraft_check" name="Budget Overdraft?">
+      <semantic:incoming>flow_runsap_to_gwoverdraft</semantic:incoming>
+      <semantic:outgoing>flow_gwoverdraft_exceeded</semantic:outgoing>
+      <semantic:outgoing>flow_gwoverdraft_not_exceeded</semantic:outgoing>
+    </semantic:exclusiveGateway>
+    <semantic:task id="task_close_project" name="Close Project">
+      <semantic:incoming>flow_gwoverdraft_not_exceeded</semantic:incoming>
+      <semantic:outgoing>flow_closeproject_to_end</semantic:outgoing>
+    </semantic:task>
+    <semantic:endEvent id="end_event_project_successful" name="Project Implemented Successfully">
+      <semantic:incoming>flow_closeproject_to_end</semantic:incoming>
+    </semantic:endEvent>
+    <semantic:sequenceFlow id="flow_start_to_plan" sourceRef="start_event_order_received" targetRef="task_plan_project"/>
+    <semantic:sequenceFlow id="flow_plan_to_pgsplit" sourceRef="task_plan_project" targetRef="pg_planning_split"/>
+    <semantic:sequenceFlow id="flow_pgsplit_to_definebudget" sourceRef="pg_planning_split" targetRef="task_define_budget_plan"/>
+    <semantic:sequenceFlow id="flow_pgsplit_to_definecosts" sourceRef="pg_planning_split" targetRef="task_define_costs"/>
+    <semantic:sequenceFlow id="flow_definebudget_to_pgjoin" sourceRef="task_define_budget_plan" targetRef="pg_planning_join"/>
+    <semantic:sequenceFlow id="flow_definecosts_to_pgjoin" sourceRef="task_define_costs" targetRef="pg_planning_join"/>
+    <semantic:sequenceFlow id="flow_pgjoin_to_obtainbudget" sourceRef="pg_planning_join" targetRef="task_obtain_project_budget"/>
+    <semantic:sequenceFlow id="flow_obtainbudget_to_submitabr" sourceRef="task_obtain_project_budget" targetRef="task_submit_abr"/>
+    <semantic:sequenceFlow id="flow_submitabr_to_gwapproval" sourceRef="task_submit_abr" targetRef="gw_budget_approval_check"/>
+    <semantic:sequenceFlow id="flow_gwapproval_not_approved" name="Not Approved" sourceRef="gw_budget_approval_check" targetRef="task_plan_project"/>
+    <semantic:sequenceFlow id="flow_gwapproval_approved" name="Approved" sourceRef="gw_budget_approval_check" targetRef="task_setup_sap"/>
+    <semantic:sequenceFlow id="flow_setupsap_to_runsap" sourceRef="task_setup_sap" targetRef="task_run_track_sap"/>
+    <semantic:sequenceFlow id="flow_runsap_to_gwoverdraft" sourceRef="task_run_track_sap" targetRef="gw_overdraft_check"/>
+    <semantic:sequenceFlow id="flow_gwoverdraft_exceeded" name="Budget Exceeded" sourceRef="gw_overdraft_check" targetRef="task_obtain_project_budget"/>
+    <semantic:sequenceFlow id="flow_gwoverdraft_not_exceeded" name="Budget Not Exceeded" sourceRef="gw_overdraft_check" targetRef="task_close_project"/>
+    <semantic:sequenceFlow id="flow_closeproject_to_end" sourceRef="task_close_project" targetRef="end_event_project_successful"/>
+  </semantic:process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_project_implementation">
+    <bpmndi:BPMNPlane id="BPMNPlane_project_implementation" bpmnElement="collab_project_implementation">
+      <bpmndi:BPMNShape id="shape_participant_controlling_dept" bpmnElement="participant_controlling_dept" isHorizontal="true">
+        <dc:Bounds x="20" y="20" width="1760" height="500"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_lane_controller" bpmnElement="lane_controller" isHorizontal="true">
+        <dc:Bounds x="50" y="20" width="1730" height="500"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_start_event_order_received" bpmnElement="start_event_order_received">
+        <dc:Bounds x="100" y="252" width="36" height="36"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="80" y="293" width="76" height="40"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_task_plan_project" bpmnElement="task_plan_project">
+        <dc:Bounds x="200" y="230" width="100" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_pg_planning_split" bpmnElement="pg_planning_split" isMarkerVisible="true">
+        <dc:Bounds x="350" y="245" width="50" height="50"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="330" y="300" width="90" height="27"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_task_define_budget_plan" bpmnElement="task_define_budget_plan">
+        <dc:Bounds x="450" y="140" width="100" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_task_define_costs" bpmnElement="task_define_costs">
+        <dc:Bounds x="450" y="320" width="100" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_pg_planning_join" bpmnElement="pg_planning_join" isMarkerVisible="true">
+        <dc:Bounds x="600" y="245" width="50" height="50"/>
+         <bpmndi:BPMNLabel>
+          <dc:Bounds x="580" y="300" width="90" height="27"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_task_obtain_project_budget" bpmnElement="task_obtain_project_budget">
+        <dc:Bounds x="700" y="230" width="100" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_task_submit_abr" bpmnElement="task_submit_abr">
+        <dc:Bounds x="850" y="230" width="100" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_gw_budget_approval_check" bpmnElement="gw_budget_approval_check" isMarkerVisible="true">
+        <dc:Bounds x="1000" y="245" width="50" height="50"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="987" y="210" width="76" height="27"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_task_setup_sap" bpmnElement="task_setup_sap">
+        <dc:Bounds x="1100" y="230" width="100" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_task_run_track_sap" bpmnElement="task_run_track_sap">
+        <dc:Bounds x="1250" y="230" width="100" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_gw_overdraft_check" bpmnElement="gw_overdraft_check" isMarkerVisible="true">
+        <dc:Bounds x="1400" y="245" width="50" height="50"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1380" y="210" width="90" height="27"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_task_close_project" bpmnElement="task_close_project">
+        <dc:Bounds x="1500" y="230" width="100" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_end_event_project_successful" bpmnElement="end_event_project_successful">
+        <dc:Bounds x="1650" y="252" width="36" height="36"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1620" y="293" width="96" height="40"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="edge_flow_start_to_plan" bpmnElement="flow_start_to_plan">
+        <di:waypoint x="136" y="270"/>
+        <di:waypoint x="200" y="270"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_plan_to_pgsplit" bpmnElement="flow_plan_to_pgsplit">
+        <di:waypoint x="300" y="270"/>
+        <di:waypoint x="350" y="270"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_pgsplit_to_definebudget" bpmnElement="flow_pgsplit_to_definebudget">
+        <di:waypoint x="375" y="245"/>
+        <di:waypoint x="375" y="180"/>
+        <di:waypoint x="450" y="180"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_pgsplit_to_definecosts" bpmnElement="flow_pgsplit_to_definecosts">
+        <di:waypoint x="375" y="295"/>
+        <di:waypoint x="375" y="360"/>
+        <di:waypoint x="450" y="360"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_definebudget_to_pgjoin" bpmnElement="flow_definebudget_to_pgjoin">
+        <di:waypoint x="550" y="180"/>
+        <di:waypoint x="625" y="180"/>
+        <di:waypoint x="625" y="245"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_definecosts_to_pgjoin" bpmnElement="flow_definecosts_to_pgjoin">
+        <di:waypoint x="550" y="360"/>
+        <di:waypoint x="625" y="360"/>
+        <di:waypoint x="625" y="295"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_pgjoin_to_obtainbudget" bpmnElement="flow_pgjoin_to_obtainbudget">
+        <di:waypoint x="650" y="270"/>
+        <di:waypoint x="700" y="270"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_obtainbudget_to_submitabr" bpmnElement="flow_obtainbudget_to_submitabr">
+        <di:waypoint x="800" y="270"/>
+        <di:waypoint x="850" y="270"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_submitabr_to_gwapproval" bpmnElement="flow_submitabr_to_gwapproval">
+        <di:waypoint x="950" y="270"/>
+        <di:waypoint x="1000" y="270"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_gwapproval_not_approved" bpmnElement="flow_gwapproval_not_approved">
+        <di:waypoint x="1025" y="245"/>
+        <di:waypoint x="1025" y="70"/>
+        <di:waypoint x="250" y="70"/>
+        <di:waypoint x="250" y="230"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="620" y="50" width="70" height="14"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_gwapproval_approved" bpmnElement="flow_gwapproval_approved">
+        <di:waypoint x="1050" y="270"/>
+        <di:waypoint x="1100" y="270"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1055" y="275" width="50" height="14"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_setupsap_to_runsap" bpmnElement="flow_setupsap_to_runsap">
+        <di:waypoint x="1200" y="270"/>
+        <di:waypoint x="1250" y="270"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_runsap_to_gwoverdraft" bpmnElement="flow_runsap_to_gwoverdraft">
+        <di:waypoint x="1350" y="270"/>
+        <di:waypoint x="1400" y="270"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_gwoverdraft_exceeded" bpmnElement="flow_gwoverdraft_exceeded">
+        <di:waypoint x="1425" y="295"/>
+        <di:waypoint x="1425" y="470"/>
+        <di:waypoint x="750" y="470"/>
+        <di:waypoint x="750" y="310"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1060" y="475" width="90" height="14"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_gwoverdraft_not_exceeded" bpmnElement="flow_gwoverdraft_not_exceeded">
+        <di:waypoint x="1450" y="270"/>
+        <di:waypoint x="1500" y="270"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1450" y="275" width="50" height="27"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_closeproject_to_end" bpmnElement="flow_closeproject_to_end">
+        <di:waypoint x="1600" y="270"/>
+        <di:waypoint x="1650" y="270"/>
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</semantic:definitions>
