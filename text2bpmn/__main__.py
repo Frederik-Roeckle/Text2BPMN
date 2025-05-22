@@ -68,7 +68,7 @@ def main():
 
 
     #input_path = "data/test_cases/example_test_case.jsonl"
-    input_path = "data/test_cases/wu_wien.json"
+    input_path = "data/test_cases/subtest_set.json"
 
     #output_path = "data/test_cases/example_test_case_with_answers.jsonl"
     
@@ -126,12 +126,12 @@ def main():
         
             final_message = final_messages[-1].content
             # Write the modified lines back as plain text
-            output_path = f"data/bpmn/three_agent_1shot{data[i]['id']}.bpmn"
+            output_path = f"data/bpmn/three_agent_5shot{data[i]['id']}.bpmn"
             with open(output_path, "w") as f:
                 f.write(final_message + "\n")
         
             print(f"Results written to {output_path}")
-            render_BPMN(f"data/bpmn/three_agent_1shot{data[i]['id']}.bpmn", f"data/img/three_agent_1shot{data[i]['id']}.png")
+            render_BPMN(f"data/bpmn/three_agent_5shot{data[i]['id']}.bpmn", f"data/img/three_agent_5shot{data[i]['id']}.png")
         except Exception as e:    
             print(f"❌ Exception occurred while processing item {i+1} (ID: {item.get('id', 'unknown')}): {e}")
             continue

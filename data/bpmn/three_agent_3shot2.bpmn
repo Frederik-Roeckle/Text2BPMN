@@ -1,0 +1,234 @@
+<?xml version="1.0" standalone="yes"?>
+<semantic:definitions id="definitions_invoice_approval"
+    targetNamespace="http://example.com/bpmn/invoice_approval"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:semantic="http://www.omg.org/spec/BPMN/20100524/MODEL"
+    xmlns:di="http://www.omg.org/spec/DD/20100524/DI"
+    xmlns:dc="http://www.omg.org/spec/DD/20100524/DC"
+    xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI">
+
+  <semantic:collaboration id="collab_invoice_approval">
+    <semantic:participant id="participant_invoice_approval_pool" name="Invoice Approval Process Pool" processRef="process_invoice_approval"/>
+  </semantic:collaboration>
+
+  <semantic:process id="process_invoice_approval" isExecutable="true">
+    <semantic:laneSet id="lane_set_invoice_approval">
+      <semantic:lane id="lane_invoice_processor" name="Invoice Processor">
+        <semantic:flowNodeRef>start_event_1</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_1</semantic:flowNodeRef>
+        <semantic:flowNodeRef>gateway_1</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_3</semantic:flowNodeRef>
+        <semantic:flowNodeRef>gateway_2</semantic:flowNodeRef>
+        <semantic:flowNodeRef>end_event_1</semantic:flowNodeRef>
+        <semantic:flowNodeRef>end_event_2</semantic:flowNodeRef>
+        <semantic:flowNodeRef>end_event_3</semantic:flowNodeRef>
+      </semantic:lane>
+      <semantic:lane id="lane_1st_approver" name="1st Approver">
+        <semantic:flowNodeRef>task_2</semantic:flowNodeRef>
+      </semantic:lane>
+      <semantic:lane id="lane_2nd_approver" name="2nd Approver">
+        <semantic:flowNodeRef>task_4</semantic:flowNodeRef>
+      </semantic:lane>
+    </semantic:laneSet>
+
+    <semantic:startEvent id="start_event_1" name="Invoice Received">
+      <semantic:outgoing>flow_1</semantic:outgoing>
+    </semantic:startEvent>
+
+    <semantic:task id="task_1" name="Send Invoice for 1st Stage Approval">
+      <semantic:incoming>flow_1</semantic:incoming>
+      <semantic:outgoing>flow_2</semantic:outgoing>
+    </semantic:task>
+
+    <semantic:task id="task_2" name="Perform 1st Stage Approval">
+      <semantic:incoming>flow_2</semantic:incoming>
+      <semantic:outgoing>flow_3</semantic:outgoing>
+    </semantic:task>
+
+    <semantic:exclusiveGateway id="gateway_1" name="1st Stage Approval Outcome?">
+      <semantic:incoming>flow_3</semantic:incoming>
+      <semantic:outgoing>flow_4</semantic:outgoing>
+      <semantic:outgoing>flow_5</semantic:outgoing>
+    </semantic:exclusiveGateway>
+
+    <semantic:task id="task_3" name="Send Invoice for 2nd Stage Approval">
+      <semantic:incoming>flow_4</semantic:incoming>
+      <semantic:outgoing>flow_6</semantic:outgoing>
+    </semantic:task>
+
+    <semantic:endEvent id="end_event_1" name="Request Rejected (1st Stage)">
+      <semantic:incoming>flow_5</semantic:incoming>
+    </semantic:endEvent>
+
+    <semantic:task id="task_4" name="Perform 2nd Stage Approval">
+      <semantic:incoming>flow_6</semantic:incoming>
+      <semantic:outgoing>flow_7</semantic:outgoing>
+    </semantic:task>
+
+    <semantic:exclusiveGateway id="gateway_2" name="2nd Stage Approval Outcome?">
+      <semantic:incoming>flow_7</semantic:incoming>
+      <semantic:outgoing>flow_8</semantic:outgoing>
+      <semantic:outgoing>flow_9</semantic:outgoing>
+    </semantic:exclusiveGateway>
+
+    <semantic:endEvent id="end_event_2" name="Signature/Approval Obtained">
+      <semantic:incoming>flow_8</semantic:incoming>
+    </semantic:endEvent>
+
+    <semantic:endEvent id="end_event_3" name="Request Rejected (2nd Stage)">
+      <semantic:incoming>flow_9</semantic:incoming>
+    </semantic:endEvent>
+
+    <semantic:sequenceFlow id="flow_1" sourceRef="start_event_1" targetRef="task_1"/>
+    <semantic:sequenceFlow id="flow_2" sourceRef="task_1" targetRef="task_2"/>
+    <semantic:sequenceFlow id="flow_3" sourceRef="task_2" targetRef="gateway_1"/>
+    <semantic:sequenceFlow id="flow_4" name="Approved" sourceRef="gateway_1" targetRef="task_3">
+      <semantic:conditionExpression xsi:type="semantic:tFormalExpression">Approved</semantic:conditionExpression>
+    </semantic:sequenceFlow>
+    <semantic:sequenceFlow id="flow_5" name="Rejected" sourceRef="gateway_1" targetRef="end_event_1">
+      <semantic:conditionExpression xsi:type="semantic:tFormalExpression">Rejected</semantic:conditionExpression>
+    </semantic:sequenceFlow>
+    <semantic:sequenceFlow id="flow_6" sourceRef="task_3" targetRef="task_4"/>
+    <semantic:sequenceFlow id="flow_7" sourceRef="task_4" targetRef="gateway_2"/>
+    <semantic:sequenceFlow id="flow_8" name="Approved" sourceRef="gateway_2" targetRef="end_event_2">
+      <semantic:conditionExpression xsi:type="semantic:tFormalExpression">Approved</semantic:conditionExpression>
+    </semantic:sequenceFlow>
+    <semantic:sequenceFlow id="flow_9" name="Denied" sourceRef="gateway_2" targetRef="end_event_3">
+      <semantic:conditionExpression xsi:type="semantic:tFormalExpression">Denied</semantic:conditionExpression>
+    </semantic:sequenceFlow>
+  </semantic:process>
+
+  <bpmndi:BPMNDiagram id="diagram_invoice_approval" name="Invoice Approval Diagram" resolution="96.0">
+    <bpmndi:BPMNPlane bpmnElement="collab_invoice_approval">
+      <bpmndi:BPMNShape id="shape_participant_invoice_approval_pool" bpmnElement="participant_invoice_approval_pool" isHorizontal="true">
+        <dc:Bounds x="10" y="10" width="1050" height="620"/>
+        <bpmndi:BPMNLabel/>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="shape_lane_invoice_processor" bpmnElement="lane_invoice_processor" isHorizontal="true">
+        <dc:Bounds x="40" y="10" width="1020" height="200"/>
+        <bpmndi:BPMNLabel/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_lane_1st_approver" bpmnElement="lane_1st_approver" isHorizontal="true">
+        <dc:Bounds x="40" y="210" width="1020" height="200"/>
+        <bpmndi:BPMNLabel/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_lane_2nd_approver" bpmnElement="lane_2nd_approver" isHorizontal="true">
+        <dc:Bounds x="40" y="410" width="1020" height="200"/>
+        <bpmndi:BPMNLabel/>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="shape_start_event_1" bpmnElement="start_event_1">
+        <dc:Bounds x="70" y="92" width="36" height="36"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="52" y="133" width="72" height="14"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_task_1" bpmnElement="task_1">
+        <dc:Bounds x="170" y="82" width="100" height="56"/>
+        <bpmndi:BPMNLabel/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_task_2" bpmnElement="task_2">
+        <dc:Bounds x="320" y="282" width="100" height="56"/>
+        <bpmndi:BPMNLabel/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_gateway_1" bpmnElement="gateway_1" isMarkerVisible="true">
+        <dc:Bounds x="470" y="85" width="50" height="50"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="445" y="55" width="100" height="28"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_task_3" bpmnElement="task_3">
+        <dc:Bounds x="570" y="82" width="100" height="56"/>
+        <bpmndi:BPMNLabel/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_end_event_1" bpmnElement="end_event_1">
+        <dc:Bounds x="570" y="160" width="36" height="36"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="532" y="201" width="112" height="28"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_task_4" bpmnElement="task_4">
+        <dc:Bounds x="720" y="482" width="100" height="56"/>
+        <bpmndi:BPMNLabel/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_gateway_2" bpmnElement="gateway_2" isMarkerVisible="true">
+        <dc:Bounds x="870" y="85" width="50" height="50"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="845" y="55" width="100" height="28"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_end_event_2" bpmnElement="end_event_2">
+        <dc:Bounds x="970" y="92" width="36" height="36"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="932" y="133" width="112" height="28"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_end_event_3" bpmnElement="end_event_3">
+        <dc:Bounds x="970" y="160" width="36" height="36"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="932" y="201" width="112" height="28"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNEdge id="edge_flow_1" bpmnElement="flow_1">
+        <di:waypoint x="106" y="110"/>
+        <di:waypoint x="170" y="110"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_2" bpmnElement="flow_2">
+        <di:waypoint x="270" y="110"/>
+        <di:waypoint x="295" y="110"/>
+        <di:waypoint x="295" y="310"/>
+        <di:waypoint x="320" y="310"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_3" bpmnElement="flow_3">
+        <di:waypoint x="420" y="310"/>
+        <di:waypoint x="445" y="310"/>
+        <di:waypoint x="445" y="110"/>
+        <di:waypoint x="470" y="110"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_4" bpmnElement="flow_4">
+        <di:waypoint x="520" y="110"/>
+        <di:waypoint x="570" y="110"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="530" y="90" width="40" height="14"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_5" bpmnElement="flow_5">
+        <di:waypoint x="495" y="135"/>
+        <di:waypoint x="495" y="178"/>
+        <di:waypoint x="570" y="178"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="500" y="151" width="40" height="14"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_6" bpmnElement="flow_6">
+        <di:waypoint x="670" y="110"/>
+        <di:waypoint x="695" y="110"/>
+        <di:waypoint x="695" y="510"/>
+        <di:waypoint x="720" y="510"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_7" bpmnElement="flow_7">
+        <di:waypoint x="820" y="510"/>
+        <di:waypoint x="845" y="510"/>
+        <di:waypoint x="845" y="110"/>
+        <di:waypoint x="870" y="110"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_8" bpmnElement="flow_8">
+        <di:waypoint x="920" y="110"/>
+        <di:waypoint x="970" y="110"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="930" y="90" width="40" height="14"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_9" bpmnElement="flow_9">
+        <di:waypoint x="895" y="135"/>
+        <di:waypoint x="895" y="178"/>
+        <di:waypoint x="970" y="178"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="900" y="151" width="40" height="14"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</semantic:definitions>

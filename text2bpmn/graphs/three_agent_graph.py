@@ -74,7 +74,7 @@ def build_graph():
     xml_Agent = NormalAgent(
         model=get_model(),
         system_message=prompt_xml_few,
-        few_shot_examples="data/examples/one_shot_examples.json",
+        few_shot_examples="data/examples/five_shot_examples.json",
         step="xml_Agent"
     )
 

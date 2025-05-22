@@ -91,7 +91,7 @@ class FeedbackAgent(BaseAgent):
 
 class EvaluatorAgent(BaseAgent):
     def __init__(self, model, system_message=None, few_shot_examples=None,
-                 invoke_message=None, tools=None, step=None, max_runs: int = 2):
+                 invoke_message=None, tools=None, step=None, max_runs: int = 3):
         super().__init__(model, system_message, few_shot_examples, invoke_message, tools, step)
         self.parser = PydanticOutputParser(pydantic_object=EvaluatorResult)
         self.max_runs = max_runs
