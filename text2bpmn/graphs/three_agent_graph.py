@@ -1,12 +1,9 @@
 from text2bpmn.agents import NormalAgent, EvaluatorAgent
 from langgraph.graph import StateGraph, START, MessagesState
-from text2bpmn.config import get_model, set_model
-from text2bpmn.models import OpenAILLM
-from typing import Annotated
+from text2bpmn.config import get_model
 from langgraph.graph import END
 from langsmith import traceable
 from langchain.schema import AIMessage, SystemMessage, HumanMessage
-from langgraph.types import Command
 
 
 
@@ -33,7 +30,6 @@ def only_last_message(agent):
         if system_msg_content is None:
             raise ValueError("Agent has no system_message attribute")
 
-        # ⚠️ Modify state in-place to preserve other keys like supervisor_runs
         state["messages"] = [
             SystemMessage(content=system_msg_content),
             HumanMessage(content=last_ai_msg.content)
@@ -59,7 +55,7 @@ def build_graph():
     # Agents
     
     prompt_extract = read_txt_file("data/promts/extraction_prompt.txt")
-    prompt_xml = read_txt_file("data/promts/create_xml_prompt.txt")
+    #prompt_xml = read_txt_file("data/promts/create_xml_prompt.txt")
     prompt_xml_few = read_txt_file("data/promts/create_xml_prompt_few.txt")
     prompt_validate = read_txt_file("data/promts/validate_prompt.txt")
     prompt_supervisor = read_txt_file("data/promts/supervisor_prompt.txt")
@@ -67,7 +63,6 @@ def build_graph():
     extractAgent  = NormalAgent(
         model=get_model(),
         system_message=prompt_extract,
-        #few_shot_examples="",
         step="extractAgent"
     )
 
@@ -81,7 +76,6 @@ def build_graph():
     validate_Agent = NormalAgent(
         model=get_model(),
         system_message=prompt_validate,
-        #few_shot_examples="data/examples/few_shot_examples.txt",
         step="validate_Agent"
     )
     #

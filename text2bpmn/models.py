@@ -1,15 +1,6 @@
 from langchain_mistralai import ChatMistralAI
 from langchain_openai import ChatOpenAI
 from langchain_google_genai import ChatGoogleGenerativeAI
-from google import genai
-from google.genai import types
-import os
-from google.genai.types import GenerateContentConfig, ThinkingConfig
-
-from google.genai import Client
-
-
-
 import os
 from dotenv import load_dotenv
 

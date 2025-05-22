@@ -10,7 +10,6 @@ import text2bpmn.config as config
 from langchain_core.messages import convert_to_messages
 from langchain_community.callbacks import get_openai_callback
 from text2bpmn.utils import render_BPMN  
-from langsmith.wrappers import wrap_openai
 from langsmith import traceable
 
 
@@ -73,8 +72,6 @@ def main():
 
     #output_path = "data/test_cases/example_test_case_with_answers.jsonl"
     
-    # TODO: Define logic that the output is appended to the original file
-
     
     # Uncomment the following lines to process the input file with each graph
 
