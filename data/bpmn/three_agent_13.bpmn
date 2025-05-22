@@ -1,0 +1,439 @@
+<?xml version="1.0" standalone="yes"?>
+<semantic:definitions id="definitions_chocolate_production"
+    targetNamespace="http://example.com/bpmn/chocolate_production"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:semantic="http://www.omg.org/spec/BPMN/20100524/MODEL"
+    xmlns:di="http://www.omg.org/spec/DD/20100524/DI"
+    xmlns:dc="http://www.omg.org/spec/DD/20100524/DC"
+    xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI">
+
+  <semantic:collaboration id="collab_chocolate_production">
+    <semantic:participant id="participant_chocolate_production" name="Chocolate Production" processRef="process_chocolate_production"/>
+  </semantic:collaboration>
+
+  <semantic:process id="process_chocolate_production" isExecutable="true">
+    <semantic:laneSet id="laneset_chocolate_production">
+      <semantic:lane id="lane_pd" name="Production Department">
+        <semantic:flowNodeRef>start_event_1</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_pd_1</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_pd_2</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_pd_3</semantic:flowNodeRef>
+      </semantic:lane>
+      <semantic:lane id="lane_mm" name="Material Management Department">
+        <semantic:flowNodeRef>task_mm_1</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_mm_2</semantic:flowNodeRef>
+        <semantic:flowNodeRef>gateway_materials_check_1</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_mm_3</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_mm_4</semantic:flowNodeRef>
+      </semantic:lane>
+      <semantic:lane id="lane_purchaser" name="Purchaser">
+        <semantic:flowNodeRef>task_purchaser_1</semantic:flowNodeRef>
+      </semantic:lane>
+      <semantic:lane id="lane_op" name="Operators">
+        <semantic:flowNodeRef>task_op_1</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_op_2</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_op_3</semantic:flowNodeRef>
+        <semantic:flowNodeRef>gateway_op_split_1</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_op_4</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_op_5</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_op_6</semantic:flowNodeRef>
+        <semantic:flowNodeRef>gateway_op_split_2</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_op_7</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_op_8</semantic:flowNodeRef>
+        <semantic:flowNodeRef>gateway_op_join_1</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_op_9</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_op_10</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_op_11</semantic:flowNodeRef>
+        <semantic:flowNodeRef>gateway_op_join_2</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_op_12</semantic:flowNodeRef>
+        <semantic:flowNodeRef>end_event_1</semantic:flowNodeRef>
+      </semantic:lane>
+    </semantic:laneSet>
+
+    <semantic:startEvent id="start_event_1" name="Chocolate Production Order Received">
+      <semantic:outgoing>sf_start_event_1_task_pd_1</semantic:outgoing>
+    </semantic:startEvent>
+    <semantic:task id="task_pd_1" name="Book Order in SAP">
+      <semantic:incoming>sf_start_event_1_task_pd_1</semantic:incoming>
+      <semantic:outgoing>sf_task_pd_1_task_pd_2</semantic:outgoing>
+    </semantic:task>
+    <semantic:task id="task_pd_2" name="Manage Recipe">
+      <semantic:incoming>sf_task_pd_1_task_pd_2</semantic:incoming>
+      <semantic:outgoing>sf_task_pd_2_task_pd_3</semantic:outgoing>
+    </semantic:task>
+    <semantic:task id="task_pd_3" name="Send Feedback to MM Department">
+      <semantic:incoming>sf_task_pd_2_task_pd_3</semantic:incoming>
+      <semantic:outgoing>sf_task_pd_3_task_mm_1</semantic:outgoing>
+    </semantic:task>
+
+    <semantic:task id="task_mm_1" name="Check Materials Availability (SAP MM)">
+      <semantic:incoming>sf_task_pd_3_task_mm_1</semantic:incoming>
+      <semantic:outgoing>sf_task_mm_1_task_mm_2</semantic:outgoing>
+    </semantic:task>
+    <semantic:task id="task_mm_2" name="Inform Purchaser (re: availability status)">
+      <semantic:incoming>sf_task_mm_1_task_mm_2</semantic:incoming>
+      <semantic:outgoing>sf_task_mm_2_gateway_materials_check_1</semantic:outgoing>
+    </semantic:task>
+    <semantic:exclusiveGateway id="gateway_materials_check_1" name="Materials Available?">
+      <semantic:incoming>sf_task_mm_2_gateway_materials_check_1</semantic:incoming>
+      <semantic:outgoing>sf_gateway_materials_check_1_task_mm_3</semantic:outgoing>
+      <semantic:outgoing>sf_gateway_materials_check_1_task_purchaser_1</semantic:outgoing>
+    </semantic:exclusiveGateway>
+    <semantic:task id="task_mm_3" name="Prepare Production Process">
+      <semantic:incoming>sf_gateway_materials_check_1_task_mm_3</semantic:incoming>
+      <semantic:incoming>sf_task_purchaser_1_task_mm_3</semantic:incoming>
+      <semantic:outgoing>sf_task_mm_3_task_mm_4</semantic:outgoing>
+    </semantic:task>
+    <semantic:task id="task_mm_4" name="Inform Operators to Start Production">
+      <semantic:incoming>sf_task_mm_3_task_mm_4</semantic:incoming>
+      <semantic:outgoing>sf_task_mm_4_task_op_1</semantic:outgoing>
+    </semantic:task>
+
+    <semantic:task id="task_purchaser_1" name="Place Order for Materials">
+      <semantic:incoming>sf_gateway_materials_check_1_task_purchaser_1</semantic:incoming>
+      <semantic:outgoing>sf_task_purchaser_1_task_mm_3</semantic:outgoing>
+    </semantic:task>
+
+    <semantic:task id="task_op_1" name="Roast and Grind Cocoa Beans">
+      <semantic:incoming>sf_task_mm_4_task_op_1</semantic:incoming>
+      <semantic:outgoing>sf_task_op_1_task_op_2</semantic:outgoing>
+    </semantic:task>
+    <semantic:task id="task_op_2" name="Create Cocoa Powder">
+      <semantic:incoming>sf_task_op_1_task_op_2</semantic:incoming>
+      <semantic:outgoing>sf_task_op_2_task_op_3</semantic:outgoing>
+    </semantic:task>
+    <semantic:task id="task_op_3" name="Create and Press Cocoa Mass">
+      <semantic:incoming>sf_task_op_2_task_op_3</semantic:incoming>
+      <semantic:outgoing>sf_task_op_3_gateway_op_split_1</semantic:outgoing>
+    </semantic:task>
+    <semantic:parallelGateway id="gateway_op_split_1" name="Split for Cake and Butter Production">
+      <semantic:incoming>sf_task_op_3_gateway_op_split_1</semantic:incoming>
+      <semantic:outgoing>sf_gateway_op_split_1_task_op_4</semantic:outgoing>
+      <semantic:outgoing>sf_gateway_op_split_1_task_op_6</semantic:outgoing>
+    </semantic:parallelGateway>
+    <semantic:task id="task_op_4" name="Create Cocoa Cake">
+      <semantic:incoming>sf_gateway_op_split_1_task_op_4</semantic:incoming>
+      <semantic:outgoing>sf_task_op_4_task_op_5</semantic:outgoing>
+    </semantic:task>
+    <semantic:task id="task_op_5" name="Break Cocoa Cake">
+      <semantic:incoming>sf_task_op_4_task_op_5</semantic:incoming>
+      <semantic:outgoing>sf_task_op_5_gateway_op_join_2</semantic:outgoing>
+    </semantic:task>
+    <semantic:task id="task_op_6" name="Create Cocoa Butter">
+      <semantic:incoming>sf_gateway_op_split_1_task_op_6</semantic:incoming>
+      <semantic:outgoing>sf_task_op_6_gateway_op_split_2</semantic:outgoing>
+    </semantic:task>
+    <semantic:parallelGateway id="gateway_op_split_2" name="Split for Aroma and Milk Processing">
+      <semantic:incoming>sf_task_op_6_gateway_op_split_2</semantic:incoming>
+      <semantic:outgoing>sf_gateway_op_split_2_task_op_7</semantic:outgoing>
+      <semantic:outgoing>sf_gateway_op_split_2_task_op_8</semantic:outgoing>
+    </semantic:parallelGateway>
+    <semantic:task id="task_op_7" name="Stir Aroma">
+      <semantic:incoming>sf_gateway_op_split_2_task_op_7</semantic:incoming>
+      <semantic:outgoing>sf_task_op_7_gateway_op_join_1</semantic:outgoing>
+    </semantic:task>
+    <semantic:task id="task_op_8" name="Mix Milk">
+      <semantic:incoming>sf_gateway_op_split_2_task_op_8</semantic:incoming>
+      <semantic:outgoing>sf_task_op_8_gateway_op_join_1</semantic:outgoing>
+    </semantic:task>
+    <semantic:parallelGateway id="gateway_op_join_1" name="Join Aroma and Milk Processing">
+      <semantic:incoming>sf_task_op_7_gateway_op_join_1</semantic:incoming>
+      <semantic:incoming>sf_task_op_8_gateway_op_join_1</semantic:incoming>
+      <semantic:outgoing>sf_gateway_op_join_1_task_op_9</semantic:outgoing>
+    </semantic:parallelGateway>
+    <semantic:task id="task_op_9" name="Create Chocolate Mass">
+      <semantic:incoming>sf_gateway_op_join_1_task_op_9</semantic:incoming>
+      <semantic:outgoing>sf_task_op_9_task_op_10</semantic:outgoing>
+    </semantic:task>
+    <semantic:task id="task_op_10" name="Shape Chocolate Mass">
+      <semantic:incoming>sf_task_op_9_task_op_10</semantic:incoming>
+      <semantic:outgoing>sf_task_op_10_task_op_11</semantic:outgoing>
+    </semantic:task>
+    <semantic:task id="task_op_11" name="Create Chocolate">
+      <semantic:incoming>sf_task_op_10_task_op_11</semantic:incoming>
+      <semantic:outgoing>sf_task_op_11_gateway_op_join_2</semantic:outgoing>
+    </semantic:task>
+    <semantic:parallelGateway id="gateway_op_join_2" name="Combine Cake and Chocolate Paths">
+      <semantic:incoming>sf_task_op_5_gateway_op_join_2</semantic:incoming>
+      <semantic:incoming>sf_task_op_11_gateway_op_join_2</semantic:incoming>
+      <semantic:outgoing>sf_gateway_op_join_2_task_op_12</semantic:outgoing>
+    </semantic:parallelGateway>
+    <semantic:task id="task_op_12" name="Carry Out Packaging">
+      <semantic:incoming>sf_gateway_op_join_2_task_op_12</semantic:incoming>
+      <semantic:outgoing>sf_task_op_12_end_event_1</semantic:outgoing>
+    </semantic:task>
+    <semantic:endEvent id="end_event_1" name="Production Order Successfully Produced">
+      <semantic:incoming>sf_task_op_12_end_event_1</semantic:incoming>
+    </semantic:endEvent>
+
+    <semantic:sequenceFlow id="sf_start_event_1_task_pd_1" sourceRef="start_event_1" targetRef="task_pd_1"/>
+    <semantic:sequenceFlow id="sf_task_pd_1_task_pd_2" sourceRef="task_pd_1" targetRef="task_pd_2"/>
+    <semantic:sequenceFlow id="sf_task_pd_2_task_pd_3" sourceRef="task_pd_2" targetRef="task_pd_3"/>
+    <semantic:sequenceFlow id="sf_task_pd_3_task_mm_1" sourceRef="task_pd_3" targetRef="task_mm_1"/>
+    <semantic:sequenceFlow id="sf_task_mm_1_task_mm_2" sourceRef="task_mm_1" targetRef="task_mm_2"/>
+    <semantic:sequenceFlow id="sf_task_mm_2_gateway_materials_check_1" sourceRef="task_mm_2" targetRef="gateway_materials_check_1"/>
+    <semantic:sequenceFlow id="sf_gateway_materials_check_1_task_mm_3" name="Materials Available" sourceRef="gateway_materials_check_1" targetRef="task_mm_3">
+      <semantic:conditionExpression xsi:type="semantic:tFormalExpression">${materialsAvailable == true}</semantic:conditionExpression>
+    </semantic:sequenceFlow>
+    <semantic:sequenceFlow id="sf_gateway_materials_check_1_task_purchaser_1" name="Materials Not Available" sourceRef="gateway_materials_check_1" targetRef="task_purchaser_1">
+      <semantic:conditionExpression xsi:type="semantic:tFormalExpression">${materialsAvailable == false}</semantic:conditionExpression>
+    </semantic:sequenceFlow>
+    <semantic:sequenceFlow id="sf_task_purchaser_1_task_mm_3" sourceRef="task_purchaser_1" targetRef="task_mm_3"/>
+    <semantic:sequenceFlow id="sf_task_mm_3_task_mm_4" sourceRef="task_mm_3" targetRef="task_mm_4"/>
+    <semantic:sequenceFlow id="sf_task_mm_4_task_op_1" sourceRef="task_mm_4" targetRef="task_op_1"/>
+    <semantic:sequenceFlow id="sf_task_op_1_task_op_2" sourceRef="task_op_1" targetRef="task_op_2"/>
+    <semantic:sequenceFlow id="sf_task_op_2_task_op_3" sourceRef="task_op_2" targetRef="task_op_3"/>
+    <semantic:sequenceFlow id="sf_task_op_3_gateway_op_split_1" sourceRef="task_op_3" targetRef="gateway_op_split_1"/>
+    <semantic:sequenceFlow id="sf_gateway_op_split_1_task_op_4" sourceRef="gateway_op_split_1" targetRef="task_op_4"/>
+    <semantic:sequenceFlow id="sf_task_op_4_task_op_5" sourceRef="task_op_4" targetRef="task_op_5"/>
+    <semantic:sequenceFlow id="sf_gateway_op_split_1_task_op_6" sourceRef="gateway_op_split_1" targetRef="task_op_6"/>
+    <semantic:sequenceFlow id="sf_task_op_6_gateway_op_split_2" sourceRef="task_op_6" targetRef="gateway_op_split_2"/>
+    <semantic:sequenceFlow id="sf_gateway_op_split_2_task_op_7" sourceRef="gateway_op_split_2" targetRef="task_op_7"/>
+    <semantic:sequenceFlow id="sf_gateway_op_split_2_task_op_8" sourceRef="gateway_op_split_2" targetRef="task_op_8"/>
+    <semantic:sequenceFlow id="sf_task_op_7_gateway_op_join_1" sourceRef="task_op_7" targetRef="gateway_op_join_1"/>
+    <semantic:sequenceFlow id="sf_task_op_8_gateway_op_join_1" sourceRef="task_op_8" targetRef="gateway_op_join_1"/>
+    <semantic:sequenceFlow id="sf_gateway_op_join_1_task_op_9" sourceRef="gateway_op_join_1" targetRef="task_op_9"/>
+    <semantic:sequenceFlow id="sf_task_op_9_task_op_10" sourceRef="task_op_9" targetRef="task_op_10"/>
+    <semantic:sequenceFlow id="sf_task_op_10_task_op_11" sourceRef="task_op_10" targetRef="task_op_11"/>
+    <semantic:sequenceFlow id="sf_task_op_5_gateway_op_join_2" sourceRef="task_op_5" targetRef="gateway_op_join_2"/>
+    <semantic:sequenceFlow id="sf_task_op_11_gateway_op_join_2" sourceRef="task_op_11" targetRef="gateway_op_join_2"/>
+    <semantic:sequenceFlow id="sf_gateway_op_join_2_task_op_12" sourceRef="gateway_op_join_2" targetRef="task_op_12"/>
+    <semantic:sequenceFlow id="sf_task_op_12_end_event_1" sourceRef="task_op_12" targetRef="end_event_1"/>
+  </semantic:process>
+
+  <bpmndi:BPMNDiagram id="BPMNDiagram_chocolate_production" name="Chocolate Production Diagram" resolution="96.0">
+    <bpmndi:BPMNPlane bpmnElement="collab_chocolate_production">
+      <bpmndi:BPMNShape id="participant_chocolate_production_shape" bpmnElement="participant_chocolate_production" isHorizontal="true">
+        <dc:Bounds x="10" y="10" width="3250" height="950"/>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="lane_pd_shape" bpmnElement="lane_pd" isHorizontal="true">
+        <dc:Bounds x="40" y="10" width="3220" height="150"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="lane_mm_shape" bpmnElement="lane_mm" isHorizontal="true">
+        <dc:Bounds x="40" y="160" width="3220" height="200"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="lane_purchaser_shape" bpmnElement="lane_purchaser" isHorizontal="true">
+        <dc:Bounds x="40" y="360" width="3220" height="150"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="lane_op_shape" bpmnElement="lane_op" isHorizontal="true">
+        <dc:Bounds x="40" y="510" width="3220" height="450"/>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="start_event_1_shape" bpmnElement="start_event_1">
+        <dc:Bounds x="50" y="67" width="36" height="36"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="task_pd_1_shape" bpmnElement="task_pd_1">
+        <dc:Bounds x="150" y="57" width="100" height="56"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="task_pd_2_shape" bpmnElement="task_pd_2">
+        <dc:Bounds x="300" y="57" width="100" height="56"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="task_pd_3_shape" bpmnElement="task_pd_3">
+        <dc:Bounds x="450" y="57" width="100" height="56"/>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="task_mm_1_shape" bpmnElement="task_mm_1">
+        <dc:Bounds x="600" y="232" width="100" height="56"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="task_mm_2_shape" bpmnElement="task_mm_2">
+        <dc:Bounds x="750" y="232" width="100" height="56"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="gateway_materials_check_1_shape" bpmnElement="gateway_materials_check_1" isMarkerVisible="true">
+        <dc:Bounds x="900" y="235" width="50" height="50"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="task_mm_3_shape" bpmnElement="task_mm_3">
+        <dc:Bounds x="1100" y="232" width="100" height="56"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="task_mm_4_shape" bpmnElement="task_mm_4">
+        <dc:Bounds x="1250" y="232" width="100" height="56"/>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="task_purchaser_1_shape" bpmnElement="task_purchaser_1">
+        <dc:Bounds x="900" y="407" width="100" height="56"/>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="task_op_1_shape" bpmnElement="task_op_1">
+        <dc:Bounds x="1400" y="707" width="100" height="56"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="task_op_2_shape" bpmnElement="task_op_2">
+        <dc:Bounds x="1550" y="707" width="100" height="56"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="task_op_3_shape" bpmnElement="task_op_3">
+        <dc:Bounds x="1700" y="707" width="100" height="56"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="gateway_op_split_1_shape" bpmnElement="gateway_op_split_1" isMarkerVisible="true">
+        <dc:Bounds x="1850" y="710" width="50" height="50"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="task_op_4_shape" bpmnElement="task_op_4">
+        <dc:Bounds x="1950" y="637" width="100" height="56"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="task_op_5_shape" bpmnElement="task_op_5">
+        <dc:Bounds x="2100" y="637" width="100" height="56"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="task_op_6_shape" bpmnElement="task_op_6">
+        <dc:Bounds x="1950" y="777" width="100" height="56"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="gateway_op_split_2_shape" bpmnElement="gateway_op_split_2" isMarkerVisible="true">
+        <dc:Bounds x="2100" y="780" width="50" height="50"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="task_op_7_shape" bpmnElement="task_op_7">
+        <dc:Bounds x="2200" y="727" width="100" height="56"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="task_op_8_shape" bpmnElement="task_op_8">
+        <dc:Bounds x="2200" y="827" width="100" height="56"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="gateway_op_join_1_shape" bpmnElement="gateway_op_join_1" isMarkerVisible="true">
+        <dc:Bounds x="2350" y="780" width="50" height="50"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="task_op_9_shape" bpmnElement="task_op_9">
+        <dc:Bounds x="2450" y="777" width="100" height="56"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="task_op_10_shape" bpmnElement="task_op_10">
+        <dc:Bounds x="2600" y="777" width="100" height="56"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="task_op_11_shape" bpmnElement="task_op_11">
+        <dc:Bounds x="2750" y="777" width="100" height="56"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="gateway_op_join_2_shape" bpmnElement="gateway_op_join_2" isMarkerVisible="true">
+        <dc:Bounds x="2900" y="710" width="50" height="50"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="task_op_12_shape" bpmnElement="task_op_12">
+        <dc:Bounds x="3000" y="707" width="100" height="56"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="end_event_1_shape" bpmnElement="end_event_1">
+        <dc:Bounds x="3150" y="717" width="36" height="36"/>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNEdge id="sf_start_event_1_task_pd_1_edge" bpmnElement="sf_start_event_1_task_pd_1">
+        <di:waypoint x="86" y="85"/>
+        <di:waypoint x="150" y="85"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="sf_task_pd_1_task_pd_2_edge" bpmnElement="sf_task_pd_1_task_pd_2">
+        <di:waypoint x="250" y="85"/>
+        <di:waypoint x="300" y="85"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="sf_task_pd_2_task_pd_3_edge" bpmnElement="sf_task_pd_2_task_pd_3">
+        <di:waypoint x="400" y="85"/>
+        <di:waypoint x="450" y="85"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="sf_task_pd_3_task_mm_1_edge" bpmnElement="sf_task_pd_3_task_mm_1">
+        <di:waypoint x="500" y="113"/>
+        <di:waypoint x="500" y="260"/>
+        <di:waypoint x="600" y="260"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="sf_task_mm_1_task_mm_2_edge" bpmnElement="sf_task_mm_1_task_mm_2">
+        <di:waypoint x="700" y="260"/>
+        <di:waypoint x="750" y="260"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="sf_task_mm_2_gateway_materials_check_1_edge" bpmnElement="sf_task_mm_2_gateway_materials_check_1">
+        <di:waypoint x="850" y="260"/>
+        <di:waypoint x="900" y="260"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="sf_gateway_materials_check_1_task_mm_3_edge" bpmnElement="sf_gateway_materials_check_1_task_mm_3">
+        <di:waypoint x="950" y="260"/>
+        <di:waypoint x="1100" y="260"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="sf_gateway_materials_check_1_task_purchaser_1_edge" bpmnElement="sf_gateway_materials_check_1_task_purchaser_1">
+        <di:waypoint x="925" y="285"/>
+        <di:waypoint x="925" y="370"/>
+        <di:waypoint x="950" y="370"/>
+        <di:waypoint x="950" y="407"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="sf_task_purchaser_1_task_mm_3_edge" bpmnElement="sf_task_purchaser_1_task_mm_3">
+        <di:waypoint x="950" y="407"/>
+        <di:waypoint x="950" y="260"/>
+        <di:waypoint x="1100" y="260"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="sf_task_mm_3_task_mm_4_edge" bpmnElement="sf_task_mm_3_task_mm_4">
+        <di:waypoint x="1200" y="260"/>
+        <di:waypoint x="1250" y="260"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="sf_task_mm_4_task_op_1_edge" bpmnElement="sf_task_mm_4_task_op_1">
+        <di:waypoint x="1300" y="288"/>
+        <di:waypoint x="1300" y="735"/>
+        <di:waypoint x="1400" y="735"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="sf_task_op_1_task_op_2_edge" bpmnElement="sf_task_op_1_task_op_2">
+        <di:waypoint x="1500" y="735"/>
+        <di:waypoint x="1550" y="735"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="sf_task_op_2_task_op_3_edge" bpmnElement="sf_task_op_2_task_op_3">
+        <di:waypoint x="1650" y="735"/>
+        <di:waypoint x="1700" y="735"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="sf_task_op_3_gateway_op_split_1_edge" bpmnElement="sf_task_op_3_gateway_op_split_1">
+        <di:waypoint x="1800" y="735"/>
+        <di:waypoint x="1850" y="735"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="sf_gateway_op_split_1_task_op_4_edge" bpmnElement="sf_gateway_op_split_1_task_op_4">
+        <di:waypoint x="1875" y="710"/>
+        <di:waypoint x="1875" y="665"/>
+        <di:waypoint x="1950" y="665"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="sf_task_op_4_task_op_5_edge" bpmnElement="sf_task_op_4_task_op_5">
+        <di:waypoint x="2050" y="665"/>
+        <di:waypoint x="2100" y="665"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="sf_gateway_op_split_1_task_op_6_edge" bpmnElement="sf_gateway_op_split_1_task_op_6">
+        <di:waypoint x="1875" y="760"/>
+        <di:waypoint x="1875" y="805"/>
+        <di:waypoint x="1950" y="805"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="sf_task_op_6_gateway_op_split_2_edge" bpmnElement="sf_task_op_6_gateway_op_split_2">
+        <di:waypoint x="2050" y="805"/>
+        <di:waypoint x="2100" y="805"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="sf_gateway_op_split_2_task_op_7_edge" bpmnElement="sf_gateway_op_split_2_task_op_7">
+        <di:waypoint x="2125" y="780"/>
+        <di:waypoint x="2125" y="755"/>
+        <di:waypoint x="2200" y="755"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="sf_gateway_op_split_2_task_op_8_edge" bpmnElement="sf_gateway_op_split_2_task_op_8">
+        <di:waypoint x="2125" y="830"/>
+        <di:waypoint x="2125" y="855"/>
+        <di:waypoint x="2200" y="855"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="sf_task_op_7_gateway_op_join_1_edge" bpmnElement="sf_task_op_7_gateway_op_join_1">
+        <di:waypoint x="2300" y="755"/>
+        <di:waypoint x="2375" y="755"/>
+        <di:waypoint x="2375" y="780"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="sf_task_op_8_gateway_op_join_1_edge" bpmnElement="sf_task_op_8_gateway_op_join_1">
+        <di:waypoint x="2300" y="855"/>
+        <di:waypoint x="2375" y="855"/>
+        <di:waypoint x="2375" y="830"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="sf_gateway_op_join_1_task_op_9_edge" bpmnElement="sf_gateway_op_join_1_task_op_9">
+        <di:waypoint x="2400" y="805"/>
+        <di:waypoint x="2450" y="805"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="sf_task_op_9_task_op_10_edge" bpmnElement="sf_task_op_9_task_op_10">
+        <di:waypoint x="2550" y="805"/>
+        <di:waypoint x="2600" y="805"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="sf_task_op_10_task_op_11_edge" bpmnElement="sf_task_op_10_task_op_11">
+        <di:waypoint x="2700" y="805"/>
+        <di:waypoint x="2750" y="805"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="sf_task_op_5_gateway_op_join_2_edge" bpmnElement="sf_task_op_5_gateway_op_join_2">
+        <di:waypoint x="2200" y="665"/>
+        <di:waypoint x="2925" y="665"/>
+        <di:waypoint x="2925" y="710"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="sf_task_op_11_gateway_op_join_2_edge" bpmnElement="sf_task_op_11_gateway_op_join_2">
+        <di:waypoint x="2850" y="805"/>
+        <di:waypoint x="2925" y="805"/>
+        <di:waypoint x="2925" y="760"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="sf_gateway_op_join_2_task_op_12_edge" bpmnElement="sf_gateway_op_join_2_task_op_12">
+        <di:waypoint x="2950" y="735"/>
+        <di:waypoint x="3000" y="735"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="sf_task_op_12_end_event_1_edge" bpmnElement="sf_task_op_12_end_event_1">
+        <di:waypoint x="3100" y="735"/>
+        <di:waypoint x="3150" y="735"/>
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</semantic:definitions>

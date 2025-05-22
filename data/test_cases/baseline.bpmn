@@ -1,0 +1,163 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL"
+             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+             xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI"
+             xmlns:omgdc="http://www.omg.org/spec/DD/20100524/DC"
+             xmlns:omgdi="http://www.omg.org/spec/DD/20100524/DI"
+             id="Definitions_1"
+             targetNamespace="http://bpmn.io/schema/bpmn">
+  <process id="HiringProcess" isExecutable="true">
+    <!-- Start Event -->
+    <startEvent id="StartEvent_HiringNeedRealized" name="Hiring Need Realized" />
+    
+    <!-- Hiring Manager Lane -->
+    <laneSet id="LaneSet_HiringProcess">
+      <lane id="Lane_HiringManager" name="Hiring Manager" />
+      <lane id="Lane_HumanResources" name="Human Resources" />
+      <lane id="Lane_HRManager" name="HR Manager" />
+    </laneSet>
+    
+    <!-- Tasks in Hiring Manager Lane -->
+    <task id="Task_CreateJobAdvertisement" name="Create Job Advertisement/Requisition" />
+    <exclusiveGateway id="Gateway_SuitableCandidate" name="Suitable Candidate?" />
+    
+    <!-- Tasks in Human Resources Lane -->
+    <task id="Task_FindBestCandidates" name="Find Best Candidates (using CVs & motivation letters)" />
+    <task id="Task_DecideInterviewers" name="Decide on Group of Interviewers" />
+    <task id="Task_InviteInterviewers" name="Invite Interviewers to Interview" />
+    <task id="Task_SetupPayroll" name="Set up Payroll" />
+    <task id="Task_ContactInterviewerSendOffer" name="Contact Interviewer and Send Offer/Contract" />
+    <task id="Task_ReceiveSignedContract" name="Receive Signed Contract" />
+    
+    <!-- Task in HR Manager Lane -->
+    <task id="Task_ConductInterviews" name="Conduct Interviews for Selected Candidates" />
+    
+    <!-- End Event -->
+    <endEvent id="EndEvent_PersonHired" name="Person Hired" />
+    
+    <!-- Sequence Flows -->
+    <sequenceFlow id="Flow_1" sourceRef="StartEvent_HiringNeedRealized" targetRef="Task_CreateJobAdvertisement" />
+    <sequenceFlow id="Flow_2" sourceRef="Task_CreateJobAdvertisement" targetRef="Task_FindBestCandidates" />
+    <sequenceFlow id="Flow_3" sourceRef="Task_FindBestCandidates" targetRef="Task_DecideInterviewers" />
+    <sequenceFlow id="Flow_4" sourceRef="Task_DecideInterviewers" targetRef="Task_InviteInterviewers" />
+    <sequenceFlow id="Flow_5" sourceRef="Task_InviteInterviewers" targetRef="Task_ConductInterviews" />
+    <sequenceFlow id="Flow_6" sourceRef="Task_ConductInterviews" targetRef="Gateway_SuitableCandidate" />
+    
+    <!-- Gateway branches -->
+    <sequenceFlow id="Flow_7_Yes" sourceRef="Gateway_SuitableCandidate" targetRef="Task_SetupPayroll">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${suitable == true}]]></conditionExpression>
+    </sequenceFlow>
+    <sequenceFlow id="Flow_8" sourceRef="Task_SetupPayroll" targetRef="Task_ContactInterviewerSendOffer" />
+    <sequenceFlow id="Flow_9" sourceRef="Task_ContactInterviewerSendOffer" targetRef="Task_ReceiveSignedContract" />
+    <sequenceFlow id="Flow_10" sourceRef="Task_ReceiveSignedContract" targetRef="EndEvent_PersonHired" />
+    
+    <sequenceFlow id="Flow_7_No" sourceRef="Gateway_SuitableCandidate" targetRef="Task_FindBestCandidates">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${suitable == false}]]></conditionExpression>
+    </sequenceFlow>
+  </process>
+  
+  <!-- BPMN Diagram -->
+  <bpmndi:BPMNDiagram id="BPMNDiagram_HiringProcess">
+    <bpmndi:BPMNPlane id="BPMNPlane_HiringProcess" bpmnElement="HiringProcess">
+      <!-- Lanes -->
+      <bpmndi:BPMNShape id="Lane_HiringManager_di" bpmnElement="Lane_HiringManager">
+        <omgdc:Bounds x="0" y="0" width="400" height="600" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Lane_HumanResources_di" bpmnElement="Lane_HumanResources">
+        <omgdc:Bounds x="400" y="0" width="400" height="600" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Lane_HRManager_di" bpmnElement="Lane_HRManager">
+        <omgdc:Bounds x="800" y="0" width="400" height="600" />
+      </bpmndi:BPMNShape>
+      
+      <!-- Start Event -->
+      <bpmndi:BPMNShape id="StartEvent_HiringNeedRealized_di" bpmnElement="StartEvent_HiringNeedRealized">
+        <omgdc:Bounds x="50" y="275" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      
+      <!-- Tasks Hiring Manager -->
+      <bpmndi:BPMNShape id="Task_CreateJobAdvertisement_di" bpmnElement="Task_CreateJobAdvertisement">
+        <omgdc:Bounds x="120" y="260" width="120" height="50" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gateway_SuitableCandidate_di" bpmnElement="Gateway_SuitableCandidate">
+        <omgdc:Bounds x="120" y="400" width="50" height="50" />
+      </bpmndi:BPMNShape>
+      
+      <!-- Tasks Human Resources -->
+      <bpmndi:BPMNShape id="Task_FindBestCandidates_di" bpmnElement="Task_FindBestCandidates">
+        <omgdc:Bounds x="420" y="150" width="140" height="50" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_DecideInterviewers_di" bpmnElement="Task_DecideInterviewers">
+        <omgdc:Bounds x="420" y="230" width="140" height="50" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_InviteInterviewers_di" bpmnElement="Task_InviteInterviewers">
+        <omgdc:Bounds x="420" y="310" width="140" height="50" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_SetupPayroll_di" bpmnElement="Task_SetupPayroll">
+        <omgdc:Bounds x="420" y="460" width="140" height="50" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_ContactInterviewerSendOffer_di" bpmnElement="Task_ContactInterviewerSendOffer">
+        <omgdc:Bounds x="420" y="540" width="140" height="50" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_ReceiveSignedContract_di" bpmnElement="Task_ReceiveSignedContract">
+        <omgdc:Bounds x="420" y="620" width="140" height="50" />
+      </bpmndi:BPMNShape>
+      
+      <!-- Task HR Manager -->
+      <bpmndi:BPMNShape id="Task_ConductInterviews_di" bpmnElement="Task_ConductInterviews">
+        <omgdc:Bounds x="820" y="310" width="140" height="50" />
+      </bpmndi:BPMNShape>
+      
+      <!-- End Event -->
+      <bpmndi:BPMNShape id="EndEvent_PersonHired_di" bpmnElement="EndEvent_PersonHired">
+        <omgdc:Bounds x="420" y="700" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      
+      <!-- Sequence Flows -->
+      <bpmndi:BPMNEdge id="Flow_1_di" bpmnElement="Flow_1">
+        <omgdi:waypoint x="86" y="293" />
+        <omgdi:waypoint x="120" y="285" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_2_di" bpmnElement="Flow_2">
+        <omgdi:waypoint x="240" y="285" />
+        <omgdi:waypoint x="420" y="175" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_3_di" bpmnElement="Flow_3">
+        <omgdi:waypoint x="560" y="175" />
+        <omgdi:waypoint x="560" y="255" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_4_di" bpmnElement="Flow_4">
+        <omgdi:waypoint x="560" y="280" />
+        <omgdi:waypoint x="560" y="335" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_5_di" bpmnElement="Flow_5">
+        <omgdi:waypoint x="560" y="335" />
+        <omgdi:waypoint x="820" y="335" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_6_di" bpmnElement="Flow_6">
+        <omgdi:waypoint x="960" y="335" />
+        <omgdi:waypoint x="145" y="425" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_7_Yes_di" bpmnElement="Flow_7_Yes">
+        <omgdi:waypoint x="170" y="425" />
+        <omgdi:waypoint x="420" y="485" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_8_di" bpmnElement="Flow_8">
+        <omgdi:waypoint x="560" y="485" />
+        <omgdi:waypoint x="560" y="565" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_9_di" bpmnElement="Flow_9">
+        <omgdi:waypoint x="560" y="590" />
+        <omgdi:waypoint x="560" y="645" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_10_di" bpmnElement="Flow_10">
+        <omgdi:waypoint x="560" y="670" />
+        <omgdi:waypoint x="438" y="718" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_7_No_di" bpmnElement="Flow_7_No">
+        <omgdi:waypoint x="145" y="450" />
+        <omgdi:waypoint x="560" y="175" />
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</definitions>

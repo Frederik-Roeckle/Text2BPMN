@@ -1,0 +1,862 @@
+***IS_VALID***
+<?xml version="1.0" standalone="yes"?>
+<semantic:definitions id="DamagesCompensationProcessDefs"
+    targetNamespace="http://example.com/bpmn/damages-compensation"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:semantic="http://www.omg.org/spec/BPMN/20100524/MODEL"
+    xmlns:di="http://www.omg.org/spec/DD/20100524/DI"
+    xmlns:dc="http://www.omg.org/spec/DD/20100524/DC"
+    xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI">
+
+  <semantic:collaboration id="collab_damagesCompensation">
+    <semantic:participant id="participant_damagesCompensationProcess" name="Damages Compensation Process" processRef="damagesCompensationProcess"/>
+  </semantic:collaboration>
+
+  <semantic:process id="damagesCompensationProcess" name="Damages Compensation Entitlement Check Process" isExecutable="true">
+    <semantic:laneSet id="laneSet_main">
+      <semantic:lane id="lane_lawyer" name="Lawyer">
+        <semantic:flowNodeRef>start_event_1</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_1_determine_liability</semantic:flowNodeRef>
+        <semantic:flowNodeRef>gw_liability_fault</semantic:flowNodeRef>
+        <semantic:flowNodeRef>end_event_no_liability_fault</semantic:flowNodeRef>
+        <semantic:flowNodeRef>sp_1_check_requirements</semantic:flowNodeRef>
+        <semantic:flowNodeRef>gw_req_check_outcome</semantic:flowNodeRef>
+        <semantic:flowNodeRef>end_event_req_failed</semantic:flowNodeRef>
+      </semantic:lane>
+      <semantic:lane id="lane_judge" name="Judge">
+        <semantic:flowNodeRef>task_2_judge_decide_extent</semantic:flowNodeRef>
+        <semantic:flowNodeRef>gw_judge_damage_type</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_judge_det_financial_extent</semantic:flowNodeRef>
+        <semantic:flowNodeRef>gw_judge_financial_negligence</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_judge_replace_market_value</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_judge_comp_damage_profit_loss</semantic:flowNodeRef>
+        <semantic:flowNodeRef>gw_judge_join_financial_comp</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_judge_det_immaterial_extent</semantic:flowNodeRef>
+        <semantic:flowNodeRef>gw_judge_immaterial_scenario</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_judge_pain_comp</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_judge_value_pref_comp</semantic:flowNodeRef>
+        <semantic:flowNodeRef>gw_judge_join_immaterial_comp_successful</semantic:flowNodeRef>
+        <semantic:flowNodeRef>end_event_immaterial_not_granted</semantic:flowNodeRef>
+        <semantic:flowNodeRef>gw_judge_join_all_compensation</semantic:flowNodeRef>
+        <semantic:flowNodeRef>end_event_process_success</semantic:flowNodeRef>
+      </semantic:lane>
+    </semantic:laneSet>
+
+    <!-- Lawyer Lane Elements -->
+    <semantic:startEvent id="start_event_1" name="Process Started">
+      <semantic:outgoing>flow_start_to_task1</semantic:outgoing>
+    </semantic:startEvent>
+    <semantic:task id="task_1_determine_liability" name="Determine type of liability using §1311 ABGB and System">
+      <semantic:incoming>flow_start_to_task1</semantic:incoming>
+      <semantic:outgoing>flow_task1_to_gw_liability</semantic:outgoing>
+    </semantic:task>
+    <semantic:exclusiveGateway id="gw_liability_fault" name="Liability of Fault Determined?">
+      <semantic:incoming>flow_task1_to_gw_liability</semantic:incoming>
+      <semantic:outgoing>flow_gw_liability_yes</semantic:outgoing>
+      <semantic:outgoing>flow_gw_liability_no</semantic:outgoing>
+    </semantic:exclusiveGateway>
+    <semantic:endEvent id="end_event_no_liability_fault" name="No Liability of Fault Determined">
+      <semantic:incoming>flow_gw_liability_no</semantic:incoming>
+    </semantic:endEvent>
+
+    <semantic:subProcess id="sp_1_check_requirements" name="Check requirements using §1295 ABGB">
+      <semantic:incoming>flow_gw_liability_yes</semantic:incoming>
+      <semantic:outgoing>flow_sp1_to_gw_req_outcome</semantic:outgoing>
+
+      <semantic:startEvent id="sp_1_start" name="Begin Requirement Check">
+        <semantic:outgoing>flow_sp_start_to_def_damage</semantic:outgoing>
+      </semantic:startEvent>
+      <semantic:task id="sp_1_task_define_damage_type" name="Define type of damage">
+        <semantic:incoming>flow_sp_start_to_def_damage</semantic:incoming>
+        <semantic:outgoing>flow_sp_def_damage_to_gw_damage</semantic:outgoing>
+      </semantic:task>
+      <semantic:exclusiveGateway id="sp_1_gw_damage_type" name="Damage Type?">
+        <semantic:incoming>flow_sp_def_damage_to_gw_damage</semantic:incoming>
+        <semantic:outgoing>flow_sp_gw_damage_financial</semantic:outgoing>
+        <semantic:outgoing>flow_sp_gw_damage_immaterial</semantic:outgoing>
+      </semantic:exclusiveGateway>
+      <semantic:task id="sp_1_task_det_financial_loss_type" name="Determine type of financial loss">
+        <semantic:incoming>flow_sp_gw_damage_financial</semantic:incoming>
+        <semantic:outgoing>flow_sp_det_fin_loss_to_gw_fin_loss</semantic:outgoing>
+      </semantic:task>
+      <semantic:exclusiveGateway id="sp_1_gw_financial_loss_type" name="Financial Loss Type?">
+        <semantic:incoming>flow_sp_det_fin_loss_to_gw_fin_loss</semantic:incoming>
+        <semantic:outgoing>flow_sp_gw_fin_loss_positive</semantic:outgoing>
+        <semantic:outgoing>flow_sp_gw_fin_loss_profit</semantic:outgoing>
+      </semantic:exclusiveGateway>
+      <semantic:task id="sp_1_task_note_positive_damage" name="Determine Positive Damage">
+        <semantic:incoming>flow_sp_gw_fin_loss_positive</semantic:incoming>
+        <semantic:outgoing>flow_sp_pos_damage_to_join_fin</semantic:outgoing>
+      </semantic:task>
+      <semantic:task id="sp_1_task_note_lost_profit" name="Determine Lost Profit">
+        <semantic:incoming>flow_sp_gw_fin_loss_profit</semantic:incoming>
+        <semantic:outgoing>flow_sp_lost_profit_to_join_fin</semantic:outgoing>
+      </semantic:task>
+      <semantic:exclusiveGateway id="sp_1_gw_join_financial_loss" name="Join Financial Loss Determination">
+        <semantic:incoming>flow_sp_pos_damage_to_join_fin</semantic:incoming>
+        <semantic:incoming>flow_sp_lost_profit_to_join_fin</semantic:incoming>
+        <semantic:outgoing>flow_sp_join_fin_to_join_damage_defs</semantic:outgoing>
+      </semantic:exclusiveGateway>
+      <semantic:task id="sp_1_task_det_immaterial_damage_type" name="Determine type of immaterial damage">
+        <semantic:incoming>flow_sp_gw_damage_immaterial</semantic:incoming>
+        <semantic:outgoing>flow_sp_det_imm_dmg_to_gw_imm_dmg</semantic:outgoing>
+      </semantic:task>
+      <semantic:exclusiveGateway id="sp_1_gw_immaterial_damage_type" name="Immaterial Damage Type?">
+        <semantic:incoming>flow_sp_det_imm_dmg_to_gw_imm_dmg</semantic:incoming>
+        <semantic:outgoing>flow_sp_gw_imm_dmg_pain</semantic:outgoing>
+        <semantic:outgoing>flow_sp_gw_imm_dmg_value</semantic:outgoing>
+      </semantic:exclusiveGateway>
+      <semantic:task id="sp_1_task_note_pain_comp" name="Determine Pain Compensation (Bodily Harm)">
+        <semantic:incoming>flow_sp_gw_imm_dmg_pain</semantic:incoming>
+        <semantic:outgoing>flow_sp_pain_comp_to_join_imm</semantic:outgoing>
+      </semantic:task>
+      <semantic:task id="sp_1_task_note_value_pref" name="Determine Value of Special Preference">
+        <semantic:incoming>flow_sp_gw_imm_dmg_value</semantic:incoming>
+        <semantic:outgoing>flow_sp_value_pref_to_join_imm</semantic:outgoing>
+      </semantic:task>
+      <semantic:exclusiveGateway id="sp_1_gw_join_immaterial_damage" name="Join Immaterial Damage Determination">
+        <semantic:incoming>flow_sp_pain_comp_to_join_imm</semantic:incoming>
+        <semantic:incoming>flow_sp_value_pref_to_join_imm</semantic:incoming>
+        <semantic:outgoing>flow_sp_join_imm_to_join_damage_defs</semantic:outgoing>
+      </semantic:exclusiveGateway>
+      <semantic:exclusiveGateway id="sp_1_gw_join_damage_defs" name="Merge Damage Definitions">
+        <semantic:incoming>flow_sp_join_fin_to_join_damage_defs</semantic:incoming>
+        <semantic:incoming>flow_sp_join_imm_to_join_damage_defs</semantic:incoming>
+        <semantic:outgoing>flow_sp_join_damage_defs_to_causality</semantic:outgoing>
+      </semantic:exclusiveGateway>
+      <semantic:task id="sp_1_task_define_causality" name="Define type of causing (causality)">
+        <semantic:incoming>flow_sp_join_damage_defs_to_causality</semantic:incoming>
+        <semantic:outgoing>flow_sp_causality_to_equiv</semantic:outgoing>
+      </semantic:task>
+      <semantic:task id="sp_1_task_check_equivalence" name="Check equivalence">
+        <semantic:incoming>flow_sp_causality_to_equiv</semantic:incoming>
+        <semantic:outgoing>flow_sp_equiv_to_gw_equiv</semantic:outgoing>
+      </semantic:task>
+      <semantic:exclusiveGateway id="sp_1_gw_equivalence_result" name="Equivalence Check Result?">
+        <semantic:incoming>flow_sp_equiv_to_gw_equiv</semantic:incoming>
+        <semantic:outgoing>flow_sp_gw_equiv_no</semantic:outgoing>
+        <semantic:outgoing>flow_sp_gw_equiv_yes</semantic:outgoing>
+      </semantic:exclusiveGateway>
+      <semantic:task id="sp_1_task_check_adequacy" name="Check adequacy">
+        <semantic:incoming>flow_sp_gw_equiv_yes</semantic:incoming>
+        <semantic:outgoing>flow_sp_adequacy_to_gw_adequacy</semantic:outgoing>
+      </semantic:task>
+      <semantic:exclusiveGateway id="sp_1_gw_adequacy_result" name="Adequacy Check Result?">
+        <semantic:incoming>flow_sp_adequacy_to_gw_adequacy</semantic:incoming>
+        <semantic:outgoing>flow_sp_gw_adequacy_no</semantic:outgoing>
+        <semantic:outgoing>flow_sp_gw_adequacy_yes</semantic:outgoing>
+      </semantic:exclusiveGateway>
+      <semantic:task id="sp_1_task_check_illegality" name="Check illegality">
+        <semantic:incoming>flow_sp_gw_adequacy_yes</semantic:incoming>
+        <semantic:outgoing>flow_sp_illegality_to_det_illegality</semantic:outgoing>
+      </semantic:task>
+      <semantic:task id="sp_1_task_det_illegality_type" name="Determine illegality type">
+        <semantic:incoming>flow_sp_illegality_to_det_illegality</semantic:incoming>
+        <semantic:outgoing>flow_sp_det_illegality_to_gw_illegality</semantic:outgoing>
+      </semantic:task>
+      <semantic:exclusiveGateway id="sp_1_gw_illegality_type" name="Illegality Type?">
+        <semantic:incoming>flow_sp_det_illegality_to_gw_illegality</semantic:incoming>
+        <semantic:outgoing>flow_sp_gw_illegality_breach</semantic:outgoing>
+        <semantic:outgoing>flow_sp_gw_illegality_violation</semantic:outgoing>
+      </semantic:exclusiveGateway>
+      <semantic:task id="sp_1_task_note_breach_law" name="Determine Breach of Law">
+        <semantic:incoming>flow_sp_gw_illegality_breach</semantic:incoming>
+        <semantic:outgoing>flow_sp_breach_to_join_illegality</semantic:outgoing>
+      </semantic:task>
+      <semantic:task id="sp_1_task_note_violation_morals" name="Determine Violation of Good Morals">
+        <semantic:incoming>flow_sp_gw_illegality_violation</semantic:incoming>
+        <semantic:outgoing>flow_sp_violation_to_join_illegality</semantic:outgoing>
+      </semantic:task>
+      <semantic:exclusiveGateway id="sp_1_gw_join_illegality" name="Join Illegality Determination">
+        <semantic:incoming>flow_sp_breach_to_join_illegality</semantic:incoming>
+        <semantic:incoming>flow_sp_violation_to_join_illegality</semantic:incoming>
+        <semantic:outgoing>flow_sp_join_illegality_to_check_fault</semantic:outgoing>
+      </semantic:exclusiveGateway>
+      <semantic:task id="sp_1_task_check_fault" name="Check fault">
+        <semantic:incoming>flow_sp_join_illegality_to_check_fault</semantic:incoming>
+        <semantic:outgoing>flow_sp_check_fault_to_accessibility</semantic:outgoing>
+      </semantic:task>
+      <semantic:task id="sp_1_task_check_accessibility" name="Check accessibility of damaging behavior">
+        <semantic:incoming>flow_sp_check_fault_to_accessibility</semantic:incoming>
+        <semantic:outgoing>flow_sp_accessibility_to_diff_fault</semantic:outgoing>
+      </semantic:task>
+      <semantic:task id="sp_1_task_differentiate_fault_intensity" name="Differentiate fault according to intensity">
+        <semantic:incoming>flow_sp_accessibility_to_diff_fault</semantic:incoming>
+        <semantic:outgoing>flow_sp_diff_fault_to_gw_fault</semantic:outgoing>
+      </semantic:task>
+      <semantic:exclusiveGateway id="sp_1_gw_fault_intensity" name="Fault Intensity?">
+        <semantic:incoming>flow_sp_diff_fault_to_gw_fault</semantic:incoming>
+        <semantic:outgoing>flow_sp_gw_fault_intent</semantic:outgoing>
+        <semantic:outgoing>flow_sp_gw_fault_negligence</semantic:outgoing>
+      </semantic:exclusiveGateway>
+      <semantic:task id="sp_1_task_note_intent" name="Determine Intent (Intentional Damage)">
+        <semantic:incoming>flow_sp_gw_fault_intent</semantic:incoming>
+        <semantic:outgoing>flow_sp_intent_to_join_fault</semantic:outgoing>
+      </semantic:task>
+      <semantic:task id="sp_1_task_det_negligence_type" name="Determine type of negligence">
+        <semantic:incoming>flow_sp_gw_fault_negligence</semantic:incoming>
+        <semantic:outgoing>flow_sp_det_neg_to_gw_neg</semantic:outgoing>
+      </semantic:task>
+      <semantic:exclusiveGateway id="sp_1_gw_negligence_type" name="Negligence Type?">
+        <semantic:incoming>flow_sp_det_neg_to_gw_neg</semantic:incoming>
+        <semantic:outgoing>flow_sp_gw_neg_gross</semantic:outgoing>
+        <semantic:outgoing>flow_sp_gw_neg_slight</semantic:outgoing>
+      </semantic:exclusiveGateway>
+      <semantic:task id="sp_1_task_note_gross_negligence" name="Determine Gross Negligence">
+        <semantic:incoming>flow_sp_gw_neg_gross</semantic:incoming>
+        <semantic:outgoing>flow_sp_gross_neg_to_join_neg</semantic:outgoing>
+      </semantic:task>
+      <semantic:task id="sp_1_task_note_slight_negligence" name="Determine Slight Negligence">
+        <semantic:incoming>flow_sp_gw_neg_slight</semantic:incoming>
+        <semantic:outgoing>flow_sp_slight_neg_to_join_neg</semantic:outgoing>
+      </semantic:task>
+      <semantic:exclusiveGateway id="sp_1_gw_join_negligence_type" name="Join Negligence Determination">
+        <semantic:incoming>flow_sp_gross_neg_to_join_neg</semantic:incoming>
+        <semantic:incoming>flow_sp_slight_neg_to_join_neg</semantic:incoming>
+        <semantic:outgoing>flow_sp_join_neg_to_join_fault</semantic:outgoing>
+      </semantic:exclusiveGateway>
+      <semantic:exclusiveGateway id="sp_1_gw_join_fault_intensity" name="Merge Fault Intensity Paths">
+        <semantic:incoming>flow_sp_intent_to_join_fault</semantic:incoming>
+        <semantic:incoming>flow_sp_join_neg_to_join_fault</semantic:incoming>
+        <semantic:outgoing>flow_sp_join_fault_to_end_checked</semantic:outgoing>
+      </semantic:exclusiveGateway>
+      <semantic:endEvent id="sp_1_end_requirements_checked" name="Subprocess: Requirements Successfully Checked">
+        <semantic:incoming>flow_sp_join_fault_to_end_checked</semantic:incoming>
+      </semantic:endEvent>
+      <semantic:endEvent id="sp_1_end_compensation_not_granted" name="Subprocess: Compensation Not Granted">
+        <semantic:incoming>flow_sp_gw_equiv_no</semantic:incoming>
+        <semantic:incoming>flow_sp_gw_adequacy_no</semantic:incoming>
+      </semantic:endEvent>
+
+      <!-- Sequence Flows for SubProcess sp_1_check_requirements -->
+      <semantic:sequenceFlow id="flow_sp_start_to_def_damage" sourceRef="sp_1_start" targetRef="sp_1_task_define_damage_type"/>
+      <semantic:sequenceFlow id="flow_sp_def_damage_to_gw_damage" sourceRef="sp_1_task_define_damage_type" targetRef="sp_1_gw_damage_type"/>
+      <semantic:sequenceFlow id="flow_sp_gw_damage_financial" name="Financial Loss Determined" sourceRef="sp_1_gw_damage_type" targetRef="sp_1_task_det_financial_loss_type"/>
+      <semantic:sequenceFlow id="flow_sp_det_fin_loss_to_gw_fin_loss" sourceRef="sp_1_task_det_financial_loss_type" targetRef="sp_1_gw_financial_loss_type"/>
+      <semantic:sequenceFlow id="flow_sp_gw_fin_loss_positive" name="Positive Damage" sourceRef="sp_1_gw_financial_loss_type" targetRef="sp_1_task_note_positive_damage"/>
+      <semantic:sequenceFlow id="flow_sp_gw_fin_loss_profit" name="Lost Profit" sourceRef="sp_1_gw_financial_loss_type" targetRef="sp_1_task_note_lost_profit"/>
+      <semantic:sequenceFlow id="flow_sp_pos_damage_to_join_fin" sourceRef="sp_1_task_note_positive_damage" targetRef="sp_1_gw_join_financial_loss"/>
+      <semantic:sequenceFlow id="flow_sp_lost_profit_to_join_fin" sourceRef="sp_1_task_note_lost_profit" targetRef="sp_1_gw_join_financial_loss"/>
+      <semantic:sequenceFlow id="flow_sp_gw_damage_immaterial" name="Immaterial Damage Determined" sourceRef="sp_1_gw_damage_type" targetRef="sp_1_task_det_immaterial_damage_type"/>
+      <semantic:sequenceFlow id="flow_sp_det_imm_dmg_to_gw_imm_dmg" sourceRef="sp_1_task_det_immaterial_damage_type" targetRef="sp_1_gw_immaterial_damage_type"/>
+      <semantic:sequenceFlow id="flow_sp_gw_imm_dmg_pain" name="Pain Compensation (Bodily Harm)" sourceRef="sp_1_gw_immaterial_damage_type" targetRef="sp_1_task_note_pain_comp"/>
+      <semantic:sequenceFlow id="flow_sp_gw_imm_dmg_value" name="Value of Special Preference" sourceRef="sp_1_gw_immaterial_damage_type" targetRef="sp_1_task_note_value_pref"/>
+      <semantic:sequenceFlow id="flow_sp_pain_comp_to_join_imm" sourceRef="sp_1_task_note_pain_comp" targetRef="sp_1_gw_join_immaterial_damage"/>
+      <semantic:sequenceFlow id="flow_sp_value_pref_to_join_imm" sourceRef="sp_1_task_note_value_pref" targetRef="sp_1_gw_join_immaterial_damage"/>
+      <semantic:sequenceFlow id="flow_sp_join_fin_to_join_damage_defs" sourceRef="sp_1_gw_join_financial_loss" targetRef="sp_1_gw_join_damage_defs"/>
+      <semantic:sequenceFlow id="flow_sp_join_imm_to_join_damage_defs" sourceRef="sp_1_gw_join_immaterial_damage" targetRef="sp_1_gw_join_damage_defs"/>
+      <semantic:sequenceFlow id="flow_sp_join_damage_defs_to_causality" sourceRef="sp_1_gw_join_damage_defs" targetRef="sp_1_task_define_causality"/>
+      <semantic:sequenceFlow id="flow_sp_causality_to_equiv" sourceRef="sp_1_task_define_causality" targetRef="sp_1_task_check_equivalence"/>
+      <semantic:sequenceFlow id="flow_sp_equiv_to_gw_equiv" sourceRef="sp_1_task_check_equivalence" targetRef="sp_1_gw_equivalence_result"/>
+      <semantic:sequenceFlow id="flow_sp_gw_equiv_no" name="No - Equivalence Fails (Damage would have occurred anyway)" sourceRef="sp_1_gw_equivalence_result" targetRef="sp_1_end_compensation_not_granted"/>
+      <semantic:sequenceFlow id="flow_sp_gw_equiv_yes" name="Yes - Equivalence Holds (Damage would not have occurred)" sourceRef="sp_1_gw_equivalence_result" targetRef="sp_1_task_check_adequacy"/>
+      <semantic:sequenceFlow id="flow_sp_adequacy_to_gw_adequacy" sourceRef="sp_1_task_check_adequacy" targetRef="sp_1_gw_adequacy_result"/>
+      <semantic:sequenceFlow id="flow_sp_gw_adequacy_no" name="No - Adequacy Fails (Act not suitable)" sourceRef="sp_1_gw_adequacy_result" targetRef="sp_1_end_compensation_not_granted"/>
+      <semantic:sequenceFlow id="flow_sp_gw_adequacy_yes" name="Yes - Adequacy Holds (Act suitable)" sourceRef="sp_1_gw_adequacy_result" targetRef="sp_1_task_check_illegality"/>
+      <semantic:sequenceFlow id="flow_sp_illegality_to_det_illegality" sourceRef="sp_1_task_check_illegality" targetRef="sp_1_task_det_illegality_type"/>
+      <semantic:sequenceFlow id="flow_sp_det_illegality_to_gw_illegality" sourceRef="sp_1_task_det_illegality_type" targetRef="sp_1_gw_illegality_type"/>
+      <semantic:sequenceFlow id="flow_sp_gw_illegality_breach" name="Breach of Law" sourceRef="sp_1_gw_illegality_type" targetRef="sp_1_task_note_breach_law"/>
+      <semantic:sequenceFlow id="flow_sp_gw_illegality_violation" name="Violation of Good Morals" sourceRef="sp_1_gw_illegality_type" targetRef="sp_1_task_note_violation_morals"/>
+      <semantic:sequenceFlow id="flow_sp_breach_to_join_illegality" sourceRef="sp_1_task_note_breach_law" targetRef="sp_1_gw_join_illegality"/>
+      <semantic:sequenceFlow id="flow_sp_violation_to_join_illegality" sourceRef="sp_1_task_note_violation_morals" targetRef="sp_1_gw_join_illegality"/>
+      <semantic:sequenceFlow id="flow_sp_join_illegality_to_check_fault" sourceRef="sp_1_gw_join_illegality" targetRef="sp_1_task_check_fault"/>
+      <semantic:sequenceFlow id="flow_sp_check_fault_to_accessibility" sourceRef="sp_1_task_check_fault" targetRef="sp_1_task_check_accessibility"/>
+      <semantic:sequenceFlow id="flow_sp_accessibility_to_diff_fault" sourceRef="sp_1_task_check_accessibility" targetRef="sp_1_task_differentiate_fault_intensity"/>
+      <semantic:sequenceFlow id="flow_sp_diff_fault_to_gw_fault" sourceRef="sp_1_task_differentiate_fault_intensity" targetRef="sp_1_gw_fault_intensity"/>
+      <semantic:sequenceFlow id="flow_sp_gw_fault_intent" name="Intent" sourceRef="sp_1_gw_fault_intensity" targetRef="sp_1_task_note_intent"/>
+      <semantic:sequenceFlow id="flow_sp_gw_fault_negligence" name="Negligence" sourceRef="sp_1_gw_fault_intensity" targetRef="sp_1_task_det_negligence_type"/>
+      <semantic:sequenceFlow id="flow_sp_det_neg_to_gw_neg" sourceRef="sp_1_task_det_negligence_type" targetRef="sp_1_gw_negligence_type"/>
+      <semantic:sequenceFlow id="flow_sp_gw_neg_gross" name="Gross Negligence" sourceRef="sp_1_gw_negligence_type" targetRef="sp_1_task_note_gross_negligence"/>
+      <semantic:sequenceFlow id="flow_sp_gw_neg_slight" name="Slight Negligence" sourceRef="sp_1_gw_negligence_type" targetRef="sp_1_task_note_slight_negligence"/>
+      <semantic:sequenceFlow id="flow_sp_gross_neg_to_join_neg" sourceRef="sp_1_task_note_gross_negligence" targetRef="sp_1_gw_join_negligence_type"/>
+      <semantic:sequenceFlow id="flow_sp_slight_neg_to_join_neg" sourceRef="sp_1_task_note_slight_negligence" targetRef="sp_1_gw_join_negligence_type"/>
+      <semantic:sequenceFlow id="flow_sp_intent_to_join_fault" sourceRef="sp_1_task_note_intent" targetRef="sp_1_gw_join_fault_intensity"/>
+      <semantic:sequenceFlow id="flow_sp_join_neg_to_join_fault" sourceRef="sp_1_gw_join_negligence_type" targetRef="sp_1_gw_join_fault_intensity"/>
+      <semantic:sequenceFlow id="flow_sp_join_fault_to_end_checked" sourceRef="sp_1_gw_join_fault_intensity" targetRef="sp_1_end_requirements_checked"/>
+    </semantic:subProcess>
+
+    <semantic:exclusiveGateway id="gw_req_check_outcome" name="Requirement Check Outcome?">
+      <semantic:incoming>flow_sp1_to_gw_req_outcome</semantic:incoming>
+      <semantic:outgoing>flow_gw_req_outcome_failed</semantic:outgoing>
+      <semantic:outgoing>flow_gw_req_outcome_success</semantic:outgoing>
+    </semantic:exclusiveGateway>
+    <semantic:endEvent id="end_event_req_failed" name="Damages Compensation Not Granted (Requirement Check Failed)">
+      <semantic:incoming>flow_gw_req_outcome_failed</semantic:incoming>
+    </semantic:endEvent>
+
+    <!-- Judge Lane Elements -->
+    <semantic:task id="task_2_judge_decide_extent" name="Decide on the extent of the compensation">
+      <semantic:incoming>flow_gw_req_outcome_success</semantic:incoming>
+      <semantic:outgoing>flow_judge_decide_to_gw_damage_type</semantic:outgoing>
+    </semantic:task>
+    <semantic:exclusiveGateway id="gw_judge_damage_type" name="Type of Damage for Compensation?">
+      <semantic:incoming>flow_judge_decide_to_gw_damage_type</semantic:incoming>
+      <semantic:outgoing>flow_judge_gw_damage_financial</semantic:outgoing>
+      <semantic:outgoing>flow_judge_gw_damage_immaterial</semantic:outgoing>
+    </semantic:exclusiveGateway>
+    <semantic:task id="task_judge_det_financial_extent" name="Determine respective extent for financial loss">
+      <semantic:incoming>flow_judge_gw_damage_financial</semantic:incoming>
+      <semantic:outgoing>flow_judge_det_fin_ext_to_gw_fin_neg</semantic:outgoing>
+    </semantic:task>
+    <semantic:exclusiveGateway id="gw_judge_financial_negligence" name="Extent of Negligence for Financial Loss?">
+      <semantic:incoming>flow_judge_det_fin_ext_to_gw_fin_neg</semantic:incoming>
+      <semantic:outgoing>flow_judge_gw_fin_neg_slight</semantic:outgoing>
+      <semantic:outgoing>flow_judge_gw_fin_neg_gross</semantic:outgoing>
+    </semantic:exclusiveGateway>
+    <semantic:task id="task_judge_replace_market_value" name="Consider Replacement of objective market value">
+      <semantic:incoming>flow_judge_gw_fin_neg_slight</semantic:incoming>
+      <semantic:outgoing>flow_judge_replace_to_join_fin_comp</semantic:outgoing>
+    </semantic:task>
+    <semantic:task id="task_judge_comp_damage_profit_loss" name="Consider compensation for damage incurred and loss of profit">
+      <semantic:incoming>flow_judge_gw_fin_neg_gross</semantic:incoming>
+      <semantic:outgoing>flow_judge_comp_profit_to_join_fin_comp</semantic:outgoing>
+    </semantic:task>
+    <semantic:exclusiveGateway id="gw_judge_join_financial_comp" name="Join Financial Compensation Decisions">
+      <semantic:incoming>flow_judge_replace_to_join_fin_comp</semantic:incoming>
+      <semantic:incoming>flow_judge_comp_profit_to_join_fin_comp</semantic:incoming>
+      <semantic:outgoing>flow_judge_join_fin_comp_to_join_all</semantic:outgoing>
+    </semantic:exclusiveGateway>
+    <semantic:task id="task_judge_det_immaterial_extent" name="Determine respective extent for immaterial damage">
+      <semantic:incoming>flow_judge_gw_damage_immaterial</semantic:incoming>
+      <semantic:outgoing>flow_judge_det_imm_ext_to_gw_imm_scenario</semantic:outgoing>
+    </semantic:task>
+    <semantic:exclusiveGateway id="gw_judge_immaterial_scenario" name="Immaterial Damage Compensation Scenario?">
+      <semantic:incoming>flow_judge_det_imm_ext_to_gw_imm_scenario</semantic:incoming>
+      <semantic:outgoing>flow_judge_gw_imm_scenario_pain</semantic:outgoing>
+      <semantic:outgoing>flow_judge_gw_imm_scenario_no_satisfaction</semantic:outgoing>
+      <semantic:outgoing>flow_judge_gw_imm_scenario_value</semantic:outgoing>
+    </semantic:exclusiveGateway>
+    <semantic:task id="task_judge_pain_comp" name="Consider Pain compensation (bodily harm)">
+      <semantic:incoming>flow_judge_gw_imm_scenario_pain</semantic:incoming>
+      <semantic:outgoing>flow_judge_pain_comp_to_join_imm_succ</semantic:outgoing>
+    </semantic:task>
+    <semantic:endEvent id="end_event_immaterial_not_granted" name="Damages Compensation will not be granted (Immaterial - No Satisfaction)">
+      <semantic:incoming>flow_judge_gw_imm_scenario_no_satisfaction</semantic:incoming>
+    </semantic:endEvent>
+    <semantic:task id="task_judge_value_pref_comp" name="Consider Value of special preference compensation">
+      <semantic:incoming>flow_judge_gw_imm_scenario_value</semantic:incoming>
+      <semantic:outgoing>flow_judge_value_pref_to_join_imm_succ</semantic:outgoing>
+    </semantic:task>
+    <semantic:exclusiveGateway id="gw_judge_join_immaterial_comp_successful" name="Join Successful Immaterial Compensation Decisions">
+      <semantic:incoming>flow_judge_pain_comp_to_join_imm_succ</semantic:incoming>
+      <semantic:incoming>flow_judge_value_pref_to_join_imm_succ</semantic:incoming>
+      <semantic:outgoing>flow_judge_join_imm_succ_to_join_all</semantic:outgoing>
+    </semantic:exclusiveGateway>
+    <semantic:exclusiveGateway id="gw_judge_join_all_compensation" name="Join All Compensation Paths">
+      <semantic:incoming>flow_judge_join_fin_comp_to_join_all</semantic:incoming>
+      <semantic:incoming>flow_judge_join_imm_succ_to_join_all</semantic:incoming>
+      <semantic:outgoing>flow_judge_join_all_to_end_success</semantic:outgoing>
+    </semantic:exclusiveGateway>
+    <semantic:endEvent id="end_event_process_success" name="Entitlement to damages compensation successfully checked">
+      <semantic:incoming>flow_judge_join_all_to_end_success</semantic:incoming>
+    </semantic:endEvent>
+
+    <!-- Main Sequence Flows -->
+    <semantic:sequenceFlow id="flow_start_to_task1" sourceRef="start_event_1" targetRef="task_1_determine_liability"/>
+    <semantic:sequenceFlow id="flow_task1_to_gw_liability" sourceRef="task_1_determine_liability" targetRef="gw_liability_fault"/>
+    <semantic:sequenceFlow id="flow_gw_liability_yes" name="Yes, liability of fault determined" sourceRef="gw_liability_fault" targetRef="sp_1_check_requirements"/>
+    <semantic:sequenceFlow id="flow_gw_liability_no" name="No, liability of fault not determined" sourceRef="gw_liability_fault" targetRef="end_event_no_liability_fault"/>
+    <semantic:sequenceFlow id="flow_sp1_to_gw_req_outcome" sourceRef="sp_1_check_requirements" targetRef="gw_req_check_outcome"/>
+    <semantic:sequenceFlow id="flow_gw_req_outcome_failed" name="Requirement Check Outcome is Failed/Not Granted" sourceRef="gw_req_check_outcome" targetRef="end_event_req_failed"/>
+    <semantic:sequenceFlow id="flow_gw_req_outcome_success" name="Requirement Check Outcome is Successful" sourceRef="gw_req_check_outcome" targetRef="task_2_judge_decide_extent"/>
+    <semantic:sequenceFlow id="flow_judge_decide_to_gw_damage_type" sourceRef="task_2_judge_decide_extent" targetRef="gw_judge_damage_type"/>
+    <semantic:sequenceFlow id="flow_judge_gw_damage_financial" name="Damage Type is Financial Loss" sourceRef="gw_judge_damage_type" targetRef="task_judge_det_financial_extent"/>
+    <semantic:sequenceFlow id="flow_judge_det_fin_ext_to_gw_fin_neg" sourceRef="task_judge_det_financial_extent" targetRef="gw_judge_financial_negligence"/>
+    <semantic:sequenceFlow id="flow_judge_gw_fin_neg_slight" name="Slight Negligence - Partial Satisfaction" sourceRef="gw_judge_financial_negligence" targetRef="task_judge_replace_market_value"/>
+    <semantic:sequenceFlow id="flow_judge_gw_fin_neg_gross" name="Gross Negligence - Full Satisfaction" sourceRef="gw_judge_financial_negligence" targetRef="task_judge_comp_damage_profit_loss"/>
+    <semantic:sequenceFlow id="flow_judge_replace_to_join_fin_comp" sourceRef="task_judge_replace_market_value" targetRef="gw_judge_join_financial_comp"/>
+    <semantic:sequenceFlow id="flow_judge_comp_profit_to_join_fin_comp" sourceRef="task_judge_comp_damage_profit_loss" targetRef="gw_judge_join_financial_comp"/>
+    <semantic:sequenceFlow id="flow_judge_gw_damage_immaterial" name="Damage Type is Immaterial Damage" sourceRef="gw_judge_damage_type" targetRef="task_judge_det_immaterial_extent"/>
+    <semantic:sequenceFlow id="flow_judge_det_imm_ext_to_gw_imm_scenario" sourceRef="task_judge_det_immaterial_extent" targetRef="gw_judge_immaterial_scenario"/>
+    <semantic:sequenceFlow id="flow_judge_gw_imm_scenario_pain" name="Slight/Gross Negligence - Full Satisfaction for Pain Compensation" sourceRef="gw_judge_immaterial_scenario" targetRef="task_judge_pain_comp"/>
+    <semantic:sequenceFlow id="flow_judge_gw_imm_scenario_no_satisfaction" name="Slight Negligence - No Satisfaction" sourceRef="gw_judge_immaterial_scenario" targetRef="end_event_immaterial_not_granted"/>
+    <semantic:sequenceFlow id="flow_judge_gw_imm_scenario_value" name="Gross Negligence - Full Satisfaction for Value of Special Preference" sourceRef="gw_judge_immaterial_scenario" targetRef="task_judge_value_pref_comp"/>
+    <semantic:sequenceFlow id="flow_judge_pain_comp_to_join_imm_succ" sourceRef="task_judge_pain_comp" targetRef="gw_judge_join_immaterial_comp_successful"/>
+    <semantic:sequenceFlow id="flow_judge_value_pref_to_join_imm_succ" sourceRef="task_judge_value_pref_comp" targetRef="gw_judge_join_immaterial_comp_successful"/>
+    <semantic:sequenceFlow id="flow_judge_join_fin_comp_to_join_all" sourceRef="gw_judge_join_financial_comp" targetRef="gw_judge_join_all_compensation"/>
+    <semantic:sequenceFlow id="flow_judge_join_imm_succ_to_join_all" sourceRef="gw_judge_join_immaterial_comp_successful" targetRef="gw_judge_join_all_compensation"/>
+    <semantic:sequenceFlow id="flow_judge_join_all_to_end_success" sourceRef="gw_judge_join_all_compensation" targetRef="end_event_process_success"/>
+  </semantic:process>
+
+  <bpmndi:BPMNDiagram id="BPMNDiagram_damagesCompensation" name="Damages Compensation Diagram" resolution="96.0">
+    <bpmndi:BPMNPlane bpmnElement="collab_damagesCompensation">
+      <bpmndi:BPMNShape id="participant_damagesCompensationProcess_shape" bpmnElement="participant_damagesCompensationProcess" isHorizontal="true">
+        <dc:Bounds x="10" y="10" width="1450" height="4600"/>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="lane_lawyer_shape" bpmnElement="lane_lawyer" isHorizontal="true">
+        <dc:Bounds x="40" y="10" width="1420" height="3500"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="lane_judge_shape" bpmnElement="lane_judge" isHorizontal="true">
+        <dc:Bounds x="40" y="3510" width="1420" height="1100"/>
+      </bpmndi:BPMNShape>
+
+      <!-- Lawyer Lane Shapes -->
+      <bpmndi:BPMNShape id="start_event_1_shape" bpmnElement="start_event_1">
+        <dc:Bounds x="100" y="82" width="36" height="36"/>
+        <bpmndi:BPMNLabel><dc:Bounds x="80" y="123" width="76" height="14"/></bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="task_1_determine_liability_shape" bpmnElement="task_1_determine_liability">
+        <dc:Bounds x="200" y="60" width="150" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="gw_liability_fault_shape" bpmnElement="gw_liability_fault" isMarkerVisible="true">
+        <dc:Bounds x="400" y="75" width="50" height="50"/>
+        <bpmndi:BPMNLabel><dc:Bounds x="380" y="130" width="90" height="28"/></bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="end_event_no_liability_fault_shape" bpmnElement="end_event_no_liability_fault">
+        <dc:Bounds x="500" y="32" width="36" height="36"/>
+        <bpmndi:BPMNLabel><dc:Bounds x="480" y="73" width="76" height="28"/></bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="sp_1_check_requirements_shape" bpmnElement="sp_1_check_requirements" isExpanded="true">
+        <dc:Bounds x="100" y="200" width="1250" height="3050"/>
+      </bpmndi:BPMNShape>
+        <!-- Shapes within SubProcess sp_1_check_requirements -->
+        <bpmndi:BPMNShape id="sp_1_start_shape" bpmnElement="sp_1_start">
+          <dc:Bounds x="707" y="250" width="36" height="36"/> <!-- SP_CENTER_X = 725. 725-18=707 -->
+           <bpmndi:BPMNLabel><dc:Bounds x="687" y="291" width="76" height="28"/></bpmndi:BPMNLabel>
+        </bpmndi:BPMNShape>
+        <bpmndi:BPMNShape id="sp_1_task_define_damage_type_shape" bpmnElement="sp_1_task_define_damage_type">
+          <dc:Bounds x="650" y="316" width="150" height="80"/> <!-- 725-75=650 -->
+        </bpmndi:BPMNShape>
+        <bpmndi:BPMNShape id="sp_1_gw_damage_type_shape" bpmnElement="sp_1_gw_damage_type" isMarkerVisible="true">
+          <dc:Bounds x="700" y="426" width="50" height="50"/> <!-- 725-25=700 -->
+          <bpmndi:BPMNLabel><dc:Bounds x="680" y="481" width="90" height="14"/></bpmndi:BPMNLabel>
+        </bpmndi:BPMNShape>
+        <bpmndi:BPMNShape id="sp_1_task_det_financial_loss_type_shape" bpmnElement="sp_1_task_det_financial_loss_type">
+          <dc:Bounds x="450" y="506" width="150" height="80"/>
+        </bpmndi:BPMNShape>
+        <bpmndi:BPMNShape id="sp_1_gw_financial_loss_type_shape" bpmnElement="sp_1_gw_financial_loss_type" isMarkerVisible="true">
+          <dc:Bounds x="475" y="616" width="50" height="50"/>
+          <bpmndi:BPMNLabel><dc:Bounds x="455" y="671" width="90" height="28"/></bpmndi:BPMNLabel>
+        </bpmndi:BPMNShape>
+        <bpmndi:BPMNShape id="sp_1_task_note_positive_damage_shape" bpmnElement="sp_1_task_note_positive_damage">
+          <dc:Bounds x="300" y="696" width="150" height="80"/>
+        </bpmndi:BPMNShape>
+        <bpmndi:BPMNShape id="sp_1_task_note_lost_profit_shape" bpmnElement="sp_1_task_note_lost_profit">
+          <dc:Bounds x="500" y="696" width="150" height="80"/>
+        </bpmndi:BPMNShape>
+        <bpmndi:BPMNShape id="sp_1_gw_join_financial_loss_shape" bpmnElement="sp_1_gw_join_financial_loss" isMarkerVisible="true">
+          <dc:Bounds x="475" y="806" width="50" height="50"/>
+          <bpmndi:BPMNLabel><dc:Bounds x="455" y="861" width="90" height="40"/></bpmndi:BPMNLabel>
+        </bpmndi:BPMNShape>
+        <bpmndi:BPMNShape id="sp_1_task_det_immaterial_damage_type_shape" bpmnElement="sp_1_task_det_immaterial_damage_type">
+          <dc:Bounds x="850" y="506" width="150" height="80"/>
+        </bpmndi:BPMNShape>
+        <bpmndi:BPMNShape id="sp_1_gw_immaterial_damage_type_shape" bpmnElement="sp_1_gw_immaterial_damage_type" isMarkerVisible="true">
+          <dc:Bounds x="875" y="616" width="50" height="50"/>
+          <bpmndi:BPMNLabel><dc:Bounds x="855" y="671" width="90" height="40"/></bpmndi:BPMNLabel>
+        </bpmndi:BPMNShape>
+        <bpmndi:BPMNShape id="sp_1_task_note_pain_comp_shape" bpmnElement="sp_1_task_note_pain_comp">
+          <dc:Bounds x="700" y="696" width="150" height="80"/>
+        </bpmndi:BPMNShape>
+        <bpmndi:BPMNShape id="sp_1_task_note_value_pref_shape" bpmnElement="sp_1_task_note_value_pref">
+          <dc:Bounds x="900" y="696" width="150" height="80"/>
+        </bpmndi:BPMNShape>
+        <bpmndi:BPMNShape id="sp_1_gw_join_immaterial_damage_shape" bpmnElement="sp_1_gw_join_immaterial_damage" isMarkerVisible="true">
+          <dc:Bounds x="875" y="806" width="50" height="50"/>
+          <bpmndi:BPMNLabel><dc:Bounds x="855" y="861" width="90" height="40"/></bpmndi:BPMNLabel>
+        </bpmndi:BPMNShape>
+        <bpmndi:BPMNShape id="sp_1_gw_join_damage_defs_shape" bpmnElement="sp_1_gw_join_damage_defs" isMarkerVisible="true">
+          <dc:Bounds x="700" y="906" width="50" height="50"/>
+          <bpmndi:BPMNLabel><dc:Bounds x="680" y="961" width="90" height="28"/></bpmndi:BPMNLabel>
+        </bpmndi:BPMNShape>
+        <bpmndi:BPMNShape id="sp_1_task_define_causality_shape" bpmnElement="sp_1_task_define_causality">
+          <dc:Bounds x="650" y="1006" width="150" height="80"/>
+        </bpmndi:BPMNShape>
+        <bpmndi:BPMNShape id="sp_1_task_check_equivalence_shape" bpmnElement="sp_1_task_check_equivalence">
+          <dc:Bounds x="650" y="1116" width="150" height="80"/>
+        </bpmndi:BPMNShape>
+        <bpmndi:BPMNShape id="sp_1_gw_equivalence_result_shape" bpmnElement="sp_1_gw_equivalence_result" isMarkerVisible="true">
+          <dc:Bounds x="700" y="1226" width="50" height="50"/>
+          <bpmndi:BPMNLabel><dc:Bounds x="680" y="1281" width="90" height="28"/></bpmndi:BPMNLabel>
+        </bpmndi:BPMNShape>
+        <bpmndi:BPMNShape id="sp_1_task_check_adequacy_shape" bpmnElement="sp_1_task_check_adequacy">
+          <dc:Bounds x="650" y="1306" width="150" height="80"/>
+        </bpmndi:BPMNShape>
+        <bpmndi:BPMNShape id="sp_1_gw_adequacy_result_shape" bpmnElement="sp_1_gw_adequacy_result" isMarkerVisible="true">
+          <dc:Bounds x="700" y="1416" width="50" height="50"/>
+          <bpmndi:BPMNLabel><dc:Bounds x="680" y="1471" width="90" height="28"/></bpmndi:BPMNLabel>
+        </bpmndi:BPMNShape>
+        <bpmndi:BPMNShape id="sp_1_end_compensation_not_granted_shape" bpmnElement="sp_1_end_compensation_not_granted">
+          <dc:Bounds x="450" y="1328" width="36" height="36"/> <!-- Centered between gw_equiv and gw_adeq -->
+          <bpmndi:BPMNLabel><dc:Bounds x="400" y="1369" width="136" height="40"/></bpmndi:BPMNLabel>
+        </bpmndi:BPMNShape>
+        <bpmndi:BPMNShape id="sp_1_task_check_illegality_shape" bpmnElement="sp_1_task_check_illegality">
+          <dc:Bounds x="650" y="1496" width="150" height="80"/>
+        </bpmndi:BPMNShape>
+        <bpmndi:BPMNShape id="sp_1_task_det_illegality_type_shape" bpmnElement="sp_1_task_det_illegality_type">
+          <dc:Bounds x="650" y="1606" width="150" height="80"/>
+        </bpmndi:BPMNShape>
+        <bpmndi:BPMNShape id="sp_1_gw_illegality_type_shape" bpmnElement="sp_1_gw_illegality_type" isMarkerVisible="true">
+          <dc:Bounds x="700" y="1716" width="50" height="50"/>
+          <bpmndi:BPMNLabel><dc:Bounds x="680" y="1771" width="90" height="28"/></bpmndi:BPMNLabel>
+        </bpmndi:BPMNShape>
+        <bpmndi:BPMNShape id="sp_1_task_note_breach_law_shape" bpmnElement="sp_1_task_note_breach_law">
+          <dc:Bounds x="500" y="1796" width="150" height="80"/>
+        </bpmndi:BPMNShape>
+        <bpmndi:BPMNShape id="sp_1_task_note_violation_morals_shape" bpmnElement="sp_1_task_note_violation_morals">
+          <dc:Bounds x="800" y="1796" width="150" height="80"/>
+        </bpmndi:BPMNShape>
+        <bpmndi:BPMNShape id="sp_1_gw_join_illegality_shape" bpmnElement="sp_1_gw_join_illegality" isMarkerVisible="true">
+          <dc:Bounds x="700" y="1906" width="50" height="50"/>
+          <bpmndi:BPMNLabel><dc:Bounds x="680" y="1961" width="90" height="40"/></bpmndi:BPMNLabel>
+        </bpmndi:BPMNShape>
+        <bpmndi:BPMNShape id="sp_1_task_check_fault_shape" bpmnElement="sp_1_task_check_fault">
+          <dc:Bounds x="650" y="1986" width="150" height="80"/>
+        </bpmndi:BPMNShape>
+        <bpmndi:BPMNShape id="sp_1_task_check_accessibility_shape" bpmnElement="sp_1_task_check_accessibility">
+          <dc:Bounds x="650" y="2096" width="150" height="80"/>
+        </bpmndi:BPMNShape>
+        <bpmndi:BPMNShape id="sp_1_task_differentiate_fault_intensity_shape" bpmnElement="sp_1_task_differentiate_fault_intensity">
+          <dc:Bounds x="650" y="2206" width="150" height="80"/>
+        </bpmndi:BPMNShape>
+        <bpmndi:BPMNShape id="sp_1_gw_fault_intensity_shape" bpmnElement="sp_1_gw_fault_intensity" isMarkerVisible="true">
+          <dc:Bounds x="700" y="2316" width="50" height="50"/>
+          <bpmndi:BPMNLabel><dc:Bounds x="680" y="2371" width="90" height="28"/></bpmndi:BPMNLabel>
+        </bpmndi:BPMNShape>
+        <bpmndi:BPMNShape id="sp_1_task_note_intent_shape" bpmnElement="sp_1_task_note_intent">
+          <dc:Bounds x="500" y="2396" width="150" height="80"/>
+        </bpmndi:BPMNShape>
+        <bpmndi:BPMNShape id="sp_1_task_det_negligence_type_shape" bpmnElement="sp_1_task_det_negligence_type">
+          <dc:Bounds x="800" y="2396" width="150" height="80"/>
+        </bpmndi:BPMNShape>
+        <bpmndi:BPMNShape id="sp_1_gw_negligence_type_shape" bpmnElement="sp_1_gw_negligence_type" isMarkerVisible="true">
+          <dc:Bounds x="825" y="2506" width="50" height="50"/>
+          <bpmndi:BPMNLabel><dc:Bounds x="805" y="2561" width="90" height="28"/></bpmndi:BPMNLabel>
+        </bpmndi:BPMNShape>
+        <bpmndi:BPMNShape id="sp_1_task_note_gross_negligence_shape" bpmnElement="sp_1_task_note_gross_negligence">
+          <dc:Bounds x="675" y="2586" width="150" height="80"/>
+        </bpmndi:BPMNShape>
+        <bpmndi:BPMNShape id="sp_1_task_note_slight_negligence_shape" bpmnElement="sp_1_task_note_slight_negligence">
+          <dc:Bounds x="875" y="2586" width="150" height="80"/>
+        </bpmndi:BPMNShape>
+        <bpmndi:BPMNShape id="sp_1_gw_join_negligence_type_shape" bpmnElement="sp_1_gw_join_negligence_type" isMarkerVisible="true">
+          <dc:Bounds x="825" y="2696" width="50" height="50"/>
+          <bpmndi:BPMNLabel><dc:Bounds x="805" y="2751" width="90" height="40"/></bpmndi:BPMNLabel>
+        </bpmndi:BPMNShape>
+        <bpmndi:BPMNShape id="sp_1_gw_join_fault_intensity_shape" bpmnElement="sp_1_gw_join_fault_intensity" isMarkerVisible="true">
+          <dc:Bounds x="700" y="2776" width="50" height="50"/>
+          <bpmndi:BPMNLabel><dc:Bounds x="680" y="2831" width="90" height="28"/></bpmndi:BPMNLabel>
+        </bpmndi:BPMNShape>
+        <bpmndi:BPMNShape id="sp_1_end_requirements_checked_shape" bpmnElement="sp_1_end_requirements_checked">
+          <dc:Bounds x="707" y="2856" width="36" height="36"/>
+          <bpmndi:BPMNLabel><dc:Bounds x="667" y="2897" width="116" height="40"/></bpmndi:BPMNLabel>
+        </bpmndi:BPMNShape>
+
+
+      <bpmndi:BPMNShape id="gw_req_check_outcome_shape" bpmnElement="gw_req_check_outcome" isMarkerVisible="true">
+        <dc:Bounds x="700" y="3300" width="50" height="50"/> <!-- SP ends at 200+3050=3250. gw_req_check_outcome below it. -->
+        <bpmndi:BPMNLabel><dc:Bounds x="680" y="3355" width="90" height="28"/></bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="end_event_req_failed_shape" bpmnElement="end_event_req_failed">
+        <dc:Bounds x="850" y="3307" width="36" height="36"/>
+        <bpmndi:BPMNLabel><dc:Bounds x="820" y="3348" width="96" height="40"/></bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <!-- Judge Lane Shapes -->
+      <bpmndi:BPMNShape id="task_2_judge_decide_extent_shape" bpmnElement="task_2_judge_decide_extent">
+        <dc:Bounds x="650" y="3560" width="150" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="gw_judge_damage_type_shape" bpmnElement="gw_judge_damage_type" isMarkerVisible="true">
+        <dc:Bounds x="700" y="3670" width="50" height="50"/>
+        <bpmndi:BPMNLabel><dc:Bounds x="680" y="3725" width="90" height="40"/></bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="task_judge_det_financial_extent_shape" bpmnElement="task_judge_det_financial_extent">
+        <dc:Bounds x="450" y="3750" width="150" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="gw_judge_financial_negligence_shape" bpmnElement="gw_judge_financial_negligence" isMarkerVisible="true">
+        <dc:Bounds x="475" y="3860" width="50" height="50"/>
+        <bpmndi:BPMNLabel><dc:Bounds x="455" y="3915" width="90" height="40"/></bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="task_judge_replace_market_value_shape" bpmnElement="task_judge_replace_market_value">
+        <dc:Bounds x="300" y="3940" width="150" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="task_judge_comp_damage_profit_loss_shape" bpmnElement="task_judge_comp_damage_profit_loss">
+        <dc:Bounds x="500" y="3940" width="150" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="gw_judge_join_financial_comp_shape" bpmnElement="gw_judge_join_financial_comp" isMarkerVisible="true">
+        <dc:Bounds x="475" y="4050" width="50" height="50"/>
+        <bpmndi:BPMNLabel><dc:Bounds x="455" y="4105" width="90" height="40"/></bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="task_judge_det_immaterial_extent_shape" bpmnElement="task_judge_det_immaterial_extent">
+        <dc:Bounds x="850" y="3750" width="150" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="gw_judge_immaterial_scenario_shape" bpmnElement="gw_judge_immaterial_scenario" isMarkerVisible="true">
+        <dc:Bounds x="875" y="3860" width="50" height="50"/>
+        <bpmndi:BPMNLabel><dc:Bounds x="855" y="3915" width="90" height="40"/></bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="task_judge_pain_comp_shape" bpmnElement="task_judge_pain_comp">
+        <dc:Bounds x="700" y="3940" width="150" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="end_event_immaterial_not_granted_shape" bpmnElement="end_event_immaterial_not_granted">
+        <dc:Bounds x="882" y="4057" width="36" height="36"/>
+        <bpmndi:BPMNLabel><dc:Bounds x="852" y="4098" width="96" height="52"/></bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="task_judge_value_pref_comp_shape" bpmnElement="task_judge_value_pref_comp">
+        <dc:Bounds x="1000" y="3940" width="150" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="gw_judge_join_immaterial_comp_successful_shape" bpmnElement="gw_judge_join_immaterial_comp_successful" isMarkerVisible="true">
+        <dc:Bounds x="875" y="4150" width="50" height="50"/>
+        <bpmndi:BPMNLabel><dc:Bounds x="855" y="4205" width="90" height="52"/></bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="gw_judge_join_all_compensation_shape" bpmnElement="gw_judge_join_all_compensation" isMarkerVisible="true">
+        <dc:Bounds x="700" y="4230" width="50" height="50"/>
+        <bpmndi:BPMNLabel><dc:Bounds x="680" y="4285" width="90" height="40"/></bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="end_event_process_success_shape" bpmnElement="end_event_process_success">
+        <dc:Bounds x="707" y="4310" width="36" height="36"/>
+        <bpmndi:BPMNLabel><dc:Bounds x="667" y="4351" width="116" height="40"/></bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <!-- Sequence Flow Edges -->
+      <!-- Main Flows -->
+      <bpmndi:BPMNEdge id="flow_start_to_task1_edge" bpmnElement="flow_start_to_task1">
+        <di:waypoint x="136" y="100"/>
+        <di:waypoint x="200" y="100"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_task1_to_gw_liability_edge" bpmnElement="flow_task1_to_gw_liability">
+        <di:waypoint x="350" y="100"/>
+        <di:waypoint x="400" y="100"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_gw_liability_yes_edge" bpmnElement="flow_gw_liability_yes">
+        <di:waypoint x="425" y="125"/>
+        <di:waypoint x="425" y="160"/>
+        <di:waypoint x="725" y="160"/> <!-- SP_CENTER_X -->
+        <di:waypoint x="725" y="200"/>
+        <bpmndi:BPMNLabel><dc:Bounds x="435" y="130" width="80" height="28"/></bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_gw_liability_no_edge" bpmnElement="flow_gw_liability_no">
+        <di:waypoint x="425" y="75"/>
+        <di:waypoint x="425" y="50"/>
+        <di:waypoint x="500" y="50"/>
+        <bpmndi:BPMNLabel><dc:Bounds x="435" y="30" width="80" height="28"/></bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_sp1_to_gw_req_outcome_edge" bpmnElement="flow_sp1_to_gw_req_outcome">
+        <di:waypoint x="725" y="3250"/> <!-- SP_CENTER_X, SP_BOTTOM_Y -->
+        <di:waypoint x="725" y="3300"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_gw_req_outcome_failed_edge" bpmnElement="flow_gw_req_outcome_failed">
+        <di:waypoint x="750" y="3325"/>
+        <di:waypoint x="850" y="3325"/>
+        <bpmndi:BPMNLabel><dc:Bounds x="760" y="3280" width="80" height="40"/></bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_gw_req_outcome_success_edge" bpmnElement="flow_gw_req_outcome_success">
+        <di:waypoint x="725" y="3350"/>
+        <di:waypoint x="725" y="3560"/>
+        <bpmndi:BPMNLabel><dc:Bounds x="735" y="3450" width="80" height="40"/></bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+
+      <!-- SubProcess sp_1_check_requirements Edges -->
+      <bpmndi:BPMNEdge id="flow_sp_start_to_def_damage_edge" bpmnElement="flow_sp_start_to_def_damage">
+        <di:waypoint x="725" y="286"/> <di:waypoint x="725" y="316"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_sp_def_damage_to_gw_damage_edge" bpmnElement="flow_sp_def_damage_to_gw_damage">
+        <di:waypoint x="725" y="396"/> <di:waypoint x="725" y="426"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_sp_gw_damage_financial_edge" bpmnElement="flow_sp_gw_damage_financial">
+        <di:waypoint x="700" y="451"/> <di:waypoint x="525" y="451"/> <di:waypoint x="525" y="506"/>
+        <bpmndi:BPMNLabel><dc:Bounds x="560" y="456" width="80" height="28"/></bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_sp_det_fin_loss_to_gw_fin_loss_edge" bpmnElement="flow_sp_det_fin_loss_to_gw_fin_loss">
+        <di:waypoint x="500" y="586"/> <di:waypoint x="500" y="616"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_sp_gw_fin_loss_positive_edge" bpmnElement="flow_sp_gw_fin_loss_positive">
+        <di:waypoint x="475" y="641"/> <di:waypoint x="375" y="641"/> <di:waypoint x="375" y="696"/>
+        <bpmndi:BPMNLabel><dc:Bounds x="385" y="646" width="80" height="14"/></bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_sp_gw_fin_loss_profit_edge" bpmnElement="flow_sp_gw_fin_loss_profit">
+        <di:waypoint x="525" y="641"/> <di:waypoint x="575" y="641"/> <di:waypoint x="575" y="696"/>
+        <bpmndi:BPMNLabel><dc:Bounds x="535" y="646" width="80" height="14"/></bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_sp_pos_damage_to_join_fin_edge" bpmnElement="flow_sp_pos_damage_to_join_fin">
+        <di:waypoint x="375" y="776"/> <di:waypoint x="375" y="831"/> <di:waypoint x="475" y="831"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_sp_lost_profit_to_join_fin_edge" bpmnElement="flow_sp_lost_profit_to_join_fin">
+        <di:waypoint x="575" y="776"/> <di:waypoint x="575" y="831"/> <di:waypoint x="525" y="831"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_sp_gw_damage_immaterial_edge" bpmnElement="flow_sp_gw_damage_immaterial">
+        <di:waypoint x="750" y="451"/> <di:waypoint x="925" y="451"/> <di:waypoint x="925" y="506"/>
+        <bpmndi:BPMNLabel><dc:Bounds x="790" y="456" width="80" height="28"/></bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_sp_det_imm_dmg_to_gw_imm_dmg_edge" bpmnElement="flow_sp_det_imm_dmg_to_gw_imm_dmg">
+        <di:waypoint x="900" y="586"/> <di:waypoint x="900" y="616"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_sp_gw_imm_dmg_pain_edge" bpmnElement="flow_sp_gw_imm_dmg_pain">
+        <di:waypoint x="875" y="641"/> <di:waypoint x="775" y="641"/> <di:waypoint x="775" y="696"/>
+        <bpmndi:BPMNLabel><dc:Bounds x="720" y="646" width="80" height="40"/></bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_sp_gw_imm_dmg_value_edge" bpmnElement="flow_sp_gw_imm_dmg_value">
+        <di:waypoint x="925" y="641"/> <di:waypoint x="975" y="641"/> <di:waypoint x="975" y="696"/>
+        <bpmndi:BPMNLabel><dc:Bounds x="935" y="646" width="80" height="40"/></bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_sp_pain_comp_to_join_imm_edge" bpmnElement="flow_sp_pain_comp_to_join_imm">
+        <di:waypoint x="775" y="776"/> <di:waypoint x="775" y="831"/> <di:waypoint x="875" y="831"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_sp_value_pref_to_join_imm_edge" bpmnElement="flow_sp_value_pref_to_join_imm">
+        <di:waypoint x="975" y="776"/> <di:waypoint x="975" y="831"/> <di:waypoint x="925" y="831"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_sp_join_fin_to_join_damage_defs_edge" bpmnElement="flow_sp_join_fin_to_join_damage_defs">
+        <di:waypoint x="500" y="856"/> <di:waypoint x="500" y="931"/> <di:waypoint x="700" y="931"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_sp_join_imm_to_join_damage_defs_edge" bpmnElement="flow_sp_join_imm_to_join_damage_defs">
+        <di:waypoint x="900" y="856"/> <di:waypoint x="900" y="931"/> <di:waypoint x="750" y="931"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_sp_join_damage_defs_to_causality_edge" bpmnElement="flow_sp_join_damage_defs_to_causality">
+        <di:waypoint x="725" y="956"/> <di:waypoint x="725" y="1006"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_sp_causality_to_equiv_edge" bpmnElement="flow_sp_causality_to_equiv">
+        <di:waypoint x="725" y="1086"/> <di:waypoint x="725" y="1116"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_sp_equiv_to_gw_equiv_edge" bpmnElement="flow_sp_equiv_to_gw_equiv">
+        <di:waypoint x="725" y="1196"/> <di:waypoint x="725" y="1226"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_sp_gw_equiv_no_edge" bpmnElement="flow_sp_gw_equiv_no">
+        <di:waypoint x="700" y="1251"/> <di:waypoint x="468" y="1251"/> <di:waypoint x="468" y="1328"/>
+        <bpmndi:BPMNLabel><dc:Bounds x="500" y="1256" width="80" height="52"/></bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_sp_gw_equiv_yes_edge" bpmnElement="flow_sp_gw_equiv_yes">
+        <di:waypoint x="725" y="1276"/> <di:waypoint x="725" y="1306"/>
+        <bpmndi:BPMNLabel><dc:Bounds x="735" y="1281" width="80" height="52"/></bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_sp_adequacy_to_gw_adequacy_edge" bpmnElement="flow_sp_adequacy_to_gw_adequacy">
+        <di:waypoint x="725" y="1386"/> <di:waypoint x="725" y="1416"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_sp_gw_adequacy_no_edge" bpmnElement="flow_sp_gw_adequacy_no">
+        <di:waypoint x="700" y="1441"/> <di:waypoint x="468" y="1441"/> <di:waypoint x="468" y="1364"/>
+        <bpmndi:BPMNLabel><dc:Bounds x="500" y="1400" width="80" height="40"/></bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_sp_gw_adequacy_yes_edge" bpmnElement="flow_sp_gw_adequacy_yes">
+        <di:waypoint x="725" y="1466"/> <di:waypoint x="725" y="1496"/>
+        <bpmndi:BPMNLabel><dc:Bounds x="735" y="1471" width="80" height="28"/></bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_sp_illegality_to_det_illegality_edge" bpmnElement="flow_sp_illegality_to_det_illegality">
+        <di:waypoint x="725" y="1576"/> <di:waypoint x="725" y="1606"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_sp_det_illegality_to_gw_illegality_edge" bpmnElement="flow_sp_det_illegality_to_gw_illegality">
+        <di:waypoint x="725" y="1686"/> <di:waypoint x="725" y="1716"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_sp_gw_illegality_breach_edge" bpmnElement="flow_sp_gw_illegality_breach">
+        <di:waypoint x="700" y="1741"/> <di:waypoint x="575" y="1741"/> <di:waypoint x="575" y="1796"/>
+        <bpmndi:BPMNLabel><dc:Bounds x="585" y="1746" width="80" height="14"/></bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_sp_gw_illegality_violation_edge" bpmnElement="flow_sp_gw_illegality_violation">
+        <di:waypoint x="750" y="1741"/> <di:waypoint x="875" y="1741"/> <di:waypoint x="875" y="1796"/>
+        <bpmndi:BPMNLabel><dc:Bounds x="790" y="1746" width="80" height="28"/></bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_sp_breach_to_join_illegality_edge" bpmnElement="flow_sp_breach_to_join_illegality">
+        <di:waypoint x="575" y="1876"/> <di:waypoint x="575" y="1931"/> <di:waypoint x="700" y="1931"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_sp_violation_to_join_illegality_edge" bpmnElement="flow_sp_violation_to_join_illegality">
+        <di:waypoint x="875" y="1876"/> <di:waypoint x="875" y="1931"/> <di:waypoint x="750" y="1931"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_sp_join_illegality_to_check_fault_edge" bpmnElement="flow_sp_join_illegality_to_check_fault">
+        <di:waypoint x="725" y="1956"/> <di:waypoint x="725" y="1986"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_sp_check_fault_to_accessibility_edge" bpmnElement="flow_sp_check_fault_to_accessibility">
+        <di:waypoint x="725" y="2066"/> <di:waypoint x="725" y="2096"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_sp_accessibility_to_diff_fault_edge" bpmnElement="flow_sp_accessibility_to_diff_fault">
+        <di:waypoint x="725" y="2176"/> <di:waypoint x="725" y="2206"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_sp_diff_fault_to_gw_fault_edge" bpmnElement="flow_sp_diff_fault_to_gw_fault">
+        <di:waypoint x="725" y="2286"/> <di:waypoint x="725" y="2316"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_sp_gw_fault_intent_edge" bpmnElement="flow_sp_gw_fault_intent">
+        <di:waypoint x="700" y="2341"/> <di:waypoint x="575" y="2341"/> <di:waypoint x="575" y="2396"/>
+        <bpmndi:BPMNLabel><dc:Bounds x="600" y="2346" width="80" height="14"/></bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_sp_gw_fault_negligence_edge" bpmnElement="flow_sp_gw_fault_negligence">
+        <di:waypoint x="750" y="2341"/> <di:waypoint x="875" y="2341"/> <di:waypoint x="875" y="2396"/>
+        <bpmndi:BPMNLabel><dc:Bounds x="780" y="2346" width="80" height="14"/></bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_sp_det_neg_to_gw_neg_edge" bpmnElement="flow_sp_det_neg_to_gw_neg">
+        <di:waypoint x="850" y="2476"/> <di:waypoint x="850" y="2506"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_sp_gw_neg_gross_edge" bpmnElement="flow_sp_gw_neg_gross">
+        <di:waypoint x="825" y="2531"/> <di:waypoint x="750" y="2531"/> <di:waypoint x="750" y="2586"/>
+        <bpmndi:BPMNLabel><dc:Bounds x="730" y="2536" width="80" height="28"/></bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_sp_gw_neg_slight_edge" bpmnElement="flow_sp_gw_neg_slight">
+        <di:waypoint x="875" y="2531"/> <di:waypoint x="950" y="2531"/> <di:waypoint x="950" y="2586"/>
+        <bpmndi:BPMNLabel><dc:Bounds x="885" y="2536" width="80" height="28"/></bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_sp_gross_neg_to_join_neg_edge" bpmnElement="flow_sp_gross_neg_to_join_neg">
+        <di:waypoint x="750" y="2666"/> <di:waypoint x="750" y="2721"/> <di:waypoint x="825" y="2721"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_sp_slight_neg_to_join_neg_edge" bpmnElement="flow_sp_slight_neg_to_join_neg">
+        <di:waypoint x="950" y="2666"/> <di:waypoint x="950" y="2721"/> <di:waypoint x="875" y="2721"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_sp_intent_to_join_fault_edge" bpmnElement="flow_sp_intent_to_join_fault">
+        <di:waypoint x="575" y="2476"/> <di:waypoint x="575" y="2801"/> <di:waypoint x="700" y="2801"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_sp_join_neg_to_join_fault_edge" bpmnElement="flow_sp_join_neg_to_join_fault">
+        <di:waypoint x="850" y="2746"/> <di:waypoint x="850" y="2801"/> <di:waypoint x="750" y="2801"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_sp_join_fault_to_end_checked_edge" bpmnElement="flow_sp_join_fault_to_end_checked">
+        <di:waypoint x="725" y="2826"/> <di:waypoint x="725" y="2856"/>
+      </bpmndi:BPMNEdge>
+
+      <!-- Judge Lane Edges -->
+      <bpmndi:BPMNEdge id="flow_judge_decide_to_gw_damage_type_edge" bpmnElement="flow_judge_decide_to_gw_damage_type">
+        <di:waypoint x="725" y="3640"/> <di:waypoint x="725" y="3670"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_judge_gw_damage_financial_edge" bpmnElement="flow_judge_gw_damage_financial">
+        <di:waypoint x="700" y="3695"/> <di:waypoint x="525" y="3695"/> <di:waypoint x="525" y="3750"/>
+         <bpmndi:BPMNLabel><dc:Bounds x="560" y="3700" width="80" height="28"/></bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_judge_det_fin_ext_to_gw_fin_neg_edge" bpmnElement="flow_judge_det_fin_ext_to_gw_fin_neg">
+        <di:waypoint x="500" y="3830"/> <di:waypoint x="500" y="3860"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_judge_gw_fin_neg_slight_edge" bpmnElement="flow_judge_gw_fin_neg_slight">
+        <di:waypoint x="475" y="3885"/> <di:waypoint x="375" y="3885"/> <di:waypoint x="375" y="3940"/>
+        <bpmndi:BPMNLabel><dc:Bounds x="350" y="3890" width="80" height="40"/></bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_judge_gw_fin_neg_gross_edge" bpmnElement="flow_judge_gw_fin_neg_gross">
+        <di:waypoint x="525" y="3885"/> <di:waypoint x="575" y="3885"/> <di:waypoint x="575" y="3940"/>
+        <bpmndi:BPMNLabel><dc:Bounds x="535" y="3890" width="80" height="40"/></bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_judge_replace_to_join_fin_comp_edge" bpmnElement="flow_judge_replace_to_join_fin_comp">
+        <di:waypoint x="375" y="4020"/> <di:waypoint x="375" y="4075"/> <di:waypoint x="475" y="4075"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_judge_comp_profit_to_join_fin_comp_edge" bpmnElement="flow_judge_comp_profit_to_join_fin_comp">
+        <di:waypoint x="575" y="4020"/> <di:waypoint x="575" y="4075"/> <di:waypoint x="525" y="4075"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_judge_gw_damage_immaterial_edge" bpmnElement="flow_judge_gw_damage_immaterial">
+        <di:waypoint x="750" y="3695"/> <di:waypoint x="925" y="3695"/> <di:waypoint x="925" y="3750"/>
+        <bpmndi:BPMNLabel><dc:Bounds x="790" y="3700" width="80" height="28"/></bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_judge_det_imm_ext_to_gw_imm_scenario_edge" bpmnElement="flow_judge_det_imm_ext_to_gw_imm_scenario">
+        <di:waypoint x="900" y="3830"/> <di:waypoint x="900" y="3860"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_judge_gw_imm_scenario_pain_edge" bpmnElement="flow_judge_gw_imm_scenario_pain">
+        <di:waypoint x="875" y="3885"/> <di:waypoint x="775" y="3885"/> <di:waypoint x="775" y="3940"/>
+        <bpmndi:BPMNLabel><dc:Bounds x="720" y="3890" width="80" height="52"/></bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_judge_gw_imm_scenario_no_satisfaction_edge" bpmnElement="flow_judge_gw_imm_scenario_no_satisfaction">
+        <di:waypoint x="900" y="3910"/> <di:waypoint x="900" y="4057"/>
+        <bpmndi:BPMNLabel><dc:Bounds x="910" y="3980" width="80" height="40"/></bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_judge_gw_imm_scenario_value_edge" bpmnElement="flow_judge_gw_imm_scenario_value">
+        <di:waypoint x="925" y="3885"/> <di:waypoint x="1075" y="3885"/> <di:waypoint x="1075" y="3940"/>
+        <bpmndi:BPMNLabel><dc:Bounds x="950" y="3890" width="80" height="52"/></bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_judge_pain_comp_to_join_imm_succ_edge" bpmnElement="flow_judge_pain_comp_to_join_imm_succ">
+        <di:waypoint x="775" y="4020"/> <di:waypoint x="775" y="4175"/> <di:waypoint x="875" y="4175"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_judge_value_pref_to_join_imm_succ_edge" bpmnElement="flow_judge_value_pref_to_join_imm_succ">
+        <di:waypoint x="1075" y="4020"/> <di:waypoint x="1075" y="4175"/> <di:waypoint x="925" y="4175"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_judge_join_fin_comp_to_join_all_edge" bpmnElement="flow_judge_join_fin_comp_to_join_all">
+        <di:waypoint x="500" y="4100"/> <di:waypoint x="500" y="4255"/> <di:waypoint x="700" y="4255"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_judge_join_imm_succ_to_join_all_edge" bpmnElement="flow_judge_join_imm_succ_to_join_all">
+        <di:waypoint x="900" y="4200"/> <di:waypoint x="900" y="4255"/> <di:waypoint x="750" y="4255"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_judge_join_all_to_end_success_edge" bpmnElement="flow_judge_join_all_to_end_success">
+        <di:waypoint x="725" y="4280"/> <di:waypoint x="725" y="4310"/>
+      </bpmndi:BPMNEdge>
+
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</semantic:definitions>

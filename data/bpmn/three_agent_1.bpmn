@@ -1,0 +1,294 @@
+<?xml version="1.0" standalone="yes"?>
+<semantic:definitions id="BookLendingCollaborationDefinitions"
+    targetNamespace="http://example.com/bpmn/bookLendingCollaboration"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:semantic="http://www.omg.org/spec/BPMN/20100524/MODEL"
+    xmlns:di="http://www.omg.org/spec/DD/20100524/DI"
+    xmlns:dc="http://www.omg.org/spec/DD/20100524/DC"
+    xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI">
+
+  <semantic:collaboration id="collab_book_lending">
+    <semantic:participant id="participant_student" name="Student" processRef="StudentBookLendingProcess"/>
+    <semantic:participant id="participant_library" name="Library" processRef="LibraryBookHandlingProcess"/>
+  </semantic:collaboration>
+
+  <semantic:process id="StudentBookLendingProcess" isExecutable="false">
+    <semantic:startEvent id="start_S" name="Book Lending Request Initiated">
+      <semantic:outgoing>sf_S_start_to_prep</semantic:outgoing>
+    </semantic:startEvent>
+    <semantic:task id="task_S_prepare_request" name="Prepare Book Lend Request">
+      <semantic:incoming>sf_S_start_to_prep</semantic:incoming>
+      <semantic:outgoing>sf_S_prep_to_send</semantic:outgoing>
+    </semantic:task>
+    <semantic:sendTask id="task_S_send_request" name="Send Lend Request to Library">
+      <semantic:incoming>sf_S_prep_to_send</semantic:incoming>
+    </semantic:sendTask>
+    <semantic:receiveTask id="task_S_receive_status" name="Receive Book Status from Library">
+      <semantic:outgoing>sf_S_recv_to_gwavail</semantic:outgoing>
+    </semantic:receiveTask>
+    <semantic:exclusiveGateway id="gw_S_book_available" name="Book Available?">
+      <semantic:incoming>sf_S_recv_to_gwavail</semantic:incoming>
+      <semantic:outgoing>sf_S_gwavail_yes_to_submit</semantic:outgoing>
+      <semantic:outgoing>sf_S_gwavail_no_to_gwdur</semantic:outgoing>
+    </semantic:exclusiveGateway>
+    <semantic:task id="task_S_submit_order" name="Submit Lend Order">
+      <semantic:incoming>sf_S_gwavail_yes_to_submit</semantic:incoming>
+      <semantic:outgoing>sf_S_submit_to_endlent</semantic:outgoing>
+    </semantic:task>
+    <semantic:endEvent id="end_S_book_lent" name="Book Lent">
+      <semantic:incoming>sf_S_submit_to_endlent</semantic:incoming>
+      <semantic:incoming>sf_S_getbook_to_endlent</semantic:incoming>
+    </semantic:endEvent>
+    <semantic:exclusiveGateway id="gw_S_assess_duration" name="Assess Loan Duration?">
+      <semantic:incoming>sf_S_gwavail_no_to_gwdur</semantic:incoming>
+      <semantic:outgoing>sf_S_gwdur_cancel_path</semantic:outgoing>
+      <semantic:outgoing>sf_S_gwdur_hold_path</semantic:outgoing>
+    </semantic:exclusiveGateway>
+    <semantic:task id="task_S_cancel_request" name="Cancel Request">
+      <semantic:incoming>sf_S_gwdur_cancel_path</semantic:incoming>
+      <semantic:outgoing>sf_S_cancel_to_endcancel</semantic:outgoing>
+    </semantic:task>
+    <semantic:endEvent id="end_S_request_cancelled" name="Request Cancelled">
+      <semantic:incoming>sf_S_cancel_to_endcancel</semantic:incoming>
+    </semantic:endEvent>
+    <semantic:task id="task_S_request_hold" name="Request to Hold Book">
+      <semantic:incoming>sf_S_gwdur_hold_path</semantic:incoming>
+      <semantic:outgoing>sf_S_hold_to_timer</semantic:outgoing>
+    </semantic:task>
+    <semantic:intermediateCatchEvent id="timer_S_wait_2_weeks" name="Wait 2 Weeks">
+      <semantic:incoming>sf_S_hold_to_timer</semantic:incoming>
+      <semantic:outgoing>sf_S_timer_to_notifywait</semantic:outgoing>
+      <semantic:timerEventDefinition/>
+    </semantic:intermediateCatchEvent>
+    <semantic:sendTask id="task_S_notify_after_wait" name="Notify Library After Waiting Period">
+      <semantic:incoming>sf_S_timer_to_notifywait</semantic:incoming>
+    </semantic:sendTask>
+    <semantic:receiveTask id="task_S_receive_availability" name="Receive Availability Notification">
+      <semantic:outgoing>sf_S_recvavail_to_getbook</semantic:outgoing>
+    </semantic:receiveTask>
+    <semantic:task id="task_S_get_book_notified" name="Get Book After Notification">
+      <semantic:incoming>sf_S_recvavail_to_getbook</semantic:incoming>
+      <semantic:outgoing>sf_S_getbook_to_endlent</semantic:outgoing>
+    </semantic:task>
+
+    <semantic:sequenceFlow id="sf_S_start_to_prep" sourceRef="start_S" targetRef="task_S_prepare_request"/>
+    <semantic:sequenceFlow id="sf_S_prep_to_send" sourceRef="task_S_prepare_request" targetRef="task_S_send_request"/>
+    <semantic:sequenceFlow id="sf_S_recv_to_gwavail" sourceRef="task_S_receive_status" targetRef="gw_S_book_available"/>
+    <semantic:sequenceFlow id="sf_S_gwavail_yes_to_submit" name="Book is available" sourceRef="gw_S_book_available" targetRef="task_S_submit_order"/>
+    <semantic:sequenceFlow id="sf_S_submit_to_endlent" sourceRef="task_S_submit_order" targetRef="end_S_book_lent"/>
+    <semantic:sequenceFlow id="sf_S_gwavail_no_to_gwdur" name="Book is unavailable/on loan" sourceRef="gw_S_book_available" targetRef="gw_S_assess_duration"/>
+    <semantic:sequenceFlow id="sf_S_gwdur_cancel_path" name="On loan for 1 month" sourceRef="gw_S_assess_duration" targetRef="task_S_cancel_request"/>
+    <semantic:sequenceFlow id="sf_S_cancel_to_endcancel" sourceRef="task_S_cancel_request" targetRef="end_S_request_cancelled"/>
+    <semantic:sequenceFlow id="sf_S_gwdur_hold_path" name="On loan for 2 weeks" sourceRef="gw_S_assess_duration" targetRef="task_S_request_hold"/>
+    <semantic:sequenceFlow id="sf_S_hold_to_timer" sourceRef="task_S_request_hold" targetRef="timer_S_wait_2_weeks"/>
+    <semantic:sequenceFlow id="sf_S_timer_to_notifywait" sourceRef="timer_S_wait_2_weeks" targetRef="task_S_notify_after_wait"/>
+    <semantic:sequenceFlow id="sf_S_recvavail_to_getbook" sourceRef="task_S_receive_availability" targetRef="task_S_get_book_notified"/>
+    <semantic:sequenceFlow id="sf_S_getbook_to_endlent" sourceRef="task_S_get_book_notified" targetRef="end_S_book_lent"/>
+  </semantic:process>
+
+  <semantic:process id="LibraryBookHandlingProcess" isExecutable="false">
+    <semantic:laneSet id="laneSet_library">
+      <semantic:lane id="lane_lib_sys" name="Library System">
+        <semantic:flowNodeRef>start_L_request_received</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_L_check_status</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_L_send_status</semantic:flowNodeRef>
+        <semantic:flowNodeRef>end_L_status_sent</semantic:flowNodeRef>
+        <semantic:flowNodeRef>start_L_wait_notif_received</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_L_notify_stud_availability</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_L_send_availability</semantic:flowNodeRef>
+        <semantic:flowNodeRef>end_L_availability_sent</semantic:flowNodeRef>
+      </semantic:lane>
+    </semantic:laneSet>
+
+    <semantic:startEvent id="start_L_request_received" name="Book Lend Request Received">
+      <semantic:outgoing>sf_L_startreq_to_check</semantic:outgoing>
+      <semantic:messageEventDefinition/>
+    </semantic:startEvent>
+    <semantic:task id="task_L_check_status" name="Check Book Status">
+      <semantic:incoming>sf_L_startreq_to_check</semantic:incoming>
+      <semantic:outgoing>sf_L_check_to_sendstat</semantic:outgoing>
+    </semantic:task>
+    <semantic:sendTask id="task_L_send_status" name="Send Book Status to Student">
+      <semantic:incoming>sf_L_check_to_sendstat</semantic:incoming>
+    </semantic:sendTask>
+    <semantic:endEvent id="end_L_status_sent" name="Book Status Sent">
+      <semantic:incoming>sf_L_sendstat_to_endstat</semantic:incoming> <!-- This was missing, added -->
+    </semantic:endEvent>
+    <semantic:sequenceFlow id="sf_L_startreq_to_check" sourceRef="start_L_request_received" targetRef="task_L_check_status"/>
+    <semantic:sequenceFlow id="sf_L_check_to_sendstat" sourceRef="task_L_check_status" targetRef="task_L_send_status"/>
+    <semantic:sequenceFlow id="sf_L_sendstat_to_endstat" sourceRef="task_L_send_status" targetRef="end_L_status_sent"/> <!-- This was missing, added -->
+
+
+    <semantic:startEvent id="start_L_wait_notif_received" name="Student Wait Notification Received">
+      <semantic:outgoing>sf_L_startwait_to_notifyavail</semantic:outgoing>
+      <semantic:messageEventDefinition/>
+    </semantic:startEvent>
+    <semantic:task id="task_L_notify_stud_availability" name="Notify Student of Book Availability">
+      <semantic:incoming>sf_L_startwait_to_notifyavail</semantic:incoming>
+      <semantic:outgoing>sf_L_notifyavail_to_sendavail</semantic:outgoing>
+    </semantic:task>
+    <semantic:sendTask id="task_L_send_availability" name="Send Availability Notification to Student">
+      <semantic:incoming>sf_L_notifyavail_to_sendavail</semantic:incoming>
+    </semantic:sendTask>
+    <semantic:endEvent id="end_L_availability_sent" name="Availability Notification Sent">
+       <semantic:incoming>sf_L_sendavail_to_endavail</semantic:incoming> <!-- This was missing, added -->
+    </semantic:endEvent>
+    <semantic:sequenceFlow id="sf_L_startwait_to_notifyavail" sourceRef="start_L_wait_notif_received" targetRef="task_L_notify_stud_availability"/>
+    <semantic:sequenceFlow id="sf_L_notifyavail_to_sendavail" sourceRef="task_L_notify_stud_availability" targetRef="task_L_send_availability"/>
+    <semantic:sequenceFlow id="sf_L_sendavail_to_endavail" sourceRef="task_L_send_availability" targetRef="end_L_availability_sent"/> <!-- This was missing, added -->
+
+  </semantic:process>
+
+  <semantic:messageFlow id="mf_S_req_to_L_req" sourceRef="task_S_send_request" targetRef="start_L_request_received"/>
+  <semantic:messageFlow id="mf_L_stat_to_S_stat" sourceRef="task_L_send_status" targetRef="task_S_receive_status"/>
+  <semantic:messageFlow id="mf_S_wait_to_L_wait" sourceRef="task_S_notify_after_wait" targetRef="start_L_wait_notif_received"/>
+  <semantic:messageFlow id="mf_L_avail_to_S_avail" sourceRef="task_L_send_availability" targetRef="task_S_receive_availability"/>
+
+  <bpmndi:BPMNDiagram id="BPMNDiagram_BookLendingCollaboration" name="Book Lending Collaboration Diagram" resolution="96.0">
+    <bpmndi:BPMNPlane bpmnElement="collab_book_lending">
+      <bpmndi:BPMNShape id="participant_student_shape" bpmnElement="participant_student" isHorizontal="true">
+        <dc:Bounds x="20" y="20" width="1600" height="380"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="participant_library_shape" bpmnElement="participant_library" isHorizontal="true">
+        <dc:Bounds x="20" y="430" width="600" height="280"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="lane_lib_sys_shape" bpmnElement="lane_lib_sys" isHorizontal="true">
+        <dc:Bounds x="50" y="430" width="570" height="280"/>
+      </bpmndi:BPMNShape>
+
+      <!-- Student Process Shapes -->
+      <bpmndi:BPMNShape id="start_S_shape" bpmnElement="start_S">
+        <dc:Bounds x="100" y="172" width="36" height="36"/>
+        <bpmndi:BPMNLabel><dc:Bounds x="70" y="213" width="96" height="28"/></bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="task_S_prepare_request_shape" bpmnElement="task_S_prepare_request">
+        <dc:Bounds x="186" y="150" width="100" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="task_S_send_request_shape" bpmnElement="task_S_send_request">
+        <dc:Bounds x="336" y="150" width="100" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="task_S_receive_status_shape" bpmnElement="task_S_receive_status">
+        <dc:Bounds x="486" y="150" width="100" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="gw_S_book_available_shape" bpmnElement="gw_S_book_available" isMarkerVisible="true">
+        <dc:Bounds x="636" y="165" width="50" height="50"/>
+        <bpmndi:BPMNLabel><dc:Bounds x="621" y="220" width="80" height="14"/></bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="task_S_submit_order_shape" bpmnElement="task_S_submit_order">
+        <dc:Bounds x="736" y="80" width="100" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="end_S_book_lent_shape" bpmnElement="end_S_book_lent">
+        <dc:Bounds x="1522" y="172" width="36" height="36"/>
+        <bpmndi:BPMNLabel><dc:Bounds x="1509" y="213" width="62" height="14"/></bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="gw_S_assess_duration_shape" bpmnElement="gw_S_assess_duration" isMarkerVisible="true">
+        <dc:Bounds x="736" y="235" width="50" height="50"/>
+        <bpmndi:BPMNLabel><dc:Bounds x="706" y="290" width="110" height="14"/></bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="task_S_cancel_request_shape" bpmnElement="task_S_cancel_request">
+        <dc:Bounds x="836" y="150" width="100" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="end_S_request_cancelled_shape" bpmnElement="end_S_request_cancelled">
+        <dc:Bounds x="986" y="172" width="36" height="36"/>
+        <bpmndi:BPMNLabel><dc:Bounds x="964" y="213" width="80" height="14"/></bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="task_S_request_hold_shape" bpmnElement="task_S_request_hold">
+        <dc:Bounds x="836" y="300" width="100" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="timer_S_wait_2_weeks_shape" bpmnElement="timer_S_wait_2_weeks">
+        <dc:Bounds x="986" y="322" width="36" height="36"/>
+        <bpmndi:BPMNLabel><dc:Bounds x="969" y="363" width="70" height="14"/></bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="task_S_notify_after_wait_shape" bpmnElement="task_S_notify_after_wait">
+        <dc:Bounds x="1072" y="300" width="100" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="task_S_receive_availability_shape" bpmnElement="task_S_receive_availability">
+        <dc:Bounds x="1222" y="300" width="100" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="task_S_get_book_notified_shape" bpmnElement="task_S_get_book_notified">
+        <dc:Bounds x="1372" y="300" width="100" height="80"/>
+      </bpmndi:BPMNShape>
+
+      <!-- Library Process Shapes -->
+      <bpmndi:BPMNShape id="start_L_request_received_shape" bpmnElement="start_L_request_received">
+        <dc:Bounds x="100" y="502" width="36" height="36"/> <!-- Y: 430(pool) + 72 -->
+        <bpmndi:BPMNLabel><dc:Bounds x="70" y="543" width="96" height="28"/></bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="task_L_check_status_shape" bpmnElement="task_L_check_status">
+        <dc:Bounds x="186" y="480" width="100" height="80"/> <!-- Y: 430(pool) + 50 -->
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="task_L_send_status_shape" bpmnElement="task_L_send_status">
+        <dc:Bounds x="336" y="480" width="100" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="end_L_status_sent_shape" bpmnElement="end_L_status_sent">
+        <dc:Bounds x="486" y="502" width="36" height="36"/>
+        <bpmndi:BPMNLabel><dc:Bounds x="461" y="543" width="86" height="14"/></bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="start_L_wait_notif_received_shape" bpmnElement="start_L_wait_notif_received">
+        <dc:Bounds x="100" y="622" width="36" height="36"/> <!-- Y: 430(pool) + 192 -->
+        <bpmndi:BPMNLabel><dc:Bounds x="70" y="663" width="96" height="28"/></bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="task_L_notify_stud_availability_shape" bpmnElement="task_L_notify_stud_availability">
+        <dc:Bounds x="186" y="600" width="100" height="80"/> <!-- Y: 430(pool) + 170 -->
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="task_L_send_availability_shape" bpmnElement="task_L_send_availability">
+        <dc:Bounds x="336" y="600" width="100" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="end_L_availability_sent_shape" bpmnElement="end_L_availability_sent">
+        <dc:Bounds x="486" y="622" width="36" height="36"/>
+        <bpmndi:BPMNLabel><dc:Bounds x="461" y="663" width="86" height="28"/></bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <!-- Student Sequence Flow Edges -->
+      <bpmndi:BPMNEdge id="sf_S_start_to_prep_edge" bpmnElement="sf_S_start_to_prep"><di:waypoint x="136" y="190"/><di:waypoint x="186" y="190"/></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="sf_S_prep_to_send_edge" bpmnElement="sf_S_prep_to_send"><di:waypoint x="286" y="190"/><di:waypoint x="336" y="190"/></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="sf_S_recv_to_gwavail_edge" bpmnElement="sf_S_recv_to_gwavail"><di:waypoint x="586" y="190"/><di:waypoint x="636" y="190"/></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="sf_S_gwavail_yes_to_submit_edge" bpmnElement="sf_S_gwavail_yes_to_submit"><di:waypoint x="661" y="165"/><di:waypoint x="661" y="120"/><di:waypoint x="736" y="120"/><bpmndi:BPMNLabel><dc:Bounds x="665" y="95" width="80" height="14"/></bpmndi:BPMNLabel></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="sf_S_submit_to_endlent_edge" bpmnElement="sf_S_submit_to_endlent"><di:waypoint x="836" y="120"/><di:waypoint x="1540" y="120"/><di:waypoint x="1540" y="172"/></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="sf_S_gwavail_no_to_gwdur_edge" bpmnElement="sf_S_gwavail_no_to_gwdur"><di:waypoint x="661" y="215"/><di:waypoint x="661" y="260"/><di:waypoint x="736" y="260"/><bpmndi:BPMNLabel><dc:Bounds x="665" y="275" width="80" height="28"/></bpmndi:BPMNLabel></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="sf_S_gwdur_cancel_path_edge" bpmnElement="sf_S_gwdur_cancel_path"><di:waypoint x="761" y="235"/><di:waypoint x="761" y="190"/><di:waypoint x="836" y="190"/><bpmndi:BPMNLabel><dc:Bounds x="765" y="205" width="80" height="28"/></bpmndi:BPMNLabel></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="sf_S_cancel_to_endcancel_edge" bpmnElement="sf_S_cancel_to_endcancel"><di:waypoint x="936" y="190"/><di:waypoint x="986" y="190"/></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="sf_S_gwdur_hold_path_edge" bpmnElement="sf_S_gwdur_hold_path"><di:waypoint x="761" y="285"/><di:waypoint x="761" y="340"/><di:waypoint x="836" y="340"/><bpmndi:BPMNLabel><dc:Bounds x="765" y="345" width="80" height="28"/></bpmndi:BPMNLabel></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="sf_S_hold_to_timer_edge" bpmnElement="sf_S_hold_to_timer"><di:waypoint x="936" y="340"/><di:waypoint x="986" y="340"/></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="sf_S_timer_to_notifywait_edge" bpmnElement="sf_S_timer_to_notifywait"><di:waypoint x="1022" y="340"/><di:waypoint x="1072" y="340"/></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="sf_S_recvavail_to_getbook_edge" bpmnElement="sf_S_recvavail_to_getbook"><di:waypoint x="1322" y="340"/><di:waypoint x="1372" y="340"/></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="sf_S_getbook_to_endlent_edge" bpmnElement="sf_S_getbook_to_endlent"><di:waypoint x="1472" y="340"/><di:waypoint x="1540" y="340"/><di:waypoint x="1540" y="208"/></bpmndi:BPMNEdge>
+
+      <!-- Library Sequence Flow Edges -->
+      <bpmndi:BPMNEdge id="sf_L_startreq_to_check_edge" bpmnElement="sf_L_startreq_to_check"><di:waypoint x="136" y="520"/><di:waypoint x="186" y="520"/></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="sf_L_check_to_sendstat_edge" bpmnElement="sf_L_check_to_sendstat"><di:waypoint x="286" y="520"/><di:waypoint x="336" y="520"/></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="sf_L_sendstat_to_endstat_edge" bpmnElement="sf_L_sendstat_to_endstat"><di:waypoint x="436" y="520"/><di:waypoint x="486" y="520"/></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="sf_L_startwait_to_notifyavail_edge" bpmnElement="sf_L_startwait_to_notifyavail"><di:waypoint x="136" y="640"/><di:waypoint x="186" y="640"/></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="sf_L_notifyavail_to_sendavail_edge" bpmnElement="sf_L_notifyavail_to_sendavail"><di:waypoint x="286" y="640"/><di:waypoint x="336" y="640"/></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="sf_L_sendavail_to_endavail_edge" bpmnElement="sf_L_sendavail_to_endavail"><di:waypoint x="436" y="640"/><di:waypoint x="486" y="640"/></bpmndi:BPMNEdge>
+
+      <!-- Message Flow Edges -->
+      <bpmndi:BPMNEdge id="mf_S_req_to_L_req_edge" bpmnElement="mf_S_req_to_L_req">
+        <di:waypoint x="386" y="230"/> <!-- center of task_S_send_request -->
+        <di:waypoint x="386" y="375"/>
+        <di:waypoint x="118" y="375"/>
+        <di:waypoint x="118" y="502"/> <!-- center of start_L_request_received -->
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="mf_L_stat_to_S_stat_edge" bpmnElement="mf_L_stat_to_S_stat">
+        <di:waypoint x="386" y="480"/> <!-- center of task_L_send_status -->
+        <di:waypoint x="386" y="375"/>
+        <di:waypoint x="536" y="375"/>
+        <di:waypoint x="536" y="230"/> <!-- center of task_S_receive_status -->
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="mf_S_wait_to_L_wait_edge" bpmnElement="mf_S_wait_to_L_wait">
+        <di:waypoint x="1122" y="380"/> <!-- center of task_S_notify_after_wait -->
+        <di:waypoint x="1122" y="500"/>
+        <di:waypoint x="118" y="500"/>
+        <di:waypoint x="118" y="622"/> <!-- center of start_L_wait_notif_received -->
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="mf_L_avail_to_S_avail_edge" bpmnElement="mf_L_avail_to_S_avail">
+        <di:waypoint x="386" y="600"/> <!-- center of task_L_send_availability -->
+        <di:waypoint x="386" y="480"/>
+        <di:waypoint x="1272" y="480"/>
+        <di:waypoint x="1272" y="380"/> <!-- center of task_S_receive_availability -->
+      </bpmndi:BPMNEdge>
+
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</semantic:definitions>

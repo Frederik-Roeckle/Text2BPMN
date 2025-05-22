@@ -1,7 +1,6 @@
 from langchain_mistralai import ChatMistralAI
 from langchain_openai import ChatOpenAI
 from langchain_google_genai import ChatGoogleGenerativeAI
-
 import os
 from dotenv import load_dotenv
 
@@ -33,4 +32,12 @@ class GeminiLLM(ChatGoogleGenerativeAI):
         if not api_key:
             raise ValueError("Missing GOOGLE_API_KEY in environment variables")
 
-        super().__init__(api_key=api_key, *args, **kwargs)
+        # required
+        kwargs.setdefault("model", "gemini-2.5-pro-preview-05-06")
+        kwargs.setdefault("temperature", 0)
+        kwargs.setdefault("google_api_key", api_key)
+
+        # ← here’s the only new line you need:
+        kwargs.setdefault("thinking_budget", 4000)
+
+        super().__init__(*args, **kwargs)

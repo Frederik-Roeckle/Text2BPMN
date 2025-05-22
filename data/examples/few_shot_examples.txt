@@ -1,0 +1,106 @@
+This is an example how the bpmn should look like, try to use this as a template for creating the xml based on a text given by a human and try to include all important elements, participents (lanes, ppols) etc as showed in the xml.
+
+"human:" [16:25, 02/05/2025] Fabian Streit: When we want a pizza, we order one. Sometimes the pizza delivery screws up and the delivery takes longer than 30 minutes. Then we complain to the delivery service. After that, we give them another 20 minutes to deliver the pizza. If they do not make it in time, we give up and cancel our order.
+[16:31, 02/05/2025] Fabian Streit: As soon as we receive an order, we bake the pizza. Our delivery person takes it to the customer and collects the money, whereby the process completes successfully.
+
+"ai": 
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" id="Definitions_0nq9bum" targetNamespace="http://bpmn.io/schema/bpmn" exporter="bpmn-js (https://demo.bpmn.io)" exporterVersion="18.6.1">
+  <bpmn:collaboration id="Collaboration_0og2ks6">
+    <bpmn:participant id="Participant_0gikvox" name="pizza sales supplier" processRef="Process_0zf03a5" />
+  </bpmn:collaboration>
+  <bpmn:process id="Process_0zf03a5" isExecutable="false">
+    <bpmn:laneSet id="LaneSet_0dnhj5u">
+      <bpmn:lane id="Lane_1vhfsxj" name="pizza baker">
+        <bpmn:flowNodeRef>Event_17nri3r</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Activity_1lg6ij5</bpmn:flowNodeRef>
+      </bpmn:lane>
+      <bpmn:lane id="Lane_00ryzze" name="delivery boy">
+        <bpmn:flowNodeRef>Activity_093gc05</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Activity_1cx1lhx</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Event_0ypko0j</bpmn:flowNodeRef>
+      </bpmn:lane>
+    </bpmn:laneSet>
+    <bpmn:startEvent id="Event_17nri3r" name="order received">
+      <bpmn:outgoing>Flow_03rf0mo</bpmn:outgoing>
+      <bpmn:messageEventDefinition id="MessageEventDefinition_02njax7" />
+    </bpmn:startEvent>
+    <bpmn:task id="Activity_1lg6ij5" name="bake pizza">
+      <bpmn:incoming>Flow_03rf0mo</bpmn:incoming>
+      <bpmn:outgoing>Flow_1925hhj</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:task id="Activity_093gc05" name="deliver pizza">
+      <bpmn:incoming>Flow_1925hhj</bpmn:incoming>
+      <bpmn:outgoing>Flow_04o0wle</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:task id="Activity_1cx1lhx" name="take the money">
+      <bpmn:incoming>Flow_04o0wle</bpmn:incoming>
+      <bpmn:outgoing>Flow_03uiho9</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:endEvent id="Event_0ypko0j" name="end">
+      <bpmn:incoming>Flow_03uiho9</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:sequenceFlow id="Flow_03rf0mo" sourceRef="Event_17nri3r" targetRef="Activity_1lg6ij5" />
+    <bpmn:sequenceFlow id="Flow_1925hhj" sourceRef="Activity_1lg6ij5" targetRef="Activity_093gc05" />
+    <bpmn:sequenceFlow id="Flow_04o0wle" sourceRef="Activity_093gc05" targetRef="Activity_1cx1lhx" />
+    <bpmn:sequenceFlow id="Flow_03uiho9" sourceRef="Activity_1cx1lhx" targetRef="Event_0ypko0j" />
+  </bpmn:process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_1">
+    <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="Collaboration_0og2ks6">
+      <bpmndi:BPMNShape id="Participant_0gikvox_di" bpmnElement="Participant_0gikvox" isHorizontal="true">
+        <dc:Bounds x="152" y="80" width="696" height="250" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Lane_1vhfsxj_di" bpmnElement="Lane_1vhfsxj" isHorizontal="true">
+        <dc:Bounds x="182" y="80" width="666" height="125" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Lane_00ryzze_di" bpmnElement="Lane_00ryzze" isHorizontal="true">
+        <dc:Bounds x="182" y="205" width="666" height="125" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_17nri3r_di" bpmnElement="Event_17nri3r">
+        <dc:Bounds x="242" y="122" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="225" y="165" width="71" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_1lg6ij5_di" bpmnElement="Activity_1lg6ij5">
+        <dc:Bounds x="320" y="100" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="BPMNShape_0oykw7d" bpmnElement="Activity_093gc05">
+        <dc:Bounds x="460" y="220" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="BPMNShape_1v2rqch" bpmnElement="Activity_1cx1lhx">
+        <dc:Bounds x="600" y="220" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_0ypko0j_di" bpmnElement="Event_0ypko0j">
+        <dc:Bounds x="732" y="242" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="741" y="285" width="19" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="Flow_1925hhj_di" bpmnElement="Flow_1925hhj">
+        <di:waypoint x="420" y="140" />
+        <di:waypoint x="440" y="140" />
+        <di:waypoint x="440" y="260" />
+        <di:waypoint x="460" y="260" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_03rf0mo_di" bpmnElement="Flow_03rf0mo">
+        <di:waypoint x="278" y="140" />
+        <di:waypoint x="320" y="140" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_04o0wle_di" bpmnElement="Flow_04o0wle">
+        <di:waypoint x="560" y="260" />
+        <di:waypoint x="600" y="260" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_03uiho9_di" bpmnElement="Flow_03uiho9">
+        <di:waypoint x="700" y="260" />
+        <di:waypoint x="732" y="260" />
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</bpmn:definitions>

@@ -1,0 +1,1070 @@
+<?xml version="1.0" standalone="yes"?>
+<semantic:definitions id="ProductionOrderProcessingDefs"
+    targetNamespace="http://example.com/bpmn/production-order-processing"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:semantic="http://www.omg.org/spec/BPMN/20100524/MODEL"
+    xmlns:di="http://www.omg.org/spec/DD/20100524/DI"
+    xmlns:dc="http://www.omg.org/spec/DD/20100524/DC"
+    xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI">
+
+  <semantic:collaboration id="collab_production_process">
+    <semantic:participant id="participant_production_process" name="Production Process" processRef="productionProcess"/>
+  </semantic:collaboration>
+
+  <semantic:process id="productionProcess" isExecutable="true">
+    <semantic:laneSet id="laneSet_production">
+      <semantic:lane id="lane_pm" name="Production Manager">
+        <semantic:flowNodeRef>start_event_1</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_pm_1</semantic:flowNodeRef>
+        <semantic:flowNodeRef>gw_excl_1</semantic:flowNodeRef>
+        <semantic:flowNodeRef>call_activity_pm_1</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_pm_2</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_pm_3</semantic:flowNodeRef>
+        <semantic:flowNodeRef>gw_excl_pm_2</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_pm_4</semantic:flowNodeRef>
+        <semantic:flowNodeRef>gw_excl_pm_3</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_pm_5</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_pm_6</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_pm_7</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_pm_8</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_pm_9</semantic:flowNodeRef>
+        <semantic:flowNodeRef>gw_excl_pm_4</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_pm_10</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_pm_11</semantic:flowNodeRef>
+        <semantic:flowNodeRef>gw_excl_join_pm_5</semantic:flowNodeRef>
+        <semantic:flowNodeRef>gw_excl_join_pm_6</semantic:flowNodeRef>
+        <semantic:flowNodeRef>gw_excl_join_pm_7</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_pm_12</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_pm_13</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_pm_14</semantic:flowNodeRef>
+        <semantic:flowNodeRef>gw_para_split_pm_4</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_pm_15</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_pm_16</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_pm_17</semantic:flowNodeRef>
+        <semantic:flowNodeRef>gw_para_join_pm_4</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_pm_18</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_pm_19</semantic:flowNodeRef>
+        <semantic:flowNodeRef>end_event_1</semantic:flowNodeRef>
+      </semantic:lane>
+      <semantic:lane id="lane_pa" name="Production Assistant">
+        <semantic:flowNodeRef>task_pa_1</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_pa_2</semantic:flowNodeRef>
+        <semantic:flowNodeRef>gw_para_split_pa_1</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_pa_3</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_pa_4</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_pa_5</semantic:flowNodeRef>
+        <semantic:flowNodeRef>gw_para_join_pa_1</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_pa_6</semantic:flowNodeRef>
+        <semantic:flowNodeRef>call_activity_pa_1</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_pa_7</semantic:flowNodeRef>
+        <semantic:flowNodeRef>gw_para_split_pa_2</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_pa_8</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_pa_9</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_pa_10</semantic:flowNodeRef>
+        <semantic:flowNodeRef>gw_para_join_pa_2</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_pa_11</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_pa_12</semantic:flowNodeRef>
+        <semantic:flowNodeRef>gw_excl_pa_8</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_pa_13</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_pa_14</semantic:flowNodeRef>
+        <semantic:flowNodeRef>gw_excl_join_pa_9</semantic:flowNodeRef>
+        <semantic:flowNodeRef>gw_para_split_pa_3</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_pa_15</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_pa_16</semantic:flowNodeRef>
+        <semantic:flowNodeRef>gw_para_join_pa_3</semantic:flowNodeRef>
+        <semantic:flowNodeRef>gw_excl_pa_10</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_pa_17</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_pa_18</semantic:flowNodeRef>
+        <semantic:flowNodeRef>gw_excl_join_pa_11</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_pa_19</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_pa_20</semantic:flowNodeRef>
+        <semantic:flowNodeRef>call_activity_pa_2</semantic:flowNodeRef>
+      </semantic:lane>
+    </semantic:laneSet>
+
+    <!-- Production Manager Elements -->
+    <semantic:startEvent id="start_event_1" name="Production Order Request Received">
+      <semantic:outgoing>flow_start_to_pm1</semantic:outgoing>
+    </semantic:startEvent>
+    <semantic:task id="task_pm_1" name="Release Production Order in SAP">
+      <semantic:incoming>flow_start_to_pm1</semantic:incoming>
+      <semantic:outgoing>flow_pm1_to_gwexcl1</semantic:outgoing>
+    </semantic:task>
+    <semantic:exclusiveGateway id="gw_excl_1" name="Order Released?">
+      <semantic:incoming>flow_pm1_to_gwexcl1</semantic:incoming>
+      <semantic:outgoing>flow_gwexcl1_to_pm2</semantic:outgoing>
+      <semantic:outgoing>flow_gwexcl1_to_callpm1</semantic:outgoing>
+    </semantic:exclusiveGateway>
+    <semantic:callActivity id="call_activity_pm_1" name="Check Production Order Logs">
+      <semantic:incoming>flow_gwexcl1_to_callpm1</semantic:incoming>
+      <semantic:outgoing>flow_callpm1_to_pm2</semantic:outgoing>
+    </semantic:callActivity>
+    <semantic:task id="task_pm_2" name="Save Releasing Process">
+      <semantic:incoming>flow_gwexcl1_to_pm2</semantic:incoming>
+      <semantic:incoming>flow_callpm1_to_pm2</semantic:incoming>
+      <semantic:outgoing>flow_pm2_to_pa1</semantic:outgoing>
+    </semantic:task>
+    <semantic:task id="task_pm_3" name="Confirm Production Order">
+      <semantic:incoming>flow_pa6_to_pm3</semantic:incoming>
+      <semantic:outgoing>flow_pm3_to_gwexclpm2</semantic:outgoing>
+    </semantic:task>
+    <semantic:exclusiveGateway id="gw_excl_pm_2" name="Confirmation Method?">
+      <semantic:incoming>flow_pm3_to_gwexclpm2</semantic:incoming>
+      <semantic:outgoing>flow_gwexclpm2_to_pm4</semantic:outgoing>
+      <semantic:outgoing>flow_gwexclpm2_to_gwexclpm3</semantic:outgoing>
+    </semantic:exclusiveGateway>
+    <semantic:task id="task_pm_4" name="Confirm via External PDC Interface">
+      <semantic:incoming>flow_gwexclpm2_to_pm4</semantic:incoming>
+      <semantic:outgoing>flow_pm4_to_gwjoinpm7</semantic:outgoing>
+    </semantic:task>
+    <semantic:exclusiveGateway id="gw_excl_pm_3" name="Manual Confirmation Type?">
+      <semantic:incoming>flow_gwexclpm2_to_gwexclpm3</semantic:incoming>
+      <semantic:outgoing>flow_gwexclpm3_to_pm5</semantic:outgoing>
+      <semantic:outgoing>flow_gwexclpm3_to_pm6</semantic:outgoing>
+      <semantic:outgoing>flow_gwexclpm3_to_pm7</semantic:outgoing>
+      <semantic:outgoing>flow_gwexclpm3_to_pm8</semantic:outgoing>
+    </semantic:exclusiveGateway>
+    <semantic:task id="task_pm_5" name="Enter using Time Ticket">
+      <semantic:incoming>flow_gwexclpm3_to_pm5</semantic:incoming>
+      <semantic:outgoing>flow_pm5_to_gwjoinpm6</semantic:outgoing>
+    </semantic:task>
+    <semantic:task id="task_pm_6" name="Enter using Time Event">
+      <semantic:incoming>flow_gwexclpm3_to_pm6</semantic:incoming>
+      <semantic:outgoing>flow_pm6_to_gwjoinpm6</semantic:outgoing>
+    </semantic:task>
+    <semantic:task id="task_pm_7" name="Enter using Collective Entry">
+      <semantic:incoming>flow_gwexclpm3_to_pm7</semantic:incoming>
+      <semantic:outgoing>flow_pm7_to_gwjoinpm6</semantic:outgoing>
+    </semantic:task>
+    <semantic:task id="task_pm_8" name="Enter Order Number (Progress Conf.)">
+      <semantic:incoming>flow_gwexclpm3_to_pm8</semantic:incoming>
+      <semantic:outgoing>flow_pm8_to_pm9</semantic:outgoing>
+    </semantic:task>
+    <semantic:task id="task_pm_9" name="Specify Confirmation Type (Progress Conf.)">
+      <semantic:incoming>flow_pm8_to_pm9</semantic:incoming>
+      <semantic:outgoing>flow_pm9_to_gwexclpm4</semantic:outgoing>
+    </semantic:task>
+    <semantic:exclusiveGateway id="gw_excl_pm_4" name="Partial or Final Confirmation?">
+      <semantic:incoming>flow_pm9_to_gwexclpm4</semantic:incoming>
+      <semantic:outgoing>flow_gwexclpm4_to_pm10</semantic:outgoing>
+      <semantic:outgoing>flow_gwexclpm4_to_pm11</semantic:outgoing>
+    </semantic:exclusiveGateway>
+    <semantic:task id="task_pm_10" name="Select Partial Confirmation">
+      <semantic:incoming>flow_gwexclpm4_to_pm10</semantic:incoming>
+      <semantic:outgoing>flow_pm10_to_gwjoinpm5</semantic:outgoing>
+    </semantic:task>
+    <semantic:task id="task_pm_11" name="Select Final Confirmation">
+      <semantic:incoming>flow_gwexclpm4_to_pm11</semantic:incoming>
+      <semantic:outgoing>flow_pm11_to_gwjoinpm5</semantic:outgoing>
+    </semantic:task>
+    <semantic:exclusiveGateway id="gw_excl_join_pm_5" name="Join Partial/Final Confirmation">
+      <semantic:incoming>flow_pm10_to_gwjoinpm5</semantic:incoming>
+      <semantic:incoming>flow_pm11_to_gwjoinpm5</semantic:incoming>
+      <semantic:outgoing>flow_gwjoinpm5_to_gwjoinpm6</semantic:outgoing>
+    </semantic:exclusiveGateway>
+    <semantic:exclusiveGateway id="gw_excl_join_pm_6" name="Join Manual Confirmation Types">
+      <semantic:incoming>flow_pm5_to_gwjoinpm6</semantic:incoming>
+      <semantic:incoming>flow_pm6_to_gwjoinpm6</semantic:incoming>
+      <semantic:incoming>flow_pm7_to_gwjoinpm6</semantic:incoming>
+      <semantic:incoming>flow_gwjoinpm5_to_gwjoinpm6</semantic:incoming>
+      <semantic:outgoing>flow_gwjoinpm6_to_gwjoinpm7</semantic:outgoing>
+    </semantic:exclusiveGateway>
+    <semantic:exclusiveGateway id="gw_excl_join_pm_7" name="Join Confirmation Methods">
+      <semantic:incoming>flow_pm4_to_gwjoinpm7</semantic:incoming>
+      <semantic:incoming>flow_gwjoinpm6_to_gwjoinpm7</semantic:incoming>
+      <semantic:outgoing>flow_gwjoinpm7_to_pm12</semantic:outgoing>
+    </semantic:exclusiveGateway>
+    <semantic:task id="task_pm_12" name="Save Confirmation Process">
+      <semantic:incoming>flow_gwjoinpm7_to_pm12</semantic:incoming>
+      <semantic:outgoing>flow_pm12_to_pm13</semantic:outgoing>
+    </semantic:task>
+    <semantic:task id="task_pm_13" name="Post Production Order Confirmation">
+      <semantic:incoming>flow_pm12_to_pm13</semantic:incoming>
+      <semantic:outgoing>flow_pm13_to_callpa1</semantic:outgoing>
+    </semantic:task>
+    <semantic:task id="task_pm_14" name="Post Settlement">
+      <semantic:incoming>flow_callpa2_to_pm14</semantic:incoming>
+      <semantic:outgoing>flow_pm14_to_gwparasplitpm4</semantic:outgoing>
+    </semantic:task>
+    <semantic:parallelGateway id="gw_para_split_pm_4" name="Define Settlement Parameters Split">
+      <semantic:incoming>flow_pm14_to_gwparasplitpm4</semantic:incoming>
+      <semantic:outgoing>flow_gwparasplitpm4_to_pm15</semantic:outgoing>
+      <semantic:outgoing>flow_gwparasplitpm4_to_pm16</semantic:outgoing>
+      <semantic:outgoing>flow_gwparasplitpm4_to_pm17</semantic:outgoing>
+    </semantic:parallelGateway>
+    <semantic:task id="task_pm_15" name="Define Order Number (Settlement)">
+      <semantic:incoming>flow_gwparasplitpm4_to_pm15</semantic:incoming>
+      <semantic:outgoing>flow_pm15_to_gwparajoinpm4</semantic:outgoing>
+    </semantic:task>
+    <semantic:task id="task_pm_16" name="Define Period (Settlement)">
+      <semantic:incoming>flow_gwparasplitpm4_to_pm16</semantic:incoming>
+      <semantic:outgoing>flow_pm16_to_gwparajoinpm4</semantic:outgoing>
+    </semantic:task>
+    <semantic:task id="task_pm_17" name="Deselect 'Test run' Field (Settlement)">
+      <semantic:incoming>flow_gwparasplitpm4_to_pm17</semantic:incoming>
+      <semantic:outgoing>flow_pm17_to_gwparajoinpm4</semantic:outgoing>
+    </semantic:task>
+    <semantic:parallelGateway id="gw_para_join_pm_4" name="Define Settlement Parameters Join">
+      <semantic:incoming>flow_pm15_to_gwparajoinpm4</semantic:incoming>
+      <semantic:incoming>flow_pm16_to_gwparajoinpm4</semantic:incoming>
+      <semantic:incoming>flow_pm17_to_gwparajoinpm4</semantic:incoming>
+      <semantic:outgoing>flow_gwparajoinpm4_to_pm18</semantic:outgoing>
+    </semantic:parallelGateway>
+    <semantic:task id="task_pm_18" name="Check Cost Analysis for Settled Costs">
+      <semantic:incoming>flow_gwparajoinpm4_to_pm18</semantic:incoming>
+      <semantic:outgoing>flow_pm18_to_pm19</semantic:outgoing>
+    </semantic:task>
+    <semantic:task id="task_pm_19" name="Check Quantity Produced Availability and Evaluation">
+      <semantic:incoming>flow_pm18_to_pm19</semantic:incoming>
+      <semantic:outgoing>flow_pm19_to_end</semantic:outgoing>
+    </semantic:task>
+    <semantic:endEvent id="end_event_1" name="Production Order Processed Successfully">
+      <semantic:incoming>flow_pm19_to_end</semantic:incoming>
+    </semantic:endEvent>
+
+    <!-- Production Assistant Elements -->
+    <semantic:task id="task_pa_1" name="Withdraw Materials from Stock">
+      <semantic:incoming>flow_pm2_to_pa1</semantic:incoming>
+      <semantic:outgoing>flow_pa1_to_pa2</semantic:outgoing>
+    </semantic:task>
+    <semantic:task id="task_pa_2" name="Post Goods Issue (MIGO)">
+      <semantic:incoming>flow_pa1_to_pa2</semantic:incoming>
+      <semantic:outgoing>flow_pa2_to_gwparasplitpa1</semantic:outgoing>
+    </semantic:task>
+    <semantic:parallelGateway id="gw_para_split_pa_1" name="Define GI Parameters Split">
+      <semantic:incoming>flow_pa2_to_gwparasplitpa1</semantic:incoming>
+      <semantic:outgoing>flow_gwparasplitpa1_to_pa3</semantic:outgoing>
+      <semantic:outgoing>flow_gwparasplitpa1_to_pa4</semantic:outgoing>
+      <semantic:outgoing>flow_gwparasplitpa1_to_pa5</semantic:outgoing>
+    </semantic:parallelGateway>
+    <semantic:task id="task_pa_3" name="Choose Movement Type 261">
+      <semantic:incoming>flow_gwparasplitpa1_to_pa3</semantic:incoming>
+      <semantic:outgoing>flow_pa3_to_gwparajoinpa1</semantic:outgoing>
+    </semantic:task>
+    <semantic:task id="task_pa_4" name="Specify Plant and Storage Area (GI)">
+      <semantic:incoming>flow_gwparasplitpa1_to_pa4</semantic:incoming>
+      <semantic:outgoing>flow_pa4_to_gwparajoinpa1</semantic:outgoing>
+    </semantic:task>
+    <semantic:task id="task_pa_5" name="Enter Order Number (GI)">
+      <semantic:incoming>flow_gwparasplitpa1_to_pa5</semantic:incoming>
+      <semantic:outgoing>flow_pa5_to_gwparajoinpa1</semantic:outgoing>
+    </semantic:task>
+    <semantic:parallelGateway id="gw_para_join_pa_1" name="Define GI Parameters Join">
+      <semantic:incoming>flow_pa3_to_gwparajoinpa1</semantic:incoming>
+      <semantic:incoming>flow_pa4_to_gwparajoinpa1</semantic:incoming>
+      <semantic:incoming>flow_pa5_to_gwparajoinpa1</semantic:incoming>
+      <semantic:outgoing>flow_gwparajoinpa1_to_pa6</semantic:outgoing>
+    </semantic:parallelGateway>
+    <semantic:task id="task_pa_6" name="Save Goods Issue Process">
+      <semantic:incoming>flow_gwparajoinpa1_to_pa6</semantic:incoming>
+      <semantic:outgoing>flow_pa6_to_pm3</semantic:outgoing>
+    </semantic:task>
+    <semantic:callActivity id="call_activity_pa_1" name="Check Production Order for Accrued Costs">
+      <semantic:incoming>flow_pm13_to_callpa1</semantic:incoming>
+      <semantic:outgoing>flow_callpa1_to_pa7</semantic:outgoing>
+    </semantic:callActivity>
+    <semantic:task id="task_pa_7" name="Post Goods Receipt in Warehouse">
+      <semantic:incoming>flow_callpa1_to_pa7</semantic:incoming>
+      <semantic:outgoing>flow_pa7_to_gwparasplitpa2</semantic:outgoing>
+    </semantic:task>
+    <semantic:parallelGateway id="gw_para_split_pa_2" name="Define GR Parameters Split">
+      <semantic:incoming>flow_pa7_to_gwparasplitpa2</semantic:incoming>
+      <semantic:outgoing>flow_gwparasplitpa2_to_pa8</semantic:outgoing>
+      <semantic:outgoing>flow_gwparasplitpa2_to_pa9</semantic:outgoing>
+      <semantic:outgoing>flow_gwparasplitpa2_to_pa10</semantic:outgoing>
+    </semantic:parallelGateway>
+    <semantic:task id="task_pa_8" name="Define Movement Type (101)">
+      <semantic:incoming>flow_gwparasplitpa2_to_pa8</semantic:incoming>
+      <semantic:outgoing>flow_pa8_to_gwparajoinpa2</semantic:outgoing>
+    </semantic:task>
+    <semantic:task id="task_pa_9" name="Specify Production Order (GR)">
+      <semantic:incoming>flow_gwparasplitpa2_to_pa9</semantic:incoming>
+      <semantic:outgoing>flow_pa9_to_gwparajoinpa2</semantic:outgoing>
+    </semantic:task>
+    <semantic:task id="task_pa_10" name="Indicate Plant and Storage Area (GR)">
+      <semantic:incoming>flow_gwparasplitpa2_to_pa10</semantic:incoming>
+      <semantic:outgoing>flow_pa10_to_gwparajoinpa2</semantic:outgoing>
+    </semantic:task>
+    <semantic:parallelGateway id="gw_para_join_pa_2" name="Define GR Parameters Join">
+      <semantic:incoming>flow_pa8_to_gwparajoinpa2</semantic:incoming>
+      <semantic:incoming>flow_pa9_to_gwparajoinpa2</semantic:incoming>
+      <semantic:incoming>flow_pa10_to_gwparajoinpa2</semantic:incoming>
+      <semantic:outgoing>flow_gwparajoinpa2_to_pa11</semantic:outgoing>
+    </semantic:parallelGateway>
+    <semantic:task id="task_pa_11" name="Save Goods Receipt (GR) Process">
+      <semantic:incoming>flow_gwparajoinpa2_to_pa11</semantic:incoming>
+      <semantic:outgoing>flow_pa11_to_pa12</semantic:outgoing>
+    </semantic:task>
+    <semantic:task id="task_pa_12" name="Compute Overheads in Actual Costs">
+      <semantic:incoming>flow_pa11_to_pa12</semantic:incoming>
+      <semantic:outgoing>flow_pa12_to_gwexclpa8</semantic:outgoing>
+    </semantic:task>
+    <semantic:exclusiveGateway id="gw_excl_pa_8" name="Overhead Processing Type?">
+      <semantic:incoming>flow_pa12_to_gwexclpa8</semantic:incoming>
+      <semantic:outgoing>flow_gwexclpa8_to_pa13</semantic:outgoing>
+      <semantic:outgoing>flow_gwexclpa8_to_pa14</semantic:outgoing>
+    </semantic:exclusiveGateway>
+    <semantic:task id="task_pa_13" name="Choose Individual Processing (Overheads)">
+      <semantic:incoming>flow_gwexclpa8_to_pa13</semantic:incoming>
+      <semantic:outgoing>flow_pa13_to_gwexcljoinpa9</semantic:outgoing>
+    </semantic:task>
+    <semantic:task id="task_pa_14" name="Choose Collective Processing (Overheads)">
+      <semantic:incoming>flow_gwexclpa8_to_pa14</semantic:incoming>
+      <semantic:outgoing>flow_pa14_to_gwexcljoinpa9</semantic:outgoing>
+    </semantic:task>
+    <semantic:exclusiveGateway id="gw_excl_join_pa_9" name="Join Overhead Processing Type">
+      <semantic:incoming>flow_pa13_to_gwexcljoinpa9</semantic:incoming>
+      <semantic:incoming>flow_pa14_to_gwexcljoinpa9</semantic:incoming>
+      <semantic:outgoing>flow_gwexcljoinpa9_to_gwparasplitpa3</semantic:outgoing>
+    </semantic:exclusiveGateway>
+    <semantic:parallelGateway id="gw_para_split_pa_3" name="Specify Overhead Parameters Split">
+      <semantic:incoming>flow_gwexcljoinpa9_to_gwparasplitpa3</semantic:incoming>
+      <semantic:outgoing>flow_gwparasplitpa3_to_pa15</semantic:outgoing>
+      <semantic:outgoing>flow_gwparasplitpa3_to_pa16</semantic:outgoing>
+    </semantic:parallelGateway>
+    <semantic:task id="task_pa_15" name="Specify Order Number (Overheads)">
+      <semantic:incoming>flow_gwparasplitpa3_to_pa15</semantic:incoming>
+      <semantic:outgoing>flow_pa15_to_gwparajoinpa3</semantic:outgoing>
+    </semantic:task>
+    <semantic:task id="task_pa_16" name="Specify Period (Overheads)">
+      <semantic:incoming>flow_gwparasplitpa3_to_pa16</semantic:incoming>
+      <semantic:outgoing>flow_pa16_to_gwparajoinpa3</semantic:outgoing>
+    </semantic:task>
+    <semantic:parallelGateway id="gw_para_join_pa_3" name="Specify Overhead Parameters Join">
+      <semantic:incoming>flow_pa15_to_gwparajoinpa3</semantic:incoming>
+      <semantic:incoming>flow_pa16_to_gwparajoinpa3</semantic:incoming>
+      <semantic:outgoing>flow_gwparajoinpa3_to_gwexclpa10</semantic:outgoing>
+    </semantic:parallelGateway>
+    <semantic:exclusiveGateway id="gw_excl_pa_10" name="Post Results (Overheads)?">
+      <semantic:incoming>flow_gwparajoinpa3_to_gwexclpa10</semantic:incoming>
+      <semantic:outgoing>flow_gwexclpa10_to_pa17</semantic:outgoing>
+      <semantic:outgoing>flow_gwexclpa10_to_pa18</semantic:outgoing>
+    </semantic:exclusiveGateway>
+    <semantic:task id="task_pa_17" name="Deselect 'Test run' Field (Overheads)">
+      <semantic:incoming>flow_gwexclpa10_to_pa17</semantic:incoming>
+      <semantic:outgoing>flow_pa17_to_gwexcljoinpa11</semantic:outgoing>
+    </semantic:task>
+    <semantic:task id="task_pa_18" name="Select 'Test run' Field (Overheads)">
+      <semantic:incoming>flow_gwexclpa10_to_pa18</semantic:incoming>
+      <semantic:outgoing>flow_pa18_to_gwexcljoinpa11</semantic:outgoing>
+    </semantic:task>
+    <semantic:exclusiveGateway id="gw_excl_join_pa_11" name="Join Test Run Choice (Overheads)">
+      <semantic:incoming>flow_pa17_to_gwexcljoinpa11</semantic:incoming>
+      <semantic:incoming>flow_pa18_to_gwexcljoinpa11</semantic:incoming>
+      <semantic:outgoing>flow_gwexcljoinpa11_to_pa19</semantic:outgoing>
+    </semantic:exclusiveGateway>
+    <semantic:task id="task_pa_19" name="Execute Overhead Process">
+      <semantic:incoming>flow_gwexcljoinpa11_to_pa19</semantic:incoming>
+      <semantic:outgoing>flow_pa19_to_pa20</semantic:outgoing>
+    </semantic:task>
+    <semantic:task id="task_pa_20" name="Display Confirmation Message (Overheads)">
+      <semantic:incoming>flow_pa19_to_pa20</semantic:incoming>
+      <semantic:outgoing>flow_pa20_to_callpa2</semantic:outgoing>
+    </semantic:task>
+    <semantic:callActivity id="call_activity_pa_2" name="Check Production Order for Overhead Surcharge">
+      <semantic:incoming>flow_pa20_to_callpa2</semantic:incoming>
+      <semantic:outgoing>flow_callpa2_to_pm14</semantic:outgoing>
+    </semantic:callActivity>
+
+    <!-- Sequence Flows -->
+    <semantic:sequenceFlow id="flow_start_to_pm1" sourceRef="start_event_1" targetRef="task_pm_1"/>
+    <semantic:sequenceFlow id="flow_pm1_to_gwexcl1" sourceRef="task_pm_1" targetRef="gw_excl_1"/>
+    <semantic:sequenceFlow id="flow_gwexcl1_to_pm2" name="Released" sourceRef="gw_excl_1" targetRef="task_pm_2"/>
+    <semantic:sequenceFlow id="flow_gwexcl1_to_callpm1" name="Not Released" sourceRef="gw_excl_1" targetRef="call_activity_pm_1"/>
+    <semantic:sequenceFlow id="flow_callpm1_to_pm2" sourceRef="call_activity_pm_1" targetRef="task_pm_2"/>
+    <semantic:sequenceFlow id="flow_pm2_to_pa1" sourceRef="task_pm_2" targetRef="task_pa_1"/>
+    <semantic:sequenceFlow id="flow_pa1_to_pa2" sourceRef="task_pa_1" targetRef="task_pa_2"/>
+    <semantic:sequenceFlow id="flow_pa2_to_gwparasplitpa1" sourceRef="task_pa_2" targetRef="gw_para_split_pa_1"/>
+    <semantic:sequenceFlow id="flow_gwparasplitpa1_to_pa3" sourceRef="gw_para_split_pa_1" targetRef="task_pa_3"/>
+    <semantic:sequenceFlow id="flow_gwparasplitpa1_to_pa4" sourceRef="gw_para_split_pa_1" targetRef="task_pa_4"/>
+    <semantic:sequenceFlow id="flow_gwparasplitpa1_to_pa5" sourceRef="gw_para_split_pa_1" targetRef="task_pa_5"/>
+    <semantic:sequenceFlow id="flow_pa3_to_gwparajoinpa1" sourceRef="task_pa_3" targetRef="gw_para_join_pa_1"/>
+    <semantic:sequenceFlow id="flow_pa4_to_gwparajoinpa1" sourceRef="task_pa_4" targetRef="gw_para_join_pa_1"/>
+    <semantic:sequenceFlow id="flow_pa5_to_gwparajoinpa1" sourceRef="task_pa_5" targetRef="gw_para_join_pa_1"/>
+    <semantic:sequenceFlow id="flow_gwparajoinpa1_to_pa6" sourceRef="gw_para_join_pa_1" targetRef="task_pa_6"/>
+    <semantic:sequenceFlow id="flow_pa6_to_pm3" sourceRef="task_pa_6" targetRef="task_pm_3"/>
+    <semantic:sequenceFlow id="flow_pm3_to_gwexclpm2" sourceRef="task_pm_3" targetRef="gw_excl_pm_2"/>
+    <semantic:sequenceFlow id="flow_gwexclpm2_to_pm4" name="PDC Interface" sourceRef="gw_excl_pm_2" targetRef="task_pm_4"/>
+    <semantic:sequenceFlow id="flow_gwexclpm2_to_gwexclpm3" name="Manual" sourceRef="gw_excl_pm_2" targetRef="gw_excl_pm_3"/>
+    <semantic:sequenceFlow id="flow_pm4_to_gwjoinpm7" sourceRef="task_pm_4" targetRef="gw_excl_join_pm_7"/>
+    <semantic:sequenceFlow id="flow_gwexclpm3_to_pm5" name="Time Ticket" sourceRef="gw_excl_pm_3" targetRef="task_pm_5"/>
+    <semantic:sequenceFlow id="flow_gwexclpm3_to_pm6" name="Time Event" sourceRef="gw_excl_pm_3" targetRef="task_pm_6"/>
+    <semantic:sequenceFlow id="flow_gwexclpm3_to_pm7" name="Collective Entry" sourceRef="gw_excl_pm_3" targetRef="task_pm_7"/>
+    <semantic:sequenceFlow id="flow_gwexclpm3_to_pm8" name="Progress Confirmation" sourceRef="gw_excl_pm_3" targetRef="task_pm_8"/>
+    <semantic:sequenceFlow id="flow_pm5_to_gwjoinpm6" sourceRef="task_pm_5" targetRef="gw_excl_join_pm_6"/>
+    <semantic:sequenceFlow id="flow_pm6_to_gwjoinpm6" sourceRef="task_pm_6" targetRef="gw_excl_join_pm_6"/>
+    <semantic:sequenceFlow id="flow_pm7_to_gwjoinpm6" sourceRef="task_pm_7" targetRef="gw_excl_join_pm_6"/>
+    <semantic:sequenceFlow id="flow_pm8_to_pm9" sourceRef="task_pm_8" targetRef="task_pm_9"/>
+    <semantic:sequenceFlow id="flow_pm9_to_gwexclpm4" sourceRef="task_pm_9" targetRef="gw_excl_pm_4"/>
+    <semantic:sequenceFlow id="flow_gwexclpm4_to_pm10" name="Partial" sourceRef="gw_excl_pm_4" targetRef="task_pm_10"/>
+    <semantic:sequenceFlow id="flow_gwexclpm4_to_pm11" name="Final" sourceRef="gw_excl_pm_4" targetRef="task_pm_11"/>
+    <semantic:sequenceFlow id="flow_pm10_to_gwjoinpm5" sourceRef="task_pm_10" targetRef="gw_excl_join_pm_5"/>
+    <semantic:sequenceFlow id="flow_pm11_to_gwjoinpm5" sourceRef="task_pm_11" targetRef="gw_excl_join_pm_5"/>
+    <semantic:sequenceFlow id="flow_gwjoinpm5_to_gwjoinpm6" sourceRef="gw_excl_join_pm_5" targetRef="gw_excl_join_pm_6"/>
+    <semantic:sequenceFlow id="flow_gwjoinpm6_to_gwjoinpm7" sourceRef="gw_excl_join_pm_6" targetRef="gw_excl_join_pm_7"/>
+    <semantic:sequenceFlow id="flow_gwjoinpm7_to_pm12" sourceRef="gw_excl_join_pm_7" targetRef="task_pm_12"/>
+    <semantic:sequenceFlow id="flow_pm12_to_pm13" sourceRef="task_pm_12" targetRef="task_pm_13"/>
+    <semantic:sequenceFlow id="flow_pm13_to_callpa1" sourceRef="task_pm_13" targetRef="call_activity_pa_1"/>
+    <semantic:sequenceFlow id="flow_callpa1_to_pa7" sourceRef="call_activity_pa_1" targetRef="task_pa_7"/>
+    <semantic:sequenceFlow id="flow_pa7_to_gwparasplitpa2" sourceRef="task_pa_7" targetRef="gw_para_split_pa_2"/>
+    <semantic:sequenceFlow id="flow_gwparasplitpa2_to_pa8" sourceRef="gw_para_split_pa_2" targetRef="task_pa_8"/>
+    <semantic:sequenceFlow id="flow_gwparasplitpa2_to_pa9" sourceRef="gw_para_split_pa_2" targetRef="task_pa_9"/>
+    <semantic:sequenceFlow id="flow_gwparasplitpa2_to_pa10" sourceRef="gw_para_split_pa_2" targetRef="task_pa_10"/>
+    <semantic:sequenceFlow id="flow_pa8_to_gwparajoinpa2" sourceRef="task_pa_8" targetRef="gw_para_join_pa_2"/>
+    <semantic:sequenceFlow id="flow_pa9_to_gwparajoinpa2" sourceRef="task_pa_9" targetRef="gw_para_join_pa_2"/>
+    <semantic:sequenceFlow id="flow_pa10_to_gwparajoinpa2" sourceRef="task_pa_10" targetRef="gw_para_join_pa_2"/>
+    <semantic:sequenceFlow id="flow_gwparajoinpa2_to_pa11" sourceRef="gw_para_join_pa_2" targetRef="task_pa_11"/>
+    <semantic:sequenceFlow id="flow_pa11_to_pa12" sourceRef="task_pa_11" targetRef="task_pa_12"/>
+    <semantic:sequenceFlow id="flow_pa12_to_gwexclpa8" sourceRef="task_pa_12" targetRef="gw_excl_pa_8"/>
+    <semantic:sequenceFlow id="flow_gwexclpa8_to_pa13" name="Individual Processing" sourceRef="gw_excl_pa_8" targetRef="task_pa_13"/>
+    <semantic:sequenceFlow id="flow_gwexclpa8_to_pa14" name="Collective Processing" sourceRef="gw_excl_pa_8" targetRef="task_pa_14"/>
+    <semantic:sequenceFlow id="flow_pa13_to_gwexcljoinpa9" sourceRef="task_pa_13" targetRef="gw_excl_join_pa_9"/>
+    <semantic:sequenceFlow id="flow_pa14_to_gwexcljoinpa9" sourceRef="task_pa_14" targetRef="gw_excl_join_pa_9"/>
+    <semantic:sequenceFlow id="flow_gwexcljoinpa9_to_gwparasplitpa3" sourceRef="gw_excl_join_pa_9" targetRef="gw_para_split_pa_3"/>
+    <semantic:sequenceFlow id="flow_gwparasplitpa3_to_pa15" sourceRef="gw_para_split_pa_3" targetRef="task_pa_15"/>
+    <semantic:sequenceFlow id="flow_gwparasplitpa3_to_pa16" sourceRef="gw_para_split_pa_3" targetRef="task_pa_16"/>
+    <semantic:sequenceFlow id="flow_pa15_to_gwparajoinpa3" sourceRef="task_pa_15" targetRef="gw_para_join_pa_3"/>
+    <semantic:sequenceFlow id="flow_pa16_to_gwparajoinpa3" sourceRef="task_pa_16" targetRef="gw_para_join_pa_3"/>
+    <semantic:sequenceFlow id="flow_gwparajoinpa3_to_gwexclpa10" sourceRef="gw_para_join_pa_3" targetRef="gw_excl_pa_10"/>
+    <semantic:sequenceFlow id="flow_gwexclpa10_to_pa17" name="Post Results" sourceRef="gw_excl_pa_10" targetRef="task_pa_17"/>
+    <semantic:sequenceFlow id="flow_gwexclpa10_to_pa18" name="Test Run" sourceRef="gw_excl_pa_10" targetRef="task_pa_18"/>
+    <semantic:sequenceFlow id="flow_pa17_to_gwexcljoinpa11" sourceRef="task_pa_17" targetRef="gw_excl_join_pa_11"/>
+    <semantic:sequenceFlow id="flow_pa18_to_gwexcljoinpa11" sourceRef="task_pa_18" targetRef="gw_excl_join_pa_11"/>
+    <semantic:sequenceFlow id="flow_gwexcljoinpa11_to_pa19" sourceRef="gw_excl_join_pa_11" targetRef="task_pa_19"/>
+    <semantic:sequenceFlow id="flow_pa19_to_pa20" sourceRef="task_pa_19" targetRef="task_pa_20"/>
+    <semantic:sequenceFlow id="flow_pa20_to_callpa2" sourceRef="task_pa_20" targetRef="call_activity_pa_2"/>
+    <semantic:sequenceFlow id="flow_callpa2_to_pm14" sourceRef="call_activity_pa_2" targetRef="task_pm_14"/>
+    <semantic:sequenceFlow id="flow_pm14_to_gwparasplitpm4" sourceRef="task_pm_14" targetRef="gw_para_split_pm_4"/>
+    <semantic:sequenceFlow id="flow_gwparasplitpm4_to_pm15" sourceRef="gw_para_split_pm_4" targetRef="task_pm_15"/>
+    <semantic:sequenceFlow id="flow_gwparasplitpm4_to_pm16" sourceRef="gw_para_split_pm_4" targetRef="task_pm_16"/>
+    <semantic:sequenceFlow id="flow_gwparasplitpm4_to_pm17" sourceRef="gw_para_split_pm_4" targetRef="task_pm_17"/>
+    <semantic:sequenceFlow id="flow_pm15_to_gwparajoinpm4" sourceRef="task_pm_15" targetRef="gw_para_join_pm_4"/>
+    <semantic:sequenceFlow id="flow_pm16_to_gwparajoinpm4" sourceRef="task_pm_16" targetRef="gw_para_join_pm_4"/>
+    <semantic:sequenceFlow id="flow_pm17_to_gwparajoinpm4" sourceRef="task_pm_17" targetRef="gw_para_join_pm_4"/>
+    <semantic:sequenceFlow id="flow_gwparajoinpm4_to_pm18" sourceRef="gw_para_join_pm_4" targetRef="task_pm_18"/>
+    <semantic:sequenceFlow id="flow_pm18_to_pm19" sourceRef="task_pm_18" targetRef="task_pm_19"/>
+    <semantic:sequenceFlow id="flow_pm19_to_end" sourceRef="task_pm_19" targetRef="end_event_1"/>
+
+  </semantic:process>
+
+  <bpmndi:BPMNDiagram id="BPMNDiagram_ProductionProcess" name="Production Order Processing Diagram" resolution="96.0">
+    <bpmndi:BPMNPlane bpmnElement="collab_production_process">
+      <bpmndi:BPMNShape id="participant_production_process_shape" bpmnElement="participant_production_process" isHorizontal="true">
+        <dc:Bounds x="20" y="20" width="6800" height="860"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="lane_pm_shape" bpmnElement="lane_pm" isHorizontal="true">
+        <dc:Bounds x="50" y="50" width="6770" height="480"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="lane_pa_shape" bpmnElement="lane_pa" isHorizontal="true">
+        <dc:Bounds x="50" y="530" width="6770" height="350"/>
+      </bpmndi:BPMNShape>
+
+      <!-- Production Manager Shapes -->
+      <bpmndi:BPMNShape id="start_event_1_shape" bpmnElement="start_event_1">
+        <dc:Bounds x="60" y="232" width="36" height="36"/> <!-- cy=250 -->
+        <bpmndi:BPMNLabel><dc:Bounds x="40" y="278" width="76" height="40"/></bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="task_pm_1_shape" bpmnElement="task_pm_1">
+        <dc:Bounds x="160" y="210" width="100" height="80"/> <!-- cy=250 -->
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="gw_excl_1_shape" bpmnElement="gw_excl_1" isMarkerVisible="true">
+        <dc:Bounds x="310" y="225" width="50" height="50"/> <!-- cy=250 -->
+        <bpmndi:BPMNLabel><dc:Bounds x="295" y="285" width="80" height="14"/></bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="call_activity_pm_1_shape" bpmnElement="call_activity_pm_1">
+        <dc:Bounds x="410" y="260" width="100" height="80"/> <!-- cy=300 -->
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="task_pm_2_shape" bpmnElement="task_pm_2">
+        <dc:Bounds x="560" y="210" width="100" height="80"/> <!-- cy=250 -->
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="task_pm_3_shape" bpmnElement="task_pm_3">
+        <dc:Bounds x="1560" y="210" width="100" height="80"/> <!-- cy=250 -->
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="gw_excl_pm_2_shape" bpmnElement="gw_excl_pm_2" isMarkerVisible="true">
+        <dc:Bounds x="1710" y="225" width="50" height="50"/> <!-- cy=250 -->
+        <bpmndi:BPMNLabel><dc:Bounds x="1690" y="285" width="90" height="28"/></bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="task_pm_4_shape" bpmnElement="task_pm_4">
+        <dc:Bounds x="1810" y="135" width="100" height="80"/> <!-- cy=175 -->
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="gw_excl_pm_3_shape" bpmnElement="gw_excl_pm_3" isMarkerVisible="true">
+        <dc:Bounds x="1810" y="250" width="50" height="50"/> <!-- cy=275 -->
+        <bpmndi:BPMNLabel><dc:Bounds x="1790" y="310" width="90" height="28"/></bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="task_pm_5_shape" bpmnElement="task_pm_5">
+        <dc:Bounds x="1910" y="110" width="100" height="80"/> <!-- cy=150 -->
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="task_pm_6_shape" bpmnElement="task_pm_6">
+        <dc:Bounds x="1910" y="210" width="100" height="80"/> <!-- cy=250 -->
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="task_pm_7_shape" bpmnElement="task_pm_7">
+        <dc:Bounds x="1910" y="310" width="100" height="80"/> <!-- cy=350 -->
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="task_pm_8_shape" bpmnElement="task_pm_8">
+        <dc:Bounds x="1910" y="410" width="100" height="80"/> <!-- cy=450 -->
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="task_pm_9_shape" bpmnElement="task_pm_9">
+        <dc:Bounds x="2060" y="410" width="100" height="80"/> <!-- cy=450 -->
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="gw_excl_pm_4_shape" bpmnElement="gw_excl_pm_4" isMarkerVisible="true">
+        <dc:Bounds x="2210" y="425" width="50" height="50"/> <!-- cy=450 -->
+        <bpmndi:BPMNLabel><dc:Bounds x="2190" y="485" width="90" height="28"/></bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="task_pm_10_shape" bpmnElement="task_pm_10">
+        <dc:Bounds x="2310" y="355" width="100" height="80"/> <!-- cy=395 -->
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="task_pm_11_shape" bpmnElement="task_pm_11">
+        <dc:Bounds x="2310" y="450" width="100" height="80"/> <!-- cy=490, Corrected y from 455 to 450 -->
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="gw_excl_join_pm_5_shape" bpmnElement="gw_excl_join_pm_5" isMarkerVisible="true">
+        <dc:Bounds x="2460" y="425" width="50" height="50"/> <!-- cy=450 -->
+        <bpmndi:BPMNLabel><dc:Bounds x="2440" y="485" width="90" height="40"/></bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="gw_excl_join_pm_6_shape" bpmnElement="gw_excl_join_pm_6" isMarkerVisible="true">
+        <dc:Bounds x="2610" y="275" width="50" height="50"/> <!-- cy=300 -->
+        <bpmndi:BPMNLabel><dc:Bounds x="2590" y="335" width="90" height="40"/></bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="gw_excl_join_pm_7_shape" bpmnElement="gw_excl_join_pm_7" isMarkerVisible="true">
+        <dc:Bounds x="2760" y="212" width="50" height="50"/> <!-- cy=237 -->
+        <bpmndi:BPMNLabel><dc:Bounds x="2740" y="272" width="90" height="28"/></bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="task_pm_12_shape" bpmnElement="task_pm_12">
+        <dc:Bounds x="2910" y="197" width="100" height="80"/> <!-- cy=237 -->
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="task_pm_13_shape" bpmnElement="task_pm_13">
+        <dc:Bounds x="3060" y="197" width="100" height="80"/> <!-- cy=237 -->
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="task_pm_14_shape" bpmnElement="task_pm_14">
+        <dc:Bounds x="5860" y="235" width="100" height="80"/> <!-- cy=275 -->
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="gw_para_split_pm_4_shape" bpmnElement="gw_para_split_pm_4">
+        <dc:Bounds x="6010" y="250" width="50" height="50"/> <!-- cy=275 -->
+        <bpmndi:BPMNLabel><dc:Bounds x="5990" y="310" width="90" height="40"/></bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="task_pm_15_shape" bpmnElement="task_pm_15">
+        <dc:Bounds x="6110" y="135" width="100" height="80"/> <!-- cy=175 -->
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="task_pm_16_shape" bpmnElement="task_pm_16">
+        <dc:Bounds x="6110" y="235" width="100" height="80"/> <!-- cy=275 -->
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="task_pm_17_shape" bpmnElement="task_pm_17">
+        <dc:Bounds x="6110" y="335" width="100" height="80"/> <!-- cy=375 -->
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="gw_para_join_pm_4_shape" bpmnElement="gw_para_join_pm_4">
+        <dc:Bounds x="6260" y="250" width="50" height="50"/> <!-- cy=275 -->
+        <bpmndi:BPMNLabel><dc:Bounds x="6240" y="310" width="90" height="40"/></bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="task_pm_18_shape" bpmnElement="task_pm_18">
+        <dc:Bounds x="6410" y="235" width="100" height="80"/> <!-- cy=275 -->
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="task_pm_19_shape" bpmnElement="task_pm_19">
+        <dc:Bounds x="6560" y="235" width="100" height="80"/> <!-- cy=275 -->
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="end_event_1_shape" bpmnElement="end_event_1">
+        <dc:Bounds x="6710" y="257" width="36" height="36"/> <!-- cy=275 -->
+        <bpmndi:BPMNLabel><dc:Bounds x="6690" y="303" width="76" height="40"/></bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <!-- Production Assistant Shapes -->
+      <bpmndi:BPMNShape id="task_pa_1_shape" bpmnElement="task_pa_1">
+        <dc:Bounds x="710" y="610" width="100" height="80"/> <!-- cy=650 -->
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="task_pa_2_shape" bpmnElement="task_pa_2">
+        <dc:Bounds x="860" y="610" width="100" height="80"/> <!-- cy=650 -->
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="gw_para_split_pa_1_shape" bpmnElement="gw_para_split_pa_1">
+        <dc:Bounds x="1010" y="650" width="50" height="50"/> <!-- cy=675 -->
+        <bpmndi:BPMNLabel><dc:Bounds x="990" y="710" width="90" height="28"/></bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="task_pa_3_shape" bpmnElement="task_pa_3">
+        <dc:Bounds x="1110" y="535" width="100" height="80"/> <!-- cy=575 -->
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="task_pa_4_shape" bpmnElement="task_pa_4">
+        <dc:Bounds x="1110" y="635" width="100" height="80"/> <!-- cy=675 -->
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="task_pa_5_shape" bpmnElement="task_pa_5">
+        <dc:Bounds x="1110" y="735" width="100" height="80"/> <!-- cy=775 -->
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="gw_para_join_pa_1_shape" bpmnElement="gw_para_join_pa_1">
+        <dc:Bounds x="1260" y="650" width="50" height="50"/> <!-- cy=675 -->
+        <bpmndi:BPMNLabel><dc:Bounds x="1240" y="710" width="90" height="28"/></bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="task_pa_6_shape" bpmnElement="task_pa_6">
+        <dc:Bounds x="1410" y="635" width="100" height="80"/> <!-- cy=675 -->
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="call_activity_pa_1_shape" bpmnElement="call_activity_pa_1">
+        <dc:Bounds x="3210" y="635" width="100" height="80"/> <!-- cy=675 -->
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="task_pa_7_shape" bpmnElement="task_pa_7">
+        <dc:Bounds x="3360" y="635" width="100" height="80"/> <!-- cy=675 -->
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="gw_para_split_pa_2_shape" bpmnElement="gw_para_split_pa_2">
+        <dc:Bounds x="3510" y="650" width="50" height="50"/> <!-- cy=675 -->
+        <bpmndi:BPMNLabel><dc:Bounds x="3490" y="710" width="90" height="28"/></bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="task_pa_8_shape" bpmnElement="task_pa_8">
+        <dc:Bounds x="3610" y="535" width="100" height="80"/> <!-- cy=575 -->
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="task_pa_9_shape" bpmnElement="task_pa_9">
+        <dc:Bounds x="3610" y="635" width="100" height="80"/> <!-- cy=675 -->
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="task_pa_10_shape" bpmnElement="task_pa_10">
+        <dc:Bounds x="3610" y="735" width="100" height="80"/> <!-- cy=775 -->
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="gw_para_join_pa_2_shape" bpmnElement="gw_para_join_pa_2">
+        <dc:Bounds x="3760" y="650" width="50" height="50"/> <!-- cy=675 -->
+        <bpmndi:BPMNLabel><dc:Bounds x="3740" y="710" width="90" height="28"/></bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="task_pa_11_shape" bpmnElement="task_pa_11">
+        <dc:Bounds x="3910" y="635" width="100" height="80"/> <!-- cy=675 -->
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="task_pa_12_shape" bpmnElement="task_pa_12">
+        <dc:Bounds x="4060" y="635" width="100" height="80"/> <!-- cy=675 -->
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="gw_excl_pa_8_shape" bpmnElement="gw_excl_pa_8" isMarkerVisible="true">
+        <dc:Bounds x="4210" y="650" width="50" height="50"/> <!-- cy=675 -->
+        <bpmndi:BPMNLabel><dc:Bounds x="4190" y="710" width="90" height="28"/></bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="task_pa_13_shape" bpmnElement="task_pa_13">
+        <dc:Bounds x="4310" y="555" width="100" height="80"/> <!-- cy=595 -->
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="task_pa_14_shape" bpmnElement="task_pa_14">
+        <dc:Bounds x="4310" y="655" width="100" height="80"/> <!-- cy=695 -->
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="gw_excl_join_pa_9_shape" bpmnElement="gw_excl_join_pa_9" isMarkerVisible="true">
+        <dc:Bounds x="4460" y="620" width="50" height="50"/> <!-- cy=645 -->
+        <bpmndi:BPMNLabel><dc:Bounds x="4440" y="680" width="90" height="40"/></bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="gw_para_split_pa_3_shape" bpmnElement="gw_para_split_pa_3">
+        <dc:Bounds x="4610" y="620" width="50" height="50"/> <!-- cy=645 -->
+        <bpmndi:BPMNLabel><dc:Bounds x="4590" y="680" width="90" height="40"/></bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="task_pa_15_shape" bpmnElement="task_pa_15">
+        <dc:Bounds x="4710" y="555" width="100" height="80"/> <!-- cy=595 -->
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="task_pa_16_shape" bpmnElement="task_pa_16">
+        <dc:Bounds x="4710" y="655" width="100" height="80"/> <!-- cy=695 -->
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="gw_para_join_pa_3_shape" bpmnElement="gw_para_join_pa_3">
+        <dc:Bounds x="4860" y="620" width="50" height="50"/> <!-- cy=645 -->
+        <bpmndi:BPMNLabel><dc:Bounds x="4840" y="680" width="90" height="40"/></bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="gw_excl_pa_10_shape" bpmnElement="gw_excl_pa_10" isMarkerVisible="true">
+        <dc:Bounds x="5010" y="620" width="50" height="50"/> <!-- cy=645 -->
+        <bpmndi:BPMNLabel><dc:Bounds x="4990" y="680" width="90" height="40"/></bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="task_pa_17_shape" bpmnElement="task_pa_17">
+        <dc:Bounds x="5110" y="555" width="100" height="80"/> <!-- cy=595 -->
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="task_pa_18_shape" bpmnElement="task_pa_18">
+        <dc:Bounds x="5110" y="655" width="100" height="80"/> <!-- cy=695 -->
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="gw_excl_join_pa_11_shape" bpmnElement="gw_excl_join_pa_11" isMarkerVisible="true">
+        <dc:Bounds x="5260" y="620" width="50" height="50"/> <!-- cy=645 -->
+        <bpmndi:BPMNLabel><dc:Bounds x="5240" y="680" width="90" height="40"/></bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="task_pa_19_shape" bpmnElement="task_pa_19">
+        <dc:Bounds x="5410" y="605" width="100" height="80"/> <!-- cy=645 -->
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="task_pa_20_shape" bpmnElement="task_pa_20">
+        <dc:Bounds x="5560" y="605" width="100" height="80"/> <!-- cy=645 -->
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="call_activity_pa_2_shape" bpmnElement="call_activity_pa_2">
+        <dc:Bounds x="5710" y="605" width="100" height="80"/> <!-- cy=645 -->
+      </bpmndi:BPMNShape>
+
+      <!-- Sequence Flow Edges -->
+      <bpmndi:BPMNEdge id="flow_start_to_pm1_edge" bpmnElement="flow_start_to_pm1">
+        <di:waypoint x="96" y="250"/>
+        <di:waypoint x="160" y="250"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_pm1_to_gwexcl1_edge" bpmnElement="flow_pm1_to_gwexcl1">
+        <di:waypoint x="260" y="250"/>
+        <di:waypoint x="310" y="250"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_gwexcl1_to_pm2_edge" bpmnElement="flow_gwexcl1_to_pm2">
+        <di:waypoint x="360" y="250"/>
+        <di:waypoint x="560" y="250"/>
+        <bpmndi:BPMNLabel><dc:Bounds x="450" y="230" width="50" height="14"/></bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_gwexcl1_to_callpm1_edge" bpmnElement="flow_gwexcl1_to_callpm1">
+        <di:waypoint x="335" y="275"/>
+        <di:waypoint x="335" y="300"/>
+        <di:waypoint x="410" y="300"/>
+        <bpmndi:BPMNLabel><dc:Bounds x="340" y="280" width="65" height="14"/></bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_callpm1_to_pm2_edge" bpmnElement="flow_callpm1_to_pm2">
+        <di:waypoint x="510" y="300"/>
+        <di:waypoint x="535" y="300"/>
+        <di:waypoint x="535" y="250"/>
+        <di:waypoint x="560" y="250"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_pm2_to_pa1_edge" bpmnElement="flow_pm2_to_pa1">
+        <di:waypoint x="610" y="290"/>
+        <di:waypoint x="610" y="650"/>
+        <di:waypoint x="710" y="650"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_pa1_to_pa2_edge" bpmnElement="flow_pa1_to_pa2">
+        <di:waypoint x="810" y="650"/>
+        <di:waypoint x="860" y="650"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_pa2_to_gwparasplitpa1_edge" bpmnElement="flow_pa2_to_gwparasplitpa1">
+        <di:waypoint x="960" y="650"/>
+        <di:waypoint x="1010" y="675"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_gwparasplitpa1_to_pa3_edge" bpmnElement="flow_gwparasplitpa1_to_pa3">
+        <di:waypoint x="1035" y="650"/>
+        <di:waypoint x="1035" y="575"/>
+        <di:waypoint x="1110" y="575"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_gwparasplitpa1_to_pa4_edge" bpmnElement="flow_gwparasplitpa1_to_pa4">
+        <di:waypoint x="1060" y="675"/>
+        <di:waypoint x="1110" y="675"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_gwparasplitpa1_to_pa5_edge" bpmnElement="flow_gwparasplitpa1_to_pa5">
+        <di:waypoint x="1035" y="700"/>
+        <di:waypoint x="1035" y="775"/>
+        <di:waypoint x="1110" y="775"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_pa3_to_gwparajoinpa1_edge" bpmnElement="flow_pa3_to_gwparajoinpa1">
+        <di:waypoint x="1210" y="575"/>
+        <di:waypoint x="1235" y="575"/>
+        <di:waypoint x="1235" y="675"/>
+        <di:waypoint x="1260" y="675"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_pa4_to_gwparajoinpa1_edge" bpmnElement="flow_pa4_to_gwparajoinpa1">
+        <di:waypoint x="1210" y="675"/>
+        <di:waypoint x="1260" y="675"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_pa5_to_gwparajoinpa1_edge" bpmnElement="flow_pa5_to_gwparajoinpa1">
+        <di:waypoint x="1210" y="775"/>
+        <di:waypoint x="1235" y="775"/>
+        <di:waypoint x="1235" y="675"/>
+        <di:waypoint x="1260" y="675"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_gwparajoinpa1_to_pa6_edge" bpmnElement="flow_gwparajoinpa1_to_pa6">
+        <di:waypoint x="1310" y="675"/>
+        <di:waypoint x="1410" y="675"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_pa6_to_pm3_edge" bpmnElement="flow_pa6_to_pm3">
+        <di:waypoint x="1460" y="635"/>
+        <di:waypoint x="1460" y="250"/>
+        <di:waypoint x="1560" y="250"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_pm3_to_gwexclpm2_edge" bpmnElement="flow_pm3_to_gwexclpm2">
+        <di:waypoint x="1660" y="250"/>
+        <di:waypoint x="1710" y="250"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_gwexclpm2_to_pm4_edge" bpmnElement="flow_gwexclpm2_to_pm4">
+        <di:waypoint x="1735" y="225"/>
+        <di:waypoint x="1735" y="175"/>
+        <di:waypoint x="1810" y="175"/>
+        <bpmndi:BPMNLabel><dc:Bounds x="1740" y="190" width="70" height="14"/></bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_gwexclpm2_to_gwexclpm3_edge" bpmnElement="flow_gwexclpm2_to_gwexclpm3">
+        <di:waypoint x="1760" y="250"/>
+        <di:waypoint x="1810" y="275"/>
+        <bpmndi:BPMNLabel><dc:Bounds x="1765" y="255" width="40" height="14"/></bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_pm4_to_gwjoinpm7_edge" bpmnElement="flow_pm4_to_gwjoinpm7">
+        <di:waypoint x="1910" y="175"/>
+        <di:waypoint x="2735" y="175"/>
+        <di:waypoint x="2735" y="237"/>
+        <di:waypoint x="2760" y="237"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_gwexclpm3_to_pm5_edge" bpmnElement="flow_gwexclpm3_to_pm5">
+        <di:waypoint x="1835" y="250"/>
+        <di:waypoint x="1835" y="150"/>
+        <di:waypoint x="1910" y="150"/>
+        <bpmndi:BPMNLabel><dc:Bounds x="1840" y="120" width="60" height="14"/></bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_gwexclpm3_to_pm6_edge" bpmnElement="flow_gwexclpm3_to_pm6">
+        <di:waypoint x="1860" y="275"/>
+        <di:waypoint x="1885" y="275"/>
+        <di:waypoint x="1885" y="250"/>
+        <di:waypoint x="1910" y="250"/>
+        <bpmndi:BPMNLabel><dc:Bounds x="1840" y="235" width="60" height="14"/></bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_gwexclpm3_to_pm7_edge" bpmnElement="flow_gwexclpm3_to_pm7">
+        <di:waypoint x="1860" y="275"/>
+        <di:waypoint x="1885" y="275"/>
+        <di:waypoint x="1885" y="350"/>
+        <di:waypoint x="1910" y="350"/>
+        <bpmndi:BPMNLabel><dc:Bounds x="1840" y="295" width="65" height="14"/></bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_gwexclpm3_to_pm8_edge" bpmnElement="flow_gwexclpm3_to_pm8">
+        <di:waypoint x="1835" y="300"/>
+        <di:waypoint x="1835" y="450"/>
+        <di:waypoint x="1910" y="450"/>
+        <bpmndi:BPMNLabel><dc:Bounds x="1840" y="370" width="65" height="28"/></bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_pm5_to_gwjoinpm6_edge" bpmnElement="flow_pm5_to_gwjoinpm6">
+        <di:waypoint x="2010" y="150"/>
+        <di:waypoint x="2585" y="150"/>
+        <di:waypoint x="2585" y="300"/>
+        <di:waypoint x="2610" y="300"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_pm6_to_gwjoinpm6_edge" bpmnElement="flow_pm6_to_gwjoinpm6">
+        <di:waypoint x="2010" y="250"/>
+        <di:waypoint x="2585" y="250"/>
+        <di:waypoint x="2585" y="300"/>
+        <di:waypoint x="2610" y="300"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_pm7_to_gwjoinpm6_edge" bpmnElement="flow_pm7_to_gwjoinpm6">
+        <di:waypoint x="2010" y="350"/>
+        <di:waypoint x="2585" y="350"/>
+        <di:waypoint x="2585" y="300"/>
+        <di:waypoint x="2610" y="300"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_pm8_to_pm9_edge" bpmnElement="flow_pm8_to_pm9">
+        <di:waypoint x="2010" y="450"/>
+        <di:waypoint x="2060" y="450"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_pm9_to_gwexclpm4_edge" bpmnElement="flow_pm9_to_gwexclpm4">
+        <di:waypoint x="2160" y="450"/>
+        <di:waypoint x="2210" y="450"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_gwexclpm4_to_pm10_edge" bpmnElement="flow_gwexclpm4_to_pm10">
+        <di:waypoint x="2235" y="425"/>
+        <di:waypoint x="2235" y="395"/>
+        <di:waypoint x="2310" y="395"/>
+        <bpmndi:BPMNLabel><dc:Bounds x="2240" y="375" width="40" height="14"/></bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_gwexclpm4_to_pm11_edge" bpmnElement="flow_gwexclpm4_to_pm11">
+        <di:waypoint x="2235" y="475"/> <!-- Exit gw_excl_pm_4 bottom center -->
+        <di:waypoint x="2235" y="490"/> <!-- Align with task_pm_11 y-center -->
+        <di:waypoint x="2310" y="490"/> <!-- Enter task_pm_11 left center -->
+        <bpmndi:BPMNLabel><dc:Bounds x="2240" y="480" width="30" height="14"/></bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_pm10_to_gwjoinpm5_edge" bpmnElement="flow_pm10_to_gwjoinpm5">
+        <di:waypoint x="2410" y="395"/>
+        <di:waypoint x="2435" y="395"/>
+        <di:waypoint x="2435" y="450"/>
+        <di:waypoint x="2460" y="450"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_pm11_to_gwjoinpm5_edge" bpmnElement="flow_pm11_to_gwjoinpm5">
+        <di:waypoint x="2410" y="490"/> <!-- Exit task_pm_11 right-center (corrected cy) -->
+        <di:waypoint x="2435" y="490"/>
+        <di:waypoint x="2435" y="450"/> <!-- Align with gw_excl_join_pm_5 y-center -->
+        <di:waypoint x="2460" y="450"/> <!-- Enter gw_excl_join_pm_5 left-center -->
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_gwjoinpm5_to_gwjoinpm6_edge" bpmnElement="flow_gwjoinpm5_to_gwjoinpm6">
+        <di:waypoint x="2510" y="450"/>
+        <di:waypoint x="2585" y="450"/>
+        <di:waypoint x="2585" y="300"/>
+        <di:waypoint x="2610" y="300"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_gwjoinpm6_to_gwjoinpm7_edge" bpmnElement="flow_gwjoinpm6_to_gwjoinpm7">
+        <di:waypoint x="2660" y="300"/>
+        <di:waypoint x="2735" y="300"/>
+        <di:waypoint x="2735" y="237"/>
+        <di:waypoint x="2760" y="237"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_gwjoinpm7_to_pm12_edge" bpmnElement="flow_gwjoinpm7_to_pm12">
+        <di:waypoint x="2810" y="237"/>
+        <di:waypoint x="2910" y="237"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_pm12_to_pm13_edge" bpmnElement="flow_pm12_to_pm13">
+        <di:waypoint x="3010" y="237"/>
+        <di:waypoint x="3060" y="237"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_pm13_to_callpa1_edge" bpmnElement="flow_pm13_to_callpa1">
+        <di:waypoint x="3110" y="277"/>
+        <di:waypoint x="3110" y="675"/>
+        <di:waypoint x="3210" y="675"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_callpa1_to_pa7_edge" bpmnElement="flow_callpa1_to_pa7">
+        <di:waypoint x="3310" y="675"/>
+        <di:waypoint x="3360" y="675"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_pa7_to_gwparasplitpa2_edge" bpmnElement="flow_pa7_to_gwparasplitpa2">
+        <di:waypoint x="3460" y="675"/>
+        <di:waypoint x="3510" y="675"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_gwparasplitpa2_to_pa8_edge" bpmnElement="flow_gwparasplitpa2_to_pa8">
+        <di:waypoint x="3535" y="650"/>
+        <di:waypoint x="3535" y="575"/>
+        <di:waypoint x="3610" y="575"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_gwparasplitpa2_to_pa9_edge" bpmnElement="flow_gwparasplitpa2_to_pa9">
+        <di:waypoint x="3560" y="675"/>
+        <di:waypoint x="3610" y="675"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_gwparasplitpa2_to_pa10_edge" bpmnElement="flow_gwparasplitpa2_to_pa10">
+        <di:waypoint x="3535" y="700"/>
+        <di:waypoint x="3535" y="775"/>
+        <di:waypoint x="3610" y="775"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_pa8_to_gwparajoinpa2_edge" bpmnElement="flow_pa8_to_gwparajoinpa2">
+        <di:waypoint x="3710" y="575"/>
+        <di:waypoint x="3735" y="575"/>
+        <di:waypoint x="3735" y="675"/>
+        <di:waypoint x="3760" y="675"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_pa9_to_gwparajoinpa2_edge" bpmnElement="flow_pa9_to_gwparajoinpa2">
+        <di:waypoint x="3710" y="675"/>
+        <di:waypoint x="3760" y="675"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_pa10_to_gwparajoinpa2_edge" bpmnElement="flow_pa10_to_gwparajoinpa2">
+        <di:waypoint x="3710" y="775"/>
+        <di:waypoint x="3735" y="775"/>
+        <di:waypoint x="3735" y="675"/>
+        <di:waypoint x="3760" y="675"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_gwparajoinpa2_to_pa11_edge" bpmnElement="flow_gwparajoinpa2_to_pa11">
+        <di:waypoint x="3810" y="675"/>
+        <di:waypoint x="3910" y="675"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_pa11_to_pa12_edge" bpmnElement="flow_pa11_to_pa12">
+        <di:waypoint x="4010" y="675"/>
+        <di:waypoint x="4060" y="675"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_pa12_to_gwexclpa8_edge" bpmnElement="flow_pa12_to_gwexclpa8">
+        <di:waypoint x="4160" y="675"/>
+        <di:waypoint x="4210" y="675"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_gwexclpa8_to_pa13_edge" bpmnElement="flow_gwexclpa8_to_pa13">
+        <di:waypoint x="4235" y="650"/>
+        <di:waypoint x="4235" y="595"/>
+        <di:waypoint x="4310" y="595"/>
+        <bpmndi:BPMNLabel><dc:Bounds x="4240" y="570" width="65" height="28"/></bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_gwexclpa8_to_pa14_edge" bpmnElement="flow_gwexclpa8_to_pa14">
+        <di:waypoint x="4235" y="700"/>
+        <di:waypoint x="4235" y="695"/>
+        <di:waypoint x="4310" y="695"/>
+        <bpmndi:BPMNLabel><dc:Bounds x="4240" y="680" width="65" height="28"/></bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_pa13_to_gwexcljoinpa9_edge" bpmnElement="flow_pa13_to_gwexcljoinpa9">
+        <di:waypoint x="4410" y="595"/>
+        <di:waypoint x="4435" y="595"/>
+        <di:waypoint x="4435" y="645"/>
+        <di:waypoint x="4460" y="645"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_pa14_to_gwexcljoinpa9_edge" bpmnElement="flow_pa14_to_gwexcljoinpa9">
+        <di:waypoint x="4410" y="695"/>
+        <di:waypoint x="4435" y="695"/>
+        <di:waypoint x="4435" y="645"/>
+        <di:waypoint x="4460" y="645"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_gwexcljoinpa9_to_gwparasplitpa3_edge" bpmnElement="flow_gwexcljoinpa9_to_gwparasplitpa3">
+        <di:waypoint x="4510" y="645"/>
+        <di:waypoint x="4610" y="645"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_gwparasplitpa3_to_pa15_edge" bpmnElement="flow_gwparasplitpa3_to_pa15">
+        <di:waypoint x="4635" y="620"/>
+        <di:waypoint x="4635" y="595"/>
+        <di:waypoint x="4710" y="595"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_gwparasplitpa3_to_pa16_edge" bpmnElement="flow_gwparasplitpa3_to_pa16">
+        <di:waypoint x="4635" y="670"/>
+        <di:waypoint x="4635" y="695"/>
+        <di:waypoint x="4710" y="695"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_pa15_to_gwparajoinpa3_edge" bpmnElement="flow_pa15_to_gwparajoinpa3">
+        <di:waypoint x="4810" y="595"/>
+        <di:waypoint x="4835" y="595"/>
+        <di:waypoint x="4835" y="645"/>
+        <di:waypoint x="4860" y="645"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_pa16_to_gwparajoinpa3_edge" bpmnElement="flow_pa16_to_gwparajoinpa3">
+        <di:waypoint x="4810" y="695"/>
+        <di:waypoint x="4835" y="695"/>
+        <di:waypoint x="4835" y="645"/>
+        <di:waypoint x="4860" y="645"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_gwparajoinpa3_to_gwexclpa10_edge" bpmnElement="flow_gwparajoinpa3_to_gwexclpa10">
+        <di:waypoint x="4910" y="645"/>
+        <di:waypoint x="5010" y="645"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_gwexclpa10_to_pa17_edge" bpmnElement="flow_gwexclpa10_to_pa17">
+        <di:waypoint x="5035" y="620"/>
+        <di:waypoint x="5035" y="595"/>
+        <di:waypoint x="5110" y="595"/>
+        <bpmndi:BPMNLabel><dc:Bounds x="5040" y="570" width="60" height="14"/></bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_gwexclpa10_to_pa18_edge" bpmnElement="flow_gwexclpa10_to_pa18">
+        <di:waypoint x="5035" y="670"/>
+        <di:waypoint x="5035" y="695"/>
+        <di:waypoint x="5110" y="695"/>
+        <bpmndi:BPMNLabel><dc:Bounds x="5040" y="680" width="50" height="14"/></bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_pa17_to_gwexcljoinpa11_edge" bpmnElement="flow_pa17_to_gwexcljoinpa11">
+        <di:waypoint x="5210" y="595"/>
+        <di:waypoint x="5235" y="595"/>
+        <di:waypoint x="5235" y="645"/>
+        <di:waypoint x="5260" y="645"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_pa18_to_gwexcljoinpa11_edge" bpmnElement="flow_pa18_to_gwexcljoinpa11">
+        <di:waypoint x="5210" y="695"/>
+        <di:waypoint x="5235" y="695"/>
+        <di:waypoint x="5235" y="645"/>
+        <di:waypoint x="5260" y="645"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_gwexcljoinpa11_to_pa19_edge" bpmnElement="flow_gwexcljoinpa11_to_pa19">
+        <di:waypoint x="5310" y="645"/>
+        <di:waypoint x="5410" y="645"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_pa19_to_pa20_edge" bpmnElement="flow_pa19_to_pa20">
+        <di:waypoint x="5510" y="645"/>
+        <di:waypoint x="5560" y="645"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_pa20_to_callpa2_edge" bpmnElement="flow_pa20_to_callpa2">
+        <di:waypoint x="5660" y="645"/>
+        <di:waypoint x="5710" y="645"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_callpa2_to_pm14_edge" bpmnElement="flow_callpa2_to_pm14">
+        <di:waypoint x="5760" y="605"/>
+        <di:waypoint x="5760" y="275"/>
+        <di:waypoint x="5860" y="275"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_pm14_to_gwparasplitpm4_edge" bpmnElement="flow_pm14_to_gwparasplitpm4">
+        <di:waypoint x="5960" y="275"/>
+        <di:waypoint x="6010" y="275"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_gwparasplitpm4_to_pm15_edge" bpmnElement="flow_gwparasplitpm4_to_pm15">
+        <di:waypoint x="6035" y="250"/>
+        <di:waypoint x="6035" y="175"/>
+        <di:waypoint x="6110" y="175"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_gwparasplitpm4_to_pm16_edge" bpmnElement="flow_gwparasplitpm4_to_pm16">
+        <di:waypoint x="6060" y="275"/>
+        <di:waypoint x="6110" y="275"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_gwparasplitpm4_to_pm17_edge" bpmnElement="flow_gwparasplitpm4_to_pm17">
+        <di:waypoint x="6035" y="300"/>
+        <di:waypoint x="6035" y="375"/>
+        <di:waypoint x="6110" y="375"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_pm15_to_gwparajoinpm4_edge" bpmnElement="flow_pm15_to_gwparajoinpm4">
+        <di:waypoint x="6210" y="175"/>
+        <di:waypoint x="6235" y="175"/>
+        <di:waypoint x="6235" y="275"/>
+        <di:waypoint x="6260" y="275"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_pm16_to_gwparajoinpm4_edge" bpmnElement="flow_pm16_to_gwparajoinpm4">
+        <di:waypoint x="6210" y="275"/>
+        <di:waypoint x="6260" y="275"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_pm17_to_gwparajoinpm4_edge" bpmnElement="flow_pm17_to_gwparajoinpm4">
+        <di:waypoint x="6210" y="375"/>
+        <di:waypoint x="6235" y="375"/>
+        <di:waypoint x="6235" y="275"/>
+        <di:waypoint x="6260" y="275"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_gwparajoinpm4_to_pm18_edge" bpmnElement="flow_gwparajoinpm4_to_pm18">
+        <di:waypoint x="6310" y="275"/>
+        <di:waypoint x="6410" y="275"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_pm18_to_pm19_edge" bpmnElement="flow_pm18_to_pm19">
+        <di:waypoint x="6510" y="275"/>
+        <di:waypoint x="6560" y="275"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_pm19_to_end_edge" bpmnElement="flow_pm19_to_end">
+        <di:waypoint x="6660" y="275"/>
+        <di:waypoint x="6710" y="275"/>
+      </bpmndi:BPMNEdge>
+
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</semantic:definitions>

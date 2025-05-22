@@ -1,0 +1,239 @@
+<?xml version="1.0" standalone="yes"?>
+<semantic:definitions id="Definitions_AssignMaterialMaster"
+    targetNamespace="http://example.com/bpmn/AssignMaterialMasterRecordsToVendors"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:semantic="http://www.omg.org/spec/BPMN/20100524/MODEL"
+    xmlns:di="http://www.omg.org/spec/DD/20100524/DI"
+    xmlns:dc="http://www.omg.org/spec/DD/20100524/DC"
+    xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI">
+
+  <semantic:collaboration id="Collab_AssignMaterialMasterRecordsToVendors">
+    <semantic:participant id="Participant_PurchasingDepartment" name="Purchasing Department" processRef="Process_AssignMaterialMasterRecordsToVendors"/>
+  </semantic:collaboration>
+
+  <semantic:process id="Process_AssignMaterialMasterRecordsToVendors" isExecutable="true">
+    <semantic:laneSet id="LaneSet_Main">
+      <semantic:lane id="Lane_PurchasingEmployee" name="Purchasing Employee">
+        <semantic:flowNodeRef>start_event_1</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_1</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_2</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_3</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_4</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_5</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_6</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_7</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_8</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_9</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_10</semantic:flowNodeRef>
+        <semantic:flowNodeRef>end_event_1</semantic:flowNodeRef>
+      </semantic:lane>
+    </semantic:laneSet>
+
+    <semantic:startEvent id="start_event_1" name="Info Record Creation Process Started">
+      <semantic:outgoing>Flow_1</semantic:outgoing>
+    </semantic:startEvent>
+
+    <semantic:task id="task_1" name="Create Info Record">
+      <semantic:incoming>Flow_1</semantic:incoming>
+      <semantic:outgoing>Flow_2</semantic:outgoing>
+    </semantic:task>
+
+    <semantic:task id="task_2" name="Define Info Record Parameters (Vendor, Material, Purch. Org, Plant)">
+      <semantic:incoming>Flow_2</semantic:incoming>
+      <semantic:outgoing>Flow_3</semantic:outgoing>
+    </semantic:task>
+
+    <semantic:task id="task_3" name="Confirm Parameter Entries">
+      <semantic:incoming>Flow_3</semantic:incoming>
+      <semantic:outgoing>Flow_4</semantic:outgoing>
+    </semantic:task>
+
+    <semantic:task id="task_4" name="Define Info Record General Data (Reminder Parameters)">
+      <semantic:incoming>Flow_4</semantic:incoming>
+      <semantic:outgoing>Flow_5</semantic:outgoing>
+    </semantic:task>
+
+    <semantic:task id="task_5" name="Define Purchasing Organization Data (Delivery Time, Purch. Group, Std. Qty, Net Price)">
+      <semantic:incoming>Flow_5</semantic:incoming>
+      <semantic:outgoing>Flow_6</semantic:outgoing>
+    </semantic:task>
+
+    <semantic:task id="task_6" name="Confirm Purchasing Organization Data Entries">
+      <semantic:incoming>Flow_6</semantic:incoming>
+      <semantic:outgoing>Flow_7</semantic:outgoing>
+    </semantic:task>
+
+    <semantic:task id="task_7" name="Define Discount Conditions">
+      <semantic:incoming>Flow_7</semantic:incoming>
+      <semantic:outgoing>Flow_8</semantic:outgoing>
+    </semantic:task>
+
+    <semantic:task id="task_8" name="Add Discount (Condition Type RA01, Percentage Rate)">
+      <semantic:incoming>Flow_8</semantic:incoming>
+      <semantic:outgoing>Flow_9</semantic:outgoing>
+    </semantic:task>
+
+    <semantic:task id="task_9" name="Confirm Discount Entries">
+      <semantic:incoming>Flow_9</semantic:incoming>
+      <semantic:outgoing>Flow_10</semantic:outgoing>
+    </semantic:task>
+
+    <semantic:task id="task_10" name="Assign Purchased Items to Sources (Vendors)">
+      <semantic:incoming>Flow_10</semantic:incoming>
+      <semantic:outgoing>Flow_11</semantic:outgoing>
+    </semantic:task>
+
+    <semantic:endEvent id="end_event_1" name="Material Master Records Assigned to Vendors">
+      <semantic:incoming>Flow_11</semantic:incoming>
+    </semantic:endEvent>
+
+    <semantic:sequenceFlow id="Flow_1" sourceRef="start_event_1" targetRef="task_1"/>
+    <semantic:sequenceFlow id="Flow_2" sourceRef="task_1" targetRef="task_2"/>
+    <semantic:sequenceFlow id="Flow_3" sourceRef="task_2" targetRef="task_3"/>
+    <semantic:sequenceFlow id="Flow_4" sourceRef="task_3" targetRef="task_4"/>
+    <semantic:sequenceFlow id="Flow_5" sourceRef="task_4" targetRef="task_5"/>
+    <semantic:sequenceFlow id="Flow_6" sourceRef="task_5" targetRef="task_6"/>
+    <semantic:sequenceFlow id="Flow_7" sourceRef="task_6" targetRef="task_7"/>
+    <semantic:sequenceFlow id="Flow_8" sourceRef="task_7" targetRef="task_8"/>
+    <semantic:sequenceFlow id="Flow_9" sourceRef="task_8" targetRef="task_9"/>
+    <semantic:sequenceFlow id="Flow_10" sourceRef="task_9" targetRef="task_10"/>
+    <semantic:sequenceFlow id="Flow_11" sourceRef="task_10" targetRef="end_event_1"/>
+  </semantic:process>
+
+  <bpmndi:BPMNDiagram id="BPMNDiagram_AssignMaterialMasterRecordsToVendors" name="Assign Material Master Records to Vendors Diagram" resolution="96.0">
+    <bpmndi:BPMNPlane bpmnElement="Collab_AssignMaterialMasterRecordsToVendors">
+      <bpmndi:BPMNShape id="Participant_PurchasingDepartment_Shape" bpmnElement="Participant_PurchasingDepartment" isHorizontal="true">
+        <dc:Bounds x="20" y="20" width="2250" height="300"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="20" y="20" width="30" height="300"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="Lane_PurchasingEmployee_Shape" bpmnElement="Lane_PurchasingEmployee" isHorizontal="true">
+        <dc:Bounds x="50" y="20" width="2220" height="300"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="50" y="20" width="30" height="300"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="start_event_1_shape" bpmnElement="start_event_1">
+        <dc:Bounds x="80" y="152" width="36" height="36"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="60" y="193" width="76" height="40"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="task_1_shape" bpmnElement="task_1">
+        <dc:Bounds x="166" y="130" width="150" height="80"/>
+        <bpmndi:BPMNLabel/>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="task_2_shape" bpmnElement="task_2">
+        <dc:Bounds x="366" y="130" width="150" height="80"/>
+        <bpmndi:BPMNLabel/>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="task_3_shape" bpmnElement="task_3">
+        <dc:Bounds x="566" y="130" width="150" height="80"/>
+        <bpmndi:BPMNLabel/>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="task_4_shape" bpmnElement="task_4">
+        <dc:Bounds x="766" y="130" width="150" height="80"/>
+        <bpmndi:BPMNLabel/>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="task_5_shape" bpmnElement="task_5">
+        <dc:Bounds x="966" y="130" width="150" height="80"/>
+        <bpmndi:BPMNLabel/>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="task_6_shape" bpmnElement="task_6">
+        <dc:Bounds x="1166" y="130" width="150" height="80"/>
+        <bpmndi:BPMNLabel/>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="task_7_shape" bpmnElement="task_7">
+        <dc:Bounds x="1366" y="130" width="150" height="80"/>
+        <bpmndi:BPMNLabel/>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="task_8_shape" bpmnElement="task_8">
+        <dc:Bounds x="1566" y="130" width="150" height="80"/>
+        <bpmndi:BPMNLabel/>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="task_9_shape" bpmnElement="task_9">
+        <dc:Bounds x="1766" y="130" width="150" height="80"/>
+        <bpmndi:BPMNLabel/>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="task_10_shape" bpmnElement="task_10">
+        <dc:Bounds x="1966" y="130" width="150" height="80"/>
+        <bpmndi:BPMNLabel/>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="end_event_1_shape" bpmnElement="end_event_1">
+        <dc:Bounds x="2166" y="152" width="36" height="36"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="2141" y="193" width="86" height="40"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNEdge id="Flow_1_edge" bpmnElement="Flow_1">
+        <di:waypoint x="116" y="170"/>
+        <di:waypoint x="166" y="170"/>
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_2_edge" bpmnElement="Flow_2">
+        <di:waypoint x="316" y="170"/>
+        <di:waypoint x="366" y="170"/>
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_3_edge" bpmnElement="Flow_3">
+        <di:waypoint x="516" y="170"/>
+        <di:waypoint x="566" y="170"/>
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_4_edge" bpmnElement="Flow_4">
+        <di:waypoint x="716" y="170"/>
+        <di:waypoint x="766" y="170"/>
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_5_edge" bpmnElement="Flow_5">
+        <di:waypoint x="916" y="170"/>
+        <di:waypoint x="966" y="170"/>
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_6_edge" bpmnElement="Flow_6">
+        <di:waypoint x="1116" y="170"/>
+        <di:waypoint x="1166" y="170"/>
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_7_edge" bpmnElement="Flow_7">
+        <di:waypoint x="1316" y="170"/>
+        <di:waypoint x="1366" y="170"/>
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_8_edge" bpmnElement="Flow_8">
+        <di:waypoint x="1516" y="170"/>
+        <di:waypoint x="1566" y="170"/>
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_9_edge" bpmnElement="Flow_9">
+        <di:waypoint x="1716" y="170"/>
+        <di:waypoint x="1766" y="170"/>
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_10_edge" bpmnElement="Flow_10">
+        <di:waypoint x="1916" y="170"/>
+        <di:waypoint x="1966" y="170"/>
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_11_edge" bpmnElement="Flow_11">
+        <di:waypoint x="2116" y="170"/>
+        <di:waypoint x="2166" y="170"/>
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</semantic:definitions>

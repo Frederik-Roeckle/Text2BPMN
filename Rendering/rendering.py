@@ -1,7 +1,7 @@
 import subprocess
 
 def render_BPMN(bpmn_name,img_name):
-    subprocess.run(["node", "convert.js", bpmn_name, img_name],
+    subprocess.run(["node", "Rendering/convert.js", bpmn_name, img_name],
                 check=True)
 
-render_BPMN("simple_pizza_delivery.bpmn", "show_paul.png")
+render_BPMN("data/bpmn/three_agent_15.bpmn", "data/img/three_agent_15.png")

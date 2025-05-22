@@ -1,0 +1,91 @@
+{
+  "process_name": "Overtime Registration Approval Process",
+  "pools": [
+    {
+      "name": "Company",
+      "lanes": [
+        {
+          "name": "Sales Employee",
+          "elements": ["start_1", "task_1", "task_2", "end_declined_1", "end_approved_1"]
+        },
+        {
+          "name": "Manager",
+          "elements": ["task_3", "gateway_1"]
+        }
+      ]
+    }
+  ],
+  "elements": [
+    {
+      "id": "start_1",
+      "type": "StartEvent",
+      "name": "Start Overtime Registration"
+    },
+    {
+      "id": "task_1",
+      "type": "Task",
+      "name": "Create Overtime Registration"
+    },
+    {
+      "id": "task_6",
+      "type": "Task",
+      "name": "Contact HR to Set Up Payroll and Send Offer/Contract"
+    },
+    {
+      "id": "task_7",
+      "type": "Task",
+      "name": "Send Overtime Registration to Manager"
+    },
+    {
+      "id": "task_3",
+      "type": "Task",
+      "name": "Evaluate Overtime Registration Request"
+    },
+    {
+      "id": "gateway_1",
+      "type": "ExclusiveGateway",
+      "name": "Manager Decision"
+    },
+    {
+      "id": "end_declined_1",
+      "type": "EndEvent",
+      "name": "Overtime Request Declined"
+    },
+    {
+      "id": "end_approved_1",
+      "type": "EndEvent",
+      "name": "Overtime Request Approved"
+    }
+  ],
+  "sequence_flows": [
+    {
+      "source": "start_1",
+      "target": "task_1"
+    },
+    {
+      "source": "task_1",
+      "target": "task_2"
+    },
+    {
+      "source": "task_2",
+      "target": "task_3"
+    },
+    {
+      "source": "task_3",
+      "target": "gateway_1"
+    },
+    {
+      "source": "gateway_1",
+      "target": "end_declined_1",
+      "condition": "If Manager declines request"
+    },
+    {
+      "source": "gateway_1",
+      "target": "end_approved_1",
+      "condition": "If Manager approves request"
+    }
+  ]
+}
+
+Textual Description:
+a) Overtime Registration needs to be requested from an employee in the sales department to the responsible Manager. b) First, the employee needs to create an overtime registration and also needs to send this registration to his Manager. c) Upon receipt of this request, the Manager evaluates/estimates this overtime registration request. d) On this level, the Manager may either decline the registration request and then the employee will receive the declined request, or he may approve the request and at this stage the process ends for both choices.

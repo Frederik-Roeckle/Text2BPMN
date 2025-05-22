@@ -1,0 +1,518 @@
+```xml
+<?xml version="1.0" standalone="yes"?>
+<semantic:definitions id="CommitmentInvoiceProcessDefs"
+    targetNamespace="http://example.com/bpmn/commitment-invoice"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:semantic="http://www.omg.org/spec/BPMN/20100524/MODEL"
+    xmlns:di="http://www.omg.org/spec/DD/20100524/DI"
+    xmlns:dc="http://www.omg.org/spec/DD/20100524/DC"
+    xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI">
+
+  <semantic:collaboration id="collab_commitment_invoice">
+    <semantic:participant id="participant_commitment_invoice_ops" name="Commitment &amp; Invoice Process Operations" processRef="proc_commitment_invoice"/>
+  </semantic:collaboration>
+
+  <semantic:process id="proc_commitment_invoice" name="Commitment and Invoice Process" isExecutable="true">
+    <semantic:laneSet id="laneSet_main">
+      <semantic:lane id="lane_monetary_dept" name="Monetary Department">
+        <semantic:flowNodeRef>se_main_start</semantic:flowNodeRef>
+        <semantic:flowNodeRef>sp_funds_commitment</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_mon_view_report</semantic:flowNodeRef>
+      </semantic:lane>
+      <semantic:lane id="lane_ap_dept" name="Accounts Payable Department">
+        <semantic:flowNodeRef>task_ap_receive_invoice</semantic:flowNodeRef>
+        <semantic:flowNodeRef>pg_ap_prereq_fork</semantic:flowNodeRef>
+        <semantic:flowNodeRef>sp_ap_maintain_vendor</semantic:flowNodeRef>
+        <semantic:flowNodeRef>sp_ap_create_cost_centre</semantic:flowNodeRef>
+        <semantic:flowNodeRef>pg_ap_prereq_join</semantic:flowNodeRef>
+        <semantic:flowNodeRef>sp_ap_post_invoice</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_ap_display_doc_check_status</semantic:flowNodeRef>
+        <semantic:flowNodeRef>xg_ap_doc_parked</semantic:flowNodeRef>
+        <semantic:flowNodeRef>sp_ap_release_parked_doc</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_ap_post_payment_req_define_details</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_ap_select_post_final_doc</semantic:flowNodeRef>
+        <semantic:flowNodeRef>ee_main_end</semantic:flowNodeRef>
+      </semantic:lane>
+    </semantic:laneSet>
+
+    <!-- Main Process Elements -->
+    <semantic:startEvent id="se_main_start" name="Commitment &amp; Invoice Received">
+      <semantic:outgoing>flow_se_main_start_to_sp_funds_commitment</semantic:outgoing>
+    </semantic:startEvent>
+
+    <semantic:subProcess id="sp_funds_commitment" name="Post Funds Commitment in SAP ECC" triggeredByEvent="false">
+      <semantic:incoming>flow_se_main_start_to_sp_funds_commitment</semantic:incoming>
+      <semantic:outgoing>flow_sp_funds_commitment_to_task_mon_view_report</semantic:outgoing>
+      <semantic:startEvent id="sp_fc_start_event" name="Start Funds Commitment">
+        <semantic:outgoing>flow_sp_fc_start_to_task_fc_define_docs</semantic:outgoing>
+      </semantic:startEvent>
+      <semantic:task id="task_fc_define_docs_codes_currency" name="Define Document Type, Company Code, and Currency">
+        <semantic:incoming>flow_sp_fc_start_to_task_fc_define_docs</semantic:incoming>
+        <semantic:outgoing>flow_task_fc_define_docs_to_task_fc_define_posting</semantic:outgoing>
+      </semantic:task>
+      <semantic:task id="task_fc_define_posting_details" name="Define Commitment Posting Details (Item, Centre, Fund, Area)">
+        <semantic:incoming>flow_task_fc_define_docs_to_task_fc_define_posting</semantic:incoming>
+        <semantic:outgoing>flow_task_fc_define_posting_to_task_fc_save</semantic:outgoing>
+      </semantic:task>
+      <semantic:task id="task_fc_save_document" name="Save Funds Commitment Document">
+        <semantic:incoming>flow_task_fc_define_posting_to_task_fc_save</semantic:incoming>
+        <semantic:outgoing>flow_task_fc_save_to_sp_fc_end</semantic:outgoing>
+      </semantic:task>
+      <semantic:endEvent id="sp_fc_end_event" name="End Funds Commitment">
+        <semantic:incoming>flow_task_fc_save_to_sp_fc_end</semantic:incoming>
+      </semantic:endEvent>
+      <semantic:sequenceFlow id="flow_sp_fc_start_to_task_fc_define_docs" sourceRef="sp_fc_start_event" targetRef="task_fc_define_docs_codes_currency"/>
+      <semantic:sequenceFlow id="flow_task_fc_define_docs_to_task_fc_define_posting" sourceRef="task_fc_define_docs_codes_currency" targetRef="task_fc_define_posting_details"/>
+      <semantic:sequenceFlow id="flow_task_fc_define_posting_to_task_fc_save" sourceRef="task_fc_define_posting_details" targetRef="task_fc_save_document"/>
+      <semantic:sequenceFlow id="flow_task_fc_save_to_sp_fc_end" sourceRef="task_fc_save_document" targetRef="sp_fc_end_event"/>
+    </semantic:subProcess>
+
+    <semantic:task id="task_mon_view_report" name="Refer to Posting Report (Funds Commitment)">
+      <semantic:incoming>flow_sp_funds_commitment_to_task_mon_view_report</semantic:incoming>
+      <semantic:outgoing>flow_task_mon_view_report_to_task_ap_receive_invoice</semantic:outgoing>
+    </semantic:task>
+
+    <semantic:task id="task_ap_receive_invoice" name="Receive Invoice from External Service Provider">
+      <semantic:incoming>flow_task_mon_view_report_to_task_ap_receive_invoice</semantic:incoming>
+      <semantic:outgoing>flow_task_ap_receive_invoice_to_pg_ap_prereq_fork</semantic:outgoing>
+    </semantic:task>
+
+    <semantic:parallelGateway id="pg_ap_prereq_fork" name="Fork for Pre-requisites">
+      <semantic:incoming>flow_task_ap_receive_invoice_to_pg_ap_prereq_fork</semantic:incoming>
+      <semantic:outgoing>flow_pg_ap_prereq_fork_to_sp_ap_maintain_vendor</semantic:outgoing>
+      <semantic:outgoing>flow_pg_ap_prereq_fork_to_sp_ap_create_cost_centre</semantic:outgoing>
+    </semantic:parallelGateway>
+
+    <semantic:subProcess id="sp_ap_maintain_vendor" name="Maintain Vendor Master Data" triggeredByEvent="false">
+      <semantic:incoming>flow_pg_ap_prereq_fork_to_sp_ap_maintain_vendor</semantic:incoming>
+      <semantic:outgoing>flow_sp_ap_maintain_vendor_to_pg_ap_prereq_join</semantic:outgoing>
+      <semantic:startEvent id="sp_vm_start_event" name="Start Vendor Maintenance">
+        <semantic:outgoing>flow_sp_vm_start_to_task_vm_specify_initial_data</semantic:outgoing>
+      </semantic:startEvent>
+      <semantic:task id="task_vm_specify_initial_data" name="Specify Initial Vendor Data (Vendor, CC, Purch. Org, Acc. Group)">
+        <semantic:incoming>flow_sp_vm_start_to_task_vm_specify_initial_data</semantic:incoming>
+        <semantic:outgoing>flow_task_vm_specify_initial_data_to_task_vm_specify_address</semantic:outgoing>
+      </semantic:task>
+      <semantic:task id="task_vm_specify_address" name="Specify Vendor Address Data">
+        <semantic:incoming>flow_task_vm_specify_initial_data_to_task_vm_specify_address</semantic:incoming>
+        <semantic:outgoing>flow_task_vm_specify_address_to_task_vm_maintain_vat_tax</semantic:outgoing>
+      </semantic:task>
+      <semantic:task id="task_vm_maintain_vat_tax" name="Maintain European VAT ID and Tax File Number">
+        <semantic:incoming>flow_task_vm_specify_address_to_task_vm_maintain_vat_tax</semantic:incoming>
+        <semantic:outgoing>flow_task_vm_maintain_vat_tax_to_task_vm_define_bank</semantic:outgoing>
+      </semantic:task>
+      <semantic:task id="task_vm_define_bank" name="Define Bank Details">
+        <semantic:incoming>flow_task_vm_maintain_vat_tax_to_task_vm_define_bank</semantic:incoming>
+        <semantic:outgoing>flow_task_vm_define_bank_to_task_vm_specify_reco_account</semantic:outgoing>
+      </semantic:task>
+      <semantic:task id="task_vm_specify_reco_account" name="Specify Reconciliation Account">
+        <semantic:incoming>flow_task_vm_define_bank_to_task_vm_specify_reco_account</semantic:incoming>
+        <semantic:outgoing>flow_task_vm_specify_reco_account_to_task_vm_define_payment_terms</semantic:outgoing>
+      </semantic:task>
+      <semantic:task id="task_vm_define_payment_terms" name="Define Payment Terms and Incoterms">
+        <semantic:incoming>flow_task_vm_specify_reco_account_to_task_vm_define_payment_terms</semantic:incoming>
+        <semantic:outgoing>flow_task_vm_define_payment_terms_to_task_vm_save_vendor</semantic:outgoing>
+      </semantic:task>
+      <semantic:task id="task_vm_save_vendor" name="Save New Vendor">
+        <semantic:incoming>flow_task_vm_define_payment_terms_to_task_vm_save_vendor</semantic:incoming>
+        <semantic:outgoing>flow_task_vm_save_vendor_to_sp_vm_end</semantic:outgoing>
+      </semantic:task>
+      <semantic:endEvent id="sp_vm_end_event" name="End Vendor Maintenance">
+        <semantic:incoming>flow_task_vm_save_vendor_to_sp_vm_end</semantic:incoming>
+      </semantic:endEvent>
+      <semantic:sequenceFlow id="flow_sp_vm_start_to_task_vm_specify_initial_data" sourceRef="sp_vm_start_event" targetRef="task_vm_specify_initial_data"/>
+      <semantic:sequenceFlow id="flow_task_vm_specify_initial_data_to_task_vm_specify_address" sourceRef="task_vm_specify_initial_data" targetRef="task_vm_specify_address"/>
+      <semantic:sequenceFlow id="flow_task_vm_specify_address_to_task_vm_maintain_vat_tax" sourceRef="task_vm_specify_address" targetRef="task_vm_maintain_vat_tax"/>
+      <semantic:sequenceFlow id="flow_task_vm_maintain_vat_tax_to_task_vm_define_bank" sourceRef="task_vm_maintain_vat_tax" targetRef="task_vm_define_bank"/>
+      <semantic:sequenceFlow id="flow_task_vm_define_bank_to_task_vm_specify_reco_account" sourceRef="task_vm_define_bank" targetRef="task_vm_specify_reco_account"/>
+      <semantic:sequenceFlow id="flow_task_vm_specify_reco_account_to_task_vm_define_payment_terms" sourceRef="task_vm_specify_reco_account" targetRef="task_vm_define_payment_terms"/>
+      <semantic:sequenceFlow id="flow_task_vm_define_payment_terms_to_task_vm_save_vendor" sourceRef="task_vm_define_payment_terms" targetRef="task_vm_save_vendor"/>
+      <semantic:sequenceFlow id="flow_task_vm_save_vendor_to_sp_vm_end" sourceRef="task_vm_save_vendor" targetRef="sp_vm_end_event"/>
+    </semantic:subProcess>
+
+    <semantic:subProcess id="sp_ap_create_cost_centre" name="Create Cost Centre (CC)" triggeredByEvent="false">
+      <semantic:incoming>flow_pg_ap_prereq_fork_to_sp_ap_create_cost_centre</semantic:incoming>
+      <semantic:outgoing>flow_sp_ap_create_cost_centre_to_pg_ap_prereq_join</semantic:outgoing>
+      <semantic:startEvent id="sp_cc_start_event" name="Start Cost Centre Creation">
+        <semantic:outgoing>flow_sp_cc_start_to_task_cc_define_name_validity</semantic:outgoing>
+      </semantic:startEvent>
+      <semantic:task id="task_cc_define_name_validity" name="Define CC Name and Validity Period">
+        <semantic:incoming>flow_sp_cc_start_to_task_cc_define_name_validity</semantic:incoming>
+        <semantic:outgoing>flow_task_cc_define_name_validity_to_task_cc_confirm_entries</semantic:outgoing>
+      </semantic:task>
+      <semantic:task id="task_cc_confirm_entries" name="Confirm CC Entries">
+        <semantic:incoming>flow_task_cc_define_name_validity_to_task_cc_confirm_entries</semantic:incoming>
+        <semantic:outgoing>flow_task_cc_confirm_entries_to_task_cc_define_master_data</semantic:outgoing>
+      </semantic:task>
+      <semantic:task id="task_cc_define_master_data" name="Define CC Master Data (Name, Resp., Category, Area, Currency, Group Assign)">
+        <semantic:incoming>flow_task_cc_confirm_entries_to_task_cc_define_master_data</semantic:incoming>
+        <semantic:outgoing>flow_task_cc_define_master_data_to_task_cc_save_entries</semantic:outgoing>
+      </semantic:task>
+      <semantic:task id="task_cc_save_entries" name="Save CC Entries">
+        <semantic:incoming>flow_task_cc_define_master_data_to_task_cc_save_entries</semantic:incoming>
+        <semantic:outgoing>flow_task_cc_save_entries_to_sp_cc_end</semantic:outgoing>
+      </semantic:task>
+      <semantic:endEvent id="sp_cc_end_event" name="End Cost Centre Creation">
+        <semantic:incoming>flow_task_cc_save_entries_to_sp_cc_end</semantic:incoming>
+      </semantic:endEvent>
+      <semantic:sequenceFlow id="flow_sp_cc_start_to_task_cc_define_name_validity" sourceRef="sp_cc_start_event" targetRef="task_cc_define_name_validity"/>
+      <semantic:sequenceFlow id="flow_task_cc_define_name_validity_to_task_cc_confirm_entries" sourceRef="task_cc_define_name_validity" targetRef="task_cc_confirm_entries"/>
+      <semantic:sequenceFlow id="flow_task_cc_confirm_entries_to_task_cc_define_master_data" sourceRef="task_cc_confirm_entries" targetRef="task_cc_define_master_data"/>
+      <semantic:sequenceFlow id="flow_task_cc_define_master_data_to_task_cc_save_entries" sourceRef="task_cc_define_master_data" targetRef="task_cc_save_entries"/>
+      <semantic:sequenceFlow id="flow_task_cc_save_entries_to_sp_cc_end" sourceRef="task_cc_save_entries" targetRef="sp_cc_end_event"/>
+    </semantic:subProcess>
+
+    <semantic:parallelGateway id="pg_ap_prereq_join" name="Join Pre-requisites">
+      <semantic:incoming>flow_sp_ap_maintain_vendor_to_pg_ap_prereq_join</semantic:incoming>
+      <semantic:incoming>flow_sp_ap_create_cost_centre_to_pg_ap_prereq_join</semantic:incoming>
+      <semantic:outgoing>flow_pg_ap_prereq_join_to_sp_ap_post_invoice</semantic:outgoing>
+    </semantic:parallelGateway>
+
+    <semantic:subProcess id="sp_ap_post_invoice" name="Prepare and Post Invoice" triggeredByEvent="false">
+      <semantic:incoming>flow_pg_ap_prereq_join_to_sp_ap_post_invoice</semantic:incoming>
+      <semantic:outgoing>flow_sp_ap_post_invoice_to_task_ap_display_doc_check_status</semantic:outgoing>
+      <semantic:startEvent id="sp_pi_start_event" name="Start Invoice Posting">
+        <semantic:outgoing>flow_sp_pi_start_to_task_pi_define_initial_details</semantic:outgoing>
+      </semantic:startEvent>
+      <semantic:task id="task_pi_define_initial_details" name="Define Initial Invoice Details (Doc Type, Vendor, Period, CI, Fund, Funds Center)">
+        <semantic:incoming>flow_sp_pi_start_to_task_pi_define_initial_details</semantic:incoming>
+        <semantic:outgoing>flow_task_pi_define_initial_details_to_task_pi_define_tax_assign_cc</semantic:outgoing>
+      </semantic:task>
+      <semantic:task id="task_pi_define_tax_assign_cc" name="Define Tax Details and Assign Cost Centre">
+        <semantic:incoming>flow_task_pi_define_initial_details_to_task_pi_define_tax_assign_cc</semantic:incoming>
+        <semantic:outgoing>flow_task_pi_define_tax_assign_cc_to_task_pi_save_posting</semantic:outgoing>
+      </semantic:task>
+      <semantic:task id="task_pi_save_posting" name="Save Invoice Posting">
+        <semantic:incoming>flow_task_pi_define_tax_assign_cc_to_task_pi_save_posting</semantic:incoming>
+        <semantic:outgoing>flow_task_pi_save_posting_to_sp_pi_end</semantic:outgoing>
+      </semantic:task>
+      <semantic:endEvent id="sp_pi_end_event" name="End Invoice Posting">
+        <semantic:incoming>flow_task_pi_save_posting_to_sp_pi_end</semantic:incoming>
+      </semantic:endEvent>
+      <semantic:sequenceFlow id="flow_sp_pi_start_to_task_pi_define_initial_details" sourceRef="sp_pi_start_event" targetRef="task_pi_define_initial_details"/>
+      <semantic:sequenceFlow id="flow_task_pi_define_initial_details_to_task_pi_define_tax_assign_cc" sourceRef="task_pi_define_initial_details" targetRef="task_pi_define_tax_assign_cc"/>
+      <semantic:sequenceFlow id="flow_task_pi_define_tax_assign_cc_to_task_pi_save_posting" sourceRef="task_pi_define_tax_assign_cc" targetRef="task_pi_save_posting"/>
+      <semantic:sequenceFlow id="flow_task_pi_save_posting_to_sp_pi_end" sourceRef="task_pi_save_posting" targetRef="sp_pi_end_event"/>
+    </semantic:subProcess>
+
+    <semantic:task id="task_ap_display_doc_check_status" name="Display Document and Check Status">
+      <semantic:incoming>flow_sp_ap_post_invoice_to_task_ap_display_doc_check_status</semantic:incoming>
+      <semantic:outgoing>flow_task_ap_display_doc_check_status_to_xg_ap_doc_parked</semantic:outgoing>
+    </semantic:task>
+
+    <semantic:exclusiveGateway id="xg_ap_doc_parked" name="Document Parked?">
+      <semantic:incoming>flow_task_ap_display_doc_check_status_to_xg_ap_doc_parked</semantic:incoming>
+      <semantic:outgoing>flow_xg_ap_doc_parked_to_sp_ap_release_parked_doc</semantic:outgoing>
+      <semantic:outgoing>flow_xg_ap_doc_parked_to_task_ap_post_payment_req_define_details</semantic:outgoing>
+    </semantic:exclusiveGateway>
+
+    <semantic:subProcess id="sp_ap_release_parked_doc" name="Release Parked Document" triggeredByEvent="false">
+      <semantic:incoming>flow_xg_ap_doc_parked_to_sp_ap_release_parked_doc</semantic:incoming>
+      <semantic:outgoing>flow_sp_ap_release_parked_doc_to_task_ap_post_payment_req_define_details</semantic:outgoing>
+      <semantic:startEvent id="sp_rpd_start_event" name="Start Document Release">
+        <semantic:outgoing>flow_sp_rpd_start_to_task_rpd_customize_doc</semantic:outgoing>
+      </semantic:startEvent>
+      <semantic:task id="task_rpd_customize_doc" name="Customize Document">
+        <semantic:incoming>flow_sp_rpd_start_to_task_rpd_customize_doc</semantic:incoming>
+        <semantic:outgoing>flow_task_rpd_customize_doc_to_task_rpd_assign_req_cat_fi</semantic:outgoing>
+      </semantic:task>
+      <semantic:task id="task_rpd_assign_req_cat_fi" name="Assign Request Category to FI Document Type">
+        <semantic:incoming>flow_task_rpd_customize_doc_to_task_rpd_assign_req_cat_fi</semantic:incoming>
+        <semantic:outgoing>flow_task_rpd_assign_req_cat_fi_to_task_rpd_link_req_cat_doc_type</semantic:outgoing>
+      </semantic:task>
+      <semantic:task id="task_rpd_link_req_cat_doc_type" name="Link Request Category to Document Type">
+        <semantic:incoming>flow_task_rpd_assign_req_cat_fi_to_task_rpd_link_req_cat_doc_type</semantic:incoming>
+        <semantic:outgoing>flow_task_rpd_link_req_cat_doc_type_to_task_rpd_control_proc_req_cat</semantic:outgoing>
+      </semantic:task>
+      <semantic:task id="task_rpd_control_proc_req_cat" name="Control Processing of Request Categories">
+        <semantic:incoming>flow_task_rpd_link_req_cat_doc_type_to_task_rpd_control_proc_req_cat</semantic:incoming>
+        <semantic:outgoing>flow_task_rpd_control_proc_req_cat_to_task_rpd_assign_workflow</semantic:outgoing>
+      </semantic:task>
+      <semantic:task id="task_rpd_assign_workflow" name="Assign Workflow to Request Type">
+        <semantic:incoming>flow_task_rpd_control_proc_req_cat_to_task_rpd_assign_workflow</semantic:incoming>
+        <semantic:outgoing>flow_task_rpd_assign_workflow_to_sp_rpd_end</semantic:outgoing>
+      </semantic:task>
+      <semantic:endEvent id="sp_rpd_end_event" name="End Document Release">
+        <semantic:incoming>flow_task_rpd_assign_workflow_to_sp_rpd_end</semantic:incoming>
+      </semantic:endEvent>
+      <semantic:sequenceFlow id="flow_sp_rpd_start_to_task_rpd_customize_doc" sourceRef="sp_rpd_start_event" targetRef="task_rpd_customize_doc"/>
+      <semantic:sequenceFlow id="flow_task_rpd_customize_doc_to_task_rpd_assign_req_cat_fi" sourceRef="task_rpd_customize_doc" targetRef="task_rpd_assign_req_cat_fi"/>
+      <semantic:sequenceFlow id="flow_task_rpd_assign_req_cat_fi_to_task_rpd_link_req_cat_doc_type" sourceRef="task_rpd_assign_req_cat_fi" targetRef="task_rpd_link_req_cat_doc_type"/>
+      <semantic:sequenceFlow id="flow_task_rpd_link_req_cat_doc_type_to_task_rpd_control_proc_req_cat" sourceRef="task_rpd_link_req_cat_doc_type" targetRef="task_rpd_control_proc_req_cat"/>
+      <semantic:sequenceFlow id="flow_task_rpd_control_proc_req_cat_to_task_rpd_assign_workflow" sourceRef="task_rpd_control_proc_req_cat" targetRef="task_rpd_assign_workflow"/>
+      <semantic:sequenceFlow id="flow_task_rpd_assign_workflow_to_sp_rpd_end" sourceRef="task_rpd_assign_workflow" targetRef="sp_rpd_end_event"/>
+    </semantic:subProcess>
+
+    <semantic:task id="task_ap_post_payment_req_define_details" name="Post Payment Request (Define Details &amp; Execute)">
+      <semantic:incoming>flow_sp_ap_release_parked_doc_to_task_ap_post_payment_req_define_details</semantic:incoming>
+      <semantic:incoming>flow_xg_ap_doc_parked_to_task_ap_post_payment_req_define_details</semantic:incoming>
+      <semantic:outgoing>flow_task_ap_post_payment_req_define_details_to_task_ap_select_post_final_doc</semantic:outgoing>
+    </semantic:task>
+
+    <semantic:task id="task_ap_select_post_final_doc" name="Select and Post Corresponding Document">
+      <semantic:incoming>flow_task_ap_post_payment_req_define_details_to_task_ap_select_post_final_doc</semantic:incoming>
+      <semantic:outgoing>flow_task_ap_select_post_final_doc_to_ee_main_end</semantic:outgoing>
+    </semantic:task>
+
+    <semantic:endEvent id="ee_main_end" name="Process Maintained">
+      <semantic:incoming>flow_task_ap_select_post_final_doc_to_ee_main_end</semantic:incoming>
+    </semantic:endEvent>
+
+    <!-- Main Process Sequence Flows -->
+    <semantic:sequenceFlow id="flow_se_main_start_to_sp_funds_commitment" sourceRef="se_main_start" targetRef="sp_funds_commitment"/>
+    <semantic:sequenceFlow id="flow_sp_funds_commitment_to_task_mon_view_report" sourceRef="sp_funds_commitment" targetRef="task_mon_view_report"/>
+    <semantic:sequenceFlow id="flow_task_mon_view_report_to_task_ap_receive_invoice" sourceRef="task_mon_view_report" targetRef="task_ap_receive_invoice"/>
+    <semantic:sequenceFlow id="flow_task_ap_receive_invoice_to_pg_ap_prereq_fork" sourceRef="task_ap_receive_invoice" targetRef="pg_ap_prereq_fork"/>
+    <semantic:sequenceFlow id="flow_pg_ap_prereq_fork_to_sp_ap_maintain_vendor" sourceRef="pg_ap_prereq_fork" targetRef="sp_ap_maintain_vendor"/>
+    <semantic:sequenceFlow id="flow_pg_ap_prereq_fork_to_sp_ap_create_cost_centre" sourceRef="pg_ap_prereq_fork" targetRef="sp_ap_create_cost_centre"/>
+    <semantic:sequenceFlow id="flow_sp_ap_maintain_vendor_to_pg_ap_prereq_join" sourceRef="sp_ap_maintain_vendor" targetRef="pg_ap_prereq_join"/>
+    <semantic:sequenceFlow id="flow_sp_ap_create_cost_centre_to_pg_ap_prereq_join" sourceRef="sp_ap_create_cost_centre" targetRef="pg_ap_prereq_join"/>
+    <semantic:sequenceFlow id="flow_pg_ap_prereq_join_to_sp_ap_post_invoice" sourceRef="pg_ap_prereq_join" targetRef="sp_ap_post_invoice"/>
+    <semantic:sequenceFlow id="flow_sp_ap_post_invoice_to_task_ap_display_doc_check_status" sourceRef="sp_ap_post_invoice" targetRef="task_ap_display_doc_check_status"/>
+    <semantic:sequenceFlow id="flow_task_ap_display_doc_check_status_to_xg_ap_doc_parked" sourceRef="task_ap_display_doc_check_status" targetRef="xg_ap_doc_parked"/>
+    <semantic:sequenceFlow id="flow_xg_ap_doc_parked_to_sp_ap_release_parked_doc" name="Document Parked" sourceRef="xg_ap_doc_parked" targetRef="sp_ap_release_parked_doc">
+      <semantic:conditionExpression xsi:type="semantic:tFormalExpression">Document Parked</semantic:conditionExpression>
+    </semantic:sequenceFlow>
+    <semantic:sequenceFlow id="flow_sp_ap_release_parked_doc_to_task_ap_post_payment_req_define_details" sourceRef="sp_ap_release_parked_doc" targetRef="task_ap_post_payment_req_define_details"/>
+    <semantic:sequenceFlow id="flow_xg_ap_doc_parked_to_task_ap_post_payment_req_define_details" name="Document Not Parked" sourceRef="xg_ap_doc_parked" targetRef="task_ap_post_payment_req_define_details">
+      <semantic:conditionExpression xsi:type="semantic:tFormalExpression">Document Not Parked</semantic:conditionExpression>
+    </semantic:sequenceFlow>
+    <semantic:sequenceFlow id="flow_task_ap_post_payment_req_define_details_to_task_ap_select_post_final_doc" sourceRef="task_ap_post_payment_req_define_details" targetRef="task_ap_select_post_final_doc"/>
+    <semantic:sequenceFlow id="flow_task_ap_select_post_final_doc_to_ee_main_end" sourceRef="task_ap_select_post_final_doc" targetRef="ee_main_end"/>
+
+  </semantic:process>
+
+  <bpmndi:BPMNDiagram id="BPMNDiagram_CommitmentInvoiceProcess">
+    <bpmndi:BPMNPlane bpmnElement="collab_commitment_invoice">
+      <bpmndi:BPMNShape id="participant_commitment_invoice_ops_shape" bpmnElement="participant_commitment_invoice_ops" isHorizontal="true">
+        <dc:Bounds x="10" y="10" width="5050" height="700"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="lane_monetary_dept_shape" bpmnElement="lane_monetary_dept" isHorizontal="true">
+        <dc:Bounds x="40" y="10" width="5020" height="250"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="lane_ap_dept_shape" bpmnElement="lane_ap_dept" isHorizontal="true">
+        <dc:Bounds x="40" y="260" width="5020" height="450"/>
+      </bpmndi:BPMNShape>
+
+      <!-- Monetary Department Shapes -->
+      <bpmndi:BPMNShape id="se_main_start_shape" bpmnElement="se_main_start">
+        <dc:Bounds x="80" y="112" width="36" height="36"/>
+        <bpmndi:BPMNLabel><dc:Bounds x="60" y="153" width="80" height="40"/></bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="sp_funds_commitment_shape" bpmnElement="sp_funds_commitment" isExpanded="true">
+        <dc:Bounds x="180" y="60" width="820" height="180"/>
+         <bpmndi:BPMNLabel><dc:Bounds x="190" y="65" width="200" height="30"/></bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="sp_fc_start_event_shape" bpmnElement="sp_fc_start_event">
+        <dc:Bounds x="220" y="132" width="36" height="36"/>
+        <bpmndi:BPMNLabel><dc:Bounds x="200" y="173" width="80" height="30"/></bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="task_fc_define_docs_codes_currency_shape" bpmnElement="task_fc_define_docs_codes_currency">
+        <dc:Bounds x="300" y="110" width="180" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="task_fc_define_posting_details_shape" bpmnElement="task_fc_define_posting_details">
+        <dc:Bounds x="520" y="110" width="180" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="task_fc_save_document_shape" bpmnElement="task_fc_save_document">
+        <dc:Bounds x="740" y="110" width="180" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="sp_fc_end_event_shape" bpmnElement="sp_fc_end_event">
+        <dc:Bounds x="940" y="132" width="36" height="36"/>
+         <bpmndi:BPMNLabel><dc:Bounds x="920" y="173" width="80" height="30"/></bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="task_mon_view_report_shape" bpmnElement="task_mon_view_report">
+        <dc:Bounds x="1020" y="110" width="180" height="80"/>
+      </bpmndi:BPMNShape>
+
+      <!-- Accounts Payable Department Shapes -->
+      <bpmndi:BPMNShape id="task_ap_receive_invoice_shape" bpmnElement="task_ap_receive_invoice">
+        <dc:Bounds x="80" y="450" width="180" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="pg_ap_prereq_fork_shape" bpmnElement="pg_ap_prereq_fork" isMarkerVisible="true">
+        <dc:Bounds x="300" y="465" width="50" height="50"/>
+         <bpmndi:BPMNLabel><dc:Bounds x="280" y="520" width="90" height="30"/></bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="sp_ap_maintain_vendor_shape" bpmnElement="sp_ap_maintain_vendor" isExpanded="true">
+        <dc:Bounds x="400" y="300" width="1610" height="180"/>
+        <bpmndi:BPMNLabel><dc:Bounds x="410" y="305" width="200" height="30"/></bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+        <bpmndi:BPMNShape id="sp_vm_start_event_shape" bpmnElement="sp_vm_start_event"><dc:Bounds x="420" y="372" width="36" height="36"/><bpmndi:BPMNLabel><dc:Bounds x="400" y="413" width="80" height="30"/></bpmndi:BPMNLabel></bpmndi:BPMNShape>
+        <bpmndi:BPMNShape id="task_vm_specify_initial_data_shape" bpmnElement="task_vm_specify_initial_data"><dc:Bounds x="490" y="350" width="180" height="80"/></bpmndi:BPMNShape>
+        <bpmndi:BPMNShape id="task_vm_specify_address_shape" bpmnElement="task_vm_specify_address"><dc:Bounds x="700" y="350" width="180" height="80"/></bpmndi:BPMNShape>
+        <bpmndi:BPMNShape id="task_vm_maintain_vat_tax_shape" bpmnElement="task_vm_maintain_vat_tax"><dc:Bounds x="910" y="350" width="180" height="80"/></bpmndi:BPMNShape>
+        <bpmndi:BPMNShape id="task_vm_define_bank_shape" bpmnElement="task_vm_define_bank"><dc:Bounds x="1120" y="350" width="180" height="80"/></bpmndi:BPMNShape>
+        <bpmndi:BPMNShape id="task_vm_specify_reco_account_shape" bpmnElement="task_vm_specify_reco_account"><dc:Bounds x="1330" y="350" width="180" height="80"/></bpmndi:BPMNShape>
+        <bpmndi:BPMNShape id="task_vm_define_payment_terms_shape" bpmnElement="task_vm_define_payment_terms"><dc:Bounds x="1540" y="350" width="180" height="80"/></bpmndi:BPMNShape>
+        <bpmndi:BPMNShape id="task_vm_save_vendor_shape" bpmnElement="task_vm_save_vendor"><dc:Bounds x="1750" y="350" width="180" height="80"/></bpmndi:BPMNShape>
+        <bpmndi:BPMNShape id="sp_vm_end_event_shape" bpmnElement="sp_vm_end_event"><dc:Bounds x="1950" y="372" width="36" height="36"/><bpmndi:BPMNLabel><dc:Bounds x="1930" y="413" width="80" height="30"/></bpmndi:BPMNLabel></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="sp_ap_create_cost_centre_shape" bpmnElement="sp_ap_create_cost_centre" isExpanded="true">
+        <dc:Bounds x="400" y="520" width="980" height="180"/>
+        <bpmndi:BPMNLabel><dc:Bounds x="410" y="525" width="200" height="30"/></bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+        <bpmndi:BPMNShape id="sp_cc_start_event_shape" bpmnElement="sp_cc_start_event"><dc:Bounds x="420" y="592" width="36" height="36"/><bpmndi:BPMNLabel><dc:Bounds x="400" y="633" width="80" height="40"/></bpmndi:BPMNLabel></bpmndi:BPMNShape>
+        <bpmndi:BPMNShape id="task_cc_define_name_validity_shape" bpmnElement="task_cc_define_name_validity"><dc:Bounds x="490" y="570" width="180" height="80"/></bpmndi:BPMNShape>
+        <bpmndi:BPMNShape id="task_cc_confirm_entries_shape" bpmnElement="task_cc_confirm_entries"><dc:Bounds x="700" y="570" width="180" height="80"/></bpmndi:BPMNShape>
+        <bpmndi:BPMNShape id="task_cc_define_master_data_shape" bpmnElement="task_cc_define_master_data"><dc:Bounds x="910" y="570" width="180" height="80"/></bpmndi:BPMNShape>
+        <bpmndi:BPMNShape id="task_cc_save_entries_shape" bpmnElement="task_cc_save_entries"><dc:Bounds x="1120" y="570" width="180" height="80"/></bpmndi:BPMNShape>
+        <bpmndi:BPMNShape id="sp_cc_end_event_shape" bpmnElement="sp_cc_end_event"><dc:Bounds x="1330" y="592" width="36" height="36"/><bpmndi:BPMNLabel><dc:Bounds x="1310" y="633" width="80" height="40"/></bpmndi:BPMNLabel></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="pg_ap_prereq_join_shape" bpmnElement="pg_ap_prereq_join" isMarkerVisible="true">
+        <dc:Bounds x="2050" y="465" width="50" height="50"/>
+        <bpmndi:BPMNLabel><dc:Bounds x="2030" y="520" width="90" height="30"/></bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="sp_ap_post_invoice_shape" bpmnElement="sp_ap_post_invoice" isExpanded="true">
+        <dc:Bounds x="2150" y="400" width="780" height="180"/>
+        <bpmndi:BPMNLabel><dc:Bounds x="2160" y="405" width="200" height="30"/></bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+        <bpmndi:BPMNShape id="sp_pi_start_event_shape" bpmnElement="sp_pi_start_event"><dc:Bounds x="2180" y="472" width="36" height="36"/><bpmndi:BPMNLabel><dc:Bounds x="2160" y="513" width="80" height="30"/></bpmndi:BPMNLabel></bpmndi:BPMNShape>
+        <bpmndi:BPMNShape id="task_pi_define_initial_details_shape" bpmnElement="task_pi_define_initial_details"><dc:Bounds x="2250" y="450" width="180" height="80"/></bpmndi:BPMNShape>
+        <bpmndi:BPMNShape id="task_pi_define_tax_assign_cc_shape" bpmnElement="task_pi_define_tax_assign_cc"><dc:Bounds x="2460" y="450" width="180" height="80"/></bpmndi:BPMNShape>
+        <bpmndi:BPMNShape id="task_pi_save_posting_shape" bpmnElement="task_pi_save_posting"><dc:Bounds x="2670" y="450" width="180" height="80"/></bpmndi:BPMNShape>
+        <bpmndi:BPMNShape id="sp_pi_end_event_shape" bpmnElement="sp_pi_end_event"><dc:Bounds x="2880" y="472" width="36" height="36"/><bpmndi:BPMNLabel><dc:Bounds x="2860" y="513" width="80" height="30"/></bpmndi:BPMNLabel></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="task_ap_display_doc_check_status_shape" bpmnElement="task_ap_display_doc_check_status">
+        <dc:Bounds x="2980" y="450" width="180" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="xg_ap_doc_parked_shape" bpmnElement="xg_ap_doc_parked" isMarkerVisible="true">
+        <dc:Bounds x="3200" y="465" width="50" height="50"/>
+        <bpmndi:BPMNLabel><dc:Bounds x="3180" y="520" width="90" height="30"/></bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="sp_ap_release_parked_doc_shape" bpmnElement="sp_ap_release_parked_doc" isExpanded="true">
+        <dc:Bounds x="3300" y="300" width="1180" height="180"/>
+         <bpmndi:BPMNLabel><dc:Bounds x="3310" y="305" width="200" height="30"/></bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+        <bpmndi:BPMNShape id="sp_rpd_start_event_shape" bpmnElement="sp_rpd_start_event"><dc:Bounds x="3320" y="372" width="36" height="36"/><bpmndi:BPMNLabel><dc:Bounds x="3300" y="413" width="80" height="40"/></bpmndi:BPMNLabel></bpmndi:BPMNShape>
+        <bpmndi:BPMNShape id="task_rpd_customize_doc_shape" bpmnElement="task_rpd_customize_doc"><dc:Bounds x="3390" y="350" width="180" height="80"/></bpmndi:BPMNShape>
+        <bpmndi:BPMNShape id="task_rpd_assign_req_cat_fi_shape" bpmnElement="task_rpd_assign_req_cat_fi"><dc:Bounds x="3600" y="350" width="180" height="80"/></bpmndi:BPMNShape>
+        <bpmndi:BPMNShape id="task_rpd_link_req_cat_doc_type_shape" bpmnElement="task_rpd_link_req_cat_doc_type"><dc:Bounds x="3810" y="350" width="180" height="80"/></bpmndi:BPMNShape>
+        <bpmndi:BPMNShape id="task_rpd_control_proc_req_cat_shape" bpmnElement="task_rpd_control_proc_req_cat"><dc:Bounds x="4020" y="350" width="180" height="80"/></bpmndi:BPMNShape>
+        <bpmndi:BPMNShape id="task_rpd_assign_workflow_shape" bpmnElement="task_rpd_assign_workflow"><dc:Bounds x="4230" y="350" width="180" height="80"/></bpmndi:BPMNShape>
+        <bpmndi:BPMNShape id="sp_rpd_end_event_shape" bpmnElement="sp_rpd_end_event"><dc:Bounds x="4440" y="372" width="36" height="36"/><bpmndi:BPMNLabel><dc:Bounds x="4420" y="413" width="80" height="40"/></bpmndi:BPMNLabel></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="task_ap_post_payment_req_define_details_shape" bpmnElement="task_ap_post_payment_req_define_details">
+        <dc:Bounds x="4550" y="450" width="180" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="task_ap_select_post_final_doc_shape" bpmnElement="task_ap_select_post_final_doc">
+        <dc:Bounds x="4780" y="450" width="180" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="ee_main_end_shape" bpmnElement="ee_main_end">
+        <dc:Bounds x="5000" y="472" width="36" height="36"/>
+        <bpmndi:BPMNLabel><dc:Bounds x="4980" y="513" width="80" height="30"/></bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <!-- Sequence Flow Edges -->
+      <bpmndi:BPMNEdge id="flow_se_main_start_to_sp_funds_commitment_edge" bpmnElement="flow_se_main_start_to_sp_funds_commitment">
+        <di:waypoint x="116" y="130"/>
+        <di:waypoint x="180" y="150"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_sp_fc_start_to_task_fc_define_docs_edge" bpmnElement="flow_sp_fc_start_to_task_fc_define_docs">
+        <di:waypoint x="256" y="150"/>
+        <di:waypoint x="300" y="150"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_task_fc_define_docs_to_task_fc_define_posting_edge" bpmnElement="flow_task_fc_define_docs_to_task_fc_define_posting">
+        <di:waypoint x="480" y="150"/>
+        <di:waypoint x="520" y="150"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_task_fc_define_posting_to_task_fc_save_edge" bpmnElement="flow_task_fc_define_posting_to_task_fc_save">
+        <di:waypoint x="700" y="150"/>
+        <di:waypoint x="740" y="150"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_task_fc_save_to_sp_fc_end_edge" bpmnElement="flow_task_fc_save_to_sp_fc_end">
+        <di:waypoint x="920" y="150"/>
+        <di:waypoint x="940" y="150"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_sp_funds_commitment_to_task_mon_view_report_edge" bpmnElement="flow_sp_funds_commitment_to_task_mon_view_report">
+        <di:waypoint x="1000" y="150"/> 
+        <di:waypoint x="1020" y="150"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_task_mon_view_report_to_task_ap_receive_invoice_edge" bpmnElement="flow_task_mon_view_report_to_task_ap_receive_invoice">
+        <di:waypoint x="1110" y="190"/>
+        <di:waypoint x="1110" y="350"/>
+        <di:waypoint x="170" y="350"/>
+        <di:waypoint x="170" y="450"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_task_ap_receive_invoice_to_pg_ap_prereq_fork_edge" bpmnElement="flow_task_ap_receive_invoice_to_pg_ap_prereq_fork">
+        <di:waypoint x="260" y="490"/>
+        <di:waypoint x="300" y="490"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_pg_ap_prereq_fork_to_sp_ap_maintain_vendor_edge" bpmnElement="flow_pg_ap_prereq_fork_to_sp_ap_maintain_vendor">
+        <di:waypoint x="325" y="465"/>
+        <di:waypoint x="325" y="390"/>
+        <di:waypoint x="400" y="390"/>
+      </bpmndi:BPMNEdge>
+        <bpmndi:BPMNEdge id="flow_sp_vm_start_to_task_vm_specify_initial_data_edge" bpmnElement="flow_sp_vm_start_to_task_vm_specify_initial_data"><di:waypoint x="456" y="390"/><di:waypoint x="490" y="390"/></bpmndi:BPMNEdge>
+        <bpmndi:BPMNEdge id="flow_task_vm_specify_initial_data_to_task_vm_specify_address_edge" bpmnElement="flow_task_vm_specify_initial_data_to_task_vm_specify_address"><di:waypoint x="670" y="390"/><di:waypoint x="700" y="390"/></bpmndi:BPMNEdge>
+        <bpmndi:BPMNEdge id="flow_task_vm_specify_address_to_task_vm_maintain_vat_tax_edge" bpmnElement="flow_task_vm_specify_address_to_task_vm_maintain_vat_tax"><di:waypoint x="880" y="390"/><di:waypoint x="910" y="390"/></bpmndi:BPMNEdge>
+        <bpmndi:BPMNEdge id="flow_task_vm_maintain_vat_tax_to_task_vm_define_bank_edge" bpmnElement="flow_task_vm_maintain_vat_tax_to_task_vm_define_bank"><di:waypoint x="1090" y="390"/><di:waypoint x="1120" y="390"/></bpmndi:BPMNEdge>
+        <bpmndi:BPMNEdge id="flow_task_vm_define_bank_to_task_vm_specify_reco_account_edge" bpmnElement="flow_task_vm_define_bank_to_task_vm_specify_reco_account"><di:waypoint x="1300" y="390"/><di:waypoint x="1330" y="390"/></bpmndi:BPMNEdge>
+        <bpmndi:BPMNEdge id="flow_task_vm_specify_reco_account_to_task_vm_define_payment_terms_edge" bpmnElement="flow_task_vm_specify_reco_account_to_task_vm_define_payment_terms"><di:waypoint x="1510" y="390"/><di:waypoint x="1540" y="390"/></bpmndi:BPMNEdge>
+        <bpmndi:BPMNEdge id="flow_task_vm_define_payment_terms_to_task_vm_save_vendor_edge" bpmnElement="flow_task_vm_define_payment_terms_to_task_vm_save_vendor"><di:waypoint x="1720" y="390"/><di:waypoint x="1750" y="390"/></bpmndi:BPMNEdge>
+        <bpmndi:BPMNEdge id="flow_task_vm_save_vendor_to_sp_vm_end_edge" bpmnElement="flow_task_vm_save_vendor_to_sp_vm_end"><di:waypoint x="1930" y="390"/><di:waypoint x="1950" y="390"/></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_pg_ap_prereq_fork_to_sp_ap_create_cost_centre_edge" bpmnElement="flow_pg_ap_prereq_fork_to_sp_ap_create_cost_centre">
+        <di:waypoint x="325" y="515"/>
+        <di:waypoint x="325" y="610"/>
+        <di:waypoint x="400" y="610"/>
+      </bpmndi:BPMNEdge>
+        <bpmndi:BPMNEdge id="flow_sp_cc_start_to_task_cc_define_name_validity_edge" bpmnElement="flow_sp_cc_start_to_task_cc_define_name_validity"><di:waypoint x="456" y="610"/><di:waypoint x="490" y="610"/></bpmndi:BPMNEdge>
+        <bpmndi:BPMNEdge id="flow_task_cc_define_name_validity_to_task_cc_confirm_entries_edge" bpmnElement="flow_task_cc_define_name_validity_to_task_cc_confirm_entries"><di:waypoint x="670" y="610"/><di:waypoint x="700" y="610"/></bpmndi:BPMNEdge>
+        <bpmndi:BPMNEdge id="flow_task_cc_confirm_entries_to_task_cc_define_master_data_edge" bpmnElement="flow_task_cc_confirm_entries_to_task_cc_define_master_data"><di:waypoint x="880" y="610"/><di:waypoint x="910" y="610"/></bpmndi:BPMNEdge>
+        <bpmndi:BPMNEdge id="flow_task_cc_define_master_data_to_task_cc_save_entries_edge" bpmnElement="flow_task_cc_define_master_data_to_task_cc_save_entries"><di:waypoint x="1090" y="610"/><di:waypoint x="1120" y="610"/></bpmndi:BPMNEdge>
+        <bpmndi:BPMNEdge id="flow_task_cc_save_entries_to_sp_cc_end_edge" bpmnElement="flow_task_cc_save_entries_to_sp_cc_end"><di:waypoint x="1300" y="610"/><di:waypoint x="1330" y="610"/></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_sp_ap_maintain_vendor_to_pg_ap_prereq_join_edge" bpmnElement="flow_sp_ap_maintain_vendor_to_pg_ap_prereq_join">
+        <di:waypoint x="2010" y="390"/>
+        <di:waypoint x="2075" y="390"/>
+        <di:waypoint x="2075" y="465"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_sp_ap_create_cost_centre_to_pg_ap_prereq_join_edge" bpmnElement="flow_sp_ap_create_cost_centre_to_pg_ap_prereq_join">
+        <di:waypoint x="1380" y="610"/>
+        <di:waypoint x="2075" y="610"/>
+        <di:waypoint x="2075" y="515"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_pg_ap_prereq_join_to_sp_ap_post_invoice_edge" bpmnElement="flow_pg_ap_prereq_join_to_sp_ap_post_invoice">
+        <di:waypoint x="2100" y="490"/>
+        <di:waypoint x="2150" y="490"/>
+      </bpmndi:BPMNEdge>
+        <bpmndi:BPMNEdge id="flow_sp_pi_start_to_task_pi_define_initial_details_edge" bpmnElement="flow_sp_pi_start_to_task_pi_define_initial_details"><di:waypoint x="2216" y="490"/><di:waypoint x="2250" y="490"/></bpmndi:BPMNEdge>
+        <bpmndi:BPMNEdge id="flow_task_pi_define_initial_details_to_task_pi_define_tax_assign_cc_edge" bpmnElement="flow_task_pi_define_initial_details_to_task_pi_define_tax_assign_cc"><di:waypoint x="2430" y="490"/><di:waypoint x="2460" y="490"/></bpmndi:BPMNEdge>
+        <bpmndi:BPMNEdge id="flow_task_pi_define_tax_assign_cc_to_task_pi_save_posting_edge" bpmnElement="flow_task_pi_define_tax_assign_cc_to_task_pi_save_posting"><di:waypoint x="2640" y="490"/><di:waypoint x="2670" y="490"/></bpmndi:BPMNEdge>
+        <bpmndi:BPMNEdge id="flow_task_pi_save_posting_to_sp_pi_end_edge" bpmnElement="flow_task_pi_save_posting_to_sp_pi_end"><di:waypoint x="2850" y="490"/><di:waypoint x="2880" y="490"/></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_sp_ap_post_invoice_to_task_ap_display_doc_check_status_edge" bpmnElement="flow_sp_ap_post_invoice_to_task_ap_display_doc_check_status">
+        <di:waypoint x="2930" y="490"/>
+        <di:waypoint x="2980" y="490"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_task_ap_display_doc_check_status_to_xg_ap_doc_parked_edge" bpmnElement="flow_task_ap_display_doc_check_status_to_xg_ap_doc_parked">
+        <di:waypoint x="3160" y="490"/>
+        <di:waypoint x="3200" y="490"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_xg_ap_doc_parked_to_sp_ap_release_parked_doc_edge" bpmnElement="flow_xg_ap_doc_parked_to_sp_ap_release_parked_doc">
+        <di:waypoint x="3225" y="465"/>
+        <di:waypoint x="3225" y="390"/>
+        <di:waypoint x="3300" y="390"/>
+        <bpmndi:BPMNLabel><dc:Bounds x="3230" y="420" width="80" height="20"/></bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+        <bpmndi:BPMNEdge id="flow_sp_rpd_start_to_task_rpd_customize_doc_edge" bpmnElement="flow_sp_rpd_start_to_task_rpd_customize_doc"><di:waypoint x="3356" y="390"/><di:waypoint x="3390" y="390"/></bpmndi:BPMNEdge>
+        <bpmndi:BPMNEdge id="flow_task_rpd_customize_doc_to_task_rpd_assign_req_cat_fi_edge" bpmnElement="flow_task_rpd_customize_doc_to_task_rpd_assign_req_cat_fi"><di:waypoint x="3570" y="390"/><di:waypoint x="3600" y="390"/></bpmndi:BPMNEdge>
+        <bpmndi:BPMNEdge id="flow_task_rpd_assign_req_cat_fi_to_task_rpd_link_req_cat_doc_type_edge" bpmnElement="flow_task_rpd_assign_req_cat_fi_to_task_rpd_link_req_cat_doc_type"><di:waypoint x="3780" y="390"/><di:waypoint x="3810" y="390"/></bpmndi:BPMNEdge>
+        <bpmndi:BPMNEdge id="flow_task_rpd_link_req_cat_doc_type_to_task_rpd_control_proc_req_cat_edge" bpmnElement="flow_task_rpd_link_req_cat_doc_type_to_task_rpd_control_proc_req_cat"><di:waypoint x="3990" y="390"/><di:waypoint x="4020" y="390"/></bpmndi:BPMNEdge>
+        <bpmndi:BPMNEdge id="flow_task_rpd_control_proc_req_cat_to_task_rpd_assign_workflow_edge" bpmnElement="flow_task_rpd_control_proc_req_cat_to_task_rpd_assign_workflow"><di:waypoint x="4200" y="390"/><di:waypoint x="4230" y="390"/></bpmndi:BPMNEdge>
+        <bpmndi:BPMNEdge id="flow_task_rpd_assign_workflow_to_sp_rpd_end_edge" bpmnElement="flow_task_rpd_assign_workflow_to_sp_rpd_end"><di:waypoint x="4410" y="390"/><di:waypoint x="4440" y="390"/></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_sp_ap_release_parked_doc_to_task_ap_post_payment_req_define_details_edge" bpmnElement="flow_sp_ap_release_parked_doc_to_task_ap_post_payment_req_define_details">
+        <di:waypoint x="4480" y="390"/>
+        <di:waypoint x="4640" y="390"/>
+        <di:waypoint x="4640" y="450"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_xg_ap_doc_parked_to_task_ap_post_payment_req_define_details_edge" bpmnElement="flow_xg_ap_doc_parked_to_task_ap_post_payment_req_define_details">
+        <di:waypoint x="3250" y="490"/>
+        <di:waypoint x="4550" y="490"/>
+        <bpmndi:BPMNLabel><dc:Bounds x="3800" y="495" width="100" height="20"/></bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_task_ap_post_payment_req_define_details_to_task_ap_select_post_final_doc_edge" bpmnElement="flow_task_ap_post_payment_req_define_details_to_task_ap_select_post_final_doc">
+        <di:waypoint x="4730" y="490"/>
+        <di:waypoint x="4780" y="490"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_task_ap_select_post_final_doc_to_ee_main_end_edge" bpmnElement="flow_task_ap_select_post_final_doc_to_ee_main_end">
+        <di:waypoint x="4960" y="490"/>
+        <di:waypoint x="5000" y="490"/>
+      </bpmndi:BPMNEdge>
+
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</semantic:definitions>
+```

@@ -1,0 +1,350 @@
+***IS_VALID***
+<?xml version="1.0" standalone="yes"?>
+<semantic:definitions id="RevenueForecastProcessDefs"
+    targetNamespace="http://example.com/bpmn/revenue-forecast"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:semantic="http://www.omg.org/spec/BPMN/20100524/MODEL"
+    xmlns:di="http://www.omg.org/spec/DD/20100524/DI"
+    xmlns:dc="http://www.omg.org/spec/DD/20100524/DC"
+    xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI">
+
+  <semantic:collaboration id="collab_revenue_process">
+    <semantic:participant id="participant_ARDept" name="AR Department" processRef="process_revenue"/>
+  </semantic:collaboration>
+
+  <semantic:process id="process_revenue" name="Revenue Forecast and Revenue Process" isExecutable="true">
+    <semantic:laneSet id="laneSet_ARDept">
+      <semantic:lane id="lane_ARProcessor" name="AR Processor">
+        <semantic:flowNodeRef>event_start_1</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_1</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_2</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_3</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_4</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_5</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_6</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_7</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_8</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_9</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_10</semantic:flowNodeRef>
+        <semantic:flowNodeRef>gateway_1</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_11</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_12</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_13</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_14</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_15</semantic:flowNodeRef>
+        <semantic:flowNodeRef>subprocess_1</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_16</semantic:flowNodeRef>
+        <semantic:flowNodeRef>event_end_1</semantic:flowNodeRef>
+      </semantic:lane>
+    </semantic:laneSet>
+
+    <semantic:startEvent id="event_start_1" name="Request for Revenue Forecast Received">
+      <semantic:outgoing>flow_1</semantic:outgoing>
+    </semantic:startEvent>
+    <semantic:task id="task_1" name="Post Forecast Revenue in SAP ECC">
+      <semantic:incoming>flow_1</semantic:incoming>
+      <semantic:outgoing>flow_2</semantic:outgoing>
+    </semantic:task>
+    <semantic:task id="task_2" name="Define Posting Details of Forecast (Fund &amp; Functional Area)">
+      <semantic:incoming>flow_2</semantic:incoming>
+      <semantic:outgoing>flow_3</semantic:outgoing>
+    </semantic:task>
+    <semantic:task id="task_3" name="Save Forecast Document">
+      <semantic:incoming>flow_3</semantic:incoming>
+      <semantic:outgoing>flow_4</semantic:outgoing>
+    </semantic:task>
+    <semantic:task id="task_4" name="Refer to Posting Report">
+      <semantic:incoming>flow_4</semantic:incoming>
+      <semantic:outgoing>flow_5</semantic:outgoing>
+    </semantic:task>
+    <semantic:task id="task_5" name="Display Forecast Posting">
+      <semantic:incoming>flow_5</semantic:incoming>
+      <semantic:outgoing>flow_6</semantic:outgoing>
+    </semantic:task>
+    <semantic:task id="task_6" name="Define Customer Details (Account Group, Payment, Company Code)">
+      <semantic:incoming>flow_6</semantic:incoming>
+      <semantic:outgoing>flow_7</semantic:outgoing>
+    </semantic:task>
+    <semantic:task id="task_7" name="Save Customer">
+      <semantic:incoming>flow_7</semantic:incoming>
+      <semantic:outgoing>flow_8</semantic:outgoing>
+    </semantic:task>
+    <semantic:task id="task_8" name="Assign Customer to Sales Org and Company Code">
+      <semantic:incoming>flow_8</semantic:incoming>
+      <semantic:outgoing>flow_9</semantic:outgoing>
+    </semantic:task>
+    <semantic:task id="task_9" name="Post Revenues Against Cost Centre">
+      <semantic:incoming>flow_9</semantic:incoming>
+      <semantic:outgoing>flow_10</semantic:outgoing>
+    </semantic:task>
+    <semantic:task id="task_10" name="Check Cost Centre Blocking Status">
+      <semantic:incoming>flow_10</semantic:incoming>
+      <semantic:outgoing>flow_11</semantic:outgoing>
+    </semantic:task>
+    <semantic:exclusiveGateway id="gateway_1" name="Cost Centre Blocked?">
+      <semantic:incoming>flow_11</semantic:incoming>
+      <semantic:outgoing>flow_12</semantic:outgoing>
+      <semantic:outgoing>flow_13</semantic:outgoing>
+    </semantic:exclusiveGateway>
+    <semantic:task id="task_11" name="Create New Unblocked Cost Centre">
+      <semantic:incoming>flow_12</semantic:incoming>
+      <semantic:outgoing>flow_14</semantic:outgoing>
+    </semantic:task>
+    <semantic:task id="task_12" name="Create Acceptance Request">
+      <semantic:incoming>flow_13</semantic:incoming>
+      <semantic:incoming>flow_14</semantic:incoming>
+      <semantic:outgoing>flow_15</semantic:outgoing>
+    </semantic:task>
+    <semantic:task id="task_13" name="Save Payment Request Document">
+      <semantic:incoming>flow_15</semantic:incoming>
+      <semantic:outgoing>flow_16</semantic:outgoing>
+    </semantic:task>
+    <semantic:task id="task_14" name="Display Document (Status Parked)">
+      <semantic:incoming>flow_16</semantic:incoming>
+      <semantic:outgoing>flow_17</semantic:outgoing>
+    </semantic:task>
+    <semantic:task id="task_15" name="Release Parked Posting">
+      <semantic:incoming>flow_17</semantic:incoming>
+      <semantic:outgoing>flow_18</semantic:outgoing>
+    </semantic:task>
+
+    <semantic:subProcess id="subprocess_1" name="Document Customization Process">
+      <semantic:incoming>flow_18</semantic:incoming>
+      <semantic:outgoing>flow_22</semantic:outgoing>
+      <semantic:startEvent id="sub_start_event_1" name="Subprocess Start">
+        <semantic:outgoing>flow_sub_start_to_cust1</semantic:outgoing>
+      </semantic:startEvent>
+      <semantic:task id="task_cust_1" name="Assign Request Category to FI Document Type">
+        <semantic:incoming>flow_sub_start_to_cust1</semantic:incoming>
+        <semantic:outgoing>flow_19</semantic:outgoing>
+      </semantic:task>
+      <semantic:task id="task_cust_2" name="Link 'Acceptance Request' Category to Document Type">
+        <semantic:incoming>flow_19</semantic:incoming>
+        <semantic:outgoing>flow_20</semantic:outgoing>
+      </semantic:task>
+      <semantic:task id="task_cust_3" name="Control Processing of Request Categories">
+        <semantic:incoming>flow_20</semantic:incoming>
+        <semantic:outgoing>flow_21</semantic:outgoing>
+      </semantic:task>
+      <semantic:task id="task_cust_4" name="Assign Workflow to Request Type">
+        <semantic:incoming>flow_21</semantic:incoming>
+        <semantic:outgoing>flow_cust4_to_sub_end</semantic:outgoing>
+      </semantic:task>
+      <semantic:endEvent id="sub_end_event_1" name="Subprocess End">
+        <semantic:incoming>flow_cust4_to_sub_end</semantic:incoming>
+      </semantic:endEvent>
+      <semantic:sequenceFlow id="flow_sub_start_to_cust1" sourceRef="sub_start_event_1" targetRef="task_cust_1"/>
+      <semantic:sequenceFlow id="flow_19" sourceRef="task_cust_1" targetRef="task_cust_2"/>
+      <semantic:sequenceFlow id="flow_20" sourceRef="task_cust_2" targetRef="task_cust_3"/>
+      <semantic:sequenceFlow id="flow_21" sourceRef="task_cust_3" targetRef="task_cust_4"/>
+      <semantic:sequenceFlow id="flow_cust4_to_sub_end" sourceRef="task_cust_4" targetRef="sub_end_event_1"/>
+    </semantic:subProcess>
+
+    <semantic:task id="task_16" name="Post Acceptance Request">
+      <semantic:incoming>flow_22</semantic:incoming>
+      <semantic:outgoing>flow_23</semantic:outgoing>
+    </semantic:task>
+    <semantic:endEvent id="event_end_1" name="Revenue Forecast Process Completed">
+      <semantic:incoming>flow_23</semantic:incoming>
+    </semantic:endEvent>
+
+    <semantic:sequenceFlow id="flow_1" sourceRef="event_start_1" targetRef="task_1"/>
+    <semantic:sequenceFlow id="flow_2" sourceRef="task_1" targetRef="task_2"/>
+    <semantic:sequenceFlow id="flow_3" sourceRef="task_2" targetRef="task_3"/>
+    <semantic:sequenceFlow id="flow_4" sourceRef="task_3" targetRef="task_4"/>
+    <semantic:sequenceFlow id="flow_5" sourceRef="task_4" targetRef="task_5"/>
+    <semantic:sequenceFlow id="flow_6" sourceRef="task_5" targetRef="task_6"/>
+    <semantic:sequenceFlow id="flow_7" sourceRef="task_6" targetRef="task_7"/>
+    <semantic:sequenceFlow id="flow_8" sourceRef="task_7" targetRef="task_8"/>
+    <semantic:sequenceFlow id="flow_9" sourceRef="task_8" targetRef="task_9"/>
+    <semantic:sequenceFlow id="flow_10" sourceRef="task_9" targetRef="task_10"/>
+    <semantic:sequenceFlow id="flow_11" sourceRef="task_10" targetRef="gateway_1"/>
+    <semantic:sequenceFlow id="flow_12" name="Yes, Blocked" sourceRef="gateway_1" targetRef="task_11"/>
+    <semantic:sequenceFlow id="flow_13" name="No, Not Blocked" sourceRef="gateway_1" targetRef="task_12"/>
+    <semantic:sequenceFlow id="flow_14" sourceRef="task_11" targetRef="task_12"/>
+    <semantic:sequenceFlow id="flow_15" sourceRef="task_12" targetRef="task_13"/>
+    <semantic:sequenceFlow id="flow_16" sourceRef="task_13" targetRef="task_14"/>
+    <semantic:sequenceFlow id="flow_17" sourceRef="task_14" targetRef="task_15"/>
+    <semantic:sequenceFlow id="flow_18" sourceRef="task_15" targetRef="subprocess_1"/>
+    <semantic:sequenceFlow id="flow_22" sourceRef="subprocess_1" targetRef="task_16"/>
+    <semantic:sequenceFlow id="flow_23" sourceRef="task_16" targetRef="event_end_1"/>
+  </semantic:process>
+
+  <bpmndi:BPMNDiagram id="BPMNDiagram_RevenueProcess" name="Revenue Forecast Diagram" resolution="96.0">
+    <bpmndi:BPMNPlane bpmnElement="collab_revenue_process">
+      <bpmndi:BPMNShape id="participant_ARDept_shape" bpmnElement="participant_ARDept" isHorizontal="true">
+        <dc:Bounds x="20" y="20" width="3550" height="400"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="lane_ARProcessor_shape" bpmnElement="lane_ARProcessor" isHorizontal="true">
+        <dc:Bounds x="50" y="20" width="3520" height="400"/>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="event_start_1_shape" bpmnElement="event_start_1">
+        <dc:Bounds x="70" y="282" width="36" height="36"/>
+        <bpmndi:BPMNLabel><dc:Bounds x="45" y="323" width="86" height="40"/></bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="task_1_shape" bpmnElement="task_1">
+        <dc:Bounds x="156" y="260" width="100" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="task_2_shape" bpmnElement="task_2">
+        <dc:Bounds x="306" y="260" width="100" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="task_3_shape" bpmnElement="task_3">
+        <dc:Bounds x="456" y="260" width="100" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="task_4_shape" bpmnElement="task_4">
+        <dc:Bounds x="606" y="260" width="100" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="task_5_shape" bpmnElement="task_5">
+        <dc:Bounds x="756" y="260" width="100" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="task_6_shape" bpmnElement="task_6">
+        <dc:Bounds x="906" y="260" width="100" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="task_7_shape" bpmnElement="task_7">
+        <dc:Bounds x="1056" y="260" width="100" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="task_8_shape" bpmnElement="task_8">
+        <dc:Bounds x="1206" y="260" width="100" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="task_9_shape" bpmnElement="task_9">
+        <dc:Bounds x="1356" y="260" width="100" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="task_10_shape" bpmnElement="task_10">
+        <dc:Bounds x="1506" y="260" width="100" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="gateway_1_shape" bpmnElement="gateway_1" isMarkerVisible="true">
+        <dc:Bounds x="1656" y="275" width="50" height="50"/>
+        <bpmndi:BPMNLabel><dc:Bounds x="1631" y="330" width="100" height="27"/></bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="task_11_shape" bpmnElement="task_11">
+        <dc:Bounds x="1756" y="175" width="100" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="task_12_shape" bpmnElement="task_12">
+        <dc:Bounds x="1906" y="260" width="100" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="task_13_shape" bpmnElement="task_13">
+        <dc:Bounds x="2056" y="260" width="100" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="task_14_shape" bpmnElement="task_14">
+        <dc:Bounds x="2206" y="260" width="100" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="task_15_shape" bpmnElement="task_15">
+        <dc:Bounds x="2356" y="260" width="100" height="80"/>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="subprocess_1_shape" bpmnElement="subprocess_1" isExpanded="true">
+        <dc:Bounds x="2506" y="220" width="690" height="160"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="sub_start_event_1_shape" bpmnElement="sub_start_event_1">
+        <dc:Bounds x="2536" y="282" width="36" height="36"/>
+         <bpmndi:BPMNLabel><dc:Bounds x="2511" y="323" width="86" height="14"/></bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="task_cust_1_shape" bpmnElement="task_cust_1">
+        <dc:Bounds x="2602" y="260" width="100" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="task_cust_2_shape" bpmnElement="task_cust_2">
+        <dc:Bounds x="2732" y="260" width="100" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="task_cust_3_shape" bpmnElement="task_cust_3">
+        <dc:Bounds x="2862" y="260" width="100" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="task_cust_4_shape" bpmnElement="task_cust_4">
+        <dc:Bounds x="2992" y="260" width="100" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="sub_end_event_1_shape" bpmnElement="sub_end_event_1">
+        <dc:Bounds x="3122" y="282" width="36" height="36"/>
+        <bpmndi:BPMNLabel><dc:Bounds x="3097" y="323" width="86" height="14"/></bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="task_16_shape" bpmnElement="task_16">
+        <dc:Bounds x="3246" y="260" width="100" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="event_end_1_shape" bpmnElement="event_end_1">
+        <dc:Bounds x="3396" y="282" width="36" height="36"/>
+        <bpmndi:BPMNLabel><dc:Bounds x="3371" y="323" width="86" height="40"/></bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNEdge id="flow_1_edge" bpmnElement="flow_1">
+        <di:waypoint x="106" y="300"/> <di:waypoint x="156" y="300"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_2_edge" bpmnElement="flow_2">
+        <di:waypoint x="256" y="300"/> <di:waypoint x="306" y="300"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_3_edge" bpmnElement="flow_3">
+        <di:waypoint x="406" y="300"/> <di:waypoint x="456" y="300"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_4_edge" bpmnElement="flow_4">
+        <di:waypoint x="556" y="300"/> <di:waypoint x="606" y="300"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_5_edge" bpmnElement="flow_5">
+        <di:waypoint x="706" y="300"/> <di:waypoint x="756" y="300"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_6_edge" bpmnElement="flow_6">
+        <di:waypoint x="856" y="300"/> <di:waypoint x="906" y="300"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_7_edge" bpmnElement="flow_7">
+        <di:waypoint x="1006" y="300"/> <di:waypoint x="1056" y="300"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_8_edge" bpmnElement="flow_8">
+        <di:waypoint x="1156" y="300"/> <di:waypoint x="1206" y="300"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_9_edge" bpmnElement="flow_9">
+        <di:waypoint x="1306" y="300"/> <di:waypoint x="1356" y="300"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_10_edge" bpmnElement="flow_10">
+        <di:waypoint x="1456" y="300"/> <di:waypoint x="1506" y="300"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_11_edge" bpmnElement="flow_11">
+        <di:waypoint x="1606" y="300"/> <di:waypoint x="1656" y="300"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_12_edge" bpmnElement="flow_12">
+        <di:waypoint x="1681" y="275"/> <di:waypoint x="1681" y="215"/> <di:waypoint x="1756" y="215"/>
+        <bpmndi:BPMNLabel><dc:Bounds x="1686" y="230" width="68" height="14"/></bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_13_edge" bpmnElement="flow_13">
+        <di:waypoint x="1706" y="300"/> <di:waypoint x="1906" y="300"/>
+        <bpmndi:BPMNLabel><dc:Bounds x="1756" y="278" width="80" height="14"/></bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_14_edge" bpmnElement="flow_14">
+        <di:waypoint x="1856" y="215"/> <di:waypoint x="1956" y="215"/> <di:waypoint x="1956" y="260"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_15_edge" bpmnElement="flow_15">
+        <di:waypoint x="2006" y="300"/> <di:waypoint x="2056" y="300"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_16_edge" bpmnElement="flow_16">
+        <di:waypoint x="2156" y="300"/> <di:waypoint x="2206" y="300"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_17_edge" bpmnElement="flow_17">
+        <di:waypoint x="2306" y="300"/> <di:waypoint x="2356" y="300"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_18_edge" bpmnElement="flow_18">
+        <di:waypoint x="2456" y="300"/> <di:waypoint x="2506" y="300"/>
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="flow_sub_start_to_cust1_edge" bpmnElement="flow_sub_start_to_cust1">
+        <di:waypoint x="2572" y="300"/> <di:waypoint x="2602" y="300"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_19_edge" bpmnElement="flow_19">
+        <di:waypoint x="2702" y="300"/> <di:waypoint x="2732" y="300"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_20_edge" bpmnElement="flow_20">
+        <di:waypoint x="2832" y="300"/> <di:waypoint x="2862" y="300"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_21_edge" bpmnElement="flow_21">
+        <di:waypoint x="2962" y="300"/> <di:waypoint x="2992" y="300"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_cust4_to_sub_end_edge" bpmnElement="flow_cust4_to_sub_end">
+        <di:waypoint x="3092" y="300"/> <di:waypoint x="3122" y="300"/>
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="flow_22_edge" bpmnElement="flow_22">
+        <di:waypoint x="3196" y="300"/> <di:waypoint x="3246" y="300"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_23_edge" bpmnElement="flow_23">
+        <di:waypoint x="3346" y="300"/> <di:waypoint x="3396" y="300"/>
+      </bpmndi:BPMNEdge>
+
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</semantic:definitions>
