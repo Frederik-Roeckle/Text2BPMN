@@ -1,0 +1,133 @@
+<?xml version="1.0" standalone="yes"?>
+<semantic:definitions id="def_invoice_process"
+    targetNamespace="http://example.com/bpmn/invoice-process"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:semantic="http://www.omg.org/spec/BPMN/20100524/MODEL"
+    xmlns:di="http://www.omg.org/spec/DD/20100524/DI"
+    xmlns:dc="http://www.omg.org/spec/DD/20100524/DC"
+    xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI">
+
+  <semantic:collaboration id="collab_invoice_process">
+    <semantic:participant id="part_AP_Dept" name="Accounts Payable Department" processRef="proc_invoice_creation"/>
+  </semantic:collaboration>
+
+  <semantic:process id="proc_invoice_creation" isExecutable="true">
+    <semantic:laneSet id="ls_AP_Dept">
+      <semantic:lane id="lane_AP_Processor" name="AP Processor">
+        <semantic:flowNodeRef>se_invoice_creation_started</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_select_deliveries</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_exec_produce_data</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_check_order_invoice</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_post_invoice_system</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_check_orig_quotation</semantic:flowNodeRef>
+        <semantic:flowNodeRef>ee_order_fulfilment_done</semantic:flowNodeRef>
+      </semantic:lane>
+    </semantic:laneSet>
+
+    <semantic:startEvent id="se_invoice_creation_started" name="Invoice Creation Process Started">
+      <semantic:outgoing>sf1</semantic:outgoing>
+    </semantic:startEvent>
+
+    <semantic:task id="task_select_deliveries" name="Select Number of Posted Deliveries">
+      <semantic:incoming>sf1</semantic:incoming>
+      <semantic:outgoing>sf2</semantic:outgoing>
+    </semantic:task>
+
+    <semantic:task id="task_exec_produce_data" name="Execute to Produce Invoice Data">
+      <semantic:incoming>sf2</semantic:incoming>
+      <semantic:outgoing>sf3</semantic:outgoing>
+    </semantic:task>
+
+    <semantic:task id="task_check_order_invoice" name="Check Order Using Invoice">
+      <semantic:incoming>sf3</semantic:incoming>
+      <semantic:outgoing>sf4</semantic:outgoing>
+    </semantic:task>
+
+    <semantic:task id="task_post_invoice_system" name="Post Invoice in System">
+      <semantic:incoming>sf4</semantic:incoming>
+      <semantic:outgoing>sf5</semantic:outgoing>
+    </semantic:task>
+
+    <semantic:task id="task_check_orig_quotation" name="Check Original Quotation">
+      <semantic:incoming>sf5</semantic:incoming>
+      <semantic:outgoing>sf6</semantic:outgoing>
+    </semantic:task>
+
+    <semantic:endEvent id="ee_order_fulfilment_done" name="Order Fulfilment Process Completed">
+      <semantic:incoming>sf6</semantic:incoming>
+    </semantic:endEvent>
+
+    <semantic:sequenceFlow id="sf1" sourceRef="se_invoice_creation_started" targetRef="task_select_deliveries"/>
+    <semantic:sequenceFlow id="sf2" sourceRef="task_select_deliveries" targetRef="task_exec_produce_data"/>
+    <semantic:sequenceFlow id="sf3" sourceRef="task_exec_produce_data" targetRef="task_check_order_invoice"/>
+    <semantic:sequenceFlow id="sf4" sourceRef="task_check_order_invoice" targetRef="task_post_invoice_system"/>
+    <semantic:sequenceFlow id="sf5" sourceRef="task_post_invoice_system" targetRef="task_check_orig_quotation"/>
+    <semantic:sequenceFlow id="sf6" sourceRef="task_check_orig_quotation" targetRef="ee_order_fulfilment_done"/>
+  </semantic:process>
+
+  <bpmndi:BPMNDiagram id="diag_invoice_process" name="Invoice Process Diagram" resolution="96.0">
+    <bpmndi:BPMNPlane bpmnElement="collab_invoice_process">
+      <bpmndi:BPMNShape id="shape_part_AP_Dept" bpmnElement="part_AP_Dept" isHorizontal="true">
+        <dc:Bounds x="30" y="30" width="1350" height="250"/>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="shape_se_invoice_creation_started" bpmnElement="se_invoice_creation_started">
+        <dc:Bounds x="100" y="132" width="36" height="36"/>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="shape_task_select_deliveries" bpmnElement="task_select_deliveries">
+        <dc:Bounds x="200" y="115" width="150" height="70"/>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="shape_task_exec_produce_data" bpmnElement="task_exec_produce_data">
+        <dc:Bounds x="420" y="115" width="150" height="70"/>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="shape_task_check_order_invoice" bpmnElement="task_check_order_invoice">
+        <dc:Bounds x="640" y="115" width="150" height="70"/>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="shape_task_post_invoice_system" bpmnElement="task_post_invoice_system">
+        <dc:Bounds x="860" y="115" width="120" height="70"/>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="shape_task_check_orig_quotation" bpmnElement="task_check_orig_quotation">
+        <dc:Bounds x="1050" y="115" width="120" height="70"/>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="shape_ee_order_fulfilment_done" bpmnElement="ee_order_fulfilment_done">
+        <dc:Bounds x="1240" y="132" width="36" height="36"/>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNEdge id="edge_sf1" bpmnElement="sf1">
+        <di:waypoint x="136" y="150"/>
+        <di:waypoint x="200" y="150"/>
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="edge_sf2" bpmnElement="sf2">
+        <di:waypoint x="350" y="150"/>
+        <di:waypoint x="420" y="150"/>
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="edge_sf3" bpmnElement="sf3">
+        <di:waypoint x="570" y="150"/>
+        <di:waypoint x="640" y="150"/>
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="edge_sf4" bpmnElement="sf4">
+        <di:waypoint x="790" y="150"/>
+        <di:waypoint x="860" y="150"/>
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="edge_sf5" bpmnElement="sf5">
+        <di:waypoint x="980" y="150"/>
+        <di:waypoint x="1050" y="150"/>
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="edge_sf6" bpmnElement="sf6">
+        <di:waypoint x="1170" y="150"/>
+        <di:waypoint x="1240" y="150"/>
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</semantic:definitions>

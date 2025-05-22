@@ -1,0 +1,615 @@
+<?xml version="1.0" standalone="yes"?>
+<semantic:definitions id="PunitiveMandateHandlingProcess"
+    targetNamespace="http://example.com/bpmn/PunitiveMandateHandlingProcess"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:semantic="http://www.omg.org/spec/BPMN/20100524/MODEL"
+    xmlns:di="http://www.omg.org/spec/DD/20100524/DI"
+    xmlns:dc="http://www.omg.org/spec/DD/20100524/DC"
+    xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI">
+
+  <semantic:collaboration id="collab_punitiveMandateProcess">
+    <semantic:participant id="participant_punitiveMandateProcess" name="Punitive Mandate Process" processRef="punitiveMandateProcess"/>
+  </semantic:collaboration>
+
+  <semantic:process id="punitiveMandateProcess" isExecutable="true">
+    <semantic:laneSet id="laneSet_punitiveMandateProcess">
+      <semantic:lane id="lane_municipalAuthority" name="Municipal Authority">
+        <semantic:flowNodeRef>start_1</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_ma_1</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_ma_2</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_ma_3</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_ma_4</semantic:flowNodeRef>
+        <semantic:flowNodeRef>gw_ma_1</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_ma_5</semantic:flowNodeRef>
+        <semantic:flowNodeRef>gw_ma_2</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_ma_6</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_ma_7</semantic:flowNodeRef>
+        <semantic:flowNodeRef>merge_gw_ma_1</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_ma_8</semantic:flowNodeRef>
+      </semantic:lane>
+      <semantic:lane id="lane_postalService" name="Postal Service">
+        <semantic:flowNodeRef>gw_ps_1</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_ps_1</semantic:flowNodeRef>
+      </semantic:lane>
+      <semantic:lane id="lane_accusedPerson" name="Accused Person">
+        <semantic:flowNodeRef>task_ap_1</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_ap_2</semantic:flowNodeRef>
+        <semantic:flowNodeRef>merge_gw_ap_1</semantic:flowNodeRef>
+        <semantic:flowNodeRef>gw_ap_1</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_ap_3</semantic:flowNodeRef>
+        <semantic:flowNodeRef>end_event_ap_1</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_ap_4</semantic:flowNodeRef>
+        <semantic:flowNodeRef>gw_ap_2</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_ap_5</semantic:flowNodeRef>
+        <semantic:flowNodeRef>end_event_ap_2</semantic:flowNodeRef>
+        <semantic:flowNodeRef>gw_ap_3</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_ap_6</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_ap_7</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_ap_8</semantic:flowNodeRef>
+      </semantic:lane>
+      <semantic:lane id="lane_court" name="Court">
+        <semantic:flowNodeRef>task_ct_1_ac</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_ct_1_fc</semantic:flowNodeRef>
+        <semantic:flowNodeRef>merge_gw_ct_1</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_ct_2</semantic:flowNodeRef>
+        <semantic:flowNodeRef>gw_ct_1</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_ct_3</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_ct_4</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_ct_5</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_ct_6</semantic:flowNodeRef>
+        <semantic:flowNodeRef>end_event_ct_1</semantic:flowNodeRef>
+      </semantic:lane>
+    </semantic:laneSet>
+
+    <semantic:startEvent id="start_1" name="Punitive Mandate Issuance Triggered">
+      <semantic:outgoing>flow_start_1_task_ma_1</semantic:outgoing>
+    </semantic:startEvent>
+    <semantic:task id="task_ma_1" name="Issue Punitive Mandate (using PRIS)">
+      <semantic:incoming>flow_start_1_task_ma_1</semantic:incoming>
+      <semantic:outgoing>flow_task_ma_1_task_ma_2</semantic:outgoing>
+    </semantic:task>
+    <semantic:task id="task_ma_2" name="Send Punitive Mandate by Post">
+      <semantic:incoming>flow_task_ma_1_task_ma_2</semantic:incoming>
+      <semantic:outgoing>flow_task_ma_2_gw_ps_1</semantic:outgoing>
+    </semantic:task>
+    <semantic:exclusiveGateway id="gw_ps_1" name="Delivery Attempt Successful?">
+      <semantic:incoming>flow_task_ma_2_gw_ps_1</semantic:incoming>
+      <semantic:outgoing>flow_gw_ps_1_task_ap_1</semantic:outgoing>
+      <semantic:outgoing>flow_gw_ps_1_task_ps_1</semantic:outgoing>
+    </semantic:exclusiveGateway>
+    <semantic:task id="task_ap_1" name="Take Over Punitive Mandate (Proof of Delivery RSb)">
+      <semantic:incoming>flow_gw_ps_1_task_ap_1</semantic:incoming>
+      <semantic:outgoing>flow_task_ap_1_merge_gw_ap_1</semantic:outgoing>
+    </semantic:task>
+    <semantic:task id="task_ps_1" name="Deposit Punitive Mandate at Post Office">
+      <semantic:incoming>flow_gw_ps_1_task_ps_1</semantic:incoming>
+      <semantic:outgoing>flow_task_ps_1_task_ap_2</semantic:outgoing>
+    </semantic:task>
+    <semantic:task id="task_ap_2" name="Take Over Punitive Mandate from Post Office">
+      <semantic:incoming>flow_task_ps_1_task_ap_2</semantic:incoming>
+      <semantic:outgoing>flow_task_ap_2_merge_gw_ap_1</semantic:outgoing>
+    </semantic:task>
+    <semantic:exclusiveGateway id="merge_gw_ap_1" name="Merge Mandate Receipt">
+      <semantic:incoming>flow_task_ap_1_merge_gw_ap_1</semantic:incoming>
+      <semantic:incoming>flow_task_ap_2_merge_gw_ap_1</semantic:incoming>
+      <semantic:outgoing>flow_merge_gw_ap_1_gw_ap_1</semantic:outgoing>
+    </semantic:exclusiveGateway>
+    <semantic:exclusiveGateway id="gw_ap_1" name="Raise Objection to Mandate?">
+      <semantic:incoming>flow_merge_gw_ap_1_gw_ap_1</semantic:incoming>
+      <semantic:outgoing>flow_gw_ap_1_task_ap_3</semantic:outgoing>
+      <semantic:outgoing>flow_gw_ap_1_end_event_ap_1</semantic:outgoing>
+    </semantic:exclusiveGateway>
+    <semantic:task id="task_ap_3" name="Raise Objection against Punitive Mandate">
+      <semantic:incoming>flow_gw_ap_1_task_ap_3</semantic:incoming>
+      <semantic:outgoing>flow_task_ap_3_task_ma_3</semantic:outgoing>
+    </semantic:task>
+    <semantic:endEvent id="end_event_ap_1" name="Mandate Accepted (No Objection)">
+      <semantic:incoming>flow_gw_ap_1_end_event_ap_1</semantic:incoming>
+    </semantic:endEvent>
+    <semantic:task id="task_ma_3" name="Check Raised Objection">
+      <semantic:incoming>flow_task_ap_3_task_ma_3</semantic:incoming>
+      <semantic:outgoing>flow_task_ma_3_task_ma_4</semantic:outgoing>
+    </semantic:task>
+    <semantic:task id="task_ma_4" name="Conclude Investigation Results">
+      <semantic:incoming>flow_task_ma_3_task_ma_4</semantic:incoming>
+      <semantic:incoming>flow_task_ma_5_task_ma_4</semantic:incoming>
+      <semantic:outgoing>flow_task_ma_4_gw_ma_1</semantic:outgoing>
+    </semantic:task>
+    <semantic:exclusiveGateway id="gw_ma_1" name="Investigation Completed?">
+      <semantic:incoming>flow_task_ma_4_gw_ma_1</semantic:incoming>
+      <semantic:outgoing>flow_gw_ma_1_task_ma_5</semantic:outgoing>
+      <semantic:outgoing>flow_gw_ma_1_gw_ma_2</semantic:outgoing>
+    </semantic:exclusiveGateway>
+    <semantic:task id="task_ma_5" name="Investigate Objection Further">
+      <semantic:incoming>flow_gw_ma_1_task_ma_5</semantic:incoming>
+      <semantic:outgoing>flow_task_ma_5_task_ma_4</semantic:outgoing>
+    </semantic:task>
+    <semantic:exclusiveGateway id="gw_ma_2" name="Decision on Objection">
+      <semantic:incoming>flow_gw_ma_1_gw_ma_2</semantic:incoming>
+      <semantic:outgoing>flow_gw_ma_2_task_ma_6</semantic:outgoing>
+      <semantic:outgoing>flow_gw_ma_2_task_ma_7</semantic:outgoing>
+    </semantic:exclusiveGateway>
+    <semantic:task id="task_ma_6" name="Impose Punitive Sentence">
+      <semantic:incoming>flow_gw_ma_2_task_ma_6</semantic:incoming>
+      <semantic:outgoing>flow_task_ma_6_merge_gw_ma_1</semantic:outgoing>
+    </semantic:task>
+    <semantic:task id="task_ma_7" name="Terminate Proceedings without Punishment">
+      <semantic:incoming>flow_gw_ma_2_task_ma_7</semantic:incoming>
+      <semantic:outgoing>flow_task_ma_7_merge_gw_ma_1</semantic:outgoing>
+    </semantic:task>
+    <semantic:exclusiveGateway id="merge_gw_ma_1" name="Merge Investigation Outcome">
+      <semantic:incoming>flow_task_ma_6_merge_gw_ma_1</semantic:incoming>
+      <semantic:incoming>flow_task_ma_7_merge_gw_ma_1</semantic:incoming>
+      <semantic:outgoing>flow_merge_gw_ma_1_task_ma_8</semantic:outgoing>
+    </semantic:exclusiveGateway>
+    <semantic:task id="task_ma_8" name="Inform Accused Person about Investigation Results">
+      <semantic:incoming>flow_merge_gw_ma_1_task_ma_8</semantic:incoming>
+      <semantic:outgoing>flow_task_ma_8_task_ap_4</semantic:outgoing>
+    </semantic:task>
+    <semantic:task id="task_ap_4" name="Receive Investigation Results">
+      <semantic:incoming>flow_task_ma_8_task_ap_4</semantic:incoming>
+      <semantic:outgoing>flow_task_ap_4_gw_ap_2</semantic:outgoing>
+    </semantic:task>
+    <semantic:exclusiveGateway id="gw_ap_2" name="Raise Complaint against Investigation Results?">
+      <semantic:incoming>flow_task_ap_4_gw_ap_2</semantic:incoming>
+      <semantic:outgoing>flow_gw_ap_2_task_ap_5</semantic:outgoing>
+      <semantic:outgoing>flow_gw_ap_2_gw_ap_3</semantic:outgoing>
+    </semantic:exclusiveGateway>
+    <semantic:task id="task_ap_5" name="Pay Imposed Penalty">
+      <semantic:incoming>flow_gw_ap_2_task_ap_5</semantic:incoming>
+      <semantic:incoming>flow_task_ap_8_task_ap_5</semantic:incoming>
+      <semantic:outgoing>flow_task_ap_5_end_event_ap_2</semantic:outgoing>
+    </semantic:task>
+    <semantic:endEvent id="end_event_ap_2" name="Penalty Paid / Process Ended">
+      <semantic:incoming>flow_task_ap_5_end_event_ap_2</semantic:incoming>
+    </semantic:endEvent>
+    <semantic:exclusiveGateway id="gw_ap_3" name="Type of Penalty?">
+      <semantic:incoming>flow_gw_ap_2_gw_ap_3</semantic:incoming>
+      <semantic:outgoing>flow_gw_ap_3_task_ap_6</semantic:outgoing>
+      <semantic:outgoing>flow_gw_ap_3_task_ap_7</semantic:outgoing>
+    </semantic:exclusiveGateway>
+    <semantic:task id="task_ap_6" name="Raise Complaint to Administrative Court">
+      <semantic:incoming>flow_gw_ap_3_task_ap_6</semantic:incoming>
+      <semantic:outgoing>flow_task_ap_6_task_ct_1_ac</semantic:outgoing>
+    </semantic:task>
+    <semantic:task id="task_ap_7" name="Raise Complaint to Federal Finance Court">
+      <semantic:incoming>flow_gw_ap_3_task_ap_7</semantic:incoming>
+      <semantic:outgoing>flow_task_ap_7_task_ct_1_fc</semantic:outgoing>
+    </semantic:task>
+    <semantic:task id="task_ct_1_ac" name="Receive Complaint (Administrative Court)">
+      <semantic:incoming>flow_task_ap_6_task_ct_1_ac</semantic:incoming>
+      <semantic:outgoing>flow_task_ct_1_ac_merge_gw_ct_1</semantic:outgoing>
+    </semantic:task>
+    <semantic:task id="task_ct_1_fc" name="Receive Complaint (Federal Finance Court)">
+      <semantic:incoming>flow_task_ap_7_task_ct_1_fc</semantic:incoming>
+      <semantic:outgoing>flow_task_ct_1_fc_merge_gw_ct_1</semantic:outgoing>
+    </semantic:task>
+    <semantic:exclusiveGateway id="merge_gw_ct_1" name="Merge Complaint Reception">
+      <semantic:incoming>flow_task_ct_1_ac_merge_gw_ct_1</semantic:incoming>
+      <semantic:incoming>flow_task_ct_1_fc_merge_gw_ct_1</semantic:incoming>
+      <semantic:outgoing>flow_merge_gw_ct_1_task_ct_2</semantic:outgoing>
+    </semantic:exclusiveGateway>
+    <semantic:task id="task_ct_2" name="Check Complaint Submission Time">
+      <semantic:incoming>flow_merge_gw_ct_1_task_ct_2</semantic:incoming>
+      <semantic:outgoing>flow_task_ct_2_gw_ct_1</semantic:outgoing>
+    </semantic:task>
+    <semantic:exclusiveGateway id="gw_ct_1" name="Complaint Submitted on Time?">
+      <semantic:incoming>flow_task_ct_2_gw_ct_1</semantic:incoming>
+      <semantic:outgoing>flow_gw_ct_1_task_ct_3</semantic:outgoing>
+      <semantic:outgoing>flow_gw_ct_1_task_ct_4</semantic:outgoing>
+    </semantic:exclusiveGateway>
+    <semantic:task id="task_ct_3" name="Disregard Complaint and Send Back">
+      <semantic:incoming>flow_gw_ct_1_task_ct_3</semantic:incoming>
+      <semantic:outgoing>flow_task_ct_3_task_ap_8</semantic:outgoing>
+    </semantic:task>
+    <semantic:task id="task_ap_8" name="Receive Disregarded Complaint">
+      <semantic:incoming>flow_task_ct_3_task_ap_8</semantic:incoming>
+      <semantic:outgoing>flow_task_ap_8_task_ap_5</semantic:outgoing>
+    </semantic:task>
+    <semantic:task id="task_ct_4" name="Investigate Complaint">
+      <semantic:incoming>flow_gw_ct_1_task_ct_4</semantic:incoming>
+      <semantic:outgoing>flow_task_ct_4_task_ct_5</semantic:outgoing>
+    </semantic:task>
+    <semantic:task id="task_ct_5" name="Arrange Trial and Summon Persons">
+      <semantic:incoming>flow_task_ct_4_task_ct_5</semantic:incoming>
+      <semantic:outgoing>flow_task_ct_5_task_ct_6</semantic:outgoing>
+    </semantic:task>
+    <semantic:task id="task_ct_6" name="Submit Court Decision">
+      <semantic:incoming>flow_task_ct_5_task_ct_6</semantic:incoming>
+      <semantic:outgoing>flow_task_ct_6_end_event_ct_1</semantic:outgoing>
+    </semantic:task>
+    <semantic:endEvent id="end_event_ct_1" name="Court Decision Submitted">
+      <semantic:incoming>flow_task_ct_6_end_event_ct_1</semantic:incoming>
+    </semantic:endEvent>
+
+    <semantic:sequenceFlow id="flow_start_1_task_ma_1" sourceRef="start_1" targetRef="task_ma_1"/>
+    <semantic:sequenceFlow id="flow_task_ma_1_task_ma_2" sourceRef="task_ma_1" targetRef="task_ma_2"/>
+    <semantic:sequenceFlow id="flow_task_ma_2_gw_ps_1" sourceRef="task_ma_2" targetRef="gw_ps_1"/>
+    <semantic:sequenceFlow id="flow_gw_ps_1_task_ap_1" name="Successful" sourceRef="gw_ps_1" targetRef="task_ap_1"/>
+    <semantic:sequenceFlow id="flow_gw_ps_1_task_ps_1" name="Not Successful" sourceRef="gw_ps_1" targetRef="task_ps_1"/>
+    <semantic:sequenceFlow id="flow_task_ps_1_task_ap_2" sourceRef="task_ps_1" targetRef="task_ap_2"/>
+    <semantic:sequenceFlow id="flow_task_ap_1_merge_gw_ap_1" sourceRef="task_ap_1" targetRef="merge_gw_ap_1"/>
+    <semantic:sequenceFlow id="flow_task_ap_2_merge_gw_ap_1" sourceRef="task_ap_2" targetRef="merge_gw_ap_1"/>
+    <semantic:sequenceFlow id="flow_merge_gw_ap_1_gw_ap_1" sourceRef="merge_gw_ap_1" targetRef="gw_ap_1"/>
+    <semantic:sequenceFlow id="flow_gw_ap_1_task_ap_3" name="Yes, Raise Objection" sourceRef="gw_ap_1" targetRef="task_ap_3"/>
+    <semantic:sequenceFlow id="flow_gw_ap_1_end_event_ap_1" name="No, Accept Mandate" sourceRef="gw_ap_1" targetRef="end_event_ap_1"/>
+    <semantic:sequenceFlow id="flow_task_ap_3_task_ma_3" sourceRef="task_ap_3" targetRef="task_ma_3"/>
+    <semantic:sequenceFlow id="flow_task_ma_3_task_ma_4" sourceRef="task_ma_3" targetRef="task_ma_4"/>
+    <semantic:sequenceFlow id="flow_task_ma_4_gw_ma_1" sourceRef="task_ma_4" targetRef="gw_ma_1"/>
+    <semantic:sequenceFlow id="flow_gw_ma_1_task_ma_5" name="No, Not Completed" sourceRef="gw_ma_1" targetRef="task_ma_5"/>
+    <semantic:sequenceFlow id="flow_task_ma_5_task_ma_4" sourceRef="task_ma_5" targetRef="task_ma_4"/>
+    <semantic:sequenceFlow id="flow_gw_ma_1_gw_ma_2" name="Yes, Completed" sourceRef="gw_ma_1" targetRef="gw_ma_2"/>
+    <semantic:sequenceFlow id="flow_gw_ma_2_task_ma_6" name="Impose Punitive Sentence" sourceRef="gw_ma_2" targetRef="task_ma_6"/>
+    <semantic:sequenceFlow id="flow_gw_ma_2_task_ma_7" name="Terminate Proceedings" sourceRef="gw_ma_2" targetRef="task_ma_7"/>
+    <semantic:sequenceFlow id="flow_task_ma_6_merge_gw_ma_1" sourceRef="task_ma_6" targetRef="merge_gw_ma_1"/>
+    <semantic:sequenceFlow id="flow_task_ma_7_merge_gw_ma_1" sourceRef="task_ma_7" targetRef="merge_gw_ma_1"/>
+    <semantic:sequenceFlow id="flow_merge_gw_ma_1_task_ma_8" sourceRef="merge_gw_ma_1" targetRef="task_ma_8"/>
+    <semantic:sequenceFlow id="flow_task_ma_8_task_ap_4" sourceRef="task_ma_8" targetRef="task_ap_4"/>
+    <semantic:sequenceFlow id="flow_task_ap_4_gw_ap_2" sourceRef="task_ap_4" targetRef="gw_ap_2"/>
+    <semantic:sequenceFlow id="flow_gw_ap_2_task_ap_5" name="No, Do Not Complain" sourceRef="gw_ap_2" targetRef="task_ap_5"/>
+    <semantic:sequenceFlow id="flow_task_ap_5_end_event_ap_2" sourceRef="task_ap_5" targetRef="end_event_ap_2"/>
+    <semantic:sequenceFlow id="flow_gw_ap_2_gw_ap_3" name="Yes, Raise Complaint" sourceRef="gw_ap_2" targetRef="gw_ap_3"/>
+    <semantic:sequenceFlow id="flow_gw_ap_3_task_ap_6" name="Traffic Penalties" sourceRef="gw_ap_3" targetRef="task_ap_6"/>
+    <semantic:sequenceFlow id="flow_gw_ap_3_task_ap_7" name="Parking Meters Penalties" sourceRef="gw_ap_3" targetRef="task_ap_7"/>
+    <semantic:sequenceFlow id="flow_task_ap_6_task_ct_1_ac" sourceRef="task_ap_6" targetRef="task_ct_1_ac"/>
+    <semantic:sequenceFlow id="flow_task_ap_7_task_ct_1_fc" sourceRef="task_ap_7" targetRef="task_ct_1_fc"/>
+    <semantic:sequenceFlow id="flow_task_ct_1_ac_merge_gw_ct_1" sourceRef="task_ct_1_ac" targetRef="merge_gw_ct_1"/>
+    <semantic:sequenceFlow id="flow_task_ct_1_fc_merge_gw_ct_1" sourceRef="task_ct_1_fc" targetRef="merge_gw_ct_1"/>
+    <semantic:sequenceFlow id="flow_merge_gw_ct_1_task_ct_2" sourceRef="merge_gw_ct_1" targetRef="task_ct_2"/>
+    <semantic:sequenceFlow id="flow_task_ct_2_gw_ct_1" sourceRef="task_ct_2" targetRef="gw_ct_1"/>
+    <semantic:sequenceFlow id="flow_gw_ct_1_task_ct_3" name="No, Not on Time" sourceRef="gw_ct_1" targetRef="task_ct_3"/>
+    <semantic:sequenceFlow id="flow_task_ct_3_task_ap_8" sourceRef="task_ct_3" targetRef="task_ap_8"/>
+    <semantic:sequenceFlow id="flow_task_ap_8_task_ap_5" sourceRef="task_ap_8" targetRef="task_ap_5"/>
+    <semantic:sequenceFlow id="flow_gw_ct_1_task_ct_4" name="Yes, On Time" sourceRef="gw_ct_1" targetRef="task_ct_4"/>
+    <semantic:sequenceFlow id="flow_task_ct_4_task_ct_5" sourceRef="task_ct_4" targetRef="task_ct_5"/>
+    <semantic:sequenceFlow id="flow_task_ct_5_task_ct_6" sourceRef="task_ct_5" targetRef="task_ct_6"/>
+    <semantic:sequenceFlow id="flow_task_ct_6_end_event_ct_1" sourceRef="task_ct_6" targetRef="end_event_ct_1"/>
+
+  </semantic:process>
+
+  <bpmndi:BPMNDiagram id="BPMNDiagram_punitiveMandateProcess" name="Punitive Mandate Handling Diagram" resolution="96.0">
+    <bpmndi:BPMNPlane bpmnElement="collab_punitiveMandateProcess">
+      <bpmndi:BPMNShape id="participant_punitiveMandateProcess_shape" bpmnElement="participant_punitiveMandateProcess" isHorizontal="true">
+        <dc:Bounds x="10" y="10" width="2800" height="1100"/>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="lane_municipalAuthority_shape" bpmnElement="lane_municipalAuthority" isHorizontal="true">
+        <dc:Bounds x="40" y="10" width="2770" height="250"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="lane_postalService_shape" bpmnElement="lane_postalService" isHorizontal="true">
+        <dc:Bounds x="40" y="260" width="2770" height="150"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="lane_accusedPerson_shape" bpmnElement="lane_accusedPerson" isHorizontal="true">
+        <dc:Bounds x="40" y="410" width="2770" height="400"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="lane_court_shape" bpmnElement="lane_court" isHorizontal="true">
+        <dc:Bounds x="40" y="810" width="2770" height="300"/>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="start_1_shape" bpmnElement="start_1">
+        <dc:Bounds x="70" y="102" width="36" height="36"/>
+        <bpmndi:BPMNLabel><dc:Bounds x="45" y="143" width="86" height="40"/></bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="task_ma_1_shape" bpmnElement="task_ma_1">
+        <dc:Bounds x="156" y="80" width="100" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="task_ma_2_shape" bpmnElement="task_ma_2">
+        <dc:Bounds x="306" y="80" width="100" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="gw_ps_1_shape" bpmnElement="gw_ps_1" isMarkerVisible="true">
+        <dc:Bounds x="331" y="305" width="50" height="50"/>
+        <bpmndi:BPMNLabel><dc:Bounds x="306" y="360" width="100" height="28"/></bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="task_ap_1_shape" bpmnElement="task_ap_1">
+        <dc:Bounds x="200" y="450" width="100" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="task_ps_1_shape" bpmnElement="task_ps_1">
+        <dc:Bounds x="456" y="290" width="100" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="task_ap_2_shape" bpmnElement="task_ap_2">
+        <dc:Bounds x="456" y="450" width="100" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="merge_gw_ap_1_shape" bpmnElement="merge_gw_ap_1" isMarkerVisible="true">
+        <dc:Bounds x="331" y="575" width="50" height="50"/>
+        <bpmndi:BPMNLabel><dc:Bounds x="306" y="630" width="100" height="28"/></bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="gw_ap_1_shape" bpmnElement="gw_ap_1" isMarkerVisible="true">
+        <dc:Bounds x="481" y="575" width="50" height="50"/>
+        <bpmndi:BPMNLabel><dc:Bounds x="456" y="630" width="100" height="28"/></bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="task_ap_3_shape" bpmnElement="task_ap_3">
+        <dc:Bounds x="606" y="450" width="100" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="end_event_ap_1_shape" bpmnElement="end_event_ap_1">
+        <dc:Bounds x="488" y="702" width="36" height="36"/>
+        <bpmndi:BPMNLabel><dc:Bounds x="463" y="743" width="86" height="40"/></bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="task_ma_3_shape" bpmnElement="task_ma_3">
+        <dc:Bounds x="606" y="80" width="100" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="task_ma_4_shape" bpmnElement="task_ma_4">
+        <dc:Bounds x="756" y="80" width="100" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="gw_ma_1_shape" bpmnElement="gw_ma_1" isMarkerVisible="true">
+        <dc:Bounds x="906" y="95" width="50" height="50"/>
+        <bpmndi:BPMNLabel><dc:Bounds x="881" y="150" width="100" height="28"/></bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="task_ma_5_shape" bpmnElement="task_ma_5">
+        <dc:Bounds x="756" y="180" width="100" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="gw_ma_2_shape" bpmnElement="gw_ma_2" isMarkerVisible="true">
+        <dc:Bounds x="1006" y="95" width="50" height="50"/>
+        <bpmndi:BPMNLabel><dc:Bounds x="981" y="150" width="100" height="28"/></bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="task_ma_6_shape" bpmnElement="task_ma_6">
+        <dc:Bounds x="1106" y="40" width="100" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="task_ma_7_shape" bpmnElement="task_ma_7">
+        <dc:Bounds x="1106" y="150" width="100" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="merge_gw_ma_1_shape" bpmnElement="merge_gw_ma_1" isMarkerVisible="true">
+        <dc:Bounds x="1256" y="95" width="50" height="50"/>
+        <bpmndi:BPMNLabel><dc:Bounds x="1231" y="150" width="100" height="28"/></bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="task_ma_8_shape" bpmnElement="task_ma_8">
+        <dc:Bounds x="1356" y="80" width="100" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="task_ap_4_shape" bpmnElement="task_ap_4">
+        <dc:Bounds x="1356" y="450" width="100" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="gw_ap_2_shape" bpmnElement="gw_ap_2" isMarkerVisible="true">
+        <dc:Bounds x="1506" y="465" width="50" height="50"/>
+        <bpmndi:BPMNLabel><dc:Bounds x="1481" y="520" width="100" height="40"/></bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="task_ap_5_shape" bpmnElement="task_ap_5">
+        <dc:Bounds x="1656" y="570" width="100" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="end_event_ap_2_shape" bpmnElement="end_event_ap_2">
+        <dc:Bounds x="1806" y="592" width="36" height="36"/>
+        <bpmndi:BPMNLabel><dc:Bounds x="1781" y="633" width="86" height="40"/></bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="gw_ap_3_shape" bpmnElement="gw_ap_3" isMarkerVisible="true">
+        <dc:Bounds x="1506" y="695" width="50" height="50"/>
+        <bpmndi:BPMNLabel><dc:Bounds x="1481" y="750" width="100" height="28"/></bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="task_ap_6_shape" bpmnElement="task_ap_6">
+        <dc:Bounds x="1356" y="680" width="100" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="task_ap_7_shape" bpmnElement="task_ap_7">
+        <dc:Bounds x="1656" y="680" width="100" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="task_ct_1_ac_shape" bpmnElement="task_ct_1_ac">
+        <dc:Bounds x="1356" y="850" width="100" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="task_ct_1_fc_shape" bpmnElement="task_ct_1_fc">
+        <dc:Bounds x="1656" y="850" width="100" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="merge_gw_ct_1_shape" bpmnElement="merge_gw_ct_1" isMarkerVisible="true">
+        <dc:Bounds x="1506" y="865" width="50" height="50"/>
+        <bpmndi:BPMNLabel><dc:Bounds x="1481" y="920" width="100" height="28"/></bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="task_ct_2_shape" bpmnElement="task_ct_2">
+        <dc:Bounds x="1806" y="850" width="100" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="gw_ct_1_shape" bpmnElement="gw_ct_1" isMarkerVisible="true">
+        <dc:Bounds x="1956" y="865" width="50" height="50"/>
+        <bpmndi:BPMNLabel><dc:Bounds x="1931" y="920" width="100" height="28"/></bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="task_ct_3_shape" bpmnElement="task_ct_3">
+        <dc:Bounds x="2106" y="850" width="100" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="task_ap_8_shape" bpmnElement="task_ap_8">
+        <dc:Bounds x="2106" y="570" width="100" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="task_ct_4_shape" bpmnElement="task_ct_4">
+        <dc:Bounds x="1931" y="970" width="100" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="task_ct_5_shape" bpmnElement="task_ct_5">
+        <dc:Bounds x="2081" y="970" width="100" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="task_ct_6_shape" bpmnElement="task_ct_6">
+        <dc:Bounds x="2231" y="970" width="100" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="end_event_ct_1_shape" bpmnElement="end_event_ct_1">
+        <dc:Bounds x="2381" y="992" width="36" height="36"/>
+        <bpmndi:BPMNLabel><dc:Bounds x="2356" y="1033" width="86" height="28"/></bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNEdge id="flow_start_1_task_ma_1_edge" bpmnElement="flow_start_1_task_ma_1">
+        <di:waypoint x="106" y="120"/>
+        <di:waypoint x="156" y="120"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_task_ma_1_task_ma_2_edge" bpmnElement="flow_task_ma_1_task_ma_2">
+        <di:waypoint x="256" y="120"/>
+        <di:waypoint x="306" y="120"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_task_ma_2_gw_ps_1_edge" bpmnElement="flow_task_ma_2_gw_ps_1">
+        <di:waypoint x="356" y="160"/>
+        <di:waypoint x="356" y="305"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_gw_ps_1_task_ap_1_edge" bpmnElement="flow_gw_ps_1_task_ap_1">
+        <di:waypoint x="331" y="330"/>
+        <di:waypoint x="250" y="330"/>
+        <di:waypoint x="250" y="450"/>
+         <bpmndi:BPMNLabel><dc:Bounds x="260" y="310" width="60" height="14"/></bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_gw_ps_1_task_ps_1_edge" bpmnElement="flow_gw_ps_1_task_ps_1">
+        <di:waypoint x="381" y="330"/>
+        <di:waypoint x="456" y="330"/>
+         <bpmndi:BPMNLabel><dc:Bounds x="390" y="310" width="80" height="14"/></bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_task_ps_1_task_ap_2_edge" bpmnElement="flow_task_ps_1_task_ap_2">
+        <di:waypoint x="506" y="370"/>
+        <di:waypoint x="506" y="450"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_task_ap_1_merge_gw_ap_1_edge" bpmnElement="flow_task_ap_1_merge_gw_ap_1">
+        <di:waypoint x="250" y="530"/>
+        <di:waypoint x="250" y="600"/>
+        <di:waypoint x="331" y="600"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_task_ap_2_merge_gw_ap_1_edge" bpmnElement="flow_task_ap_2_merge_gw_ap_1">
+        <di:waypoint x="506" y="530"/>
+        <di:waypoint x="506" y="600"/>
+        <di:waypoint x="381" y="600"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_merge_gw_ap_1_gw_ap_1_edge" bpmnElement="flow_merge_gw_ap_1_gw_ap_1">
+        <di:waypoint x="381" y="600"/>
+        <di:waypoint x="481" y="600"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_gw_ap_1_task_ap_3_edge" bpmnElement="flow_gw_ap_1_task_ap_3">
+        <di:waypoint x="531" y="600"/>
+        <di:waypoint x="656" y="600"/>
+        <di:waypoint x="656" y="530"/>
+         <bpmndi:BPMNLabel><dc:Bounds x="540" y="580" width="100" height="14"/></bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_gw_ap_1_end_event_ap_1_edge" bpmnElement="flow_gw_ap_1_end_event_ap_1">
+        <di:waypoint x="506" y="625"/>
+        <di:waypoint x="506" y="702"/>
+         <bpmndi:BPMNLabel><dc:Bounds x="515" y="650" width="100" height="14"/></bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_task_ap_3_task_ma_3_edge" bpmnElement="flow_task_ap_3_task_ma_3">
+        <di:waypoint x="656" y="450"/>
+        <di:waypoint x="656" y="160"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_task_ma_3_task_ma_4_edge" bpmnElement="flow_task_ma_3_task_ma_4">
+        <di:waypoint x="706" y="120"/>
+        <di:waypoint x="756" y="120"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_task_ma_4_gw_ma_1_edge" bpmnElement="flow_task_ma_4_gw_ma_1">
+        <di:waypoint x="856" y="120"/>
+        <di:waypoint x="906" y="120"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_gw_ma_1_task_ma_5_edge" bpmnElement="flow_gw_ma_1_task_ma_5">
+        <di:waypoint x="931" y="145"/>
+        <di:waypoint x="931" y="220"/>
+        <di:waypoint x="856" y="220"/>
+         <bpmndi:BPMNLabel><dc:Bounds x="850" y="180" width="80" height="28"/></bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_task_ma_5_task_ma_4_edge" bpmnElement="flow_task_ma_5_task_ma_4">
+        <di:waypoint x="756" y="220"/>
+        <di:waypoint x="706" y="220"/>
+        <di:waypoint x="706" y="120"/>
+        <di:waypoint x="756" y="120"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_gw_ma_1_gw_ma_2_edge" bpmnElement="flow_gw_ma_1_gw_ma_2">
+        <di:waypoint x="956" y="120"/>
+        <di:waypoint x="1006" y="120"/>
+         <bpmndi:BPMNLabel><dc:Bounds x="960" y="100" width="80" height="14"/></bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_gw_ma_2_task_ma_6_edge" bpmnElement="flow_gw_ma_2_task_ma_6">
+        <di:waypoint x="1031" y="95"/>
+        <di:waypoint x="1031" y="80"/>
+        <di:waypoint x="1106" y="80"/>
+         <bpmndi:BPMNLabel><dc:Bounds x="1000" y="60" width="100" height="28"/></bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_gw_ma_2_task_ma_7_edge" bpmnElement="flow_gw_ma_2_task_ma_7">
+        <di:waypoint x="1031" y="145"/>
+        <di:waypoint x="1031" y="190"/>
+        <di:waypoint x="1106" y="190"/>
+         <bpmndi:BPMNLabel><dc:Bounds x="1000" y="160" width="100" height="28"/></bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_task_ma_6_merge_gw_ma_1_edge" bpmnElement="flow_task_ma_6_merge_gw_ma_1">
+        <di:waypoint x="1206" y="80"/>
+        <di:waypoint x="1281" y="80"/>
+        <di:waypoint x="1281" y="95"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_task_ma_7_merge_gw_ma_1_edge" bpmnElement="flow_task_ma_7_merge_gw_ma_1">
+        <di:waypoint x="1206" y="190"/>
+        <di:waypoint x="1281" y="190"/>
+        <di:waypoint x="1281" y="145"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_merge_gw_ma_1_task_ma_8_edge" bpmnElement="flow_merge_gw_ma_1_task_ma_8">
+        <di:waypoint x="1306" y="120"/>
+        <di:waypoint x="1356" y="120"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_task_ma_8_task_ap_4_edge" bpmnElement="flow_task_ma_8_task_ap_4">
+        <di:waypoint x="1406" y="160"/>
+        <di:waypoint x="1406" y="450"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_task_ap_4_gw_ap_2_edge" bpmnElement="flow_task_ap_4_gw_ap_2">
+        <di:waypoint x="1456" y="490"/>
+        <di:waypoint x="1506" y="490"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_gw_ap_2_task_ap_5_edge" bpmnElement="flow_gw_ap_2_task_ap_5">
+        <di:waypoint x="1531" y="515"/>
+        <di:waypoint x="1531" y="610"/>
+        <di:waypoint x="1656" y="610"/>
+         <bpmndi:BPMNLabel><dc:Bounds x="1540" y="580" width="100" height="28"/></bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_task_ap_5_end_event_ap_2_edge" bpmnElement="flow_task_ap_5_end_event_ap_2">
+        <di:waypoint x="1756" y="610"/>
+        <di:waypoint x="1806" y="610"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_gw_ap_2_gw_ap_3_edge" bpmnElement="flow_gw_ap_2_gw_ap_3">
+        <di:waypoint x="1531" y="515"/>
+        <di:waypoint x="1531" y="695"/>
+         <bpmndi:BPMNLabel><dc:Bounds x="1540" y="600" width="100" height="28"/></bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_gw_ap_3_task_ap_6_edge" bpmnElement="flow_gw_ap_3_task_ap_6">
+        <di:waypoint x="1506" y="720"/>
+        <di:waypoint x="1456" y="720"/>
+         <bpmndi:BPMNLabel><dc:Bounds x="1460" y="700" width="80" height="14"/></bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_gw_ap_3_task_ap_7_edge" bpmnElement="flow_gw_ap_3_task_ap_7">
+        <di:waypoint x="1556" y="720"/>
+        <di:waypoint x="1656" y="720"/>
+         <bpmndi:BPMNLabel><dc:Bounds x="1560" y="700" width="80" height="28"/></bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_task_ap_6_task_ct_1_ac_edge" bpmnElement="flow_task_ap_6_task_ct_1_ac">
+        <di:waypoint x="1406" y="760"/>
+        <di:waypoint x="1406" y="850"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_task_ap_7_task_ct_1_fc_edge" bpmnElement="flow_task_ap_7_task_ct_1_fc">
+        <di:waypoint x="1706" y="760"/>
+        <di:waypoint x="1706" y="850"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_task_ct_1_ac_merge_gw_ct_1_edge" bpmnElement="flow_task_ct_1_ac_merge_gw_ct_1">
+        <di:waypoint x="1456" y="890"/>
+        <di:waypoint x="1506" y="890"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_task_ct_1_fc_merge_gw_ct_1_edge" bpmnElement="flow_task_ct_1_fc_merge_gw_ct_1">
+        <di:waypoint x="1656" y="890"/>
+        <di:waypoint x="1556" y="890"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_merge_gw_ct_1_task_ct_2_edge" bpmnElement="flow_merge_gw_ct_1_task_ct_2">
+        <di:waypoint x="1556" y="890"/>
+        <di:waypoint x="1806" y="890"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_task_ct_2_gw_ct_1_edge" bpmnElement="flow_task_ct_2_gw_ct_1">
+        <di:waypoint x="1906" y="890"/>
+        <di:waypoint x="1956" y="890"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_gw_ct_1_task_ct_3_edge" bpmnElement="flow_gw_ct_1_task_ct_3">
+        <di:waypoint x="2006" y="890"/>
+        <di:waypoint x="2106" y="890"/>
+         <bpmndi:BPMNLabel><dc:Bounds x="2010" y="870" width="80" height="14"/></bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_task_ct_3_task_ap_8_edge" bpmnElement="flow_task_ct_3_task_ap_8">
+        <di:waypoint x="2156" y="850"/>
+        <di:waypoint x="2156" y="650"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_task_ap_8_task_ap_5_edge" bpmnElement="flow_task_ap_8_task_ap_5">
+        <di:waypoint x="2106" y="610"/>
+        <di:waypoint x="1756" y="610"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_gw_ct_1_task_ct_4_edge" bpmnElement="flow_gw_ct_1_task_ct_4">
+        <di:waypoint x="1981" y="915"/>
+        <di:waypoint x="1981" y="970"/>
+         <bpmndi:BPMNLabel><dc:Bounds x="1990" y="940" width="60" height="14"/></bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_task_ct_4_task_ct_5_edge" bpmnElement="flow_task_ct_4_task_ct_5">
+        <di:waypoint x="2031" y="1010"/>
+        <di:waypoint x="2081" y="1010"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_task_ct_5_task_ct_6_edge" bpmnElement="flow_task_ct_5_task_ct_6">
+        <di:waypoint x="2181" y="1010"/>
+        <di:waypoint x="2231" y="1010"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_task_ct_6_end_event_ct_1_edge" bpmnElement="flow_task_ct_6_end_event_ct_1">
+        <di:waypoint x="2331" y="1010"/>
+        <di:waypoint x="2381" y="1010"/>
+      </bpmndi:BPMNEdge>
+
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</semantic:definitions>

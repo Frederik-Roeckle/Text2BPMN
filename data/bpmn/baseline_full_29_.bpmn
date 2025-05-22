@@ -1,0 +1,340 @@
+<?xml version="1.0" standalone="yes"?>
+<semantic:definitions id="RevenueForecastProcessDefs"
+    targetNamespace="http://example.com/bpmn/revenue-forecast"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:semantic="http://www.omg.org/spec/BPMN/20100524/MODEL"
+    xmlns:di="http://www.omg.org/spec/DD/20100524/DI"
+    xmlns:dc="http://www.omg.org/spec/DD/20100524/DC"
+    xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI">
+
+  <semantic:collaboration id="collab_revenueForecast">
+    <semantic:participant id="participant_ARDept" name="Accounts Receivable Department" processRef="revenueForecastProcess"/>
+  </semantic:collaboration>
+
+  <semantic:process id="revenueForecastProcess" isExecutable="true">
+    <semantic:laneSet id="laneSet_AR">
+      <semantic:lane id="lane_ARProcessor" name="AR Processor">
+        <semantic:flowNodeRef>startEvent_RequestReceived</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_PostForecastRevenue</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_DefinePostingDetails</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_SaveForecastDoc</semantic:flowNodeRef>
+        <semantic:flowNodeRef>gateway_ReportDecision</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_DisplayPostingReport</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_DefineAcctGroup</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_CreateCustomer</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_DefineCustomerData</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_SaveCustomerDetails</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_AssignCustomer</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_CheckCostCentre</semantic:flowNodeRef>
+        <semantic:flowNodeRef>gateway_CostCentreDecision</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_CreateNewCostCentreUnblocked</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_CreatePayRequest</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_SavePayRequestDoc</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_DisplayParkedPayRequest</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_ReleasePosting</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_CustomizeDoc</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_PostRequest</semantic:flowNodeRef>
+        <semantic:flowNodeRef>endEvent_ProcessCompleted</semantic:flowNodeRef>
+      </semantic:lane>
+    </semantic:laneSet>
+
+    <semantic:startEvent id="startEvent_RequestReceived" name="Request Received">
+      <semantic:outgoing>flow_start_to_postforecast</semantic:outgoing>
+    </semantic:startEvent>
+
+    <semantic:task id="task_PostForecastRevenue" name="Post Forecast Revenue">
+      <semantic:incoming>flow_start_to_postforecast</semantic:incoming>
+      <semantic:outgoing>flow_postforecast_to_defineposting</semantic:outgoing>
+    </semantic:task>
+
+    <semantic:task id="task_DefinePostingDetails" name="Define Forecast Posting Details">
+      <semantic:incoming>flow_postforecast_to_defineposting</semantic:incoming>
+      <semantic:outgoing>flow_defineposting_to_saveforecast</semantic:outgoing>
+    </semantic:task>
+
+    <semantic:task id="task_SaveForecastDoc" name="Save Forecast Document">
+      <semantic:incoming>flow_defineposting_to_saveforecast</semantic:incoming>
+      <semantic:outgoing>flow_saveforecast_to_reportdecision</semantic:outgoing>
+    </semantic:task>
+
+    <semantic:exclusiveGateway id="gateway_ReportDecision" name="Need Posting Report?">
+      <semantic:incoming>flow_saveforecast_to_reportdecision</semantic:incoming>
+      <semantic:outgoing>flow_reportdecision_to_displayreport</semantic:outgoing>
+      <semantic:outgoing>flow_reportdecision_to_defineacctgroup_no</semantic:outgoing>
+    </semantic:exclusiveGateway>
+
+    <semantic:task id="task_DisplayPostingReport" name="Display Forecast Posting Report">
+      <semantic:incoming>flow_reportdecision_to_displayreport</semantic:incoming>
+      <semantic:outgoing>flow_displayreport_to_defineacctgroup</semantic:outgoing>
+    </semantic:task>
+
+    <semantic:task id="task_DefineAcctGroup" name="Define Account Group">
+      <semantic:incoming>flow_reportdecision_to_defineacctgroup_no</semantic:incoming>
+      <semantic:incoming>flow_displayreport_to_defineacctgroup</semantic:incoming>
+      <semantic:outgoing>flow_defineacctgroup_to_createcustomer</semantic:outgoing>
+    </semantic:task>
+
+    <semantic:task id="task_CreateCustomer" name="Create Customer">
+      <semantic:incoming>flow_defineacctgroup_to_createcustomer</semantic:incoming>
+      <semantic:outgoing>flow_createcustomer_to_definecustomerdata</semantic:outgoing>
+    </semantic:task>
+
+    <semantic:task id="task_DefineCustomerData" name="Define Customer Data">
+      <semantic:incoming>flow_createcustomer_to_definecustomerdata</semantic:incoming>
+      <semantic:outgoing>flow_definecustomerdata_to_savecustomer</semantic:outgoing>
+    </semantic:task>
+
+    <semantic:task id="task_SaveCustomerDetails" name="Save Customer Details">
+      <semantic:incoming>flow_definecustomerdata_to_savecustomer</semantic:incoming>
+      <semantic:outgoing>flow_savecustomer_to_assigncustomer</semantic:outgoing>
+    </semantic:task>
+
+    <semantic:task id="task_AssignCustomer" name="Assign Customer">
+      <semantic:incoming>flow_savecustomer_to_assigncustomer</semantic:incoming>
+      <semantic:outgoing>flow_assigncustomer_to_checkcostcentre</semantic:outgoing>
+    </semantic:task>
+
+    <semantic:task id="task_CheckCostCentre" name="Check Cost Centre Block">
+      <semantic:incoming>flow_assigncustomer_to_checkcostcentre</semantic:incoming>
+      <semantic:outgoing>flow_checkcostcentre_to_costcentredecision</semantic:outgoing>
+    </semantic:task>
+
+    <semantic:exclusiveGateway id="gateway_CostCentreDecision" name="Cost Centre Blocked?">
+      <semantic:incoming>flow_checkcostcentre_to_costcentredecision</semantic:incoming>
+      <semantic:outgoing>flow_costcentredecision_to_createnewcostcentre</semantic:outgoing>
+      <semantic:outgoing>flow_costcentredecision_to_createpayrequest_no</semantic:outgoing>
+    </semantic:exclusiveGateway>
+
+    <semantic:task id="task_CreateNewCostCentreUnblocked" name="Create Unblocked Cost Centre">
+      <semantic:incoming>flow_costcentredecision_to_createnewcostcentre</semantic:incoming>
+      <semantic:outgoing>flow_createnewcostcentre_to_createpayrequest</semantic:outgoing>
+    </semantic:task>
+
+    <semantic:task id="task_CreatePayRequest" name="Create Payment Request">
+      <semantic:incoming>flow_costcentredecision_to_createpayrequest_no</semantic:incoming>
+      <semantic:incoming>flow_createnewcostcentre_to_createpayrequest</semantic:incoming>
+      <semantic:outgoing>flow_createpayrequest_to_savepayrequestdoc</semantic:outgoing>
+    </semantic:task>
+
+    <semantic:task id="task_SavePayRequestDoc" name="Save Payment Request Document">
+      <semantic:incoming>flow_createpayrequest_to_savepayrequestdoc</semantic:incoming>
+      <semantic:outgoing>flow_savepayrequestdoc_to_displayparkeddoc</semantic:outgoing>
+    </semantic:task>
+
+    <semantic:task id="task_DisplayParkedPayRequest" name="Display Parked Payment Request">
+      <semantic:incoming>flow_savepayrequestdoc_to_displayparkeddoc</semantic:incoming>
+      <semantic:outgoing>flow_displayparkeddoc_to_releaseposting</semantic:outgoing>
+    </semantic:task>
+
+    <semantic:task id="task_ReleasePosting" name="Release Parked Posting">
+      <semantic:incoming>flow_displayparkeddoc_to_releaseposting</semantic:incoming>
+      <semantic:outgoing>flow_releaseposting_to_customizedoc</semantic:outgoing>
+    </semantic:task>
+
+    <semantic:task id="task_CustomizeDoc" name="Customize Document">
+      <semantic:incoming>flow_releaseposting_to_customizedoc</semantic:incoming>
+      <semantic:outgoing>flow_customizedoc_to_postrequest</semantic:outgoing>
+    </semantic:task>
+
+    <semantic:task id="task_PostRequest" name="Post Acceptance Request">
+      <semantic:incoming>flow_customizedoc_to_postrequest</semantic:incoming>
+      <semantic:outgoing>flow_postrequest_to_end</semantic:outgoing>
+    </semantic:task>
+
+    <semantic:endEvent id="endEvent_ProcessCompleted" name="Process Completed">
+      <semantic:incoming>flow_postrequest_to_end</semantic:incoming>
+    </semantic:endEvent>
+
+    <semantic:sequenceFlow id="flow_start_to_postforecast" sourceRef="startEvent_RequestReceived" targetRef="task_PostForecastRevenue"/>
+    <semantic:sequenceFlow id="flow_postforecast_to_defineposting" sourceRef="task_PostForecastRevenue" targetRef="task_DefinePostingDetails"/>
+    <semantic:sequenceFlow id="flow_defineposting_to_saveforecast" sourceRef="task_DefinePostingDetails" targetRef="task_SaveForecastDoc"/>
+    <semantic:sequenceFlow id="flow_saveforecast_to_reportdecision" sourceRef="task_SaveForecastDoc" targetRef="gateway_ReportDecision"/>
+    <semantic:sequenceFlow id="flow_reportdecision_to_displayreport" name="Yes" sourceRef="gateway_ReportDecision" targetRef="task_DisplayPostingReport"/>
+    <semantic:sequenceFlow id="flow_reportdecision_to_defineacctgroup_no" name="No" sourceRef="gateway_ReportDecision" targetRef="task_DefineAcctGroup"/>
+    <semantic:sequenceFlow id="flow_displayreport_to_defineacctgroup" sourceRef="task_DisplayPostingReport" targetRef="task_DefineAcctGroup"/>
+    <semantic:sequenceFlow id="flow_defineacctgroup_to_createcustomer" sourceRef="task_DefineAcctGroup" targetRef="task_CreateCustomer"/>
+    <semantic:sequenceFlow id="flow_createcustomer_to_definecustomerdata" sourceRef="task_CreateCustomer" targetRef="task_DefineCustomerData"/>
+    <semantic:sequenceFlow id="flow_definecustomerdata_to_savecustomer" sourceRef="task_DefineCustomerData" targetRef="task_SaveCustomerDetails"/>
+    <semantic:sequenceFlow id="flow_savecustomer_to_assigncustomer" sourceRef="task_SaveCustomerDetails" targetRef="task_AssignCustomer"/>
+    <semantic:sequenceFlow id="flow_assigncustomer_to_checkcostcentre" sourceRef="task_AssignCustomer" targetRef="task_CheckCostCentre"/>
+    <semantic:sequenceFlow id="flow_checkcostcentre_to_costcentredecision" sourceRef="task_CheckCostCentre" targetRef="gateway_CostCentreDecision"/>
+    <semantic:sequenceFlow id="flow_costcentredecision_to_createnewcostcentre" name="Yes" sourceRef="gateway_CostCentreDecision" targetRef="task_CreateNewCostCentreUnblocked"/>
+    <semantic:sequenceFlow id="flow_costcentredecision_to_createpayrequest_no" name="No" sourceRef="gateway_CostCentreDecision" targetRef="task_CreatePayRequest"/>
+    <semantic:sequenceFlow id="flow_createnewcostcentre_to_createpayrequest" sourceRef="task_CreateNewCostCentreUnblocked" targetRef="task_CreatePayRequest"/>
+    <semantic:sequenceFlow id="flow_createpayrequest_to_savepayrequestdoc" sourceRef="task_CreatePayRequest" targetRef="task_SavePayRequestDoc"/>
+    <semantic:sequenceFlow id="flow_savepayrequestdoc_to_displayparkeddoc" sourceRef="task_SavePayRequestDoc" targetRef="task_DisplayParkedPayRequest"/>
+    <semantic:sequenceFlow id="flow_displayparkeddoc_to_releaseposting" sourceRef="task_DisplayParkedPayRequest" targetRef="task_ReleasePosting"/>
+    <semantic:sequenceFlow id="flow_releaseposting_to_customizedoc" sourceRef="task_ReleasePosting" targetRef="task_CustomizeDoc"/>
+    <semantic:sequenceFlow id="flow_customizedoc_to_postrequest" sourceRef="task_CustomizeDoc" targetRef="task_PostRequest"/>
+    <semantic:sequenceFlow id="flow_postrequest_to_end" sourceRef="task_PostRequest" targetRef="endEvent_ProcessCompleted"/>
+
+  </semantic:process>
+
+  <bpmndi:BPMNDiagram id="BPMNDiagram_revenueForecast" name="Revenue Forecast Diagram" resolution="96.0">
+    <bpmndi:BPMNPlane bpmnElement="collab_revenueForecast">
+      <bpmndi:BPMNShape id="participant_ARDept_shape" bpmnElement="participant_ARDept" isHorizontal="true">
+        <dc:Bounds x="20" y="20" width="700" height="2400"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="lane_ARProcessor_shape" bpmnElement="lane_ARProcessor" isHorizontal="true">
+        <dc:Bounds x="50" y="20" width="670" height="2400"/>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="startEvent_RequestReceived_shape" bpmnElement="startEvent_RequestReceived">
+        <dc:Bounds x="332" y="100" width="36" height="36"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="task_PostForecastRevenue_shape" bpmnElement="task_PostForecastRevenue">
+        <dc:Bounds x="260" y="180" width="180" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="task_DefinePostingDetails_shape" bpmnElement="task_DefinePostingDetails">
+        <dc:Bounds x="260" y="300" width="180" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="task_SaveForecastDoc_shape" bpmnElement="task_SaveForecastDoc">
+        <dc:Bounds x="260" y="420" width="180" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="gateway_ReportDecision_shape" bpmnElement="gateway_ReportDecision" isMarkerVisible="true">
+        <dc:Bounds x="325" y="540" width="50" height="50"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="task_DisplayPostingReport_shape" bpmnElement="task_DisplayPostingReport">
+        <dc:Bounds x="450" y="525" width="180" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="task_DefineAcctGroup_shape" bpmnElement="task_DefineAcctGroup">
+        <dc:Bounds x="260" y="660" width="180" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="task_CreateCustomer_shape" bpmnElement="task_CreateCustomer">
+        <dc:Bounds x="260" y="780" width="180" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="task_DefineCustomerData_shape" bpmnElement="task_DefineCustomerData">
+        <dc:Bounds x="260" y="900" width="180" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="task_SaveCustomerDetails_shape" bpmnElement="task_SaveCustomerDetails">
+        <dc:Bounds x="260" y="1020" width="180" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="task_AssignCustomer_shape" bpmnElement="task_AssignCustomer">
+        <dc:Bounds x="260" y="1140" width="180" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="task_CheckCostCentre_shape" bpmnElement="task_CheckCostCentre">
+        <dc:Bounds x="260" y="1260" width="180" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="gateway_CostCentreDecision_shape" bpmnElement="gateway_CostCentreDecision" isMarkerVisible="true">
+        <dc:Bounds x="325" y="1380" width="50" height="50"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="task_CreateNewCostCentreUnblocked_shape" bpmnElement="task_CreateNewCostCentreUnblocked">
+        <dc:Bounds x="450" y="1365" width="180" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="task_CreatePayRequest_shape" bpmnElement="task_CreatePayRequest">
+        <dc:Bounds x="260" y="1500" width="180" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="task_SavePayRequestDoc_shape" bpmnElement="task_SavePayRequestDoc">
+        <dc:Bounds x="260" y="1620" width="180" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="task_DisplayParkedPayRequest_shape" bpmnElement="task_DisplayParkedPayRequest">
+        <dc:Bounds x="260" y="1740" width="180" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="task_ReleasePosting_shape" bpmnElement="task_ReleasePosting">
+        <dc:Bounds x="260" y="1860" width="180" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="task_CustomizeDoc_shape" bpmnElement="task_CustomizeDoc">
+        <dc:Bounds x="260" y="1980" width="180" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="task_PostRequest_shape" bpmnElement="task_PostRequest">
+        <dc:Bounds x="260" y="2100" width="180" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="endEvent_ProcessCompleted_shape" bpmnElement="endEvent_ProcessCompleted">
+        <dc:Bounds x="332" y="2220" width="36" height="36"/>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNEdge id="flow_start_to_postforecast_edge" bpmnElement="flow_start_to_postforecast">
+        <di:waypoint x="350" y="136"/>
+        <di:waypoint x="350" y="180"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_postforecast_to_defineposting_edge" bpmnElement="flow_postforecast_to_defineposting">
+        <di:waypoint x="350" y="260"/>
+        <di:waypoint x="350" y="300"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_defineposting_to_saveforecast_edge" bpmnElement="flow_defineposting_to_saveforecast">
+        <di:waypoint x="350" y="380"/>
+        <di:waypoint x="350" y="420"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_saveforecast_to_reportdecision_edge" bpmnElement="flow_saveforecast_to_reportdecision">
+        <di:waypoint x="350" y="500"/>
+        <di:waypoint x="350" y="540"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_reportdecision_to_displayreport_edge" bpmnElement="flow_reportdecision_to_displayreport">
+        <di:waypoint x="375" y="565"/>
+        <di:waypoint x="450" y="565"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_reportdecision_to_defineacctgroup_no_edge" bpmnElement="flow_reportdecision_to_defineacctgroup_no">
+        <di:waypoint x="350" y="590"/>
+        <di:waypoint x="350" y="660"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_displayreport_to_defineacctgroup_edge" bpmnElement="flow_displayreport_to_defineacctgroup">
+        <di:waypoint x="540" y="605"/>
+        <di:waypoint x="540" y="630"/>
+        <di:waypoint x="350" y="630"/>
+        <di:waypoint x="350" y="660"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_defineacctgroup_to_createcustomer_edge" bpmnElement="flow_defineacctgroup_to_createcustomer">
+        <di:waypoint x="350" y="740"/>
+        <di:waypoint x="350" y="780"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_createcustomer_to_definecustomerdata_edge" bpmnElement="flow_createcustomer_to_definecustomerdata">
+        <di:waypoint x="350" y="860"/>
+        <di:waypoint x="350" y="900"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_definecustomerdata_to_savecustomer_edge" bpmnElement="flow_definecustomerdata_to_savecustomer">
+        <di:waypoint x="350" y="980"/>
+        <di:waypoint x="350" y="1020"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_savecustomer_to_assigncustomer_edge" bpmnElement="flow_savecustomer_to_assigncustomer">
+        <di:waypoint x="350" y="1100"/>
+        <di:waypoint x="350" y="1140"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_assigncustomer_to_checkcostcentre_edge" bpmnElement="flow_assigncustomer_to_checkcostcentre">
+        <di:waypoint x="350" y="1220"/>
+        <di:waypoint x="350" y="1260"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_checkcostcentre_to_costcentredecision_edge" bpmnElement="flow_checkcostcentre_to_costcentredecision">
+        <di:waypoint x="350" y="1340"/>
+        <di:waypoint x="350" y="1380"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_costcentredecision_to_createnewcostcentre_edge" bpmnElement="flow_costcentredecision_to_createnewcostcentre">
+        <di:waypoint x="375" y="1405"/>
+        <di:waypoint x="450" y="1405"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_costcentredecision_to_createpayrequest_no_edge" bpmnElement="flow_costcentredecision_to_createpayrequest_no">
+        <di:waypoint x="350" y="1430"/>
+        <di:waypoint x="350" y="1500"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_createnewcostcentre_to_createpayrequest_edge" bpmnElement="flow_createnewcostcentre_to_createpayrequest">
+        <di:waypoint x="540" y="1445"/>
+        <di:waypoint x="540" y="1470"/>
+        <di:waypoint x="350" y="1470"/>
+        <di:waypoint x="350" y="1500"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_createpayrequest_to_savepayrequestdoc_edge" bpmnElement="flow_createpayrequest_to_savepayrequestdoc">
+        <di:waypoint x="350" y="1580"/>
+        <di:waypoint x="350" y="1620"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_savepayrequestdoc_to_displayparkeddoc_edge" bpmnElement="flow_savepayrequestdoc_to_displayparkeddoc">
+        <di:waypoint x="350" y="1700"/>
+        <di:waypoint x="350" y="1740"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_displayparkeddoc_to_releaseposting_edge" bpmnElement="flow_displayparkeddoc_to_releaseposting">
+        <di:waypoint x="350" y="1820"/>
+        <di:waypoint x="350" y="1860"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_releaseposting_to_customizedoc_edge" bpmnElement="flow_releaseposting_to_customizedoc">
+        <di:waypoint x="350" y="1940"/>
+        <di:waypoint x="350" y="1980"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_customizedoc_to_postrequest_edge" bpmnElement="flow_customizedoc_to_postrequest">
+        <di:waypoint x="350" y="2060"/>
+        <di:waypoint x="350" y="2100"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_postrequest_to_end_edge" bpmnElement="flow_postrequest_to_end">
+        <di:waypoint x="350" y="2180"/>
+        <di:waypoint x="350" y="2220"/>
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</semantic:definitions>

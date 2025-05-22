@@ -1,0 +1,432 @@
+<?xml version="1.0" standalone="yes"?>
+<semantic:definitions id="PurchaseToPayProcess"
+    targetNamespace="http://example.com/bpmn/purchase-to-pay"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:semantic="http://www.omg.org/spec/BPMN/20100524/MODEL"
+    xmlns:di="http://www.omg.org/spec/DD/20100524/DI"
+    xmlns:dc="http://www.omg.org/spec/DD/20100524/DC"
+    xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI">
+
+  <semantic:collaboration id="collab_purchaseToPay">
+    <semantic:participant id="participant_requestor" name="Requestor Pool" processRef="purchaseToPayProcess"/>
+    <semantic:participant id="participant_heads" name="Heads of Departments Pool" processRef="purchaseToPayProcess"/>
+    <semantic:participant id="participant_vendor" name="Vendor Pool" processRef="purchaseToPayProcess"/>
+    <semantic:participant id="participant_ap" name="Accounts Payable Pool" processRef="purchaseToPayProcess"/>
+  </semantic:collaboration>
+
+  <semantic:process id="purchaseToPayProcess" isExecutable="true">
+    <semantic:laneSet id="laneSet">
+      <semantic:lane id="requestorLane" name="Requestor">
+        <semantic:flowNodeRef>start</semantic:flowNodeRef>
+        <semantic:flowNodeRef>defineRequirements</semantic:flowNodeRef>
+        <semantic:flowNodeRef>issuePR</semantic:flowNodeRef>
+        <semantic:flowNodeRef>submitPRToHeads</semantic:flowNodeRef>
+        <semantic:flowNodeRef>createPO</semantic:flowNodeRef>
+        <semantic:flowNodeRef>dispatchPO</semantic:flowNodeRef>
+        <semantic:flowNodeRef>receiveGoodsOrServices</semantic:flowNodeRef>
+        <semantic:flowNodeRef>issueGRorSES</semantic:flowNodeRef>
+        <semantic:flowNodeRef>receiveInvoice</semantic:flowNodeRef>
+        <semantic:flowNodeRef>checkInvoice</semantic:flowNodeRef>
+        <semantic:flowNodeRef>postInvoice</semantic:flowNodeRef>
+        <semantic:flowNodeRef>end</semantic:flowNodeRef>
+      </semantic:lane>
+      <semantic:lane id="headsLane" name="Heads of Departments">
+        <semantic:flowNodeRef>reviewPR</semantic:flowNodeRef>
+        <semantic:flowNodeRef>documentDecisionPR</semantic:flowNodeRef>
+      </semantic:lane>
+      <semantic:lane id="vendorLane" name="Vendor">
+        <semantic:flowNodeRef>evaluatePO</semantic:flowNodeRef>
+        <semantic:flowNodeRef>deliverGoodsOrServices</semantic:flowNodeRef>
+        <semantic:flowNodeRef>correctInvoice</semantic:flowNodeRef>
+      </semantic:lane>
+      <semantic:lane id="apLane" name="Accounts Payable">
+        <semantic:flowNodeRef>decidePaymentMethod</semantic:flowNodeRef>
+        <semantic:flowNodeRef>performPayment</semantic:flowNodeRef>
+      </semantic:lane>
+    </semantic:laneSet>
+
+    <semantic:startEvent id="start" name="Start Process">
+      <semantic:outgoing>flow1</semantic:outgoing>
+    </semantic:startEvent>
+
+    <semantic:task id="defineRequirements" name="Determine Business Requirements">
+      <semantic:incoming>flow1</semantic:incoming>
+      <semantic:outgoing>flow2</semantic:outgoing>
+    </semantic:task>
+
+    <semantic:task id="issuePR" name="Issue Purchase Requisition">
+      <semantic:incoming>flow2</semantic:incoming>
+      <semantic:outgoing>flow3</semantic:outgoing>
+    </semantic:task>
+
+    <semantic:exclusiveGateway id="gatewayPRApproval" name="Is PR Approved?">
+      <semantic:incoming>flow3</semantic:incoming>
+      <semantic:outgoing>flow4</semantic:outgoing>
+      <semantic:outgoing>flow5</semantic:outgoing>
+    </semantic:exclusiveGateway>
+
+    <semantic:task id="submitPRToHeads" name="Submit PR to Heads of Departments">
+      <semantic:incoming>flow4</semantic:incoming>
+      <semantic:outgoing>flow6</semantic:outgoing>
+    </semantic:task>
+
+    <semantic:task id="reviewPR" name="Review Purchase Requisition">
+      <semantic:incoming>flow6</semantic:incoming>
+      <semantic:outgoing>flow7</semantic:outgoing>
+    </semantic:task>
+
+    <semantic:exclusiveGateway id="gatewayPRDecision" name="Decision on PR">
+      <semantic:incoming>flow7</semantic:incoming>
+      <semantic:outgoing>flow8</semantic:outgoing>
+      <semantic:outgoing>flow9</semantic:outgoing>
+      <semantic:outgoing>flow10</semantic:outgoing>
+    </semantic:exclusiveGateway>
+
+    <semantic:task id="documentDecisionPR" name="Document Decision on PR">
+      <semantic:incoming>flow8</semantic:incoming>
+      <semantic:outgoing>flow11</semantic:outgoing>
+    </semantic:task>
+
+    <semantic:task id="createPO" name="Create Purchase Order">
+      <semantic:incoming>flow11</semantic:incoming>
+      <semantic:outgoing>flow12</semantic:outgoing>
+    </semantic:task>
+
+    <semantic:task id="dispatchPO" name="Dispatch Purchase Order to Vendor">
+      <semantic:incoming>flow12</semantic:incoming>
+      <semantic:outgoing>flow13</semantic:outgoing>
+    </semantic:task>
+
+    <semantic:task id="evaluatePO" name="Evaluate Purchase Order">
+      <semantic:incoming>flow13</semantic:incoming>
+      <semantic:outgoing>flow14</semantic:outgoing>
+    </semantic:task>
+
+    <semantic:exclusiveGateway id="gatewayPODecision" name="Decision on PO">
+      <semantic:incoming>flow14</semantic:incoming>
+      <semantic:outgoing>flow15</semantic:outgoing>
+      <semantic:outgoing>flow16</semantic:outgoing>
+    </semantic:exclusiveGateway>
+
+    <semantic:task id="deliverGoodsOrServices" name="Deliver Goods/Services">
+      <semantic:incoming>flow15</semantic:incoming>
+      <semantic:outgoing>flow17</semantic:outgoing>
+    </semantic:task>
+
+    <semantic:task id="receiveGoodsOrServices" name="Receive Goods/Services">
+      <semantic:incoming>flow17</semantic:incoming>
+      <semantic:outgoing>flow18</semantic:outgoing>
+    </semantic:task>
+
+    <semantic:task id="issueGRorSES" name="Issue Goods Receipt or Service Entry Sheet">
+      <semantic:incoming>flow18</semantic:incoming>
+      <semantic:outgoing>flow19</semantic:outgoing>
+    </semantic:task>
+
+    <semantic:task id="receiveInvoice" name="Receive Invoice from Vendor">
+      <semantic:incoming>flow19</semantic:incoming>
+      <semantic:outgoing>flow20</semantic:outgoing>
+    </semantic:task>
+
+    <semantic:task id="checkInvoice" name="Check Invoice for Discrepancies">
+      <semantic:incoming>flow20</semantic:incoming>
+      <semantic:outgoing>flow21</semantic:outgoing>
+    </semantic:task>
+
+    <semantic:exclusiveGateway id="gatewayInvoiceCheck" name="Is Invoice Correct?">
+      <semantic:incoming>flow21</semantic:incoming>
+      <semantic:outgoing>flow22</semantic:outgoing>
+      <semantic:outgoing>flow23</semantic:outgoing>
+    </semantic:exclusiveGateway>
+
+    <semantic:task id="postInvoice" name="Post Invoice in SAP">
+      <semantic:incoming>flow22</semantic:incoming>
+      <semantic:outgoing>flow24</semantic:outgoing>
+    </semantic:task>
+
+    <semantic:endEvent id="end" name="End Process">
+      <semantic:incoming>flow24</semantic:incoming>
+    </semantic:endEvent>
+
+    <semantic:task id="correctInvoice" name="Correct Invoice">
+      <semantic:incoming>flow23</semantic:incoming>
+      <semantic:outgoing>flow25</semantic:outgoing>
+    </semantic:task>
+
+    <semantic:task id="decidePaymentMethod" name="Decide Payment Method">
+      <semantic:incoming>flow25</semantic:incoming>
+      <semantic:outgoing>flow26</semantic:outgoing>
+    </semantic:task>
+
+    <semantic:task id="performPayment" name="Perform Payment to Vendor">
+      <semantic:incoming>flow26</semantic:incoming>
+      <semantic:outgoing>flow27</semantic:outgoing>
+    </semantic:task>
+
+    <semantic:sequenceFlow id="flow1" sourceRef="start" targetRef="defineRequirements"/>
+    <semantic:sequenceFlow id="flow2" sourceRef="defineRequirements" targetRef="issuePR"/>
+    <semantic:sequenceFlow id="flow3" sourceRef="issuePR" targetRef="gatewayPRApproval"/>
+    <semantic:sequenceFlow id="flow4" sourceRef="gatewayPRApproval" targetRef="submitPRToHeads"/>
+    <semantic:sequenceFlow id="flow5" sourceRef="gatewayPRApproval" targetRef="defineRequirements"/>
+    <semantic:sequenceFlow id="flow6" sourceRef="submitPRToHeads" targetRef="reviewPR"/>
+    <semantic:sequenceFlow id="flow7" sourceRef="reviewPR" targetRef="gatewayPRDecision"/>
+    <semantic:sequenceFlow id="flow8" sourceRef="gatewayPRDecision" targetRef="documentDecisionPR"/>
+    <semantic:sequenceFlow id="flow9" sourceRef="gatewayPRDecision" targetRef="defineRequirements"/>
+    <semantic:sequenceFlow id="flow10" sourceRef="gatewayPRDecision" targetRef="defineRequirements"/>
+    <semantic:sequenceFlow id="flow11" sourceRef="documentDecisionPR" targetRef="createPO"/>
+    <semantic:sequenceFlow id="flow12" sourceRef="createPO" targetRef="dispatchPO"/>
+    <semantic:sequenceFlow id="flow13" sourceRef="dispatchPO" targetRef="evaluatePO"/>
+    <semantic:sequenceFlow id="flow14" sourceRef="evaluatePO" targetRef="gatewayPODecision"/>
+    <semantic:sequenceFlow id="flow15" sourceRef="gatewayPODecision" targetRef="deliverGoodsOrServices"/>
+    <semantic:sequenceFlow id="flow16" sourceRef="gatewayPODecision" targetRef="defineRequirements"/>
+    <semantic:sequenceFlow id="flow17" sourceRef="deliverGoodsOrServices" targetRef="receiveGoodsOrServices"/>
+    <semantic:sequenceFlow id="flow18" sourceRef="receiveGoodsOrServices" targetRef="issueGRorSES"/>
+    <semantic:sequenceFlow id="flow19" sourceRef="issueGRorSES" targetRef="receiveInvoice"/>
+    <semantic:sequenceFlow id="flow20" sourceRef="receiveInvoice" targetRef="checkInvoice"/>
+    <semantic:sequenceFlow id="flow21" sourceRef="checkInvoice" targetRef="gatewayInvoiceCheck"/>
+    <semantic:sequenceFlow id="flow22" sourceRef="gatewayInvoiceCheck" targetRef="postInvoice"/>
+    <semantic:sequenceFlow id="flow23" sourceRef="gatewayInvoiceCheck" targetRef="correctInvoice"/>
+    <semantic:sequenceFlow id="flow24" sourceRef="postInvoice" targetRef="end"/>
+    <semantic:sequenceFlow id="flow25" sourceRef="correctInvoice" targetRef="receiveInvoice"/>
+    <semantic:sequenceFlow id="flow26" sourceRef="receiveInvoice" targetRef="decidePaymentMethod"/>
+    <semantic:sequenceFlow id="flow27" sourceRef="decidePaymentMethod" targetRef="performPayment"/>
+  </semantic:process>
+
+  <bpmndi:BPMNDiagram id="BPMNDiagram_purchaseToPay" name="Purchase to Pay Diagram" resolution="96.0">
+    <bpmndi:BPMNPlane bpmnElement="collab_purchaseToPay">
+      <bpmndi:BPMNShape id="participant_requestor_shape" bpmnElement="participant_requestor" isHorizontal="true">
+        <dc:Bounds x="20" y="20" width="800" height="600"/>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="participant_heads_shape" bpmnElement="participant_heads" isHorizontal="true">
+        <dc:Bounds x="20" y="640" width="800" height="200"/>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="participant_vendor_shape" bpmnElement="participant_vendor" isHorizontal="true">
+        <dc:Bounds x="20" y="860" width="800" height="200"/>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="participant_ap_shape" bpmnElement="participant_ap" isHorizontal="true">
+        <dc:Bounds x="20" y="1080" width="800" height="200"/>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="start_shape" bpmnElement="start">
+        <dc:Bounds x="100" y="100" width="36" height="36"/>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="defineRequirements_shape" bpmnElement="defineRequirements">
+        <dc:Bounds x="180" y="90" width="200" height="56"/>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="issuePR_shape" bpmnElement="issuePR">
+        <dc:Bounds x="400" y="90" width="200" height="56"/>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="gatewayPRApproval_shape" bpmnElement="gatewayPRApproval" isMarkerVisible="true">
+        <dc:Bounds x="620" y="95" width="50" height="50"/>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="submitPRToHeads_shape" bpmnElement="submitPRToHeads">
+        <dc:Bounds x="680" y="90" width="200" height="56"/>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="reviewPR_shape" bpmnElement="reviewPR">
+        <dc:Bounds x="900" y="90" width="200" height="56"/>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="gatewayPRDecision_shape" bpmnElement="gatewayPRDecision" isMarkerVisible="true">
+        <dc:Bounds x="1120" y="95" width="50" height="50"/>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="documentDecisionPR_shape" bpmnElement="documentDecisionPR">
+        <dc:Bounds x="1180" y="90" width="200" height="56"/>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="createPO_shape" bpmnElement="createPO">
+        <dc:Bounds x="1400" y="90" width="200" height="56"/>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="dispatchPO_shape" bpmnElement="dispatchPO">
+        <dc:Bounds x="1620" y="90" width="200" height="56"/>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="evaluatePO_shape" bpmnElement="evaluatePO">
+        <dc:Bounds x="1840" y="90" width="200" height="56"/>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="gatewayPODecision_shape" bpmnElement="gatewayPODecision" isMarkerVisible="true">
+        <dc:Bounds x="2060" y="95" width="50" height="50"/>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="deliverGoodsOrServices_shape" bpmnElement="deliverGoodsOrServices">
+        <dc:Bounds x="2120" y="90" width="200" height="56"/>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="receiveGoodsOrServices_shape" bpmnElement="receiveGoodsOrServices">
+        <dc:Bounds x="2340" y="90" width="200" height="56"/>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="issueGRorSES_shape" bpmnElement="issueGRorSES">
+        <dc:Bounds x="2560" y="90" width="200" height="56"/>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="receiveInvoice_shape" bpmnElement="receiveInvoice">
+        <dc:Bounds x="2780" y="90" width="200" height="56"/>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="checkInvoice_shape" bpmnElement="checkInvoice">
+        <dc:Bounds x="3000" y="90" width="200" height="56"/>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="gatewayInvoiceCheck_shape" bpmnElement="gatewayInvoiceCheck" isMarkerVisible="true">
+        <dc:Bounds x="3220" y="95" width="50" height="50"/>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="postInvoice_shape" bpmnElement="postInvoice">
+        <dc:Bounds x="3280" y="90" width="200" height="56"/>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="correctInvoice_shape" bpmnElement="correctInvoice">
+        <dc:Bounds x="3500" y="90" width="200" height="56"/>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="decidePaymentMethod_shape" bpmnElement="decidePaymentMethod">
+        <dc:Bounds x="3720" y="90" width="200" height="56"/>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="performPayment_shape" bpmnElement="performPayment">
+        <dc:Bounds x="3940" y="90" width="200" height="56"/>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNEdge id="flow1_edge" bpmnElement="flow1">
+        <di:waypoint x="136" y="118"/>
+        <di:waypoint x="180" y="118"/>
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="flow2_edge" bpmnElement="flow2">
+        <di:waypoint x="380" y="118"/>
+        <di:waypoint x="400" y="118"/>
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="flow3_edge" bpmnElement="flow3">
+        <di:waypoint x="600" y="118"/>
+        <di:waypoint x="620" y="120"/>
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="flow4_edge" bpmnElement="flow4">
+        <di:waypoint x="670" y="118"/>
+        <di:waypoint x="680" y="118"/>
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="flow5_edge" bpmnElement="flow5">
+        <di:waypoint x="670" y="118"/>
+        <di:waypoint x="400" y="118"/>
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="flow6_edge" bpmnElement="flow6">
+        <di:waypoint x="880" y="118"/>
+        <di:waypoint x="900" y="118"/>
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="flow7_edge" bpmnElement="flow7">
+        <di:waypoint x="1100" y="118"/>
+        <di:waypoint x="1120" y="120"/>
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="flow8_edge" bpmnElement="flow8">
+        <di:waypoint x="1170" y="118"/>
+        <di:waypoint x="1180" y="118"/>
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="flow9_edge" bpmnElement="flow9">
+        <di:waypoint x="1170" y="118"/>
+        <di:waypoint x="400" y="118"/>
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="flow10_edge" bpmnElement="flow10">
+        <di:waypoint x="1170" y="118"/>
+        <di:waypoint x="400" y="118"/>
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="flow11_edge" bpmnElement="flow11">
+        <di:waypoint x="1380" y="118"/>
+        <di:waypoint x="1400" y="118"/>
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="flow12_edge" bpmnElement="flow12">
+        <di:waypoint x="1600" y="118"/>
+        <di:waypoint x="1620" y="118"/>
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="flow13_edge" bpmnElement="flow13">
+        <di:waypoint x="1820" y="118"/>
+        <di:waypoint x="1840" y="118"/>
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="flow14_edge" bpmnElement="flow14">
+        <di:waypoint x="2040" y="118"/>
+        <di:waypoint x="2060" y="120"/>
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="flow15_edge" bpmnElement="flow15">
+        <di:waypoint x="2110" y="118"/>
+        <di:waypoint x="2120" y="118"/>
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="flow16_edge" bpmnElement="flow16">
+        <di:waypoint x="2110" y="118"/>
+        <di:waypoint x="400" y="118"/>
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="flow17_edge" bpmnElement="flow17">
+        <di:waypoint x="2330" y="118"/>
+        <di:waypoint x="2340" y="118"/>
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="flow18_edge" bpmnElement="flow18">
+        <di:waypoint x="2550" y="118"/>
+        <di:waypoint x="2560" y="118"/>
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="flow19_edge" bpmnElement="flow19">
+        <di:waypoint x="2770" y="118"/>
+        <di:waypoint x="2780" y="118"/>
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="flow20_edge" bpmnElement="flow20">
+        <di:waypoint x="2990" y="118"/>
+        <di:waypoint x="3000" y="118"/>
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="flow21_edge" bpmnElement="flow21">
+        <di:waypoint x="3210" y="118"/>
+        <di:waypoint x="3220" y="120"/>
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="flow22_edge" bpmnElement="flow22">
+        <di:waypoint x="3270" y="118"/>
+        <di:waypoint x="3280" y="118"/>
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="flow23_edge" bpmnElement="flow23">
+        <di:waypoint x="3270" y="118"/>
+        <di:waypoint x="3500" y="118"/>
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="flow24_edge" bpmnElement="flow24">
+        <di:waypoint x="3500" y="118"/>
+        <di:waypoint x="3720" y="118"/>
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="flow25_edge" bpmnElement="flow25">
+        <di:waypoint x="3720" y="118"/>
+        <di:waypoint x="3940" y="118"/>
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="flow26_edge" bpmnElement="flow26">
+        <di:waypoint x="3940" y="118"/>
+        <di:waypoint x="3940" y="118"/>
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</semantic:definitions>

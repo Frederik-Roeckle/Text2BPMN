@@ -1,0 +1,1232 @@
+<?xml version="1.0" standalone="yes"?>
+<semantic:definitions id="InternalRefurbishmentProcessDefs"
+    targetNamespace="http://example.com/bpmn/internal-refurbishment"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:semantic="http://www.omg.org/spec/BPMN/20100524/MODEL"
+    xmlns:di="http://www.omg.org/spec/DD/20100524/DI"
+    xmlns:dc="http://www.omg.org/spec/DD/20100524/DC"
+    xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI">
+
+  <semantic:collaboration id="collab_internal_refurbishment">
+    <semantic:participant id="pool_main_process" name="Internal Refurbishment Process" processRef="internalRefurbishmentProcess"/>
+    <semantic:participant id="pool_subprocess_planning" name="Planning &amp; Scheduling Process" processRef="planningSchedulingProcess"/>
+    <semantic:messageFlow id="message_flow_to_manager" sourceRef="task_save_process_mail" targetRef="intermediate_catch_request_received"/>
+    <semantic:messageFlow id="message_flow_decision_approved_to_rm" sourceRef="task_mgr_save_entries_approved" targetRef="intermediate_catch_decision_received"/>
+    <semantic:messageFlow id="message_flow_decision_rejected_to_rm" sourceRef="task_mgr_save_entries_rejected" targetRef="intermediate_catch_decision_received"/>
+  </semantic:collaboration>
+
+  <semantic:process id="internalRefurbishmentProcess" isExecutable="true">
+    <semantic:laneSet id="laneSet_main">
+      <semantic:lane id="lane_responsible_maintenance" name="Responsible Maintenance">
+        <semantic:flowNodeRef>start_event_request_received</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_create_pm_notification</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_choose_notification_type</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_define_notification_characteristics</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_confirm_entries_warranty</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_define_reference_object_tab</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_define_malfunction_data_tab</semantic:flowNodeRef>
+        <semantic:flowNodeRef>gateway_breakdown_case</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_mark_breakdown_checkbox</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_not_mark_breakdown_checkbox</semantic:flowNodeRef>
+        <semantic:flowNodeRef>gateway_merge_breakdown</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_save_pm_notification</semantic:flowNodeRef>
+        <semantic:flowNodeRef>pg_split_send_details</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_define_receiver_details</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_define_notice_text</semantic:flowNodeRef>
+        <semantic:flowNodeRef>pg_merge_send_details</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_confirm_send_entries</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_save_process_mail</semantic:flowNodeRef>
+        <semantic:flowNodeRef>intermediate_catch_decision_received</semantic:flowNodeRef>
+        <semantic:flowNodeRef>gateway_request_approved_check</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_manage_work_order</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_create_internal_refurb_order</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_transfer_info_to_wo</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_define_order_type_mc04</semantic:flowNodeRef>
+        <semantic:flowNodeRef>pg_split_plants_valuation</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_define_refurb_plants</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_define_valuation_type</semantic:flowNodeRef>
+        <semantic:flowNodeRef>pg_merge_plants_valuation</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_define_operations_main</semantic:flowNodeRef>
+        <semantic:flowNodeRef>pg_split_internal_external_ops</semantic:flowNodeRef>
+        <semantic:flowNodeRef>call_activity_planning_scheduling</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_maintain_external_ops</semantic:flowNodeRef>
+        <semantic:flowNodeRef>pg_merge_internal_external_ops</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_define_estimated_costs</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_maintain_involved_partners</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_define_allocated_objects</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_define_additional_data</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_define_location_data</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_save_work_order</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_assign_wo_to_wbs</semantic:flowNodeRef>
+        <semantic:flowNodeRef>end_event_request_handled</semantic:flowNodeRef>
+        <semantic:flowNodeRef>end_event_rm_rejected</semantic:flowNodeRef>
+      </semantic:lane>
+      <semantic:lane id="lane_maintenance_manager" name="Maintenance Manager">
+        <semantic:flowNodeRef>intermediate_catch_request_received</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_evaluate_request</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_document_submit_decision</semantic:flowNodeRef>
+        <semantic:flowNodeRef>gateway_decision_approved</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_mgr_change_pm_notification_approved</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_mgr_set_status_approved</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_mgr_confirm_entries_approved</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_mgr_select_put_in_process</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_mgr_save_entries_approved</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_mgr_change_pm_notification_rejected</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_mgr_set_status_cancelled</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_mgr_save_entries_rejected</semantic:flowNodeRef>
+        <semantic:flowNodeRef>end_event_request_rejected</semantic:flowNodeRef>
+      </semantic:lane>
+    </semantic:laneSet>
+
+    <!-- Responsible Maintenance Lane Elements -->
+    <semantic:startEvent id="start_event_request_received" name="Internal Refurbishment Request Received">
+      <semantic:outgoing>flow_to_create_pm</semantic:outgoing>
+    </semantic:startEvent>
+    <semantic:task id="task_create_pm_notification" name="Create PM Notification in SAP">
+      <semantic:incoming>flow_to_create_pm</semantic:incoming>
+      <semantic:outgoing>flow_to_choose_type</semantic:outgoing>
+    </semantic:task>
+    <semantic:task id="task_choose_notification_type" name="Choose Notification Type P1">
+      <semantic:incoming>flow_to_choose_type</semantic:incoming>
+      <semantic:outgoing>flow_to_define_chars</semantic:outgoing>
+    </semantic:task>
+    <semantic:task id="task_define_notification_characteristics" name="Define Notification Characteristics Tab">
+      <semantic:incoming>flow_to_define_chars</semantic:incoming>
+      <semantic:outgoing>flow_to_confirm_warranty</semantic:outgoing>
+    </semantic:task>
+    <semantic:task id="task_confirm_entries_warranty" name="Confirm Entries (Warranty Check)">
+      <semantic:incoming>flow_to_confirm_warranty</semantic:incoming>
+      <semantic:outgoing>flow_to_define_ref_obj</semantic:outgoing>
+    </semantic:task>
+    <semantic:task id="task_define_reference_object_tab" name="Define Reference Object Tab">
+      <semantic:incoming>flow_to_define_ref_obj</semantic:incoming>
+      <semantic:outgoing>flow_to_define_malf_data</semantic:outgoing>
+    </semantic:task>
+    <semantic:task id="task_define_malfunction_data_tab" name="Define Malfunction Data Tab">
+      <semantic:incoming>flow_to_define_malf_data</semantic:incoming>
+      <semantic:outgoing>flow_to_gw_breakdown</semantic:outgoing>
+    </semantic:task>
+    <semantic:exclusiveGateway id="gateway_breakdown_case" name="Breakdown Case?">
+      <semantic:incoming>flow_to_gw_breakdown</semantic:incoming>
+      <semantic:outgoing>flow_breakdown_yes</semantic:outgoing>
+      <semantic:outgoing>flow_breakdown_no</semantic:outgoing>
+    </semantic:exclusiveGateway>
+    <semantic:task id="task_mark_breakdown_checkbox" name="Mark Breakdown Checkbox">
+      <semantic:incoming>flow_breakdown_yes</semantic:incoming>
+      <semantic:outgoing>flow_to_merge_breakdown_1</semantic:outgoing>
+    </semantic:task>
+    <semantic:task id="task_not_mark_breakdown_checkbox" name="Do Not Mark Breakdown Checkbox">
+      <semantic:incoming>flow_breakdown_no</semantic:incoming>
+      <semantic:outgoing>flow_to_merge_breakdown_2</semantic:outgoing>
+    </semantic:task>
+    <semantic:exclusiveGateway id="gateway_merge_breakdown">
+      <semantic:incoming>flow_to_merge_breakdown_1</semantic:incoming>
+      <semantic:incoming>flow_to_merge_breakdown_2</semantic:incoming>
+      <semantic:outgoing>flow_to_save_pm_notif</semantic:outgoing>
+    </semantic:exclusiveGateway>
+    <semantic:task id="task_save_pm_notification" name="Save PM Notification">
+      <semantic:incoming>flow_to_save_pm_notif</semantic:incoming>
+      <semantic:outgoing>flow_to_pg_split_send</semantic:outgoing>
+    </semantic:task>
+    <semantic:parallelGateway id="pg_split_send_details" name="Define Send Details">
+      <semantic:incoming>flow_to_pg_split_send</semantic:incoming>
+      <semantic:outgoing>flow_to_define_receiver</semantic:outgoing>
+      <semantic:outgoing>flow_to_define_notice_text</semantic:outgoing>
+    </semantic:parallelGateway>
+    <semantic:task id="task_define_receiver_details" name="Define Receiver Details">
+      <semantic:incoming>flow_to_define_receiver</semantic:incoming>
+      <semantic:outgoing>flow_to_pg_merge_send_1</semantic:outgoing>
+    </semantic:task>
+    <semantic:task id="task_define_notice_text" name="Define Notice Text">
+      <semantic:incoming>flow_to_define_notice_text</semantic:incoming>
+      <semantic:outgoing>flow_to_pg_merge_send_2</semantic:outgoing>
+    </semantic:task>
+    <semantic:parallelGateway id="pg_merge_send_details">
+      <semantic:incoming>flow_to_pg_merge_send_1</semantic:incoming>
+      <semantic:incoming>flow_to_pg_merge_send_2</semantic:incoming>
+      <semantic:outgoing>flow_to_confirm_send_entries</semantic:outgoing>
+    </semantic:parallelGateway>
+    <semantic:task id="task_confirm_send_entries" name="Confirm Send Entries">
+      <semantic:incoming>flow_to_confirm_send_entries</semantic:incoming>
+      <semantic:outgoing>flow_to_save_process_mail</semantic:outgoing>
+    </semantic:task>
+    <semantic:userTask id="task_save_process_mail" name="Save Process and Send Mail"> <!-- Changed to UserTask as it initiates a message -->
+      <semantic:incoming>flow_to_save_process_mail</semantic:incoming>
+      <!-- Outgoing is the message flow -->
+    </semantic:userTask>
+
+    <semantic:intermediateCatchEvent id="intermediate_catch_decision_received" name="Receive Maintenance Request Decision">
+      <!-- Incoming is message flow -->
+      <semantic:outgoing>flow_to_gw_req_approved_check</semantic:outgoing>
+      <semantic:messageEventDefinition messageRef="message_decision"/>
+    </semantic:intermediateCatchEvent>
+    <semantic:exclusiveGateway id="gateway_request_approved_check" name="Request Approved?">
+      <semantic:incoming>flow_to_gw_req_approved_check</semantic:incoming>
+      <semantic:outgoing>flow_req_approved_yes</semantic:outgoing>
+      <semantic:outgoing>flow_req_approved_no</semantic:outgoing>
+    </semantic:exclusiveGateway>
+    <semantic:task id="task_manage_work_order" name="Manage Work Order">
+      <semantic:incoming>flow_req_approved_yes</semantic:incoming>
+      <semantic:outgoing>flow_to_create_refurb_order</semantic:outgoing>
+    </semantic:task>
+    <semantic:task id="task_create_internal_refurb_order" name="Create Internal Refurbishment Order">
+      <semantic:incoming>flow_to_create_refurb_order</semantic:incoming>
+      <semantic:outgoing>flow_to_transfer_info</semantic:outgoing>
+    </semantic:task>
+    <semantic:task id="task_transfer_info_to_wo" name="Transfer Information to Work Order">
+      <semantic:incoming>flow_to_transfer_info</semantic:incoming>
+      <semantic:outgoing>flow_to_define_order_type</semantic:outgoing>
+    </semantic:task>
+    <semantic:task id="task_define_order_type_mc04" name="Define Order Type MC04">
+      <semantic:incoming>flow_to_define_order_type</semantic:incoming>
+      <semantic:outgoing>flow_to_pg_split_plants_val</semantic:outgoing>
+    </semantic:task>
+    <semantic:parallelGateway id="pg_split_plants_valuation" name="Define Plants and Valuation">
+      <semantic:incoming>flow_to_pg_split_plants_val</semantic:incoming>
+      <semantic:outgoing>flow_to_define_refurb_plants</semantic:outgoing>
+      <semantic:outgoing>flow_to_define_val_type</semantic:outgoing>
+    </semantic:parallelGateway>
+    <semantic:task id="task_define_refurb_plants" name="Define Interval of Refurbishment Plants">
+      <semantic:incoming>flow_to_define_refurb_plants</semantic:incoming>
+      <semantic:outgoing>flow_to_pg_merge_plants_val_1</semantic:outgoing>
+    </semantic:task>
+    <semantic:task id="task_define_valuation_type" name="Define Valuation Type">
+      <semantic:incoming>flow_to_define_val_type</semantic:incoming>
+      <semantic:outgoing>flow_to_pg_merge_plants_val_2</semantic:outgoing>
+    </semantic:task>
+    <semantic:parallelGateway id="pg_merge_plants_valuation">
+      <semantic:incoming>flow_to_pg_merge_plants_val_1</semantic:incoming>
+      <semantic:incoming>flow_to_pg_merge_plants_val_2</semantic:incoming>
+      <semantic:outgoing>flow_to_define_ops_main</semantic:outgoing>
+    </semantic:parallelGateway>
+    <semantic:task id="task_define_operations_main" name="Define Operations">
+      <semantic:incoming>flow_to_define_ops_main</semantic:incoming>
+      <semantic:outgoing>flow_to_pg_split_int_ext_ops</semantic:outgoing>
+    </semantic:task>
+    <semantic:parallelGateway id="pg_split_internal_external_ops" name="Maintain Operations">
+      <semantic:incoming>flow_to_pg_split_int_ext_ops</semantic:incoming>
+      <semantic:outgoing>flow_to_call_activity_planning</semantic:outgoing>
+      <semantic:outgoing>flow_to_maintain_ext_ops</semantic:outgoing>
+    </semantic:parallelGateway>
+    <semantic:callActivity id="call_activity_planning_scheduling" name="Maintain Internal Operations" calledElement="planningSchedulingProcess">
+      <semantic:incoming>flow_to_call_activity_planning</semantic:incoming>
+      <semantic:outgoing>flow_to_pg_merge_int_ext_ops_1</semantic:outgoing>
+    </semantic:callActivity>
+    <semantic:task id="task_maintain_external_ops" name="Maintain External Operations">
+      <semantic:incoming>flow_to_maintain_ext_ops</semantic:incoming>
+      <semantic:outgoing>flow_to_pg_merge_int_ext_ops_2</semantic:outgoing>
+    </semantic:task>
+    <semantic:parallelGateway id="pg_merge_internal_external_ops">
+      <semantic:incoming>flow_to_pg_merge_int_ext_ops_1</semantic:incoming>
+      <semantic:incoming>flow_to_pg_merge_int_ext_ops_2</semantic:incoming>
+      <semantic:outgoing>flow_to_define_est_costs</semantic:outgoing>
+    </semantic:parallelGateway>
+    <semantic:task id="task_define_estimated_costs" name="Define Estimated Costs">
+      <semantic:incoming>flow_to_define_est_costs</semantic:incoming>
+      <semantic:outgoing>flow_to_maintain_partners</semantic:outgoing>
+    </semantic:task>
+    <semantic:task id="task_maintain_involved_partners" name="Maintain Involved Partners">
+      <semantic:incoming>flow_to_maintain_partners</semantic:incoming>
+      <semantic:outgoing>flow_to_define_alloc_obj</semantic:outgoing>
+    </semantic:task>
+    <semantic:task id="task_define_allocated_objects" name="Define Allocated Objects">
+      <semantic:incoming>flow_to_define_alloc_obj</semantic:incoming>
+      <semantic:outgoing>flow_to_define_add_data</semantic:outgoing>
+    </semantic:task>
+    <semantic:task id="task_define_additional_data" name="Define Additional Data">
+      <semantic:incoming>flow_to_define_add_data</semantic:incoming>
+      <semantic:outgoing>flow_to_define_loc_data</semantic:outgoing>
+    </semantic:task>
+    <semantic:task id="task_define_location_data" name="Define Location Data">
+      <semantic:incoming>flow_to_define_loc_data</semantic:incoming>
+      <semantic:outgoing>flow_to_save_wo</semantic:outgoing>
+    </semantic:task>
+    <semantic:task id="task_save_work_order" name="Save Work Order">
+      <semantic:incoming>flow_to_save_wo</semantic:incoming>
+      <semantic:outgoing>flow_to_assign_wbs</semantic:outgoing>
+    </semantic:task>
+    <semantic:task id="task_assign_wo_to_wbs" name="Assign Work Order to WBS Element">
+      <semantic:incoming>flow_to_assign_wbs</semantic:incoming>
+      <semantic:outgoing>flow_to_end_handled</semantic:outgoing>
+    </semantic:task>
+    <semantic:endEvent id="end_event_request_handled" name="Internal Refurbishment Request Handled">
+      <semantic:incoming>flow_to_end_handled</semantic:incoming>
+    </semantic:endEvent>
+    <semantic:endEvent id="end_event_rm_rejected" name="Process Ended (RM - Rejected)">
+      <semantic:incoming>flow_req_approved_no</semantic:incoming>
+    </semantic:endEvent>
+
+    <!-- Maintenance Manager Lane Elements -->
+    <semantic:intermediateCatchEvent id="intermediate_catch_request_received" name="Maintenance Request Received">
+      <!-- Incoming is message flow -->
+      <semantic:outgoing>flow_to_evaluate_request</semantic:outgoing>
+      <semantic:messageEventDefinition messageRef="message_request"/>
+    </semantic:intermediateCatchEvent>
+    <semantic:task id="task_evaluate_request" name="Evaluate Request">
+      <semantic:incoming>flow_to_evaluate_request</semantic:incoming>
+      <semantic:outgoing>flow_to_doc_decision</semantic:outgoing>
+    </semantic:task>
+    <semantic:task id="task_document_submit_decision" name="Document/Submit Decision">
+      <semantic:incoming>flow_to_doc_decision</semantic:incoming>
+      <semantic:outgoing>flow_to_gw_decision_approved</semantic:outgoing>
+    </semantic:task>
+    <semantic:exclusiveGateway id="gateway_decision_approved" name="Decision Approved?">
+      <semantic:incoming>flow_to_gw_decision_approved</semantic:incoming>
+      <semantic:outgoing>flow_decision_approved_yes</semantic:outgoing>
+      <semantic:outgoing>flow_decision_approved_no</semantic:outgoing>
+    </semantic:exclusiveGateway>
+    <semantic:task id="task_mgr_change_pm_notification_approved" name="Change PM Notification (Approved)">
+      <semantic:incoming>flow_decision_approved_yes</semantic:incoming>
+      <semantic:outgoing>flow_to_mgr_set_status_appr</semantic:outgoing>
+    </semantic:task>
+    <semantic:task id="task_mgr_set_status_approved" name="Set Notification Status to Approved">
+      <semantic:incoming>flow_to_mgr_set_status_appr</semantic:incoming>
+      <semantic:outgoing>flow_to_mgr_confirm_appr</semantic:outgoing>
+    </semantic:task>
+    <semantic:task id="task_mgr_confirm_entries_approved" name="Confirm Entries (Approved)">
+      <semantic:incoming>flow_to_mgr_confirm_appr</semantic:incoming>
+      <semantic:outgoing>flow_to_mgr_put_in_process</semantic:outgoing>
+    </semantic:task>
+    <semantic:task id="task_mgr_select_put_in_process" name="Select Put in Process Icon">
+      <semantic:incoming>flow_to_mgr_put_in_process</semantic:incoming>
+      <semantic:outgoing>flow_to_mgr_save_appr</semantic:outgoing>
+    </semantic:task>
+    <semantic:userTask id="task_mgr_save_entries_approved" name="Save Entries (Approved)"> <!-- Changed to UserTask as it initiates a message -->
+      <semantic:incoming>flow_to_mgr_save_appr</semantic:incoming>
+      <!-- Outgoing is message flow -->
+    </semantic:userTask>
+    <semantic:task id="task_mgr_change_pm_notification_rejected" name="Change PM Notification (Cancelled)">
+      <semantic:incoming>flow_decision_approved_no</semantic:incoming>
+      <semantic:outgoing>flow_to_mgr_set_status_cancel</semantic:outgoing>
+    </semantic:task>
+    <semantic:task id="task_mgr_set_status_cancelled" name="Set Notification Status to Cancelled">
+      <semantic:incoming>flow_to_mgr_set_status_cancel</semantic:incoming>
+      <semantic:outgoing>flow_to_mgr_save_cancel</semantic:outgoing>
+    </semantic:task>
+    <semantic:userTask id="task_mgr_save_entries_rejected" name="Save Entries (Cancelled)"> <!-- Changed to UserTask as it initiates a message -->
+      <semantic:incoming>flow_to_mgr_save_cancel</semantic:incoming>
+      <semantic:outgoing>flow_to_end_rejected_mgr</semantic:outgoing> <!-- Also sends message -->
+    </semantic:userTask>
+    <semantic:endEvent id="end_event_request_rejected" name="Request Rejected and Process Terminated">
+      <semantic:incoming>flow_to_end_rejected_mgr</semantic:incoming>
+    </semantic:endEvent>
+
+    <!-- Sequence Flows for Responsible Maintenance -->
+    <semantic:sequenceFlow id="flow_to_create_pm" sourceRef="start_event_request_received" targetRef="task_create_pm_notification"/>
+    <semantic:sequenceFlow id="flow_to_choose_type" sourceRef="task_create_pm_notification" targetRef="task_choose_notification_type"/>
+    <semantic:sequenceFlow id="flow_to_define_chars" sourceRef="task_choose_notification_type" targetRef="task_define_notification_characteristics"/>
+    <semantic:sequenceFlow id="flow_to_confirm_warranty" sourceRef="task_define_notification_characteristics" targetRef="task_confirm_entries_warranty"/>
+    <semantic:sequenceFlow id="flow_to_define_ref_obj" sourceRef="task_confirm_entries_warranty" targetRef="task_define_reference_object_tab"/>
+    <semantic:sequenceFlow id="flow_to_define_malf_data" sourceRef="task_define_reference_object_tab" targetRef="task_define_malfunction_data_tab"/>
+    <semantic:sequenceFlow id="flow_to_gw_breakdown" sourceRef="task_define_malfunction_data_tab" targetRef="gateway_breakdown_case"/>
+    <semantic:sequenceFlow id="flow_breakdown_yes" name="Yes" sourceRef="gateway_breakdown_case" targetRef="task_mark_breakdown_checkbox"/>
+    <semantic:sequenceFlow id="flow_breakdown_no" name="No" sourceRef="gateway_breakdown_case" targetRef="task_not_mark_breakdown_checkbox"/>
+    <semantic:sequenceFlow id="flow_to_merge_breakdown_1" sourceRef="task_mark_breakdown_checkbox" targetRef="gateway_merge_breakdown"/>
+    <semantic:sequenceFlow id="flow_to_merge_breakdown_2" sourceRef="task_not_mark_breakdown_checkbox" targetRef="gateway_merge_breakdown"/>
+    <semantic:sequenceFlow id="flow_to_save_pm_notif" sourceRef="gateway_merge_breakdown" targetRef="task_save_pm_notification"/>
+    <semantic:sequenceFlow id="flow_to_pg_split_send" sourceRef="task_save_pm_notification" targetRef="pg_split_send_details"/>
+    <semantic:sequenceFlow id="flow_to_define_receiver" sourceRef="pg_split_send_details" targetRef="task_define_receiver_details"/>
+    <semantic:sequenceFlow id="flow_to_define_notice_text" sourceRef="pg_split_send_details" targetRef="task_define_notice_text"/>
+    <semantic:sequenceFlow id="flow_to_pg_merge_send_1" sourceRef="task_define_receiver_details" targetRef="pg_merge_send_details"/>
+    <semantic:sequenceFlow id="flow_to_pg_merge_send_2" sourceRef="task_define_notice_text" targetRef="pg_merge_send_details"/>
+    <semantic:sequenceFlow id="flow_to_confirm_send_entries" sourceRef="pg_merge_send_details" targetRef="task_confirm_send_entries"/>
+    <semantic:sequenceFlow id="flow_to_save_process_mail" sourceRef="task_confirm_send_entries" targetRef="task_save_process_mail"/>
+
+    <semantic:sequenceFlow id="flow_to_gw_req_approved_check" sourceRef="intermediate_catch_decision_received" targetRef="gateway_request_approved_check"/>
+    <semantic:sequenceFlow id="flow_req_approved_yes" name="Yes" sourceRef="gateway_request_approved_check" targetRef="task_manage_work_order"/>
+    <semantic:sequenceFlow id="flow_req_approved_no" name="No" sourceRef="gateway_request_approved_check" targetRef="end_event_rm_rejected"/>
+    <semantic:sequenceFlow id="flow_to_create_refurb_order" sourceRef="task_manage_work_order" targetRef="task_create_internal_refurb_order"/>
+    <semantic:sequenceFlow id="flow_to_transfer_info" sourceRef="task_create_internal_refurb_order" targetRef="task_transfer_info_to_wo"/>
+    <semantic:sequenceFlow id="flow_to_define_order_type" sourceRef="task_transfer_info_to_wo" targetRef="task_define_order_type_mc04"/>
+    <semantic:sequenceFlow id="flow_to_pg_split_plants_val" sourceRef="task_define_order_type_mc04" targetRef="pg_split_plants_valuation"/>
+    <semantic:sequenceFlow id="flow_to_define_refurb_plants" sourceRef="pg_split_plants_valuation" targetRef="task_define_refurb_plants"/>
+    <semantic:sequenceFlow id="flow_to_define_val_type" sourceRef="pg_split_plants_valuation" targetRef="task_define_valuation_type"/>
+    <semantic:sequenceFlow id="flow_to_pg_merge_plants_val_1" sourceRef="task_define_refurb_plants" targetRef="pg_merge_plants_valuation"/>
+    <semantic:sequenceFlow id="flow_to_pg_merge_plants_val_2" sourceRef="task_define_valuation_type" targetRef="pg_merge_plants_valuation"/>
+    <semantic:sequenceFlow id="flow_to_define_ops_main" sourceRef="pg_merge_plants_valuation" targetRef="task_define_operations_main"/>
+    <semantic:sequenceFlow id="flow_to_pg_split_int_ext_ops" sourceRef="task_define_operations_main" targetRef="pg_split_internal_external_ops"/>
+    <semantic:sequenceFlow id="flow_to_call_activity_planning" sourceRef="pg_split_internal_external_ops" targetRef="call_activity_planning_scheduling"/>
+    <semantic:sequenceFlow id="flow_to_maintain_ext_ops" sourceRef="pg_split_internal_external_ops" targetRef="task_maintain_external_ops"/>
+    <semantic:sequenceFlow id="flow_to_pg_merge_int_ext_ops_1" sourceRef="call_activity_planning_scheduling" targetRef="pg_merge_internal_external_ops"/>
+    <semantic:sequenceFlow id="flow_to_pg_merge_int_ext_ops_2" sourceRef="task_maintain_external_ops" targetRef="pg_merge_internal_external_ops"/>
+    <semantic:sequenceFlow id="flow_to_define_est_costs" sourceRef="pg_merge_internal_external_ops" targetRef="task_define_estimated_costs"/>
+    <semantic:sequenceFlow id="flow_to_maintain_partners" sourceRef="task_define_estimated_costs" targetRef="task_maintain_involved_partners"/>
+    <semantic:sequenceFlow id="flow_to_define_alloc_obj" sourceRef="task_maintain_involved_partners" targetRef="task_define_allocated_objects"/>
+    <semantic:sequenceFlow id="flow_to_define_add_data" sourceRef="task_define_allocated_objects" targetRef="task_define_additional_data"/>
+    <semantic:sequenceFlow id="flow_to_define_loc_data" sourceRef="task_define_additional_data" targetRef="task_define_location_data"/>
+    <semantic:sequenceFlow id="flow_to_save_wo" sourceRef="task_define_location_data" targetRef="task_save_work_order"/>
+    <semantic:sequenceFlow id="flow_to_assign_wbs" sourceRef="task_save_work_order" targetRef="task_assign_wo_to_wbs"/>
+    <semantic:sequenceFlow id="flow_to_end_handled" sourceRef="task_assign_wo_to_wbs" targetRef="end_event_request_handled"/>
+
+    <!-- Sequence Flows for Maintenance Manager -->
+    <semantic:sequenceFlow id="flow_to_evaluate_request" sourceRef="intermediate_catch_request_received" targetRef="task_evaluate_request"/>
+    <semantic:sequenceFlow id="flow_to_doc_decision" sourceRef="task_evaluate_request" targetRef="task_document_submit_decision"/>
+    <semantic:sequenceFlow id="flow_to_gw_decision_approved" sourceRef="task_document_submit_decision" targetRef="gateway_decision_approved"/>
+    <semantic:sequenceFlow id="flow_decision_approved_yes" name="Approved" sourceRef="gateway_decision_approved" targetRef="task_mgr_change_pm_notification_approved"/>
+    <semantic:sequenceFlow id="flow_decision_approved_no" name="Not Approved" sourceRef="gateway_decision_approved" targetRef="task_mgr_change_pm_notification_rejected"/>
+    <semantic:sequenceFlow id="flow_to_mgr_set_status_appr" sourceRef="task_mgr_change_pm_notification_approved" targetRef="task_mgr_set_status_approved"/>
+    <semantic:sequenceFlow id="flow_to_mgr_confirm_appr" sourceRef="task_mgr_set_status_approved" targetRef="task_mgr_confirm_entries_approved"/>
+    <semantic:sequenceFlow id="flow_to_mgr_put_in_process" sourceRef="task_mgr_confirm_entries_approved" targetRef="task_mgr_select_put_in_process"/>
+    <semantic:sequenceFlow id="flow_to_mgr_save_appr" sourceRef="task_mgr_select_put_in_process" targetRef="task_mgr_save_entries_approved"/>
+    <semantic:sequenceFlow id="flow_to_mgr_set_status_cancel" sourceRef="task_mgr_change_pm_notification_rejected" targetRef="task_mgr_set_status_cancelled"/>
+    <semantic:sequenceFlow id="flow_to_mgr_save_cancel" sourceRef="task_mgr_set_status_cancelled" targetRef="task_mgr_save_entries_rejected"/>
+    <semantic:sequenceFlow id="flow_to_end_rejected_mgr" sourceRef="task_mgr_save_entries_rejected" targetRef="end_event_request_rejected"/>
+  </semantic:process>
+
+  <semantic:process id="planningSchedulingProcess" isExecutable="true">
+    <semantic:laneSet id="laneSet_subprocess">
+      <semantic:lane id="lane_maintenance_planner" name="Maintenance Planner">
+        <semantic:flowNodeRef>start_event_planning_request_received_sub</semantic:flowNodeRef>
+        <semantic:flowNodeRef>pg_split_plan_ops_params</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_plan_define_plant</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_plan_define_description</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_plan_define_control_key</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_plan_define_working_hours</semantic:flowNodeRef>
+        <semantic:flowNodeRef>pg_merge_plan_ops_params</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_create_wo_approval</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_plan_resources</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_check_material_availability</semantic:flowNodeRef>
+        <semantic:flowNodeRef>pg_split_mat_check_params</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_mat_define_plant</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_mat_define_material_used</semantic:flowNodeRef>
+        <semantic:flowNodeRef>pg_merge_mat_check_params</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_execute_mat_check_entries</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_display_reservation_wo</semantic:flowNodeRef>
+        <semantic:flowNodeRef>gateway_materials_available</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_reserve_materials</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_order_required_materials</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_dispatch_request_purchasing</semantic:flowNodeRef>
+        <semantic:flowNodeRef>gateway_merge_material_decision</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_plan_capacity</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_define_wo_number_capacity</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_execute_capacity_entry</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_schedule_wo</semantic:flowNodeRef>
+        <semantic:flowNodeRef>end_event_planning_completed_sub</semantic:flowNodeRef>
+      </semantic:lane>
+    </semantic:laneSet>
+
+    <semantic:startEvent id="start_event_planning_request_received_sub" name="Request for Planning Received">
+      <semantic:outgoing>flow_to_pg_split_plan_ops</semantic:outgoing>
+    </semantic:startEvent>
+    <semantic:parallelGateway id="pg_split_plan_ops_params" name="Define Planning Parameters">
+      <semantic:incoming>flow_to_pg_split_plan_ops</semantic:incoming>
+      <semantic:outgoing>flow_to_plan_def_plant</semantic:outgoing>
+      <semantic:outgoing>flow_to_plan_def_desc</semantic:outgoing>
+      <semantic:outgoing>flow_to_plan_def_ctrl_key</semantic:outgoing>
+      <semantic:outgoing>flow_to_plan_def_work_hrs</semantic:outgoing>
+    </semantic:parallelGateway>
+    <semantic:task id="task_plan_define_plant" name="Define Plant">
+      <semantic:incoming>flow_to_plan_def_plant</semantic:incoming>
+      <semantic:outgoing>flow_to_pg_merge_plan_ops_1</semantic:outgoing>
+    </semantic:task>
+    <semantic:task id="task_plan_define_description" name="Define Description">
+      <semantic:incoming>flow_to_plan_def_desc</semantic:incoming>
+      <semantic:outgoing>flow_to_pg_merge_plan_ops_2</semantic:outgoing>
+    </semantic:task>
+    <semantic:task id="task_plan_define_control_key" name="Define Control Key PM01">
+      <semantic:incoming>flow_to_plan_def_ctrl_key</semantic:incoming>
+      <semantic:outgoing>flow_to_pg_merge_plan_ops_3</semantic:outgoing>
+    </semantic:task>
+    <semantic:task id="task_plan_define_working_hours" name="Define Working Hours">
+      <semantic:incoming>flow_to_plan_def_work_hrs</semantic:incoming>
+      <semantic:outgoing>flow_to_pg_merge_plan_ops_4</semantic:outgoing>
+    </semantic:task>
+    <semantic:parallelGateway id="pg_merge_plan_ops_params">
+      <semantic:incoming>flow_to_pg_merge_plan_ops_1</semantic:incoming>
+      <semantic:incoming>flow_to_pg_merge_plan_ops_2</semantic:incoming>
+      <semantic:incoming>flow_to_pg_merge_plan_ops_3</semantic:incoming>
+      <semantic:incoming>flow_to_pg_merge_plan_ops_4</semantic:incoming>
+      <semantic:outgoing>flow_to_create_wo_approval</semantic:outgoing>
+    </semantic:parallelGateway>
+    <semantic:task id="task_create_wo_approval" name="Create Work Order Approval">
+      <semantic:incoming>flow_to_create_wo_approval</semantic:incoming>
+      <semantic:outgoing>flow_to_plan_resources</semantic:outgoing>
+    </semantic:task>
+    <semantic:task id="task_plan_resources" name="Plan Resources">
+      <semantic:incoming>flow_to_plan_resources</semantic:incoming>
+      <semantic:outgoing>flow_to_check_mat_avail</semantic:outgoing>
+    </semantic:task>
+    <semantic:task id="task_check_material_availability" name="Check Material Availability">
+      <semantic:incoming>flow_to_check_mat_avail</semantic:incoming>
+      <semantic:outgoing>flow_to_pg_split_mat_check</semantic:outgoing>
+    </semantic:task>
+    <semantic:parallelGateway id="pg_split_mat_check_params" name="Define Material Check Parameters">
+      <semantic:incoming>flow_to_pg_split_mat_check</semantic:incoming>
+      <semantic:outgoing>flow_to_mat_def_plant</semantic:outgoing>
+      <semantic:outgoing>flow_to_mat_def_material</semantic:outgoing>
+    </semantic:parallelGateway>
+    <semantic:task id="task_mat_define_plant" name="Define Plant (Material Check)">
+      <semantic:incoming>flow_to_mat_def_plant</semantic:incoming>
+      <semantic:outgoing>flow_to_pg_merge_mat_check_1</semantic:outgoing>
+    </semantic:task>
+    <semantic:task id="task_mat_define_material_used" name="Define Material Used">
+      <semantic:incoming>flow_to_mat_def_material</semantic:incoming>
+      <semantic:outgoing>flow_to_pg_merge_mat_check_2</semantic:outgoing>
+    </semantic:task>
+    <semantic:parallelGateway id="pg_merge_mat_check_params">
+      <semantic:incoming>flow_to_pg_merge_mat_check_1</semantic:incoming>
+      <semantic:incoming>flow_to_pg_merge_mat_check_2</semantic:incoming>
+      <semantic:outgoing>flow_to_exec_mat_check</semantic:outgoing>
+    </semantic:parallelGateway>
+    <semantic:task id="task_execute_mat_check_entries" name="Execute Material Check Entries">
+      <semantic:incoming>flow_to_exec_mat_check</semantic:incoming>
+      <semantic:outgoing>flow_to_display_reserv</semantic:outgoing>
+    </semantic:task>
+    <semantic:task id="task_display_reservation_wo" name="Display Corresponding Reservation">
+      <semantic:incoming>flow_to_display_reserv</semantic:incoming>
+      <semantic:outgoing>flow_to_gw_mat_avail</semantic:outgoing>
+    </semantic:task>
+    <semantic:exclusiveGateway id="gateway_materials_available" name="Materials Available?">
+      <semantic:incoming>flow_to_gw_mat_avail</semantic:incoming>
+      <semantic:outgoing>flow_mat_avail_yes</semantic:outgoing>
+      <semantic:outgoing>flow_mat_avail_no</semantic:outgoing>
+    </semantic:exclusiveGateway>
+    <semantic:task id="task_reserve_materials" name="Reserve Materials">
+      <semantic:incoming>flow_mat_avail_yes</semantic:incoming>
+      <semantic:outgoing>flow_to_merge_mat_decision_1</semantic:outgoing>
+    </semantic:task>
+    <semantic:task id="task_order_required_materials" name="Order Required Materials">
+      <semantic:incoming>flow_mat_avail_no</semantic:incoming>
+      <semantic:outgoing>flow_to_dispatch_purch</semantic:outgoing>
+    </semantic:task>
+    <semantic:sendTask id="task_dispatch_request_purchasing" name="Dispatch Request to Purchasing Dept.">
+      <semantic:incoming>flow_to_dispatch_purch</semantic:incoming>
+      <semantic:outgoing>flow_to_merge_mat_decision_2</semantic:outgoing>
+    </semantic:sendTask>
+    <semantic:exclusiveGateway id="gateway_merge_material_decision">
+      <semantic:incoming>flow_to_merge_mat_decision_1</semantic:incoming>
+      <semantic:incoming>flow_to_merge_mat_decision_2</semantic:incoming>
+      <semantic:outgoing>flow_to_plan_capacity</semantic:outgoing>
+    </semantic:exclusiveGateway>
+    <semantic:task id="task_plan_capacity" name="Plan Capacity (Check Capacity)">
+      <semantic:incoming>flow_to_plan_capacity</semantic:incoming>
+      <semantic:outgoing>flow_to_def_wo_num_cap</semantic:outgoing>
+    </semantic:task>
+    <semantic:task id="task_define_wo_number_capacity" name="Define Work Order Number (Capacity)">
+      <semantic:incoming>flow_to_def_wo_num_cap</semantic:incoming>
+      <semantic:outgoing>flow_to_exec_cap_entry</semantic:outgoing>
+    </semantic:task>
+    <semantic:task id="task_execute_capacity_entry" name="Execute Capacity Entry">
+      <semantic:incoming>flow_to_exec_cap_entry</semantic:incoming>
+      <semantic:outgoing>flow_to_schedule_wo</semantic:outgoing>
+    </semantic:task>
+    <semantic:task id="task_schedule_wo" name="Schedule Work Order">
+      <semantic:incoming>flow_to_schedule_wo</semantic:incoming>
+      <semantic:outgoing>flow_to_end_planning_sub</semantic:outgoing>
+    </semantic:task>
+    <semantic:endEvent id="end_event_planning_completed_sub" name="Planning &amp; Scheduling Completed">
+      <semantic:incoming>flow_to_end_planning_sub</semantic:incoming>
+    </semantic:endEvent>
+
+    <!-- Sequence Flows for Sub-Process -->
+    <semantic:sequenceFlow id="flow_to_pg_split_plan_ops" sourceRef="start_event_planning_request_received_sub" targetRef="pg_split_plan_ops_params"/>
+    <semantic:sequenceFlow id="flow_to_plan_def_plant" sourceRef="pg_split_plan_ops_params" targetRef="task_plan_define_plant"/>
+    <semantic:sequenceFlow id="flow_to_plan_def_desc" sourceRef="pg_split_plan_ops_params" targetRef="task_plan_define_description"/>
+    <semantic:sequenceFlow id="flow_to_plan_def_ctrl_key" sourceRef="pg_split_plan_ops_params" targetRef="task_plan_define_control_key"/>
+    <semantic:sequenceFlow id="flow_to_plan_def_work_hrs" sourceRef="pg_split_plan_ops_params" targetRef="task_plan_define_working_hours"/>
+    <semantic:sequenceFlow id="flow_to_pg_merge_plan_ops_1" sourceRef="task_plan_define_plant" targetRef="pg_merge_plan_ops_params"/>
+    <semantic:sequenceFlow id="flow_to_pg_merge_plan_ops_2" sourceRef="task_plan_define_description" targetRef="pg_merge_plan_ops_params"/>
+    <semantic:sequenceFlow id="flow_to_pg_merge_plan_ops_3" sourceRef="task_plan_define_control_key" targetRef="pg_merge_plan_ops_params"/>
+    <semantic:sequenceFlow id="flow_to_pg_merge_plan_ops_4" sourceRef="task_plan_define_working_hours" targetRef="pg_merge_plan_ops_params"/>
+    <semantic:sequenceFlow id="flow_to_create_wo_approval" sourceRef="pg_merge_plan_ops_params" targetRef="task_create_wo_approval"/>
+    <semantic:sequenceFlow id="flow_to_plan_resources" sourceRef="task_create_wo_approval" targetRef="task_plan_resources"/>
+    <semantic:sequenceFlow id="flow_to_check_mat_avail" sourceRef="task_plan_resources" targetRef="task_check_material_availability"/>
+    <semantic:sequenceFlow id="flow_to_pg_split_mat_check" sourceRef="task_check_material_availability" targetRef="pg_split_mat_check_params"/>
+    <semantic:sequenceFlow id="flow_to_mat_def_plant" sourceRef="pg_split_mat_check_params" targetRef="task_mat_define_plant"/>
+    <semantic:sequenceFlow id="flow_to_mat_def_material" sourceRef="pg_split_mat_check_params" targetRef="task_mat_define_material_used"/>
+    <semantic:sequenceFlow id="flow_to_pg_merge_mat_check_1" sourceRef="task_mat_define_plant" targetRef="pg_merge_mat_check_params"/>
+    <semantic:sequenceFlow id="flow_to_pg_merge_mat_check_2" sourceRef="task_mat_define_material_used" targetRef="pg_merge_mat_check_params"/>
+    <semantic:sequenceFlow id="flow_to_exec_mat_check" sourceRef="pg_merge_mat_check_params" targetRef="task_execute_mat_check_entries"/>
+    <semantic:sequenceFlow id="flow_to_display_reserv" sourceRef="task_execute_mat_check_entries" targetRef="task_display_reservation_wo"/>
+    <semantic:sequenceFlow id="flow_to_gw_mat_avail" sourceRef="task_display_reservation_wo" targetRef="gateway_materials_available"/>
+    <semantic:sequenceFlow id="flow_mat_avail_yes" name="Yes" sourceRef="gateway_materials_available" targetRef="task_reserve_materials"/>
+    <semantic:sequenceFlow id="flow_mat_avail_no" name="No" sourceRef="gateway_materials_available" targetRef="task_order_required_materials"/>
+    <semantic:sequenceFlow id="flow_to_merge_mat_decision_1" sourceRef="task_reserve_materials" targetRef="gateway_merge_material_decision"/>
+    <semantic:sequenceFlow id="flow_to_dispatch_purch" sourceRef="task_order_required_materials" targetRef="task_dispatch_request_purchasing"/>
+    <semantic:sequenceFlow id="flow_to_merge_mat_decision_2" sourceRef="task_dispatch_request_purchasing" targetRef="gateway_merge_material_decision"/>
+    <semantic:sequenceFlow id="flow_to_plan_capacity" sourceRef="gateway_merge_material_decision" targetRef="task_plan_capacity"/>
+    <semantic:sequenceFlow id="flow_to_def_wo_num_cap" sourceRef="task_plan_capacity" targetRef="task_define_wo_number_capacity"/>
+    <semantic:sequenceFlow id="flow_to_exec_cap_entry" sourceRef="task_define_wo_number_capacity" targetRef="task_execute_capacity_entry"/>
+    <semantic:sequenceFlow id="flow_to_schedule_wo" sourceRef="task_execute_capacity_entry" targetRef="task_schedule_wo"/>
+    <semantic:sequenceFlow id="flow_to_end_planning_sub" sourceRef="task_schedule_wo" targetRef="end_event_planning_completed_sub"/>
+  </semantic:process>
+
+  <semantic:message id="message_request" name="MaintenanceRequestMessage"/>
+  <semantic:message id="message_decision" name="DecisionMessage"/>
+
+  <bpmndi:BPMNDiagram id="BPMNDiagram_InternalRefurbishment">
+    <bpmndi:BPMNPlane bpmnElement="collab_internal_refurbishment">
+      <!-- Main Process Pool and Lanes -->
+      <bpmndi:BPMNShape id="shape_pool_main_process" bpmnElement="pool_main_process" isHorizontal="true">
+        <dc:Bounds x="30" y="30" width="6300" height="550"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_lane_responsible_maintenance" bpmnElement="lane_responsible_maintenance" isHorizontal="true">
+        <dc:Bounds x="60" y="30" width="6270" height="300"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_lane_maintenance_manager" bpmnElement="lane_maintenance_manager" isHorizontal="true">
+        <dc:Bounds x="60" y="330" width="6270" height="250"/>
+      </bpmndi:BPMNShape>
+
+      <!-- Responsible Maintenance Shapes -->
+      <bpmndi:BPMNShape id="shape_start_event_request_received" bpmnElement="start_event_request_received">
+        <dc:Bounds x="100" y="132" width="36" height="36"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_task_create_pm_notification" bpmnElement="task_create_pm_notification">
+        <dc:Bounds x="200" y="110" width="100" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_task_choose_notification_type" bpmnElement="task_choose_notification_type">
+        <dc:Bounds x="360" y="110" width="100" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_task_define_notification_characteristics" bpmnElement="task_define_notification_characteristics">
+        <dc:Bounds x="520" y="110" width="100" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_task_confirm_entries_warranty" bpmnElement="task_confirm_entries_warranty">
+        <dc:Bounds x="680" y="110" width="100" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_task_define_reference_object_tab" bpmnElement="task_define_reference_object_tab">
+        <dc:Bounds x="840" y="110" width="100" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_task_define_malfunction_data_tab" bpmnElement="task_define_malfunction_data_tab">
+        <dc:Bounds x="1000" y="110" width="100" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_gateway_breakdown_case" bpmnElement="gateway_breakdown_case" isMarkerVisible="true">
+        <dc:Bounds x="1160" y="125" width="50" height="50"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_task_mark_breakdown_checkbox" bpmnElement="task_mark_breakdown_checkbox">
+        <dc:Bounds x="1260" y="70" width="100" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_task_not_mark_breakdown_checkbox" bpmnElement="task_not_mark_breakdown_checkbox">
+        <dc:Bounds x="1260" y="170" width="100" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_gateway_merge_breakdown" bpmnElement="gateway_merge_breakdown" isMarkerVisible="true">
+        <dc:Bounds x="1400" y="125" width="50" height="50"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_task_save_pm_notification" bpmnElement="task_save_pm_notification">
+        <dc:Bounds x="1500" y="110" width="100" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_pg_split_send_details" bpmnElement="pg_split_send_details">
+        <dc:Bounds x="1660" y="125" width="50" height="50"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_task_define_receiver_details" bpmnElement="task_define_receiver_details">
+        <dc:Bounds x="1760" y="70" width="100" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_task_define_notice_text" bpmnElement="task_define_notice_text">
+        <dc:Bounds x="1760" y="170" width="100" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_pg_merge_send_details" bpmnElement="pg_merge_send_details">
+        <dc:Bounds x="1900" y="125" width="50" height="50"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_task_confirm_send_entries" bpmnElement="task_confirm_send_entries">
+        <dc:Bounds x="2000" y="110" width="100" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_task_save_process_mail" bpmnElement="task_save_process_mail">
+        <dc:Bounds x="2160" y="110" width="100" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_intermediate_catch_decision_received" bpmnElement="intermediate_catch_decision_received">
+        <dc:Bounds x="3396" y="132" width="36" height="36"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_gateway_request_approved_check" bpmnElement="gateway_request_approved_check" isMarkerVisible="true">
+        <dc:Bounds x="3500" y="125" width="50" height="50"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_task_manage_work_order" bpmnElement="task_manage_work_order">
+        <dc:Bounds x="3600" y="110" width="100" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_task_create_internal_refurb_order" bpmnElement="task_create_internal_refurb_order">
+        <dc:Bounds x="3760" y="110" width="100" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_task_transfer_info_to_wo" bpmnElement="task_transfer_info_to_wo">
+        <dc:Bounds x="3920" y="110" width="100" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_task_define_order_type_mc04" bpmnElement="task_define_order_type_mc04">
+        <dc:Bounds x="4080" y="110" width="100" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_pg_split_plants_valuation" bpmnElement="pg_split_plants_valuation">
+        <dc:Bounds x="4240" y="125" width="50" height="50"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_task_define_refurb_plants" bpmnElement="task_define_refurb_plants">
+        <dc:Bounds x="4340" y="70" width="100" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_task_define_valuation_type" bpmnElement="task_define_valuation_type">
+        <dc:Bounds x="4340" y="170" width="100" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_pg_merge_plants_valuation" bpmnElement="pg_merge_plants_valuation">
+        <dc:Bounds x="4480" y="125" width="50" height="50"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_task_define_operations_main" bpmnElement="task_define_operations_main">
+        <dc:Bounds x="4580" y="110" width="100" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_pg_split_internal_external_ops" bpmnElement="pg_split_internal_external_ops">
+        <dc:Bounds x="4740" y="125" width="50" height="50"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_call_activity_planning_scheduling" bpmnElement="call_activity_planning_scheduling">
+        <dc:Bounds x="4840" y="70" width="100" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_task_maintain_external_ops" bpmnElement="task_maintain_external_ops">
+        <dc:Bounds x="4840" y="170" width="100" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_pg_merge_internal_external_ops" bpmnElement="pg_merge_internal_external_ops">
+        <dc:Bounds x="4980" y="125" width="50" height="50"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_task_define_estimated_costs" bpmnElement="task_define_estimated_costs">
+        <dc:Bounds x="5080" y="110" width="100" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_task_maintain_involved_partners" bpmnElement="task_maintain_involved_partners">
+        <dc:Bounds x="5240" y="110" width="100" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_task_define_allocated_objects" bpmnElement="task_define_allocated_objects">
+        <dc:Bounds x="5400" y="110" width="100" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_task_define_additional_data" bpmnElement="task_define_additional_data">
+        <dc:Bounds x="5560" y="110" width="100" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_task_define_location_data" bpmnElement="task_define_location_data">
+        <dc:Bounds x="5720" y="110" width="100" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_task_save_work_order" bpmnElement="task_save_work_order">
+        <dc:Bounds x="5880" y="110" width="100" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_task_assign_wo_to_wbs" bpmnElement="task_assign_wo_to_wbs">
+        <dc:Bounds x="6040" y="110" width="100" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_end_event_request_handled" bpmnElement="end_event_request_handled">
+        <dc:Bounds x="6200" y="132" width="36" height="36"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_end_event_rm_rejected" bpmnElement="end_event_rm_rejected">
+        <dc:Bounds x="3600" y="232" width="36" height="36"/>
+      </bpmndi:BPMNShape>
+
+      <!-- Maintenance Manager Shapes -->
+      <bpmndi:BPMNShape id="shape_intermediate_catch_request_received" bpmnElement="intermediate_catch_request_received">
+        <dc:Bounds x="2196" y="382" width="36" height="36"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_task_evaluate_request" bpmnElement="task_evaluate_request">
+        <dc:Bounds x="2300" y="360" width="100" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_task_document_submit_decision" bpmnElement="task_document_submit_decision">
+        <dc:Bounds x="2460" y="360" width="100" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_gateway_decision_approved" bpmnElement="gateway_decision_approved" isMarkerVisible="true">
+        <dc:Bounds x="2620" y="375" width="50" height="50"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_task_mgr_change_pm_notification_approved" bpmnElement="task_mgr_change_pm_notification_approved">
+        <dc:Bounds x="2720" y="300" width="100" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_task_mgr_set_status_approved" bpmnElement="task_mgr_set_status_approved">
+        <dc:Bounds x="2880" y="300" width="100" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_task_mgr_confirm_entries_approved" bpmnElement="task_mgr_confirm_entries_approved">
+        <dc:Bounds x="3040" y="300" width="100" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_task_mgr_select_put_in_process" bpmnElement="task_mgr_select_put_in_process">
+        <dc:Bounds x="3200" y="300" width="100" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_task_mgr_save_entries_approved" bpmnElement="task_mgr_save_entries_approved">
+        <dc:Bounds x="3360" y="300" width="100" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_task_mgr_change_pm_notification_rejected" bpmnElement="task_mgr_change_pm_notification_rejected">
+        <dc:Bounds x="2720" y="420" width="100" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_task_mgr_set_status_cancelled" bpmnElement="task_mgr_set_status_cancelled">
+        <dc:Bounds x="2880" y="420" width="100" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_task_mgr_save_entries_rejected" bpmnElement="task_mgr_save_entries_rejected">
+        <dc:Bounds x="3040" y="420" width="100" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_end_event_request_rejected" bpmnElement="end_event_request_rejected">
+        <dc:Bounds x="3200" y="432" width="36" height="36"/>
+      </bpmndi:BPMNShape>
+
+      <!-- Sequence Flow Edges for Main Process -->
+      <bpmndi:BPMNEdge id="edge_flow_to_create_pm" bpmnElement="flow_to_create_pm">
+        <di:waypoint x="136" y="150"/>
+        <di:waypoint x="200" y="150"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_to_choose_type" bpmnElement="flow_to_choose_type">
+        <di:waypoint x="300" y="150"/>
+        <di:waypoint x="360" y="150"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_to_define_chars" bpmnElement="flow_to_define_chars">
+        <di:waypoint x="460" y="150"/>
+        <di:waypoint x="520" y="150"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_to_confirm_warranty" bpmnElement="flow_to_confirm_warranty">
+        <di:waypoint x="620" y="150"/>
+        <di:waypoint x="680" y="150"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_to_define_ref_obj" bpmnElement="flow_to_define_ref_obj">
+        <di:waypoint x="780" y="150"/>
+        <di:waypoint x="840" y="150"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_to_define_malf_data" bpmnElement="flow_to_define_malf_data">
+        <di:waypoint x="940" y="150"/>
+        <di:waypoint x="1000" y="150"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_to_gw_breakdown" bpmnElement="flow_to_gw_breakdown">
+        <di:waypoint x="1100" y="150"/>
+        <di:waypoint x="1160" y="150"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_breakdown_yes" bpmnElement="flow_breakdown_yes">
+        <di:waypoint x="1185" y="125"/>
+        <di:waypoint x="1185" y="110"/>
+        <di:waypoint x="1260" y="110"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_breakdown_no" bpmnElement="flow_breakdown_no">
+        <di:waypoint x="1185" y="175"/>
+        <di:waypoint x="1185" y="210"/>
+        <di:waypoint x="1260" y="210"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_to_merge_breakdown_1" bpmnElement="flow_to_merge_breakdown_1">
+        <di:waypoint x="1360" y="110"/>
+        <di:waypoint x="1425" y="110"/>
+        <di:waypoint x="1425" y="125"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_to_merge_breakdown_2" bpmnElement="flow_to_merge_breakdown_2">
+        <di:waypoint x="1360" y="210"/>
+        <di:waypoint x="1425" y="210"/>
+        <di:waypoint x="1425" y="175"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_to_save_pm_notif" bpmnElement="flow_to_save_pm_notif">
+        <di:waypoint x="1450" y="150"/>
+        <di:waypoint x="1500" y="150"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_to_pg_split_send" bpmnElement="flow_to_pg_split_send">
+        <di:waypoint x="1600" y="150"/>
+        <di:waypoint x="1660" y="150"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_to_define_receiver" bpmnElement="flow_to_define_receiver">
+        <di:waypoint x="1685" y="125"/>
+        <di:waypoint x="1685" y="110"/>
+        <di:waypoint x="1760" y="110"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_to_define_notice_text" bpmnElement="flow_to_define_notice_text">
+        <di:waypoint x="1685" y="175"/>
+        <di:waypoint x="1685" y="210"/>
+        <di:waypoint x="1760" y="210"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_to_pg_merge_send_1" bpmnElement="flow_to_pg_merge_send_1">
+        <di:waypoint x="1860" y="110"/>
+        <di:waypoint x="1925" y="110"/>
+        <di:waypoint x="1925" y="125"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_to_pg_merge_send_2" bpmnElement="flow_to_pg_merge_send_2">
+        <di:waypoint x="1860" y="210"/>
+        <di:waypoint x="1925" y="210"/>
+        <di:waypoint x="1925" y="175"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_to_confirm_send_entries" bpmnElement="flow_to_confirm_send_entries">
+        <di:waypoint x="1950" y="150"/>
+        <di:waypoint x="2000" y="150"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_to_save_process_mail" bpmnElement="flow_to_save_process_mail">
+        <di:waypoint x="2100" y="150"/>
+        <di:waypoint x="2160" y="150"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_to_gw_req_approved_check" bpmnElement="flow_to_gw_req_approved_check">
+        <di:waypoint x="3432" y="150"/>
+        <di:waypoint x="3500" y="150"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_req_approved_yes" bpmnElement="flow_req_approved_yes">
+        <di:waypoint x="3550" y="150"/>
+        <di:waypoint x="3600" y="150"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_req_approved_no" bpmnElement="flow_req_approved_no">
+        <di:waypoint x="3525" y="175"/>
+        <di:waypoint x="3525" y="250"/>
+        <di:waypoint x="3600" y="250"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_to_create_refurb_order" bpmnElement="flow_to_create_refurb_order">
+        <di:waypoint x="3700" y="150"/>
+        <di:waypoint x="3760" y="150"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_to_transfer_info" bpmnElement="flow_to_transfer_info">
+        <di:waypoint x="3860" y="150"/>
+        <di:waypoint x="3920" y="150"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_to_define_order_type" bpmnElement="flow_to_define_order_type">
+        <di:waypoint x="4020" y="150"/>
+        <di:waypoint x="4080" y="150"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_to_pg_split_plants_val" bpmnElement="flow_to_pg_split_plants_val">
+        <di:waypoint x="4180" y="150"/>
+        <di:waypoint x="4240" y="150"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_to_define_refurb_plants" bpmnElement="flow_to_define_refurb_plants">
+        <di:waypoint x="4265" y="125"/>
+        <di:waypoint x="4265" y="110"/>
+        <di:waypoint x="4340" y="110"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_to_define_val_type" bpmnElement="flow_to_define_val_type">
+        <di:waypoint x="4265" y="175"/>
+        <di:waypoint x="4265" y="210"/>
+        <di:waypoint x="4340" y="210"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_to_pg_merge_plants_val_1" bpmnElement="flow_to_pg_merge_plants_val_1">
+        <di:waypoint x="4440" y="110"/>
+        <di:waypoint x="4505" y="110"/>
+        <di:waypoint x="4505" y="125"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_to_pg_merge_plants_val_2" bpmnElement="flow_to_pg_merge_plants_val_2">
+        <di:waypoint x="4440" y="210"/>
+        <di:waypoint x="4505" y="210"/>
+        <di:waypoint x="4505" y="175"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_to_define_ops_main" bpmnElement="flow_to_define_ops_main">
+        <di:waypoint x="4530" y="150"/>
+        <di:waypoint x="4580" y="150"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_to_pg_split_int_ext_ops" bpmnElement="flow_to_pg_split_int_ext_ops">
+        <di:waypoint x="4680" y="150"/>
+        <di:waypoint x="4740" y="150"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_to_call_activity_planning" bpmnElement="flow_to_call_activity_planning">
+        <di:waypoint x="4765" y="125"/>
+        <di:waypoint x="4765" y="110"/>
+        <di:waypoint x="4840" y="110"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_to_maintain_ext_ops" bpmnElement="flow_to_maintain_ext_ops">
+        <di:waypoint x="4765" y="175"/>
+        <di:waypoint x="4765" y="210"/>
+        <di:waypoint x="4840" y="210"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_to_pg_merge_int_ext_ops_1" bpmnElement="flow_to_pg_merge_int_ext_ops_1">
+        <di:waypoint x="4940" y="110"/>
+        <di:waypoint x="5005" y="110"/>
+        <di:waypoint x="5005" y="125"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_to_pg_merge_int_ext_ops_2" bpmnElement="flow_to_pg_merge_int_ext_ops_2">
+        <di:waypoint x="4940" y="210"/>
+        <di:waypoint x="5005" y="210"/>
+        <di:waypoint x="5005" y="175"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_to_define_est_costs" bpmnElement="flow_to_define_est_costs">
+        <di:waypoint x="5030" y="150"/>
+        <di:waypoint x="5080" y="150"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_to_maintain_partners" bpmnElement="flow_to_maintain_partners">
+        <di:waypoint x="5180" y="150"/>
+        <di:waypoint x="5240" y="150"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_to_define_alloc_obj" bpmnElement="flow_to_define_alloc_obj">
+        <di:waypoint x="5340" y="150"/>
+        <di:waypoint x="5400" y="150"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_to_define_add_data" bpmnElement="flow_to_define_add_data">
+        <di:waypoint x="5500" y="150"/>
+        <di:waypoint x="5560" y="150"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_to_define_loc_data" bpmnElement="flow_to_define_loc_data">
+        <di:waypoint x="5660" y="150"/>
+        <di:waypoint x="5720" y="150"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_to_save_wo" bpmnElement="flow_to_save_wo">
+        <di:waypoint x="5820" y="150"/>
+        <di:waypoint x="5880" y="150"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_to_assign_wbs" bpmnElement="flow_to_assign_wbs">
+        <di:waypoint x="5980" y="150"/>
+        <di:waypoint x="6040" y="150"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_to_end_handled" bpmnElement="flow_to_end_handled">
+        <di:waypoint x="6140" y="150"/>
+        <di:waypoint x="6200" y="150"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_to_evaluate_request" bpmnElement="flow_to_evaluate_request">
+        <di:waypoint x="2232" y="400"/>
+        <di:waypoint x="2300" y="400"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_to_doc_decision" bpmnElement="flow_to_doc_decision">
+        <di:waypoint x="2400" y="400"/>
+        <di:waypoint x="2460" y="400"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_to_gw_decision_approved" bpmnElement="flow_to_gw_decision_approved">
+        <di:waypoint x="2560" y="400"/>
+        <di:waypoint x="2620" y="400"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_decision_approved_yes" bpmnElement="flow_decision_approved_yes">
+        <di:waypoint x="2645" y="375"/>
+        <di:waypoint x="2645" y="340"/>
+        <di:waypoint x="2720" y="340"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_decision_approved_no" bpmnElement="flow_decision_approved_no">
+        <di:waypoint x="2645" y="425"/>
+        <di:waypoint x="2645" y="460"/>
+        <di:waypoint x="2720" y="460"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_to_mgr_set_status_appr" bpmnElement="flow_to_mgr_set_status_appr">
+        <di:waypoint x="2820" y="340"/>
+        <di:waypoint x="2880" y="340"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_to_mgr_confirm_appr" bpmnElement="flow_to_mgr_confirm_appr">
+        <di:waypoint x="2980" y="340"/>
+        <di:waypoint x="3040" y="340"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_to_mgr_put_in_process" bpmnElement="flow_to_mgr_put_in_process">
+        <di:waypoint x="3140" y="340"/>
+        <di:waypoint x="3200" y="340"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_to_mgr_save_appr" bpmnElement="flow_to_mgr_save_appr">
+        <di:waypoint x="3300" y="340"/>
+        <di:waypoint x="3360" y="340"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_to_mgr_set_status_cancel" bpmnElement="flow_to_mgr_set_status_cancel">
+        <di:waypoint x="2820" y="460"/>
+        <di:waypoint x="2880" y="460"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_to_mgr_save_cancel" bpmnElement="flow_to_mgr_save_cancel">
+        <di:waypoint x="2980" y="460"/>
+        <di:waypoint x="3040" y="460"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_to_end_rejected_mgr" bpmnElement="flow_to_end_rejected_mgr">
+        <di:waypoint x="3140" y="460"/>
+        <di:waypoint x="3200" y="450"/>
+      </bpmndi:BPMNEdge>
+
+      <!-- Sub-Process Pool and Lane -->
+      <bpmndi:BPMNShape id="shape_pool_subprocess_planning" bpmnElement="pool_subprocess_planning" isHorizontal="true">
+        <dc:Bounds x="30" y="600" width="2950" height="450"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_lane_maintenance_planner" bpmnElement="lane_maintenance_planner" isHorizontal="true">
+        <dc:Bounds x="60" y="600" width="2920" height="450"/>
+      </bpmndi:BPMNShape>
+
+      <!-- Maintenance Planner Shapes (Sub-Process) -->
+      <bpmndi:BPMNShape id="shape_start_event_planning_request_received_sub" bpmnElement="start_event_planning_request_received_sub">
+        <dc:Bounds x="100" y="757" width="36" height="36"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_pg_split_plan_ops_params" bpmnElement="pg_split_plan_ops_params">
+        <dc:Bounds x="200" y="750" width="50" height="50"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_task_plan_define_plant" bpmnElement="task_plan_define_plant">
+        <dc:Bounds x="300" y="600" width="100" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_task_plan_define_description" bpmnElement="task_plan_define_description">
+        <dc:Bounds x="300" y="690" width="100" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_task_plan_define_control_key" bpmnElement="task_plan_define_control_key">
+        <dc:Bounds x="300" y="780" width="100" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_task_plan_define_working_hours" bpmnElement="task_plan_define_working_hours">
+        <dc:Bounds x="300" y="870" width="100" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_pg_merge_plan_ops_params" bpmnElement="pg_merge_plan_ops_params">
+        <dc:Bounds x="440" y="750" width="50" height="50"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_task_create_wo_approval" bpmnElement="task_create_wo_approval">
+        <dc:Bounds x="540" y="735" width="100" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_task_plan_resources" bpmnElement="task_plan_resources">
+        <dc:Bounds x="700" y="735" width="100" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_task_check_material_availability" bpmnElement="task_check_material_availability">
+        <dc:Bounds x="860" y="735" width="100" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_pg_split_mat_check_params" bpmnElement="pg_split_mat_check_params">
+        <dc:Bounds x="1020" y="750" width="50" height="50"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_task_mat_define_plant" bpmnElement="task_mat_define_plant">
+        <dc:Bounds x="1120" y="700" width="100" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_task_mat_define_material_used" bpmnElement="task_mat_define_material_used">
+        <dc:Bounds x="1120" y="790" width="100" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_pg_merge_mat_check_params" bpmnElement="pg_merge_mat_check_params">
+        <dc:Bounds x="1260" y="750" width="50" height="50"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_task_execute_mat_check_entries" bpmnElement="task_execute_mat_check_entries">
+        <dc:Bounds x="1360" y="735" width="100" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_task_display_reservation_wo" bpmnElement="task_display_reservation_wo">
+        <dc:Bounds x="1520" y="735" width="100" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_gateway_materials_available" bpmnElement="gateway_materials_available" isMarkerVisible="true">
+        <dc:Bounds x="1680" y="750" width="50" height="50"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_task_reserve_materials" bpmnElement="task_reserve_materials">
+        <dc:Bounds x="1780" y="700" width="100" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_task_order_required_materials" bpmnElement="task_order_required_materials">
+        <dc:Bounds x="1780" y="790" width="100" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_task_dispatch_request_purchasing" bpmnElement="task_dispatch_request_purchasing">
+        <dc:Bounds x="1940" y="790" width="100" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_gateway_merge_material_decision" bpmnElement="gateway_merge_material_decision" isMarkerVisible="true">
+        <dc:Bounds x="2080" y="750" width="50" height="50"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_task_plan_capacity" bpmnElement="task_plan_capacity">
+        <dc:Bounds x="2180" y="735" width="100" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_task_define_wo_number_capacity" bpmnElement="task_define_wo_number_capacity">
+        <dc:Bounds x="2340" y="735" width="100" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_task_execute_capacity_entry" bpmnElement="task_execute_capacity_entry">
+        <dc:Bounds x="2500" y="735" width="100" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_task_schedule_wo" bpmnElement="task_schedule_wo">
+        <dc:Bounds x="2660" y="735" width="100" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_end_event_planning_completed_sub" bpmnElement="end_event_planning_completed_sub">
+        <dc:Bounds x="2820" y="757" width="36" height="36"/>
+      </bpmndi:BPMNShape>
+
+      <!-- Sequence Flow Edges for Sub-Process -->
+      <bpmndi:BPMNEdge id="edge_flow_to_pg_split_plan_ops" bpmnElement="flow_to_pg_split_plan_ops">
+        <di:waypoint x="136" y="775"/>
+        <di:waypoint x="200" y="775"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_to_plan_def_plant" bpmnElement="flow_to_plan_def_plant">
+        <di:waypoint x="225" y="750"/>
+        <di:waypoint x="225" y="640"/>
+        <di:waypoint x="300" y="640"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_to_plan_def_desc" bpmnElement="flow_to_plan_def_desc">
+        <di:waypoint x="225" y="750"/>
+        <di:waypoint x="225" y="730"/>
+        <di:waypoint x="300" y="730"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_to_plan_def_ctrl_key" bpmnElement="flow_to_plan_def_ctrl_key">
+        <di:waypoint x="225" y="800"/>
+        <di:waypoint x="225" y="820"/>
+        <di:waypoint x="300" y="820"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_to_plan_def_work_hrs" bpmnElement="flow_to_plan_def_work_hrs">
+        <di:waypoint x="225" y="800"/>
+        <di:waypoint x="225" y="910"/>
+        <di:waypoint x="300" y="910"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_to_pg_merge_plan_ops_1" bpmnElement="flow_to_pg_merge_plan_ops_1">
+        <di:waypoint x="400" y="640"/>
+        <di:waypoint x="465" y="640"/>
+        <di:waypoint x="465" y="750"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_to_pg_merge_plan_ops_2" bpmnElement="flow_to_pg_merge_plan_ops_2">
+        <di:waypoint x="400" y="730"/>
+        <di:waypoint x="465" y="730"/>
+        <di:waypoint x="465" y="750"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_to_pg_merge_plan_ops_3" bpmnElement="flow_to_pg_merge_plan_ops_3">
+        <di:waypoint x="400" y="820"/>
+        <di:waypoint x="465" y="820"/>
+        <di:waypoint x="465" y="800"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_to_pg_merge_plan_ops_4" bpmnElement="flow_to_pg_merge_plan_ops_4">
+        <di:waypoint x="400" y="910"/>
+        <di:waypoint x="465" y="910"/>
+        <di:waypoint x="465" y="800"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_to_create_wo_approval" bpmnElement="flow_to_create_wo_approval">
+        <di:waypoint x="490" y="775"/>
+        <di:waypoint x="540" y="775"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_to_plan_resources" bpmnElement="flow_to_plan_resources">
+        <di:waypoint x="640" y="775"/>
+        <di:waypoint x="700" y="775"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_to_check_mat_avail" bpmnElement="flow_to_check_mat_avail">
+        <di:waypoint x="800" y="775"/>
+        <di:waypoint x="860" y="775"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_to_pg_split_mat_check" bpmnElement="flow_to_pg_split_mat_check">
+        <di:waypoint x="960" y="775"/>
+        <di:waypoint x="1020" y="775"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_to_mat_def_plant" bpmnElement="flow_to_mat_def_plant">
+        <di:waypoint x="1045" y="750"/>
+        <di:waypoint x="1045" y="740"/>
+        <di:waypoint x="1120" y="740"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_to_mat_def_material" bpmnElement="flow_to_mat_def_material">
+        <di:waypoint x="1045" y="800"/>
+        <di:waypoint x="1045" y="830"/>
+        <di:waypoint x="1120" y="830"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_to_pg_merge_mat_check_1" bpmnElement="flow_to_pg_merge_mat_check_1">
+        <di:waypoint x="1220" y="740"/>
+        <di:waypoint x="1285" y="740"/>
+        <di:waypoint x="1285" y="750"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_to_pg_merge_mat_check_2" bpmnElement="flow_to_pg_merge_mat_check_2">
+        <di:waypoint x="1220" y="830"/>
+        <di:waypoint x="1285" y="830"/>
+        <di:waypoint x="1285" y="800"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_to_exec_mat_check" bpmnElement="flow_to_exec_mat_check">
+        <di:waypoint x="1310" y="775"/>
+        <di:waypoint x="1360" y="775"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_to_display_reserv" bpmnElement="flow_to_display_reserv">
+        <di:waypoint x="1460" y="775"/>
+        <di:waypoint x="1520" y="775"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_to_gw_mat_avail" bpmnElement="flow_to_gw_mat_avail">
+        <di:waypoint x="1620" y="775"/>
+        <di:waypoint x="1680" y="775"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_mat_avail_yes" bpmnElement="flow_mat_avail_yes">
+        <di:waypoint x="1705" y="750"/>
+        <di:waypoint x="1705" y="740"/>
+        <di:waypoint x="1780" y="740"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_mat_avail_no" bpmnElement="flow_mat_avail_no">
+        <di:waypoint x="1705" y="800"/>
+        <di:waypoint x="1705" y="830"/>
+        <di:waypoint x="1780" y="830"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_to_merge_mat_decision_1" bpmnElement="flow_to_merge_mat_decision_1">
+        <di:waypoint x="1880" y="740"/>
+        <di:waypoint x="2105" y="740"/>
+        <di:waypoint x="2105" y="750"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_to_dispatch_purch" bpmnElement="flow_to_dispatch_purch">
+        <di:waypoint x="1880" y="830"/>
+        <di:waypoint x="1940" y="830"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_to_merge_mat_decision_2" bpmnElement="flow_to_merge_mat_decision_2">
+        <di:waypoint x="2040" y="830"/>
+        <di:waypoint x="2105" y="830"/>
+        <di:waypoint x="2105" y="800"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_to_plan_capacity" bpmnElement="flow_to_plan_capacity">
+        <di:waypoint x="2130" y="775"/>
+        <di:waypoint x="2180" y="775"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_to_def_wo_num_cap" bpmnElement="flow_to_def_wo_num_cap">
+        <di:waypoint x="2280" y="775"/>
+        <di:waypoint x="2340" y="775"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_to_exec_cap_entry" bpmnElement="flow_to_exec_cap_entry">
+        <di:waypoint x="2440" y="775"/>
+        <di:waypoint x="2500" y="775"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_to_schedule_wo" bpmnElement="flow_to_schedule_wo">
+        <di:waypoint x="2600" y="775"/>
+        <di:waypoint x="2660" y="775"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_flow_to_end_planning_sub" bpmnElement="flow_to_end_planning_sub">
+        <di:waypoint x="2760" y="775"/>
+        <di:waypoint x="2820" y="775"/>
+      </bpmndi:BPMNEdge>
+
+      <!-- Message Flow Edges -->
+      <bpmndi:BPMNEdge id="edge_message_flow_to_manager" bpmnElement="message_flow_to_manager">
+        <di:waypoint x="2210" y="190"/> <!-- center of task_save_process_mail -->
+        <di:waypoint x="2210" y="260"/>
+        <di:waypoint x="2214" y="260"/>
+        <di:waypoint x="2214" y="382"/> <!-- top of intermediate_catch_request_received -->
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_message_flow_decision_approved_to_rm" bpmnElement="message_flow_decision_approved_to_rm">
+        <di:waypoint x="3410" y="300"/> <!-- bottom of task_mgr_save_entries_approved -->
+        <di:waypoint x="3410" y="260"/>
+        <di:waypoint x="3414" y="260"/>
+        <di:waypoint x="3414" y="168"/> <!-- top of intermediate_catch_decision_received -->
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_message_flow_decision_rejected_to_rm" bpmnElement="message_flow_decision_rejected_to_rm">
+        <di:waypoint x="3090" y="420"/> <!-- bottom of task_mgr_save_entries_rejected -->
+        <di:waypoint x="3090" y="260"/>
+        <di:waypoint x="3414" y="260"/>
+        <di:waypoint x="3414" y="168"/> <!-- top of intermediate_catch_decision_received -->
+      </bpmndi:BPMNEdge>
+
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</semantic:definitions>

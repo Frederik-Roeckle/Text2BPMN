@@ -1,0 +1,255 @@
+<?xml version="1.0" standalone="yes"?>
+<semantic:definitions id="SOPProcessDefinitions"
+    targetNamespace="http://example.com/bpmn/sop-process"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:semantic="http://www.omg.org/spec/BPMN/20100524/MODEL"
+    xmlns:di="http://www.omg.org/spec/DD/20100524/DI"
+    xmlns:dc="http://www.omg.org/spec/DD/20100524/DC"
+    xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI">
+
+  <semantic:collaboration id="collab_SOPProcess">
+    <semantic:participant id="participant_ProdDept" name="Production Department" processRef="process_SOP"/>
+  </semantic:collaboration>
+
+  <semantic:process id="process_SOP" isExecutable="true">
+    <semantic:laneSet id="laneSet_Prod">
+      <semantic:lane id="lane_ProdAssistant" name="Production Assistant">
+        <semantic:flowNodeRef>startEvent_SOPInitiated</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_TransferPlanningData</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_ConfirmEntriesAndDisplayData</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_SelectTransferNow</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_DeriveDependentDemandMRP</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_ExecuteMRPRunAndDefineParams</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_ConfirmMRPParams</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_ExecuteEntriesExplodeBOM</semantic:flowNodeRef>
+        <semantic:flowNodeRef>gateway_ProcurementDecision</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_CreatePRs</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_CreatePlannedOrders</semantic:flowNodeRef>
+        <semantic:flowNodeRef>gateway_MergePaths</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_CombineDemands</semantic:flowNodeRef>
+        <semantic:flowNodeRef>endEvent_SOPMaintained</semantic:flowNodeRef>
+      </semantic:lane>
+    </semantic:laneSet>
+
+    <semantic:startEvent id="startEvent_SOPInitiated" name="SOP Maintenance Initiated">
+      <semantic:outgoing>flow_1</semantic:outgoing>
+    </semantic:startEvent>
+
+    <semantic:task id="task_TransferPlanningData" name="Transfer Planning Data to Demand Management">
+      <semantic:incoming>flow_1</semantic:incoming>
+      <semantic:outgoing>flow_2</semantic:outgoing>
+    </semantic:task>
+
+    <semantic:task id="task_ConfirmEntriesAndDisplayData" name="Confirm Entries and Display Transferred Data">
+      <semantic:incoming>flow_2</semantic:incoming>
+      <semantic:outgoing>flow_3</semantic:outgoing>
+    </semantic:task>
+
+    <semantic:task id="task_SelectTransferNow" name="Select 'Transfer Now' to Create Independent Demand">
+      <semantic:incoming>flow_3</semantic:incoming>
+      <semantic:outgoing>flow_4</semantic:outgoing>
+    </semantic:task>
+
+    <semantic:task id="task_DeriveDependentDemandMRP" name="Derive Dependent Demand via MRP">
+      <semantic:incoming>flow_4</semantic:incoming>
+      <semantic:outgoing>flow_5</semantic:outgoing>
+    </semantic:task>
+
+    <semantic:task id="task_ExecuteMRPRunAndDefineParams" name="Execute MRP Run and Define Parameters">
+      <semantic:incoming>flow_5</semantic:incoming>
+      <semantic:outgoing>flow_6</semantic:outgoing>
+    </semantic:task>
+
+    <semantic:task id="task_ConfirmMRPParams" name="Confirm MRP Parameter Entries">
+      <semantic:incoming>flow_6</semantic:incoming>
+      <semantic:outgoing>flow_7</semantic:outgoing>
+    </semantic:task>
+
+    <semantic:task id="task_ExecuteEntriesExplodeBOM" name="Execute Entries to Explode BOM and Determine Requirements">
+      <semantic:incoming>flow_7</semantic:incoming>
+      <semantic:outgoing>flow_8</semantic:outgoing>
+    </semantic:task>
+
+    <semantic:exclusiveGateway id="gateway_ProcurementDecision" name="Purchase or Produce Materials?">
+      <semantic:incoming>flow_8</semantic:incoming>
+      <semantic:outgoing>flow_9</semantic:outgoing>
+      <semantic:outgoing>flow_10</semantic:outgoing>
+    </semantic:exclusiveGateway>
+
+    <semantic:task id="task_CreatePRs" name="Create Purchase Requisitions (External)">
+      <semantic:incoming>flow_9</semantic:incoming>
+      <semantic:outgoing>flow_11</semantic:outgoing>
+    </semantic:task>
+
+    <semantic:task id="task_CreatePlannedOrders" name="Create Planned Production Orders (In-house)">
+      <semantic:incoming>flow_10</semantic:incoming>
+      <semantic:outgoing>flow_12</semantic:outgoing>
+    </semantic:task>
+
+    <semantic:exclusiveGateway id="gateway_MergePaths" name="Merge Procurement/Production Paths">
+      <semantic:incoming>flow_11</semantic:incoming>
+      <semantic:incoming>flow_12</semantic:incoming>
+      <semantic:outgoing>flow_13</semantic:outgoing>
+    </semantic:exclusiveGateway>
+
+    <semantic:task id="task_CombineDemands" name="Combine Independent and Dependent Demand">
+      <semantic:incoming>flow_13</semantic:incoming>
+      <semantic:outgoing>flow_14</semantic:outgoing>
+    </semantic:task>
+
+    <semantic:endEvent id="endEvent_SOPMaintained" name="SOP Successfully Maintained">
+      <semantic:incoming>flow_14</semantic:incoming>
+    </semantic:endEvent>
+
+    <semantic:sequenceFlow id="flow_1" sourceRef="startEvent_SOPInitiated" targetRef="task_TransferPlanningData"/>
+    <semantic:sequenceFlow id="flow_2" sourceRef="task_TransferPlanningData" targetRef="task_ConfirmEntriesAndDisplayData"/>
+    <semantic:sequenceFlow id="flow_3" sourceRef="task_ConfirmEntriesAndDisplayData" targetRef="task_SelectTransferNow"/>
+    <semantic:sequenceFlow id="flow_4" sourceRef="task_SelectTransferNow" targetRef="task_DeriveDependentDemandMRP"/>
+    <semantic:sequenceFlow id="flow_5" sourceRef="task_DeriveDependentDemandMRP" targetRef="task_ExecuteMRPRunAndDefineParams"/>
+    <semantic:sequenceFlow id="flow_6" sourceRef="task_ExecuteMRPRunAndDefineParams" targetRef="task_ConfirmMRPParams"/>
+    <semantic:sequenceFlow id="flow_7" sourceRef="task_ConfirmMRPParams" targetRef="task_ExecuteEntriesExplodeBOM"/>
+    <semantic:sequenceFlow id="flow_8" sourceRef="task_ExecuteEntriesExplodeBOM" targetRef="gateway_ProcurementDecision"/>
+    <semantic:sequenceFlow id="flow_9" sourceRef="gateway_ProcurementDecision" targetRef="task_CreatePRs" name="Purchase Materials"/>
+    <semantic:sequenceFlow id="flow_10" sourceRef="gateway_ProcurementDecision" targetRef="task_CreatePlannedOrders" name="Produce In-house"/>
+    <semantic:sequenceFlow id="flow_11" sourceRef="task_CreatePRs" targetRef="gateway_MergePaths"/>
+    <semantic:sequenceFlow id="flow_12" sourceRef="task_CreatePlannedOrders" targetRef="gateway_MergePaths"/>
+    <semantic:sequenceFlow id="flow_13" sourceRef="gateway_MergePaths" targetRef="task_CombineDemands"/>
+    <semantic:sequenceFlow id="flow_14" sourceRef="task_CombineDemands" targetRef="endEvent_SOPMaintained"/>
+  </semantic:process>
+
+  <bpmndi:BPMNDiagram id="BPMNDiagram_SOPProcess" name="SOP Process Diagram" resolution="96.0">
+    <bpmndi:BPMNPlane bpmnElement="collab_SOPProcess">
+      <bpmndi:BPMNShape id="participant_ProdDept_shape" bpmnElement="participant_ProdDept" isHorizontal="true">
+        <dc:Bounds x="30" y="30" width="2100" height="340"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="lane_ProdAssistant_shape" bpmnElement="lane_ProdAssistant" isHorizontal="true">
+        <dc:Bounds x="60" y="30" width="2070" height="340"/> 
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="startEvent_SOPInitiated_shape" bpmnElement="startEvent_SOPInitiated">
+        <dc:Bounds x="80" y="182" width="36" height="36"/>
+        <bpmndi:BPMNLabel><dc:Bounds x="60" y="223" width="76" height="28"/></bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="task_TransferPlanningData_shape" bpmnElement="task_TransferPlanningData">
+        <dc:Bounds x="180" y="160" width="120" height="80"/>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="task_ConfirmEntriesAndDisplayData_shape" bpmnElement="task_ConfirmEntriesAndDisplayData">
+        <dc:Bounds x="360" y="160" width="120" height="80"/>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="task_SelectTransferNow_shape" bpmnElement="task_SelectTransferNow">
+        <dc:Bounds x="540" y="160" width="120" height="80"/>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="task_DeriveDependentDemandMRP_shape" bpmnElement="task_DeriveDependentDemandMRP">
+        <dc:Bounds x="720" y="160" width="120" height="80"/>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="task_ExecuteMRPRunAndDefineParams_shape" bpmnElement="task_ExecuteMRPRunAndDefineParams">
+        <dc:Bounds x="900" y="160" width="120" height="80"/>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="task_ConfirmMRPParams_shape" bpmnElement="task_ConfirmMRPParams">
+        <dc:Bounds x="1080" y="160" width="120" height="80"/>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="task_ExecuteEntriesExplodeBOM_shape" bpmnElement="task_ExecuteEntriesExplodeBOM">
+        <dc:Bounds x="1260" y="160" width="120" height="80"/>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="gateway_ProcurementDecision_shape" bpmnElement="gateway_ProcurementDecision" isMarkerVisible="true">
+        <dc:Bounds x="1440" y="175" width="50" height="50"/>
+        <bpmndi:BPMNLabel><dc:Bounds x="1420" y="230" width="90" height="28"/></bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="task_CreatePRs_shape" bpmnElement="task_CreatePRs">
+        <dc:Bounds x="1550" y="80" width="120" height="80"/>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="task_CreatePlannedOrders_shape" bpmnElement="task_CreatePlannedOrders">
+        <dc:Bounds x="1550" y="240" width="120" height="80"/>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="gateway_MergePaths_shape" bpmnElement="gateway_MergePaths" isMarkerVisible="true">
+        <dc:Bounds x="1730" y="175" width="50" height="50"/>
+         <bpmndi:BPMNLabel><dc:Bounds x="1710" y="230" width="90" height="28"/></bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="task_CombineDemands_shape" bpmnElement="task_CombineDemands">
+        <dc:Bounds x="1840" y="160" width="120" height="80"/>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="endEvent_SOPMaintained_shape" bpmnElement="endEvent_SOPMaintained">
+        <dc:Bounds x="2020" y="182" width="36" height="36"/>
+        <bpmndi:BPMNLabel><dc:Bounds x="2000" y="223" width="76" height="28"/></bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNEdge id="flow_1_edge" bpmnElement="flow_1">
+        <di:waypoint x="116" y="200"/>
+        <di:waypoint x="180" y="200"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_2_edge" bpmnElement="flow_2">
+        <di:waypoint x="300" y="200"/>
+        <di:waypoint x="360" y="200"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_3_edge" bpmnElement="flow_3">
+        <di:waypoint x="480" y="200"/>
+        <di:waypoint x="540" y="200"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_4_edge" bpmnElement="flow_4">
+        <di:waypoint x="660" y="200"/>
+        <di:waypoint x="720" y="200"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_5_edge" bpmnElement="flow_5">
+        <di:waypoint x="840" y="200"/>
+        <di:waypoint x="900" y="200"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_6_edge" bpmnElement="flow_6">
+        <di:waypoint x="1020" y="200"/>
+        <di:waypoint x="1080" y="200"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_7_edge" bpmnElement="flow_7">
+        <di:waypoint x="1200" y="200"/>
+        <di:waypoint x="1260" y="200"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_8_edge" bpmnElement="flow_8">
+        <di:waypoint x="1380" y="200"/>
+        <di:waypoint x="1440" y="200"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_9_edge" bpmnElement="flow_9">
+        <di:waypoint x="1465" y="200"/>
+        <di:waypoint x="1465" y="120"/>
+        <di:waypoint x="1550" y="120"/>
+        <bpmndi:BPMNLabel><dc:Bounds x="1470" y="100" width="80" height="14"/></bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_10_edge" bpmnElement="flow_10">
+        <di:waypoint x="1465" y="200"/>
+        <di:waypoint x="1465" y="280"/>
+        <di:waypoint x="1550" y="280"/>
+        <bpmndi:BPMNLabel><dc:Bounds x="1470" y="295" width="80" height="14"/></bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_11_edge" bpmnElement="flow_11">
+        <di:waypoint x="1670" y="120"/>
+        <di:waypoint x="1700" y="120"/>
+        <di:waypoint x="1700" y="200"/>
+        <di:waypoint x="1730" y="200"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_12_edge" bpmnElement="flow_12">
+        <di:waypoint x="1670" y="280"/>
+        <di:waypoint x="1700" y="280"/>
+        <di:waypoint x="1700" y="200"/>
+        <di:waypoint x="1730" y="200"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_13_edge" bpmnElement="flow_13">
+        <di:waypoint x="1780" y="200"/>
+        <di:waypoint x="1840" y="200"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_14_edge" bpmnElement="flow_14">
+        <di:waypoint x="1960" y="200"/>
+        <di:waypoint x="2020" y="200"/>
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</semantic:definitions>

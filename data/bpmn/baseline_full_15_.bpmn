@@ -1,0 +1,213 @@
+<?xml version="1.0" standalone="yes"?>
+<semantic:definitions id="MaterialAssignmentProcessDefs"
+    targetNamespace="http://example.com/bpmn/material-assignment"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:semantic="http://www.omg.org/spec/BPMN/20100524/MODEL"
+    xmlns:di="http://www.omg.org/spec/DD/20100524/DI"
+    xmlns:dc="http://www.omg.org/spec/DD/20100524/DC"
+    xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI">
+
+  <semantic:collaboration id="collab_material_assignment">
+    <semantic:participant id="participant_purchasing_dept" name="Purchasing Department" processRef="process_material_assignment"/>
+  </semantic:collaboration>
+
+  <semantic:process id="process_material_assignment" name="Material Master Record Assignment Process" isExecutable="true">
+    <semantic:laneSet id="laneSet_purchasing">
+      <semantic:lane id="lane_purchasing_employee" name="Purchasing Employee">
+        <semantic:flowNodeRef>startEvent</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_create_info_record</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_define_info_record_params</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_confirm_param_entries</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_define_general_data</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_define_purch_org_data</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_confirm_purch_data_entries</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_define_discount_conditions</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_specify_discount_details</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_confirm_discount_entries</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_assign_items_to_vendors</semantic:flowNodeRef>
+        <semantic:flowNodeRef>endEvent</semantic:flowNodeRef>
+      </semantic:lane>
+    </semantic:laneSet>
+
+    <semantic:startEvent id="startEvent" name="Start Material Assignment Process">
+      <semantic:outgoing>sf1</semantic:outgoing>
+    </semantic:startEvent>
+
+    <semantic:task id="task_create_info_record" name="Create Info Record">
+      <semantic:incoming>sf1</semantic:incoming>
+      <semantic:outgoing>sf2</semantic:outgoing>
+    </semantic:task>
+
+    <semantic:task id="task_define_info_record_params" name="Define Info Record Parameters">
+      <semantic:incoming>sf2</semantic:incoming>
+      <semantic:outgoing>sf3</semantic:outgoing>
+    </semantic:task>
+
+    <semantic:task id="task_confirm_param_entries" name="Confirm Parameter Entries">
+      <semantic:incoming>sf3</semantic:incoming>
+      <semantic:outgoing>sf4</semantic:outgoing>
+    </semantic:task>
+
+    <semantic:task id="task_define_general_data" name="Define General Data for Info Record">
+      <semantic:incoming>sf4</semantic:incoming>
+      <semantic:outgoing>sf5</semantic:outgoing>
+    </semantic:task>
+
+    <semantic:task id="task_define_purch_org_data" name="Define Purchasing Organization Data">
+      <semantic:incoming>sf5</semantic:incoming>
+      <semantic:outgoing>sf6</semantic:outgoing>
+    </semantic:task>
+
+    <semantic:task id="task_confirm_purch_data_entries" name="Confirm Purchasing Data Entries">
+      <semantic:incoming>sf6</semantic:incoming>
+      <semantic:outgoing>sf7</semantic:outgoing>
+    </semantic:task>
+
+    <semantic:task id="task_define_discount_conditions" name="Define Conditions for Discounts">
+      <semantic:incoming>sf7</semantic:incoming>
+      <semantic:outgoing>sf8</semantic:outgoing>
+    </semantic:task>
+
+    <semantic:task id="task_specify_discount_details" name="Specify Discount Condition Type and Rate">
+      <semantic:incoming>sf8</semantic:incoming>
+      <semantic:outgoing>sf9</semantic:outgoing>
+    </semantic:task>
+
+    <semantic:task id="task_confirm_discount_entries" name="Confirm Discount Entries">
+      <semantic:incoming>sf9</semantic:incoming>
+      <semantic:outgoing>sf10</semantic:outgoing>
+    </semantic:task>
+
+    <semantic:task id="task_assign_items_to_vendors" name="Assign Purchased Items to Vendors">
+      <semantic:incoming>sf10</semantic:incoming>
+      <semantic:outgoing>sf11</semantic:outgoing>
+    </semantic:task>
+
+    <semantic:endEvent id="endEvent" name="Material Master Records Assigned">
+      <semantic:incoming>sf11</semantic:incoming>
+    </semantic:endEvent>
+
+    <semantic:sequenceFlow id="sf1" sourceRef="startEvent" targetRef="task_create_info_record"/>
+    <semantic:sequenceFlow id="sf2" sourceRef="task_create_info_record" targetRef="task_define_info_record_params"/>
+    <semantic:sequenceFlow id="sf3" sourceRef="task_define_info_record_params" targetRef="task_confirm_param_entries"/>
+    <semantic:sequenceFlow id="sf4" sourceRef="task_confirm_param_entries" targetRef="task_define_general_data"/>
+    <semantic:sequenceFlow id="sf5" sourceRef="task_define_general_data" targetRef="task_define_purch_org_data"/>
+    <semantic:sequenceFlow id="sf6" sourceRef="task_define_purch_org_data" targetRef="task_confirm_purch_data_entries"/>
+    <semantic:sequenceFlow id="sf7" sourceRef="task_confirm_purch_data_entries" targetRef="task_define_discount_conditions"/>
+    <semantic:sequenceFlow id="sf8" sourceRef="task_define_discount_conditions" targetRef="task_specify_discount_details"/>
+    <semantic:sequenceFlow id="sf9" sourceRef="task_specify_discount_details" targetRef="task_confirm_discount_entries"/>
+    <semantic:sequenceFlow id="sf10" sourceRef="task_confirm_discount_entries" targetRef="task_assign_items_to_vendors"/>
+    <semantic:sequenceFlow id="sf11" sourceRef="task_assign_items_to_vendors" targetRef="endEvent"/>
+  </semantic:process>
+
+  <bpmndi:BPMNDiagram id="BPMNDiagram_material_assignment" name="Material Assignment Diagram" resolution="96.0">
+    <bpmndi:BPMNPlane bpmnElement="collab_material_assignment">
+      <bpmndi:BPMNShape id="participant_purchasing_dept_shape" bpmnElement="participant_purchasing_dept" isHorizontal="true">
+        <dc:Bounds x="50" y="50" width="1850" height="300"/>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="startEvent_shape" bpmnElement="startEvent">
+        <dc:Bounds x="100" y="182" width="36" height="36"/>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="task_create_info_record_shape" bpmnElement="task_create_info_record">
+        <dc:Bounds x="200" y="160" width="100" height="80"/>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="task_define_info_record_params_shape" bpmnElement="task_define_info_record_params">
+        <dc:Bounds x="360" y="160" width="100" height="80"/>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="task_confirm_param_entries_shape" bpmnElement="task_confirm_param_entries">
+        <dc:Bounds x="520" y="160" width="100" height="80"/>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="task_define_general_data_shape" bpmnElement="task_define_general_data">
+        <dc:Bounds x="680" y="160" width="100" height="80"/>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="task_define_purch_org_data_shape" bpmnElement="task_define_purch_org_data">
+        <dc:Bounds x="840" y="160" width="100" height="80"/>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="task_confirm_purch_data_entries_shape" bpmnElement="task_confirm_purch_data_entries">
+        <dc:Bounds x="1000" y="160" width="100" height="80"/>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="task_define_discount_conditions_shape" bpmnElement="task_define_discount_conditions">
+        <dc:Bounds x="1160" y="160" width="100" height="80"/>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="task_specify_discount_details_shape" bpmnElement="task_specify_discount_details">
+        <dc:Bounds x="1320" y="160" width="100" height="80"/>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="task_confirm_discount_entries_shape" bpmnElement="task_confirm_discount_entries">
+        <dc:Bounds x="1480" y="160" width="100" height="80"/>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="task_assign_items_to_vendors_shape" bpmnElement="task_assign_items_to_vendors">
+        <dc:Bounds x="1640" y="160" width="100" height="80"/>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="endEvent_shape" bpmnElement="endEvent">
+        <dc:Bounds x="1800" y="182" width="36" height="36"/>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNEdge id="sf1_edge" bpmnElement="sf1">
+        <di:waypoint x="136" y="200"/>
+        <di:waypoint x="200" y="200"/>
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="sf2_edge" bpmnElement="sf2">
+        <di:waypoint x="300" y="200"/>
+        <di:waypoint x="360" y="200"/>
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="sf3_edge" bpmnElement="sf3">
+        <di:waypoint x="460" y="200"/>
+        <di:waypoint x="520" y="200"/>
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="sf4_edge" bpmnElement="sf4">
+        <di:waypoint x="620" y="200"/>
+        <di:waypoint x="680" y="200"/>
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="sf5_edge" bpmnElement="sf5">
+        <di:waypoint x="780" y="200"/>
+        <di:waypoint x="840" y="200"/>
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="sf6_edge" bpmnElement="sf6">
+        <di:waypoint x="940" y="200"/>
+        <di:waypoint x="1000" y="200"/>
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="sf7_edge" bpmnElement="sf7">
+        <di:waypoint x="1100" y="200"/>
+        <di:waypoint x="1160" y="200"/>
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="sf8_edge" bpmnElement="sf8">
+        <di:waypoint x="1260" y="200"/>
+        <di:waypoint x="1320" y="200"/>
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="sf9_edge" bpmnElement="sf9">
+        <di:waypoint x="1420" y="200"/>
+        <di:waypoint x="1480" y="200"/>
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="sf10_edge" bpmnElement="sf10">
+        <di:waypoint x="1580" y="200"/>
+        <di:waypoint x="1640" y="200"/>
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="sf11_edge" bpmnElement="sf11">
+        <di:waypoint x="1740" y="200"/>
+        <di:waypoint x="1800" y="200"/>
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</semantic:definitions>

@@ -1,0 +1,1368 @@
+<?xml version="1.0" standalone="yes"?>
+<semantic:definitions id="HeatingRenewableEnergyProcess"
+    targetNamespace="http://example.com/bpmn/heating-renewable-energy"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:semantic="http://www.omg.org/spec/BPMN/20100524/MODEL"
+    xmlns:di="http://www.omg.org/spec/DD/20100524/DI"
+    xmlns:dc="http://www.omg.org/spec/DD/20100524/DC"
+    xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI">
+
+  <semantic:collaboration id="collab_heating_process">
+    <semantic:participant id="pool_bafa" name="Federal Office of Economics and Export Control (BAFA)" processRef="process_bafa"/>
+    <semantic:participant id="pool_nlp" name="Natural/Legal Person" processRef="process_nlp"/>
+    <semantic:participant id="pool_contractor" name="Contractor" processRef="process_contractor"/>
+  </semantic:collaboration>
+
+  <!-- BAFA Process -->
+  <semantic:process id="process_bafa" isExecutable="false">
+    <semantic:laneSet id="laneSet_bafa">
+      <semantic:lane id="lane_bafa_officer" name="BAFA Officer">
+        <semantic:flowNodeRef>start_bafa_realize_requirement</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_bafa_notify_person</semantic:flowNodeRef> <!-- Implicit task to send message -->
+      </semantic:lane>
+    </semantic:laneSet>
+    <semantic:startEvent id="start_bafa_realize_requirement" name="Realize Heating with Renewable Energy Required">
+      <semantic:outgoing>flow_bafa_start_to_notify</semantic:outgoing>
+    </semantic:startEvent>
+    <semantic:task id="task_bafa_notify_person" name="Notify Natural/Legal Person">
+        <semantic:incoming>flow_bafa_start_to_notify</semantic:incoming>
+    </semantic:task>
+    <semantic:sequenceFlow id="flow_bafa_start_to_notify" sourceRef="start_bafa_realize_requirement" targetRef="task_bafa_notify_person"/>
+  </semantic:process>
+
+  <!-- Natural/Legal Person Process -->
+  <semantic:process id="process_nlp" isExecutable="false">
+    <semantic:laneSet id="laneSet_nlp">
+      <semantic:lane id="lane_nlp_applicant" name="Applicant">
+        <semantic:flowNodeRef>start_nlp_receive_requirement</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_nlp_decide_heating_method</semantic:flowNodeRef>
+        <semantic:flowNodeRef>gw_nlp_heating_requirement_type</semantic:flowNodeRef>
+        <semantic:flowNodeRef>gw_nlp_optionA_system_choice</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_nlp_heat_with_biomass</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_nlp_decide_biomass_plant</semantic:flowNodeRef>
+        <semantic:flowNodeRef>gw_nlp_biomass_plant_type</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_nlp_choose_boiler_pellets_chips</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_nlp_choose_combination_boiler</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_nlp_choose_pellet_stoves_water_pocket</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_nlp_choose_retrofit_calorific</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_nlp_choose_retrofit_dust_reduction</semantic:flowNodeRef>
+        <semantic:flowNodeRef>gw_nlp_merge_biomass_plant_choice</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_nlp_select_funding_option_biomass</semantic:flowNodeRef>
+        <semantic:flowNodeRef>gw_nlp_biomass_funding_type</semantic:flowNodeRef>
+        <semantic:flowNodeRef>gw_nlp_biomass_existing_funding_subtype</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_nlp_verify_basic_funding_req_biomass</semantic:flowNodeRef>
+        <semantic:flowNodeRef>event_boundary_biomass_basic_req_risk</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_nlp_select_biomass_plant_basic</semantic:flowNodeRef>
+        <semantic:flowNodeRef>gw_nlp_biomass_plant_basic_type</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_nlp_select_wood_chip_boiler</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_nlp_select_pellet_boiler_buffer</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_nlp_select_pellet_stove_water</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_nlp_select_log_wood_boiler</semantic:flowNodeRef>
+        <semantic:flowNodeRef>gw_nlp_merge_biomass_plant_basic_choice</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_nlp_choose_basic_funding_biomass</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_nlp_choose_additional_funding_biomass_main</semantic:flowNodeRef>
+        <semantic:flowNodeRef>gw_nlp_biomass_additional_split</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_nlp_biomass_combo_bonus</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_nlp_biomass_establish_solar_heatpump</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_nlp_biomass_connect_to_network</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_nlp_biomass_efficiency_bonus</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_nlp_biomass_ensure_efficient_building</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_nlp_biomass_meet_kfw55</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_nlp_biomass_submit_expert_confirmation</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_nlp_biomass_investment_grants</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_nlp_biomass_receive_optimization_bonus</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_nlp_biomass_apee_incentive</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_nlp_biomass_replace_inefficient_systems</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_nlp_biomass_optimize_heating_system</semantic:flowNodeRef>
+        <semantic:flowNodeRef>gw_nlp_biomass_additional_join</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_nlp_finalize_additional_funding_biomass</semantic:flowNodeRef>
+        <semantic:flowNodeRef>gw_nlp_merge_biomass_existing_funding</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_nlp_fund_biomass_new_building</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_nlp_identify_support_devices_biomass_new</semantic:flowNodeRef>
+        <semantic:flowNodeRef>gw_nlp_merge_biomass_funding_paths</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_nlp_heat_with_heat_pump</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_nlp_decide_heat_pump</semantic:flowNodeRef>
+        <semantic:flowNodeRef>gw_nlp_heat_pump_type</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_nlp_hp_combined_water_space</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_nlp_hp_exclusive_room</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_nlp_hp_exclusive_space_non_res</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_nlp_hp_provision_heat_networks</semantic:flowNodeRef>
+        <semantic:flowNodeRef>gw_nlp_merge_hp_type_choice</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_nlp_heat_with_solar_thermal</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_nlp_decide_solar_thermal_system</semantic:flowNodeRef>
+        <semantic:flowNodeRef>gw_nlp_solar_thermal_system_type</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_nlp_st_exclusive_water</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_nlp_st_exclusive_space</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_nlp_st_combined_water_space</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_nlp_st_supply_heat_networks</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_nlp_st_supply_cold_networks</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_nlp_st_solar_refrigeration</semantic:flowNodeRef>
+        <semantic:flowNodeRef>gw_nlp_merge_st_type_choice</semantic:flowNodeRef>
+        <semantic:flowNodeRef>gw_nlp_merge_hp_st_paths</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_nlp_select_funding_option_hp_st</semantic:flowNodeRef>
+        <semantic:flowNodeRef>gw_nlp_hp_st_funding_type</semantic:flowNodeRef>
+        <semantic:flowNodeRef>gw_nlp_hp_st_existing_funding_subtype</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_nlp_verify_basic_funding_req_hp_st</semantic:flowNodeRef>
+        <semantic:flowNodeRef>event_boundary_hp_st_basic_req_risk</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_nlp_receive_basic_funding_hp_st</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_nlp_verify_innovation_funding_req_hp_st</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_nlp_receive_innovation_funding_hp_st</semantic:flowNodeRef>
+        <semantic:flowNodeRef>gw_nlp_merge_hp_st_basic_innovation</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_nlp_receive_additional_funding_hp_st_main</semantic:flowNodeRef>
+        <semantic:flowNodeRef>gw_nlp_hp_st_additional_split</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_nlp_hp_st_combo_bonus</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_nlp_hp_st_establish_solar_biomass</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_nlp_hp_st_construct_solar_collector</semantic:flowNodeRef>
+        <semantic:flowNodeRef>event_boundary_hp_st_solar_collector_missing_risk</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_nlp_hp_st_meet_solar_collector_req</semantic:flowNodeRef>
+        <semantic:flowNodeRef>event_boundary_hp_st_gross_collector_area_risk</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_nlp_hp_st_connect_to_network</semantic:flowNodeRef>
+        <semantic:flowNodeRef>event_boundary_hp_st_not_connected_network_risk</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_nlp_hp_st_load_management_fund</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_nlp_hp_st_ensure_interfaces_enable_hp</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_nlp_hp_st_construct_storage_facility</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_nlp_hp_st_provide_smart_grid_cert</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_nlp_hp_st_efficiency_bonus</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_nlp_hp_st_ensure_efficient_building</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_nlp_hp_st_meet_kfw55</semantic:flowNodeRef>
+        <semantic:flowNodeRef>event_boundary_hp_st_kfw55_risk</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_nlp_hp_st_submit_expert_app</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_nlp_hp_st_investment_grants</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_nlp_hp_st_receive_optimization_bonus</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_nlp_hp_st_apee_incentive</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_nlp_hp_st_replace_inefficient_systems</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_nlp_hp_st_optimize_heating_system</semantic:flowNodeRef>
+        <semantic:flowNodeRef>gw_nlp_hp_st_additional_join</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_nlp_finalize_additional_funding_hp_st</semantic:flowNodeRef>
+        <semantic:flowNodeRef>gw_nlp_merge_hp_st_existing_funding</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_nlp_fund_hp_st_new_building</semantic:flowNodeRef>
+        <semantic:flowNodeRef>gw_nlp_merge_hp_st_funding_paths</semantic:flowNodeRef>
+        <semantic:flowNodeRef>gw_nlp_funding_path_determined</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_nlp_request_application_filling</semantic:flowNodeRef> <!-- Implicit task to send message -->
+        <semantic:flowNodeRef>event_intermediate_nlp_application_submitted</semantic:flowNodeRef>
+        <semantic:flowNodeRef>end_nlp_application_successful</semantic:flowNodeRef>
+      </semantic:lane>
+    </semantic:laneSet>
+
+    <semantic:startEvent id="start_nlp_receive_requirement" name="Receive Requirement for Renewable Heating">
+      <semantic:outgoing>flow_nlp_start_to_decide_method</semantic:outgoing>
+    </semantic:startEvent>
+    <semantic:task id="task_nlp_decide_heating_method" name="Decide on Heating Method">
+      <semantic:incoming>flow_nlp_start_to_decide_method</semantic:incoming>
+      <semantic:outgoing>flow_nlp_decide_method_to_gw_req_type</semantic:outgoing>
+    </semantic:task>
+    <semantic:exclusiveGateway id="gw_nlp_heating_requirement_type" name="Heating Requirement Type?">
+      <semantic:incoming>flow_nlp_decide_method_to_gw_req_type</semantic:incoming>
+      <semantic:outgoing>flow_nlp_gw_req_type_to_optionA</semantic:outgoing>
+      <semantic:outgoing>flow_nlp_gw_req_type_to_optionB</semantic:outgoing>
+    </semantic:exclusiveGateway>
+
+    <!-- Option A Path (Biomass or Heat Pump) -->
+    <semantic:exclusiveGateway id="gw_nlp_optionA_system_choice" name="Choose System for Option A (Max 100kW)">
+      <semantic:incoming>flow_nlp_gw_req_type_to_optionA</semantic:incoming>
+      <semantic:outgoing>flow_nlp_optionA_to_biomass</semantic:outgoing>
+      <semantic:outgoing>flow_nlp_optionA_to_hp</semantic:outgoing>
+    </semantic:exclusiveGateway>
+
+    <!-- Biomass Path -->
+    <semantic:task id="task_nlp_heat_with_biomass" name="Heat using Biomass Plants">
+      <semantic:incoming>flow_nlp_optionA_to_biomass</semantic:incoming>
+      <semantic:outgoing>flow_nlp_biomass_to_decide_plant</semantic:outgoing>
+    </semantic:task>
+    <semantic:task id="task_nlp_decide_biomass_plant" name="Decide on Biomass Plant (Considering Funding)">
+      <semantic:incoming>flow_nlp_biomass_to_decide_plant</semantic:incoming>
+      <semantic:outgoing>flow_nlp_decide_plant_to_gw_plant_type</semantic:outgoing>
+    </semantic:task>
+    <semantic:exclusiveGateway id="gw_nlp_biomass_plant_type" name="Select Biomass Plant Type">
+      <semantic:incoming>flow_nlp_decide_plant_to_gw_plant_type</semantic:incoming>
+      <semantic:outgoing>flow_nlp_gw_plant_type_to_boiler_pellets</semantic:outgoing>
+      <semantic:outgoing>flow_nlp_gw_plant_type_to_combo_boiler</semantic:outgoing>
+      <semantic:outgoing>flow_nlp_gw_plant_type_to_pellet_stoves</semantic:outgoing>
+      <semantic:outgoing>flow_nlp_gw_plant_type_to_retrofit_calorific</semantic:outgoing>
+      <semantic:outgoing>flow_nlp_gw_plant_type_to_retrofit_dust</semantic:outgoing>
+    </semantic:exclusiveGateway>
+    <semantic:task id="task_nlp_choose_boiler_pellets_chips" name="Choose Boiler for Pellets/Wood Chips">
+      <semantic:incoming>flow_nlp_gw_plant_type_to_boiler_pellets</semantic:incoming>
+      <semantic:outgoing>flow_nlp_boiler_pellets_to_merge</semantic:outgoing>
+    </semantic:task>
+    <semantic:task id="task_nlp_choose_combination_boiler" name="Choose Combination Boiler">
+      <semantic:incoming>flow_nlp_gw_plant_type_to_combo_boiler</semantic:incoming>
+      <semantic:outgoing>flow_nlp_combo_boiler_to_merge</semantic:outgoing>
+    </semantic:task>
+    <semantic:task id="task_nlp_choose_pellet_stoves_water_pocket" name="Choose Pellet Stoves with Water Pocket">
+      <semantic:incoming>flow_nlp_gw_plant_type_to_pellet_stoves</semantic:incoming>
+      <semantic:outgoing>flow_nlp_pellet_stoves_to_merge</semantic:outgoing>
+    </semantic:task>
+    <semantic:task id="task_nlp_choose_retrofit_calorific" name="Choose Retrofit System (Calorific Value)">
+      <semantic:incoming>flow_nlp_gw_plant_type_to_retrofit_calorific</semantic:incoming>
+      <semantic:outgoing>flow_nlp_retrofit_calorific_to_merge</semantic:outgoing>
+    </semantic:task>
+    <semantic:task id="task_nlp_choose_retrofit_dust_reduction" name="Choose Retrofit System (Dust Reduction)">
+      <semantic:incoming>flow_nlp_gw_plant_type_to_retrofit_dust</semantic:incoming>
+      <semantic:outgoing>flow_nlp_retrofit_dust_to_merge</semantic:outgoing>
+    </semantic:task>
+    <semantic:exclusiveGateway id="gw_nlp_merge_biomass_plant_choice" name="Biomass Plant Chosen">
+      <semantic:incoming>flow_nlp_boiler_pellets_to_merge</semantic:incoming>
+      <semantic:incoming>flow_nlp_combo_boiler_to_merge</semantic:incoming>
+      <semantic:incoming>flow_nlp_pellet_stoves_to_merge</semantic:incoming>
+      <semantic:incoming>flow_nlp_retrofit_calorific_to_merge</semantic:incoming>
+      <semantic:incoming>flow_nlp_retrofit_dust_to_merge</semantic:incoming>
+      <semantic:outgoing>flow_nlp_merge_plant_choice_to_select_funding</semantic:outgoing>
+    </semantic:exclusiveGateway>
+    <semantic:task id="task_nlp_select_funding_option_biomass" name="Select Funding Option for Biomass">
+      <semantic:incoming>flow_nlp_merge_plant_choice_to_select_funding</semantic:incoming>
+      <semantic:outgoing>flow_nlp_select_funding_to_gw_biomass_funding_type</semantic:outgoing>
+    </semantic:task>
+    <semantic:exclusiveGateway id="gw_nlp_biomass_funding_type" name="Funding Type for Biomass?">
+      <semantic:incoming>flow_nlp_select_funding_to_gw_biomass_funding_type</semantic:incoming>
+      <semantic:outgoing>flow_nlp_biomass_funding_to_existing</semantic:outgoing>
+      <semantic:outgoing>flow_nlp_biomass_funding_to_new</semantic:outgoing>
+    </semantic:exclusiveGateway>
+    <!-- Biomass Existing Building Funding -->
+    <semantic:exclusiveGateway id="gw_nlp_biomass_existing_funding_subtype" name="Funding Sub-Type for Existing Buildings (Biomass)?">
+      <semantic:incoming>flow_nlp_biomass_funding_to_existing</semantic:incoming>
+      <semantic:outgoing>flow_nlp_biomass_existing_to_basic</semantic:outgoing>
+      <semantic:outgoing>flow_nlp_biomass_existing_to_additional</semantic:outgoing>
+    </semantic:exclusiveGateway>
+    <semantic:task id="task_nlp_verify_basic_funding_req_biomass" name="Verify Basic Funding Requirements (Biomass)">
+      <semantic:incoming>flow_nlp_biomass_existing_to_basic</semantic:incoming>
+      <semantic:outgoing>flow_nlp_verify_basic_biomass_to_select_plant</semantic:outgoing>
+    </semantic:task>
+    <semantic:boundaryEvent id="event_boundary_biomass_basic_req_risk" name="Risk: Heating System Missing/Installed &lt; 2 Years" attachedToRef="task_nlp_verify_basic_funding_req_biomass">
+      <semantic:errorEventDefinition id="error_biomass_basic_req" />
+      <semantic:outgoing>flow_nlp_biomass_basic_risk_to_merge_funding</semantic:outgoing> <!-- Or to an error handling end -->
+    </semantic:boundaryEvent>
+    <semantic:task id="task_nlp_select_biomass_plant_basic" name="Select Biomass Plant for Basic Funding">
+      <semantic:incoming>flow_nlp_verify_basic_biomass_to_select_plant</semantic:incoming>
+      <semantic:outgoing>flow_nlp_select_plant_basic_to_gw_type</semantic:outgoing>
+    </semantic:task>
+    <semantic:exclusiveGateway id="gw_nlp_biomass_plant_basic_type" name="Biomass Plant for Basic Funding Type">
+      <semantic:incoming>flow_nlp_select_plant_basic_to_gw_type</semantic:incoming>
+      <semantic:outgoing>flow_nlp_gw_biomass_basic_to_wood_chip</semantic:outgoing>
+      <semantic:outgoing>flow_nlp_gw_biomass_basic_to_pellet_boiler</semantic:outgoing>
+      <semantic:outgoing>flow_nlp_gw_biomass_basic_to_pellet_stove</semantic:outgoing>
+      <semantic:outgoing>flow_nlp_gw_biomass_basic_to_log_wood</semantic:outgoing>
+    </semantic:exclusiveGateway>
+    <semantic:task id="task_nlp_select_wood_chip_boiler" name="Select Wood Chip Boiler with Buffer">
+      <semantic:incoming>flow_nlp_gw_biomass_basic_to_wood_chip</semantic:incoming>
+      <semantic:outgoing>flow_nlp_wood_chip_to_merge_basic_plant</semantic:outgoing>
+    </semantic:task>
+    <semantic:task id="task_nlp_select_pellet_boiler_buffer" name="Select Pellet Boiler with New Buffer">
+      <semantic:incoming>flow_nlp_gw_biomass_basic_to_pellet_boiler</semantic:incoming>
+      <semantic:outgoing>flow_nlp_pellet_boiler_to_merge_basic_plant</semantic:outgoing>
+    </semantic:task>
+    <semantic:task id="task_nlp_select_pellet_stove_water" name="Select Pellet Stove with Water Pocket">
+      <semantic:incoming>flow_nlp_gw_biomass_basic_to_pellet_stove</semantic:incoming>
+      <semantic:outgoing>flow_nlp_pellet_stove_to_merge_basic_plant</semantic:outgoing>
+    </semantic:task>
+    <semantic:task id="task_nlp_select_log_wood_boiler" name="Select Log Wood Gasification Boiler with Buffer">
+      <semantic:incoming>flow_nlp_gw_biomass_basic_to_log_wood</semantic:incoming>
+      <semantic:outgoing>flow_nlp_log_wood_to_merge_basic_plant</semantic:outgoing>
+    </semantic:task>
+    <semantic:exclusiveGateway id="gw_nlp_merge_biomass_plant_basic_choice" name="Biomass Plant for Basic Funding Chosen">
+      <semantic:incoming>flow_nlp_wood_chip_to_merge_basic_plant</semantic:incoming>
+      <semantic:incoming>flow_nlp_pellet_boiler_to_merge_basic_plant</semantic:incoming>
+      <semantic:incoming>flow_nlp_pellet_stove_to_merge_basic_plant</semantic:incoming>
+      <semantic:incoming>flow_nlp_log_wood_to_merge_basic_plant</semantic:incoming>
+      <semantic:outgoing>flow_nlp_merge_basic_plant_to_choose_basic</semantic:outgoing>
+    </semantic:exclusiveGateway>
+    <semantic:task id="task_nlp_choose_basic_funding_biomass" name="Choose Basic Funding (Biomass)">
+      <semantic:incoming>flow_nlp_merge_basic_plant_to_choose_basic</semantic:incoming>
+      <semantic:outgoing>flow_nlp_choose_basic_biomass_to_merge_existing</semantic:outgoing>
+    </semantic:task>
+    <!-- Biomass Additional Funding -->
+    <semantic:task id="task_nlp_choose_additional_funding_biomass_main" name="Choose Additional Funding (Biomass)">
+      <semantic:incoming>flow_nlp_biomass_existing_to_additional</semantic:incoming>
+      <semantic:outgoing>flow_nlp_choose_add_biomass_to_split</semantic:outgoing>
+    </semantic:task>
+    <semantic:parallelGateway id="gw_nlp_biomass_additional_split" name="Select Additional Funding Types (Biomass)">
+      <semantic:incoming>flow_nlp_choose_add_biomass_to_split</semantic:incoming>
+      <semantic:outgoing>flow_nlp_biomass_add_to_combo</semantic:outgoing>
+      <semantic:outgoing>flow_nlp_biomass_add_to_efficiency</semantic:outgoing>
+      <semantic:outgoing>flow_nlp_biomass_add_to_invest</semantic:outgoing>
+      <semantic:outgoing>flow_nlp_biomass_add_to_apee</semantic:outgoing>
+    </semantic:parallelGateway>
+    <semantic:task id="task_nlp_biomass_combo_bonus" name="Receive Combination Bonus for Biomass Systems">
+      <semantic:incoming>flow_nlp_biomass_add_to_combo</semantic:incoming>
+      <semantic:outgoing>flow_nlp_biomass_combo_to_establish_solar_hp</semantic:outgoing>
+    </semantic:task>
+    <semantic:task id="task_nlp_biomass_establish_solar_heatpump" name="Establish Eligible Solar Thermal/Heat Pump System">
+        <semantic:incoming>flow_nlp_biomass_combo_to_establish_solar_hp</semantic:incoming>
+        <semantic:outgoing>flow_nlp_biomass_establish_solar_hp_to_connect_network</semantic:outgoing>
+    </semantic:task>
+    <semantic:task id="task_nlp_biomass_connect_to_network" name="Connect Biomass Plant to Heating Network">
+        <semantic:incoming>flow_nlp_biomass_establish_solar_hp_to_connect_network</semantic:incoming>
+        <semantic:outgoing>flow_nlp_biomass_combo_to_join</semantic:outgoing>
+    </semantic:task>
+    <semantic:task id="task_nlp_biomass_efficiency_bonus" name="Receive Building Efficiency Bonus (Biomass)">
+      <semantic:incoming>flow_nlp_biomass_add_to_efficiency</semantic:incoming>
+      <semantic:outgoing>flow_nlp_biomass_efficiency_to_ensure_building</semantic:outgoing>
+    </semantic:task>
+    <semantic:task id="task_nlp_biomass_ensure_efficient_building" name="Ensure Building is Efficient Residential">
+        <semantic:incoming>flow_nlp_biomass_efficiency_to_ensure_building</semantic:incoming>
+        <semantic:outgoing>flow_nlp_biomass_ensure_building_to_meet_kfw</semantic:outgoing>
+    </semantic:task>
+    <semantic:task id="task_nlp_biomass_meet_kfw55" name="Meet KfW Efficiency House 55 Requirements">
+        <semantic:incoming>flow_nlp_biomass_ensure_building_to_meet_kfw</semantic:incoming>
+        <semantic:outgoing>flow_nlp_biomass_meet_kfw_to_submit_confirm</semantic:outgoing>
+    </semantic:task>
+    <semantic:task id="task_nlp_biomass_submit_expert_confirmation" name="Submit Online Confirmation from Expert">
+        <semantic:incoming>flow_nlp_biomass_meet_kfw_to_submit_confirm</semantic:incoming>
+        <semantic:outgoing>flow_nlp_biomass_efficiency_to_join</semantic:outgoing>
+    </semantic:task>
+    <semantic:task id="task_nlp_biomass_investment_grants" name="Receive Investment Grants for Optimization (Biomass)">
+      <semantic:incoming>flow_nlp_biomass_add_to_invest</semantic:incoming>
+      <semantic:outgoing>flow_nlp_biomass_invest_to_receive_bonus</semantic:outgoing>
+    </semantic:task>
+    <semantic:task id="task_nlp_biomass_receive_optimization_bonus" name="Receive Optimization Bonus (Biomass)">
+        <semantic:incoming>flow_nlp_biomass_invest_to_receive_bonus</semantic:incoming>
+        <semantic:outgoing>flow_nlp_biomass_invest_to_join</semantic:outgoing>
+    </semantic:task>
+    <semantic:task id="task_nlp_biomass_apee_incentive" name="Receive APEE Incentive (Biomass)">
+      <semantic:incoming>flow_nlp_biomass_add_to_apee</semantic:incoming>
+      <semantic:outgoing>flow_nlp_biomass_apee_to_replace_systems</semantic:outgoing>
+    </semantic:task>
+    <semantic:task id="task_nlp_biomass_replace_inefficient_systems" name="Replace Inefficient Old Systems (Biomass)">
+        <semantic:incoming>flow_nlp_biomass_apee_to_replace_systems</semantic:incoming>
+        <semantic:outgoing>flow_nlp_biomass_replace_to_optimize</semantic:outgoing>
+    </semantic:task>
+    <semantic:task id="task_nlp_biomass_optimize_heating_system" name="Optimize Entire Heating System (Biomass)">
+        <semantic:incoming>flow_nlp_biomass_replace_to_optimize</semantic:incoming>
+        <semantic:outgoing>flow_nlp_biomass_apee_to_join</semantic:outgoing>
+    </semantic:task>
+    <semantic:parallelGateway id="gw_nlp_biomass_additional_join" name="Combine Additional Funding Types (Biomass)">
+      <semantic:incoming>flow_nlp_biomass_combo_to_join</semantic:incoming>
+      <semantic:incoming>flow_nlp_biomass_efficiency_to_join</semantic:incoming>
+      <semantic:incoming>flow_nlp_biomass_invest_to_join</semantic:incoming>
+      <semantic:incoming>flow_nlp_biomass_apee_to_join</semantic:incoming>
+      <semantic:outgoing>flow_nlp_biomass_additional_join_to_finalize</semantic:outgoing>
+    </semantic:parallelGateway>
+    <semantic:task id="task_nlp_finalize_additional_funding_biomass" name="Finalize Additional Funding Choice (Biomass)">
+      <semantic:incoming>flow_nlp_biomass_additional_join_to_finalize</semantic:incoming>
+      <semantic:outgoing>flow_nlp_finalize_add_biomass_to_merge_existing</semantic:outgoing>
+    </semantic:task>
+    <semantic:exclusiveGateway id="gw_nlp_merge_biomass_existing_funding" name="Biomass Existing Building Funding Chosen">
+      <semantic:incoming>flow_nlp_choose_basic_biomass_to_merge_existing</semantic:incoming>
+      <semantic:incoming>flow_nlp_finalize_add_biomass_to_merge_existing</semantic:incoming>
+      <semantic:incoming>flow_nlp_biomass_basic_risk_to_merge_funding</semantic:incoming> <!-- From boundary event -->
+      <semantic:outgoing>flow_nlp_merge_biomass_existing_to_merge_all_biomass</semantic:outgoing>
+    </semantic:exclusiveGateway>
+    <!-- Biomass New Building Funding -->
+    <semantic:task id="task_nlp_fund_biomass_new_building" name="Fund Plants in New Building (Biomass)">
+      <semantic:incoming>flow_nlp_biomass_funding_to_new</semantic:incoming>
+      <semantic:outgoing>flow_nlp_biomass_new_to_identify_devices</semantic:outgoing>
+    </semantic:task>
+    <semantic:task id="task_nlp_identify_support_devices_biomass_new" name="Identify Support Devices for New Building (Biomass)">
+      <semantic:incoming>flow_nlp_biomass_new_to_identify_devices</semantic:incoming>
+      <semantic:outgoing>flow_nlp_biomass_new_devices_to_merge_all_biomass</semantic:outgoing>
+    </semantic:task>
+    <semantic:exclusiveGateway id="gw_nlp_merge_biomass_funding_paths" name="Biomass Funding Path Determined">
+      <semantic:incoming>flow_nlp_merge_biomass_existing_to_merge_all_biomass</semantic:incoming>
+      <semantic:incoming>flow_nlp_biomass_new_devices_to_merge_all_biomass</semantic:incoming>
+      <semantic:outgoing>flow_nlp_merge_biomass_to_overall_funding_determined</semantic:outgoing>
+    </semantic:exclusiveGateway>
+
+    <!-- Heat Pump Path (Option A) -->
+    <semantic:task id="task_nlp_heat_with_heat_pump" name="Heat using Heat Pump Systems">
+      <semantic:incoming>flow_nlp_optionA_to_hp</semantic:incoming>
+      <semantic:outgoing>flow_nlp_hp_to_decide_pump</semantic:outgoing>
+    </semantic:task>
+    <semantic:task id="task_nlp_decide_heat_pump" name="Decide on Heat Pump">
+      <semantic:incoming>flow_nlp_hp_to_decide_pump</semantic:incoming>
+      <semantic:outgoing>flow_nlp_decide_pump_to_gw_hp_type</semantic:outgoing>
+    </semantic:task>
+    <semantic:exclusiveGateway id="gw_nlp_heat_pump_type" name="Select Heat Pump Type">
+      <semantic:incoming>flow_nlp_decide_pump_to_gw_hp_type</semantic:incoming>
+      <semantic:outgoing>flow_nlp_gw_hp_type_to_combined</semantic:outgoing>
+      <semantic:outgoing>flow_nlp_gw_hp_type_to_exclusive_room</semantic:outgoing>
+      <semantic:outgoing>flow_nlp_gw_hp_type_to_exclusive_space</semantic:outgoing>
+      <semantic:outgoing>flow_nlp_gw_hp_type_to_provision_heat</semantic:outgoing>
+    </semantic:exclusiveGateway>
+    <semantic:task id="task_nlp_hp_combined_water_space" name="Choose HP for Combined Water/Space Heating">
+      <semantic:incoming>flow_nlp_gw_hp_type_to_combined</semantic:incoming>
+      <semantic:outgoing>flow_nlp_hp_combined_to_merge</semantic:outgoing>
+    </semantic:task>
+    <semantic:task id="task_nlp_hp_exclusive_room" name="Choose HP for Exclusive Room Heating">
+      <semantic:incoming>flow_nlp_gw_hp_type_to_exclusive_room</semantic:incoming>
+      <semantic:outgoing>flow_nlp_hp_exclusive_room_to_merge</semantic:outgoing>
+    </semantic:task>
+    <semantic:task id="task_nlp_hp_exclusive_space_non_res" name="Choose HP for Exclusive Space Heating (Non-Residential)">
+      <semantic:incoming>flow_nlp_gw_hp_type_to_exclusive_space</semantic:incoming>
+      <semantic:outgoing>flow_nlp_hp_exclusive_space_to_merge</semantic:outgoing>
+    </semantic:task>
+    <semantic:task id="task_nlp_hp_provision_heat_networks" name="Choose HP for Provision of Heat for Networks">
+      <semantic:incoming>flow_nlp_gw_hp_type_to_provision_heat</semantic:incoming>
+      <semantic:outgoing>flow_nlp_hp_provision_heat_to_merge</semantic:outgoing>
+    </semantic:task>
+    <semantic:exclusiveGateway id="gw_nlp_merge_hp_type_choice" name="Heat Pump Type Chosen">
+      <semantic:incoming>flow_nlp_hp_combined_to_merge</semantic:incoming>
+      <semantic:incoming>flow_nlp_hp_exclusive_room_to_merge</semantic:incoming>
+      <semantic:incoming>flow_nlp_hp_exclusive_space_to_merge</semantic:incoming>
+      <semantic:incoming>flow_nlp_hp_provision_heat_to_merge</semantic:incoming>
+      <semantic:outgoing>flow_nlp_merge_hp_choice_to_merge_hp_st</semantic:outgoing>
+    </semantic:exclusiveGateway>
+
+    <!-- Solar Thermal Path (Option B) -->
+    <semantic:task id="task_nlp_heat_with_solar_thermal" name="Heat using Solar Thermal Systems (Max 100sqm)">
+      <semantic:incoming>flow_nlp_gw_req_type_to_optionB</semantic:incoming>
+      <semantic:outgoing>flow_nlp_st_to_decide_system</semantic:outgoing>
+    </semantic:task>
+    <semantic:task id="task_nlp_decide_solar_thermal_system" name="Decide on Solar Thermal System">
+      <semantic:incoming>flow_nlp_st_to_decide_system</semantic:incoming>
+      <semantic:outgoing>flow_nlp_decide_st_to_gw_st_type</semantic:outgoing>
+    </semantic:task>
+    <semantic:exclusiveGateway id="gw_nlp_solar_thermal_system_type" name="Select Solar Thermal System Type">
+      <semantic:incoming>flow_nlp_decide_st_to_gw_st_type</semantic:incoming>
+      <semantic:outgoing>flow_nlp_gw_st_type_to_exclusive_water</semantic:outgoing>
+      <semantic:outgoing>flow_nlp_gw_st_type_to_exclusive_space</semantic:outgoing>
+      <semantic:outgoing>flow_nlp_gw_st_type_to_combined</semantic:outgoing>
+      <semantic:outgoing>flow_nlp_gw_st_type_to_supply_heat</semantic:outgoing>
+      <semantic:outgoing>flow_nlp_gw_st_type_to_supply_cold</semantic:outgoing>
+      <semantic:outgoing>flow_nlp_gw_st_type_to_solar_fridge</semantic:outgoing>
+    </semantic:exclusiveGateway>
+    <semantic:task id="task_nlp_st_exclusive_water" name="Choose ST for Exclusive Water Heating">
+      <semantic:incoming>flow_nlp_gw_st_type_to_exclusive_water</semantic:incoming>
+      <semantic:outgoing>flow_nlp_st_exclusive_water_to_merge</semantic:outgoing>
+    </semantic:task>
+    <semantic:task id="task_nlp_st_exclusive_space" name="Choose ST for Exclusive Space Heating">
+      <semantic:incoming>flow_nlp_gw_st_type_to_exclusive_space</semantic:incoming>
+      <semantic:outgoing>flow_nlp_st_exclusive_space_to_merge</semantic:outgoing>
+    </semantic:task>
+    <semantic:task id="task_nlp_st_combined_water_space" name="Choose ST for Combined Water/Space Heating">
+      <semantic:incoming>flow_nlp_gw_st_type_to_combined</semantic:incoming>
+      <semantic:outgoing>flow_nlp_st_combined_to_merge</semantic:outgoing>
+    </semantic:task>
+    <semantic:task id="task_nlp_st_supply_heat_networks" name="Choose ST for Supply of Heat in Heating Networks">
+      <semantic:incoming>flow_nlp_gw_st_type_to_supply_heat</semantic:incoming>
+      <semantic:outgoing>flow_nlp_st_supply_heat_to_merge</semantic:outgoing>
+    </semantic:task>
+    <semantic:task id="task_nlp_st_supply_cold_networks" name="Choose ST for Supply in Cold in Cooling Networks">
+      <semantic:incoming>flow_nlp_gw_st_type_to_supply_cold</semantic:incoming>
+      <semantic:outgoing>flow_nlp_st_supply_cold_to_merge</semantic:outgoing>
+    </semantic:task>
+    <semantic:task id="task_nlp_st_solar_refrigeration" name="Choose ST for Solar Refrigeration">
+      <semantic:incoming>flow_nlp_gw_st_type_to_solar_fridge</semantic:incoming>
+      <semantic:outgoing>flow_nlp_st_solar_fridge_to_merge</semantic:outgoing>
+    </semantic:task>
+    <semantic:exclusiveGateway id="gw_nlp_merge_st_type_choice" name="Solar Thermal System Type Chosen">
+      <semantic:incoming>flow_nlp_st_exclusive_water_to_merge</semantic:incoming>
+      <semantic:incoming>flow_nlp_st_exclusive_space_to_merge</semantic:incoming>
+      <semantic:incoming>flow_nlp_st_combined_to_merge</semantic:incoming>
+      <semantic:incoming>flow_nlp_st_supply_heat_to_merge</semantic:incoming>
+      <semantic:incoming>flow_nlp_st_supply_cold_to_merge</semantic:incoming>
+      <semantic:incoming>flow_nlp_st_solar_fridge_to_merge</semantic:incoming>
+      <semantic:outgoing>flow_nlp_merge_st_choice_to_merge_hp_st</semantic:outgoing>
+    </semantic:exclusiveGateway>
+
+    <!-- Merge HP and ST paths before their common funding selection -->
+    <semantic:exclusiveGateway id="gw_nlp_merge_hp_st_paths" name="Heat Pump or Solar Thermal System Chosen">
+      <semantic:incoming>flow_nlp_merge_hp_choice_to_merge_hp_st</semantic:incoming>
+      <semantic:incoming>flow_nlp_merge_st_choice_to_merge_hp_st</semantic:incoming>
+      <semantic:outgoing>flow_nlp_merge_hp_st_to_select_funding</semantic:outgoing>
+    </semantic:exclusiveGateway>
+    <semantic:task id="task_nlp_select_funding_option_hp_st" name="Select Funding Option (HP/ST)">
+      <semantic:incoming>flow_nlp_merge_hp_st_to_select_funding</semantic:incoming>
+      <semantic:outgoing>flow_nlp_select_funding_hp_st_to_gw_type</semantic:outgoing>
+    </semantic:task>
+    <semantic:exclusiveGateway id="gw_nlp_hp_st_funding_type" name="Funding Type for HP/ST?">
+      <semantic:incoming>flow_nlp_select_funding_hp_st_to_gw_type</semantic:incoming>
+      <semantic:outgoing>flow_nlp_hp_st_funding_to_existing</semantic:outgoing>
+      <semantic:outgoing>flow_nlp_hp_st_funding_to_new</semantic:outgoing>
+    </semantic:exclusiveGateway>
+    <!-- HP/ST Existing Building Funding -->
+    <semantic:exclusiveGateway id="gw_nlp_hp_st_existing_funding_subtype" name="Funding Sub-Type for Existing Buildings (HP/ST)?">
+      <semantic:incoming>flow_nlp_hp_st_funding_to_existing</semantic:incoming>
+      <semantic:outgoing>flow_nlp_hp_st_existing_to_basic_add</semantic:outgoing>
+      <semantic:outgoing>flow_nlp_hp_st_existing_to_innov_add</semantic:outgoing>
+    </semantic:exclusiveGateway>
+    <!-- HP/ST Basic Funding Path -->
+    <semantic:task id="task_nlp_verify_basic_funding_req_hp_st" name="Verify Basic Funding Requirements (HP/ST)">
+      <semantic:incoming>flow_nlp_hp_st_existing_to_basic_add</semantic:incoming>
+      <semantic:outgoing>flow_nlp_verify_basic_hp_st_to_receive_basic</semantic:outgoing>
+    </semantic:task>
+    <semantic:boundaryEvent id="event_boundary_hp_st_basic_req_risk" name="Risk: Heating System Missing/Installed &lt; 2 Years (HP/ST)" attachedToRef="task_nlp_verify_basic_funding_req_hp_st">
+      <semantic:errorEventDefinition id="error_hp_st_basic_req" />
+      <semantic:outgoing>flow_nlp_hp_st_basic_risk_to_merge_funding</semantic:outgoing> <!-- Or to an error handling end -->
+    </semantic:boundaryEvent>
+    <semantic:task id="task_nlp_receive_basic_funding_hp_st" name="Receive Basic Funding (HP/ST)">
+      <semantic:incoming>flow_nlp_verify_basic_hp_st_to_receive_basic</semantic:incoming>
+      <semantic:outgoing>flow_nlp_receive_basic_hp_st_to_merge_basic_innov</semantic:outgoing>
+    </semantic:task>
+    <!-- HP/ST Innovation Funding Path -->
+    <semantic:task id="task_nlp_verify_innovation_funding_req_hp_st" name="Verify Innovation Funding Requirements (HP/ST)">
+      <semantic:incoming>flow_nlp_hp_st_existing_to_innov_add</semantic:incoming>
+      <semantic:outgoing>flow_nlp_verify_innov_hp_st_to_receive_innov</semantic:outgoing>
+    </semantic:task>
+    <semantic:task id="task_nlp_receive_innovation_funding_hp_st" name="Receive Innovation Funding (HP/ST)">
+      <semantic:incoming>flow_nlp_verify_innov_hp_st_to_receive_innov</semantic:incoming>
+      <semantic:outgoing>flow_nlp_receive_innov_hp_st_to_merge_basic_innov</semantic:outgoing>
+    </semantic:task>
+    <semantic:exclusiveGateway id="gw_nlp_merge_hp_st_basic_innovation" name="Basic or Innovation Funding Chosen for HP/ST">
+      <semantic:incoming>flow_nlp_receive_basic_hp_st_to_merge_basic_innov</semantic:incoming>
+      <semantic:incoming>flow_nlp_receive_innov_hp_st_to_merge_basic_innov</semantic:incoming>
+      <semantic:outgoing>flow_nlp_merge_basic_innov_to_additional_main</semantic:outgoing>
+    </semantic:exclusiveGateway>
+    <!-- HP/ST Additional Funding -->
+    <semantic:task id="task_nlp_receive_additional_funding_hp_st_main" name="Receive Additional Funding (HP/ST)">
+      <semantic:incoming>flow_nlp_merge_basic_innov_to_additional_main</semantic:incoming>
+      <semantic:outgoing>flow_nlp_hp_st_additional_main_to_split</semantic:outgoing>
+    </semantic:task>
+    <semantic:parallelGateway id="gw_nlp_hp_st_additional_split" name="Select Additional Funding Types (HP/ST)">
+      <semantic:incoming>flow_nlp_hp_st_additional_main_to_split</semantic:incoming>
+      <semantic:outgoing>flow_nlp_hp_st_add_to_combo</semantic:outgoing>
+      <semantic:outgoing>flow_nlp_hp_st_add_to_load_mgmt</semantic:outgoing>
+      <semantic:outgoing>flow_nlp_hp_st_add_to_efficiency</semantic:outgoing>
+      <semantic:outgoing>flow_nlp_hp_st_add_to_invest</semantic:outgoing>
+      <semantic:outgoing>flow_nlp_hp_st_add_to_apee</semantic:outgoing>
+    </semantic:parallelGateway>
+    <!-- HP/ST Additional Type 1: Combination Bonus -->
+    <semantic:task id="task_nlp_hp_st_combo_bonus" name="Receive Combination Bonus for Efficient Heat Pumps">
+      <semantic:incoming>flow_nlp_hp_st_add_to_combo</semantic:incoming>
+      <semantic:outgoing>flow_nlp_hp_st_combo_to_establish_sb</semantic:outgoing>
+    </semantic:task>
+    <semantic:task id="task_nlp_hp_st_establish_solar_biomass" name="Establish Eligible Solar Thermal/Biomass Plant">
+        <semantic:incoming>flow_nlp_hp_st_combo_to_establish_sb</semantic:incoming>
+        <semantic:outgoing>flow_nlp_hp_st_establish_sb_to_construct_solar</semantic:outgoing>
+    </semantic:task>
+    <semantic:task id="task_nlp_hp_st_construct_solar_collector" name="Simultaneously Construct Solar Collector System">
+        <semantic:incoming>flow_nlp_hp_st_establish_sb_to_construct_solar</semantic:incoming>
+        <semantic:outgoing>flow_nlp_hp_st_construct_solar_to_meet_req</semantic:outgoing>
+    </semantic:task>
+    <semantic:boundaryEvent id="event_boundary_hp_st_solar_collector_missing_risk" name="Risk: Solar Collector System Missing" attachedToRef="task_nlp_hp_st_construct_solar_collector">
+        <semantic:errorEventDefinition id="error_hp_st_solar_collector_missing"/>
+        <semantic:outgoing>flow_nlp_hp_st_solar_collector_risk_to_join</semantic:outgoing>
+    </semantic:boundaryEvent>
+    <semantic:task id="task_nlp_hp_st_meet_solar_collector_req" name="Meet Solar Collector Construction Requirements">
+        <semantic:incoming>flow_nlp_hp_st_construct_solar_to_meet_req</semantic:incoming>
+        <semantic:outgoing>flow_nlp_hp_st_meet_solar_req_to_connect_network</semantic:outgoing>
+    </semantic:task>
+    <semantic:boundaryEvent id="event_boundary_hp_st_gross_collector_area_risk" name="Risk: Gross Collector Area &lt; 7m²" attachedToRef="task_nlp_hp_st_meet_solar_collector_req">
+        <semantic:errorEventDefinition id="error_hp_st_gross_collector_area"/>
+        <semantic:outgoing>flow_nlp_hp_st_gross_collector_risk_to_join</semantic:outgoing>
+    </semantic:boundaryEvent>
+    <semantic:task id="task_nlp_hp_st_connect_to_network" name="Connect Heat Pump to Heating Network">
+        <semantic:incoming>flow_nlp_hp_st_meet_solar_req_to_connect_network</semantic:incoming>
+        <semantic:outgoing>flow_nlp_hp_st_combo_to_join</semantic:outgoing>
+    </semantic:task>
+    <semantic:boundaryEvent id="event_boundary_hp_st_not_connected_network_risk" name="Risk: Heat Pump Not Connected to Network" attachedToRef="task_nlp_hp_st_connect_to_network">
+        <semantic:errorEventDefinition id="error_hp_st_not_connected_network"/>
+        <semantic:outgoing>flow_nlp_hp_st_connect_network_risk_to_join</semantic:outgoing>
+    </semantic:boundaryEvent>
+    <!-- HP/ST Additional Type 2: Load Management -->
+    <semantic:task id="task_nlp_hp_st_load_management_fund" name="Receive Load Management Capability Fund">
+      <semantic:incoming>flow_nlp_hp_st_add_to_load_mgmt</semantic:incoming>
+      <semantic:outgoing>flow_nlp_hp_st_load_mgmt_to_ensure_interfaces</semantic:outgoing>
+    </semantic:task>
+    <semantic:task id="task_nlp_hp_st_ensure_interfaces_enable_hp" name="Ensure System Interfaces Enable Heat Pump">
+        <semantic:incoming>flow_nlp_hp_st_load_mgmt_to_ensure_interfaces</semantic:incoming>
+        <semantic:outgoing>flow_nlp_hp_st_ensure_interfaces_to_construct_storage</semantic:outgoing>
+    </semantic:task>
+    <semantic:task id="task_nlp_hp_st_construct_storage_facility" name="Simultaneously Construct Storage Facility (>=30L/kW)">
+        <semantic:incoming>flow_nlp_hp_st_ensure_interfaces_to_construct_storage</semantic:incoming>
+        <semantic:outgoing>flow_nlp_hp_st_construct_storage_to_provide_cert</semantic:outgoing>
+    </semantic:task>
+    <semantic:task id="task_nlp_hp_st_provide_smart_grid_cert" name="Provide 'Smart Grid Ready' Certificate/Declaration">
+        <semantic:incoming>flow_nlp_hp_st_construct_storage_to_provide_cert</semantic:incoming>
+        <semantic:outgoing>flow_nlp_hp_st_load_mgmt_to_join</semantic:outgoing>
+    </semantic:task>
+    <!-- HP/ST Additional Type 3: Building Efficiency Bonus -->
+    <semantic:task id="task_nlp_hp_st_efficiency_bonus" name="Receive Building Efficiency Bonus (HP/ST)">
+      <semantic:incoming>flow_nlp_hp_st_add_to_efficiency</semantic:incoming>
+      <semantic:outgoing>flow_nlp_hp_st_efficiency_to_ensure_building</semantic:outgoing>
+    </semantic:task>
+    <semantic:task id="task_nlp_hp_st_ensure_efficient_building" name="Ensure System Built in Efficient Residential Building">
+        <semantic:incoming>flow_nlp_hp_st_efficiency_to_ensure_building</semantic:incoming>
+        <semantic:outgoing>flow_nlp_hp_st_ensure_building_to_meet_kfw</semantic:outgoing>
+    </semantic:task>
+    <semantic:task id="task_nlp_hp_st_meet_kfw55" name="Meet KfW Efficiency House 55 Requirements (HP/ST)">
+        <semantic:incoming>flow_nlp_hp_st_ensure_building_to_meet_kfw</semantic:incoming>
+        <semantic:outgoing>flow_nlp_hp_st_meet_kfw_to_submit_app</semantic:outgoing>
+    </semantic:task>
+    <semantic:boundaryEvent id="event_boundary_hp_st_kfw55_risk" name="Risk: Building Not KfW Efficiency House 55" attachedToRef="task_nlp_hp_st_meet_kfw55">
+        <semantic:errorEventDefinition id="error_hp_st_kfw55"/>
+        <semantic:outgoing>flow_nlp_hp_st_kfw55_risk_to_join</semantic:outgoing>
+    </semantic:boundaryEvent>
+    <semantic:task id="task_nlp_hp_st_submit_expert_app" name="Submit Online Application from Expert (HP/ST)">
+        <semantic:incoming>flow_nlp_hp_st_meet_kfw_to_submit_app</semantic:incoming>
+        <semantic:outgoing>flow_nlp_hp_st_efficiency_to_join</semantic:outgoing>
+    </semantic:task>
+    <!-- HP/ST Additional Type 4: Investment Grants -->
+    <semantic:task id="task_nlp_hp_st_investment_grants" name="Receive Investment Grants for Optimization (HP/ST)">
+      <semantic:incoming>flow_nlp_hp_st_add_to_invest</semantic:incoming>
+      <semantic:outgoing>flow_nlp_hp_st_invest_to_receive_bonus</semantic:outgoing>
+    </semantic:task>
+    <semantic:task id="task_nlp_hp_st_receive_optimization_bonus" name="Receive Optimization Bonus (HP/ST)">
+        <semantic:incoming>flow_nlp_hp_st_invest_to_receive_bonus</semantic:incoming>
+        <semantic:outgoing>flow_nlp_hp_st_invest_to_join</semantic:outgoing>
+    </semantic:task>
+    <!-- HP/ST Additional Type 5: APEE Incentive -->
+    <semantic:task id="task_nlp_hp_st_apee_incentive" name="Receive APEE Incentive (HP/ST)">
+      <semantic:incoming>flow_nlp_hp_st_add_to_apee</semantic:incoming>
+      <semantic:outgoing>flow_nlp_hp_st_apee_to_replace_systems</semantic:outgoing>
+    </semantic:task>
+    <semantic:task id="task_nlp_hp_st_replace_inefficient_systems" name="Replace Inefficient Old Systems (HP/ST)">
+        <semantic:incoming>flow_nlp_hp_st_apee_to_replace_systems</semantic:incoming>
+        <semantic:outgoing>flow_nlp_hp_st_replace_to_optimize</semantic:outgoing>
+    </semantic:task>
+    <semantic:task id="task_nlp_hp_st_optimize_heating_system" name="Optimize Entire Heating System (HP/ST)">
+        <semantic:incoming>flow_nlp_hp_st_replace_to_optimize</semantic:incoming>
+        <semantic:outgoing>flow_nlp_hp_st_apee_to_join</semantic:outgoing>
+    </semantic:task>
+    <semantic:parallelGateway id="gw_nlp_hp_st_additional_join" name="Combine Additional Funding Types (HP/ST)">
+      <semantic:incoming>flow_nlp_hp_st_combo_to_join</semantic:incoming>
+      <semantic:incoming>flow_nlp_hp_st_load_mgmt_to_join</semantic:incoming>
+      <semantic:incoming>flow_nlp_hp_st_efficiency_to_join</semantic:incoming>
+      <semantic:incoming>flow_nlp_hp_st_invest_to_join</semantic:incoming>
+      <semantic:incoming>flow_nlp_hp_st_apee_to_join</semantic:incoming>
+      <semantic:incoming>flow_nlp_hp_st_solar_collector_risk_to_join</semantic:incoming>
+      <semantic:incoming>flow_nlp_hp_st_gross_collector_risk_to_join</semantic:incoming>
+      <semantic:incoming>flow_nlp_hp_st_connect_network_risk_to_join</semantic:incoming>
+      <semantic:incoming>flow_nlp_hp_st_kfw55_risk_to_join</semantic:incoming>
+      <semantic:outgoing>flow_nlp_hp_st_additional_join_to_finalize</semantic:outgoing>
+    </semantic:parallelGateway>
+    <semantic:task id="task_nlp_finalize_additional_funding_hp_st" name="Finalize Additional Funding Choice (HP/ST)">
+      <semantic:incoming>flow_nlp_hp_st_additional_join_to_finalize</semantic:incoming>
+      <semantic:outgoing>flow_nlp_finalize_add_hp_st_to_merge_existing</semantic:outgoing>
+    </semantic:task>
+    <semantic:exclusiveGateway id="gw_nlp_merge_hp_st_existing_funding" name="HP/ST Existing Building Funding Chosen">
+      <semantic:incoming>flow_nlp_finalize_add_hp_st_to_merge_existing</semantic:incoming>
+      <semantic:incoming>flow_nlp_hp_st_basic_risk_to_merge_funding</semantic:incoming> <!-- From boundary event -->
+      <semantic:outgoing>flow_nlp_merge_hp_st_existing_to_merge_all_hp_st</semantic:outgoing>
+    </semantic:exclusiveGateway>
+    <!-- HP/ST New Building Funding -->
+    <semantic:task id="task_nlp_fund_hp_st_new_building" name="Fund Plants in New Building (HP/ST)">
+      <semantic:incoming>flow_nlp_hp_st_funding_to_new</semantic:incoming>
+      <semantic:outgoing>flow_nlp_hp_st_new_to_merge_all_hp_st</semantic:outgoing>
+    </semantic:task>
+    <semantic:exclusiveGateway id="gw_nlp_merge_hp_st_funding_paths" name="HP/ST Funding Path Determined">
+      <semantic:incoming>flow_nlp_merge_hp_st_existing_to_merge_all_hp_st</semantic:incoming>
+      <semantic:incoming>flow_nlp_hp_st_new_to_merge_all_hp_st</semantic:incoming>
+      <semantic:outgoing>flow_nlp_merge_hp_st_to_overall_funding_determined</semantic:outgoing>
+    </semantic:exclusiveGateway>
+
+    <!-- Merge all main heating/funding paths -->
+    <semantic:exclusiveGateway id="gw_nlp_funding_path_determined" name="Funding Path Determined">
+      <semantic:incoming>flow_nlp_merge_biomass_to_overall_funding_determined</semantic:incoming>
+      <semantic:incoming>flow_nlp_merge_hp_st_to_overall_funding_determined</semantic:incoming>
+      <semantic:outgoing>flow_nlp_funding_determined_to_request_app</semantic:outgoing>
+    </semantic:exclusiveGateway>
+    <semantic:task id="task_nlp_request_application_filling" name="Request Contractor to Fill Application">
+        <semantic:incoming>flow_nlp_funding_determined_to_request_app</semantic:incoming>
+    </semantic:task>
+    <semantic:intermediateCatchEvent id="event_intermediate_nlp_application_submitted" name="Application Submitted by Contractor">
+      <semantic:outgoing>flow_nlp_app_submitted_to_end</semantic:outgoing>
+      <semantic:messageEventDefinition id="message_app_submitted_def"/>
+    </semantic:intermediateCatchEvent>
+    <semantic:endEvent id="end_nlp_application_successful" name="Heating with Renewable Energy Application Successfully Submitted">
+      <semantic:incoming>flow_nlp_app_submitted_to_end</semantic:incoming>
+    </semantic:endEvent>
+
+    <!-- Sequence Flows for NLP Process -->
+    <semantic:sequenceFlow id="flow_nlp_start_to_decide_method" sourceRef="start_nlp_receive_requirement" targetRef="task_nlp_decide_heating_method"/>
+    <semantic:sequenceFlow id="flow_nlp_decide_method_to_gw_req_type" sourceRef="task_nlp_decide_heating_method" targetRef="gw_nlp_heating_requirement_type"/>
+    <semantic:sequenceFlow id="flow_nlp_gw_req_type_to_optionA" name="Up to 100kW Nominal Heat Output (Option A)" sourceRef="gw_nlp_heating_requirement_type" targetRef="gw_nlp_optionA_system_choice"/>
+    <semantic:sequenceFlow id="flow_nlp_gw_req_type_to_optionB" name="Up to 100sqm Collector Area (Option B)" sourceRef="gw_nlp_heating_requirement_type" targetRef="task_nlp_heat_with_solar_thermal"/>
+    <semantic:sequenceFlow id="flow_nlp_optionA_to_biomass" name="Heat with Biomass" sourceRef="gw_nlp_optionA_system_choice" targetRef="task_nlp_heat_with_biomass"/>
+    <semantic:sequenceFlow id="flow_nlp_optionA_to_hp" name="Heat with Heat Pump" sourceRef="gw_nlp_optionA_system_choice" targetRef="task_nlp_heat_with_heat_pump"/>
+    <semantic:sequenceFlow id="flow_nlp_biomass_to_decide_plant" sourceRef="task_nlp_heat_with_biomass" targetRef="task_nlp_decide_biomass_plant"/>
+    <semantic:sequenceFlow id="flow_nlp_decide_plant_to_gw_plant_type" sourceRef="task_nlp_decide_biomass_plant" targetRef="gw_nlp_biomass_plant_type"/>
+    <semantic:sequenceFlow id="flow_nlp_gw_plant_type_to_boiler_pellets" name="Boiler for Pellets/Chips" sourceRef="gw_nlp_biomass_plant_type" targetRef="task_nlp_choose_boiler_pellets_chips"/>
+    <semantic:sequenceFlow id="flow_nlp_gw_plant_type_to_combo_boiler" name="Combination Boiler" sourceRef="gw_nlp_biomass_plant_type" targetRef="task_nlp_choose_combination_boiler"/>
+    <semantic:sequenceFlow id="flow_nlp_gw_plant_type_to_pellet_stoves" name="Pellet Stoves w/ Water Pocket" sourceRef="gw_nlp_biomass_plant_type" targetRef="task_nlp_choose_pellet_stoves_water_pocket"/>
+    <semantic:sequenceFlow id="flow_nlp_gw_plant_type_to_retrofit_calorific" name="Retrofit (Calorific)" sourceRef="gw_nlp_biomass_plant_type" targetRef="task_nlp_choose_retrofit_calorific"/>
+    <semantic:sequenceFlow id="flow_nlp_gw_plant_type_to_retrofit_dust" name="Retrofit (Dust Reduction)" sourceRef="gw_nlp_biomass_plant_type" targetRef="task_nlp_choose_retrofit_dust_reduction"/>
+    <semantic:sequenceFlow id="flow_nlp_boiler_pellets_to_merge" sourceRef="task_nlp_choose_boiler_pellets_chips" targetRef="gw_nlp_merge_biomass_plant_choice"/>
+    <semantic:sequenceFlow id="flow_nlp_combo_boiler_to_merge" sourceRef="task_nlp_choose_combination_boiler" targetRef="gw_nlp_merge_biomass_plant_choice"/>
+    <semantic:sequenceFlow id="flow_nlp_pellet_stoves_to_merge" sourceRef="task_nlp_choose_pellet_stoves_water_pocket" targetRef="gw_nlp_merge_biomass_plant_choice"/>
+    <semantic:sequenceFlow id="flow_nlp_retrofit_calorific_to_merge" sourceRef="task_nlp_choose_retrofit_calorific" targetRef="gw_nlp_merge_biomass_plant_choice"/>
+    <semantic:sequenceFlow id="flow_nlp_retrofit_dust_to_merge" sourceRef="task_nlp_choose_retrofit_dust_reduction" targetRef="gw_nlp_merge_biomass_plant_choice"/>
+    <semantic:sequenceFlow id="flow_nlp_merge_plant_choice_to_select_funding" sourceRef="gw_nlp_merge_biomass_plant_choice" targetRef="task_nlp_select_funding_option_biomass"/>
+    <semantic:sequenceFlow id="flow_nlp_select_funding_to_gw_biomass_funding_type" sourceRef="task_nlp_select_funding_option_biomass" targetRef="gw_nlp_biomass_funding_type"/>
+    <semantic:sequenceFlow id="flow_nlp_biomass_funding_to_existing" name="Fund Plants in Existing Buildings" sourceRef="gw_nlp_biomass_funding_type" targetRef="gw_nlp_biomass_existing_funding_subtype"/>
+    <semantic:sequenceFlow id="flow_nlp_biomass_funding_to_new" name="Fund Plants in New Buildings" sourceRef="gw_nlp_biomass_funding_type" targetRef="task_nlp_fund_biomass_new_building"/>
+    <semantic:sequenceFlow id="flow_nlp_biomass_existing_to_basic" name="Basic Funding" sourceRef="gw_nlp_biomass_existing_funding_subtype" targetRef="task_nlp_verify_basic_funding_req_biomass"/>
+    <semantic:sequenceFlow id="flow_nlp_biomass_existing_to_additional" name="Additional Funding" sourceRef="gw_nlp_biomass_existing_funding_subtype" targetRef="task_nlp_choose_additional_funding_biomass_main"/>
+    <semantic:sequenceFlow id="flow_nlp_verify_basic_biomass_to_select_plant" sourceRef="task_nlp_verify_basic_funding_req_biomass" targetRef="task_nlp_select_biomass_plant_basic"/>
+    <semantic:sequenceFlow id="flow_nlp_biomass_basic_risk_to_merge_funding" sourceRef="event_boundary_biomass_basic_req_risk" targetRef="gw_nlp_merge_biomass_existing_funding"/>
+    <semantic:sequenceFlow id="flow_nlp_select_plant_basic_to_gw_type" sourceRef="task_nlp_select_biomass_plant_basic" targetRef="gw_nlp_biomass_plant_basic_type"/>
+    <semantic:sequenceFlow id="flow_nlp_gw_biomass_basic_to_wood_chip" name="Wood Chip Boiler" sourceRef="gw_nlp_biomass_plant_basic_type" targetRef="task_nlp_select_wood_chip_boiler"/>
+    <semantic:sequenceFlow id="flow_nlp_gw_biomass_basic_to_pellet_boiler" name="Pellet Boiler" sourceRef="gw_nlp_biomass_plant_basic_type" targetRef="task_nlp_select_pellet_boiler_buffer"/>
+    <semantic:sequenceFlow id="flow_nlp_gw_biomass_basic_to_pellet_stove" name="Pellet Stove" sourceRef="gw_nlp_biomass_plant_basic_type" targetRef="task_nlp_select_pellet_stove_water"/>
+    <semantic:sequenceFlow id="flow_nlp_gw_biomass_basic_to_log_wood" name="Log Wood Boiler" sourceRef="gw_nlp_biomass_plant_basic_type" targetRef="task_nlp_select_log_wood_boiler"/>
+    <semantic:sequenceFlow id="flow_nlp_wood_chip_to_merge_basic_plant" sourceRef="task_nlp_select_wood_chip_boiler" targetRef="gw_nlp_merge_biomass_plant_basic_choice"/>
+    <semantic:sequenceFlow id="flow_nlp_pellet_boiler_to_merge_basic_plant" sourceRef="task_nlp_select_pellet_boiler_buffer" targetRef="gw_nlp_merge_biomass_plant_basic_choice"/>
+    <semantic:sequenceFlow id="flow_nlp_pellet_stove_to_merge_basic_plant" sourceRef="task_nlp_select_pellet_stove_water" targetRef="gw_nlp_merge_biomass_plant_basic_choice"/>
+    <semantic:sequenceFlow id="flow_nlp_log_wood_to_merge_basic_plant" sourceRef="task_nlp_select_log_wood_boiler" targetRef="gw_nlp_merge_biomass_plant_basic_choice"/>
+    <semantic:sequenceFlow id="flow_nlp_merge_basic_plant_to_choose_basic" sourceRef="gw_nlp_merge_biomass_plant_basic_choice" targetRef="task_nlp_choose_basic_funding_biomass"/>
+    <semantic:sequenceFlow id="flow_nlp_choose_basic_biomass_to_merge_existing" sourceRef="task_nlp_choose_basic_funding_biomass" targetRef="gw_nlp_merge_biomass_existing_funding"/>
+    <semantic:sequenceFlow id="flow_nlp_choose_add_biomass_to_split" sourceRef="task_nlp_choose_additional_funding_biomass_main" targetRef="gw_nlp_biomass_additional_split"/>
+    <semantic:sequenceFlow id="flow_nlp_biomass_add_to_combo" sourceRef="gw_nlp_biomass_additional_split" targetRef="task_nlp_biomass_combo_bonus"/>
+    <semantic:sequenceFlow id="flow_nlp_biomass_combo_to_establish_solar_hp" sourceRef="task_nlp_biomass_combo_bonus" targetRef="task_nlp_biomass_establish_solar_heatpump"/>
+    <semantic:sequenceFlow id="flow_nlp_biomass_establish_solar_hp_to_connect_network" sourceRef="task_nlp_biomass_establish_solar_heatpump" targetRef="task_nlp_biomass_connect_to_network"/>
+    <semantic:sequenceFlow id="flow_nlp_biomass_combo_to_join" sourceRef="task_nlp_biomass_connect_to_network" targetRef="gw_nlp_biomass_additional_join"/>
+    <semantic:sequenceFlow id="flow_nlp_biomass_add_to_efficiency" sourceRef="gw_nlp_biomass_additional_split" targetRef="task_nlp_biomass_efficiency_bonus"/>
+    <semantic:sequenceFlow id="flow_nlp_biomass_efficiency_to_ensure_building" sourceRef="task_nlp_biomass_efficiency_bonus" targetRef="task_nlp_biomass_ensure_efficient_building"/>
+    <semantic:sequenceFlow id="flow_nlp_biomass_ensure_building_to_meet_kfw" sourceRef="task_nlp_biomass_ensure_efficient_building" targetRef="task_nlp_biomass_meet_kfw55"/>
+    <semantic:sequenceFlow id="flow_nlp_biomass_meet_kfw_to_submit_confirm" sourceRef="task_nlp_biomass_meet_kfw55" targetRef="task_nlp_biomass_submit_expert_confirmation"/>
+    <semantic:sequenceFlow id="flow_nlp_biomass_efficiency_to_join" sourceRef="task_nlp_biomass_submit_expert_confirmation" targetRef="gw_nlp_biomass_additional_join"/>
+    <semantic:sequenceFlow id="flow_nlp_biomass_add_to_invest" sourceRef="gw_nlp_biomass_additional_split" targetRef="task_nlp_biomass_investment_grants"/>
+    <semantic:sequenceFlow id="flow_nlp_biomass_invest_to_receive_bonus" sourceRef="task_nlp_biomass_investment_grants" targetRef="task_nlp_biomass_receive_optimization_bonus"/>
+    <semantic:sequenceFlow id="flow_nlp_biomass_invest_to_join" sourceRef="task_nlp_biomass_receive_optimization_bonus" targetRef="gw_nlp_biomass_additional_join"/>
+    <semantic:sequenceFlow id="flow_nlp_biomass_add_to_apee" sourceRef="gw_nlp_biomass_additional_split" targetRef="task_nlp_biomass_apee_incentive"/>
+    <semantic:sequenceFlow id="flow_nlp_biomass_apee_to_replace_systems" sourceRef="task_nlp_biomass_apee_incentive" targetRef="task_nlp_biomass_replace_inefficient_systems"/>
+    <semantic:sequenceFlow id="flow_nlp_biomass_replace_to_optimize" sourceRef="task_nlp_biomass_replace_inefficient_systems" targetRef="task_nlp_biomass_optimize_heating_system"/>
+    <semantic:sequenceFlow id="flow_nlp_biomass_apee_to_join" sourceRef="task_nlp_biomass_optimize_heating_system" targetRef="gw_nlp_biomass_additional_join"/>
+    <semantic:sequenceFlow id="flow_nlp_biomass_additional_join_to_finalize" sourceRef="gw_nlp_biomass_additional_join" targetRef="task_nlp_finalize_additional_funding_biomass"/>
+    <semantic:sequenceFlow id="flow_nlp_finalize_add_biomass_to_merge_existing" sourceRef="task_nlp_finalize_additional_funding_biomass" targetRef="gw_nlp_merge_biomass_existing_funding"/>
+    <semantic:sequenceFlow id="flow_nlp_merge_biomass_existing_to_merge_all_biomass" sourceRef="gw_nlp_merge_biomass_existing_funding" targetRef="gw_nlp_merge_biomass_funding_paths"/>
+    <semantic:sequenceFlow id="flow_nlp_biomass_new_to_identify_devices" sourceRef="task_nlp_fund_biomass_new_building" targetRef="task_nlp_identify_support_devices_biomass_new"/>
+    <semantic:sequenceFlow id="flow_nlp_biomass_new_devices_to_merge_all_biomass" sourceRef="task_nlp_identify_support_devices_biomass_new" targetRef="gw_nlp_merge_biomass_funding_paths"/>
+    <semantic:sequenceFlow id="flow_nlp_merge_biomass_to_overall_funding_determined" sourceRef="gw_nlp_merge_biomass_funding_paths" targetRef="gw_nlp_funding_path_determined"/>
+    <semantic:sequenceFlow id="flow_nlp_hp_to_decide_pump" sourceRef="task_nlp_heat_with_heat_pump" targetRef="task_nlp_decide_heat_pump"/>
+    <semantic:sequenceFlow id="flow_nlp_decide_pump_to_gw_hp_type" sourceRef="task_nlp_decide_heat_pump" targetRef="gw_nlp_heat_pump_type"/>
+    <semantic:sequenceFlow id="flow_nlp_gw_hp_type_to_combined" name="Combined Water/Space" sourceRef="gw_nlp_heat_pump_type" targetRef="task_nlp_hp_combined_water_space"/>
+    <semantic:sequenceFlow id="flow_nlp_gw_hp_type_to_exclusive_room" name="Exclusive Room" sourceRef="gw_nlp_heat_pump_type" targetRef="task_nlp_hp_exclusive_room"/>
+    <semantic:sequenceFlow id="flow_nlp_gw_hp_type_to_exclusive_space" name="Exclusive Space (Non-Res)" sourceRef="gw_nlp_heat_pump_type" targetRef="task_nlp_hp_exclusive_space_non_res"/>
+    <semantic:sequenceFlow id="flow_nlp_gw_hp_type_to_provision_heat" name="Provision for Networks" sourceRef="gw_nlp_heat_pump_type" targetRef="task_nlp_hp_provision_heat_networks"/>
+    <semantic:sequenceFlow id="flow_nlp_hp_combined_to_merge" sourceRef="task_nlp_hp_combined_water_space" targetRef="gw_nlp_merge_hp_type_choice"/>
+    <semantic:sequenceFlow id="flow_nlp_hp_exclusive_room_to_merge" sourceRef="task_nlp_hp_exclusive_room" targetRef="gw_nlp_merge_hp_type_choice"/>
+    <semantic:sequenceFlow id="flow_nlp_hp_exclusive_space_to_merge" sourceRef="task_nlp_hp_exclusive_space_non_res" targetRef="gw_nlp_merge_hp_type_choice"/>
+    <semantic:sequenceFlow id="flow_nlp_hp_provision_heat_to_merge" sourceRef="task_nlp_hp_provision_heat_networks" targetRef="gw_nlp_merge_hp_type_choice"/>
+    <semantic:sequenceFlow id="flow_nlp_merge_hp_choice_to_merge_hp_st" sourceRef="gw_nlp_merge_hp_type_choice" targetRef="gw_nlp_merge_hp_st_paths"/>
+    <semantic:sequenceFlow id="flow_nlp_st_to_decide_system" sourceRef="task_nlp_heat_with_solar_thermal" targetRef="task_nlp_decide_solar_thermal_system"/>
+    <semantic:sequenceFlow id="flow_nlp_decide_st_to_gw_st_type" sourceRef="task_nlp_decide_solar_thermal_system" targetRef="gw_nlp_solar_thermal_system_type"/>
+    <semantic:sequenceFlow id="flow_nlp_gw_st_type_to_exclusive_water" name="Exclusive Water" sourceRef="gw_nlp_solar_thermal_system_type" targetRef="task_nlp_st_exclusive_water"/>
+    <semantic:sequenceFlow id="flow_nlp_gw_st_type_to_exclusive_space" name="Exclusive Space" sourceRef="gw_nlp_solar_thermal_system_type" targetRef="task_nlp_st_exclusive_space"/>
+    <semantic:sequenceFlow id="flow_nlp_gw_st_type_to_combined" name="Combined Water/Space" sourceRef="gw_nlp_solar_thermal_system_type" targetRef="task_nlp_st_combined_water_space"/>
+    <semantic:sequenceFlow id="flow_nlp_gw_st_type_to_supply_heat" name="Supply Heat Networks" sourceRef="gw_nlp_solar_thermal_system_type" targetRef="task_nlp_st_supply_heat_networks"/>
+    <semantic:sequenceFlow id="flow_nlp_gw_st_type_to_supply_cold" name="Supply Cold Networks" sourceRef="gw_nlp_solar_thermal_system_type" targetRef="task_nlp_st_supply_cold_networks"/>
+    <semantic:sequenceFlow id="flow_nlp_gw_st_type_to_solar_fridge" name="Solar Refrigeration" sourceRef="gw_nlp_solar_thermal_system_type" targetRef="task_nlp_st_solar_refrigeration"/>
+    <semantic:sequenceFlow id="flow_nlp_st_exclusive_water_to_merge" sourceRef="task_nlp_st_exclusive_water" targetRef="gw_nlp_merge_st_type_choice"/>
+    <semantic:sequenceFlow id="flow_nlp_st_exclusive_space_to_merge" sourceRef="task_nlp_st_exclusive_space" targetRef="gw_nlp_merge_st_type_choice"/>
+    <semantic:sequenceFlow id="flow_nlp_st_combined_to_merge" sourceRef="task_nlp_st_combined_water_space" targetRef="gw_nlp_merge_st_type_choice"/>
+    <semantic:sequenceFlow id="flow_nlp_st_supply_heat_to_merge" sourceRef="task_nlp_st_supply_heat_networks" targetRef="gw_nlp_merge_st_type_choice"/>
+    <semantic:sequenceFlow id="flow_nlp_st_supply_cold_to_merge" sourceRef="task_nlp_st_supply_cold_networks" targetRef="gw_nlp_merge_st_type_choice"/>
+    <semantic:sequenceFlow id="flow_nlp_st_solar_fridge_to_merge" sourceRef="task_nlp_st_solar_refrigeration" targetRef="gw_nlp_merge_st_type_choice"/>
+    <semantic:sequenceFlow id="flow_nlp_merge_st_choice_to_merge_hp_st" sourceRef="gw_nlp_merge_st_type_choice" targetRef="gw_nlp_merge_hp_st_paths"/>
+    <semantic:sequenceFlow id="flow_nlp_merge_hp_st_to_select_funding" sourceRef="gw_nlp_merge_hp_st_paths" targetRef="task_nlp_select_funding_option_hp_st"/>
+    <semantic:sequenceFlow id="flow_nlp_select_funding_hp_st_to_gw_type" sourceRef="task_nlp_select_funding_option_hp_st" targetRef="gw_nlp_hp_st_funding_type"/>
+    <semantic:sequenceFlow id="flow_nlp_hp_st_funding_to_existing" name="Fund Plants in Existing Buildings (HP/ST)" sourceRef="gw_nlp_hp_st_funding_type" targetRef="gw_nlp_hp_st_existing_funding_subtype"/>
+    <semantic:sequenceFlow id="flow_nlp_hp_st_funding_to_new" name="Fund Plants in New Buildings (HP/ST)" sourceRef="gw_nlp_hp_st_funding_type" targetRef="task_nlp_fund_hp_st_new_building"/>
+    <semantic:sequenceFlow id="flow_nlp_hp_st_existing_to_basic_add" name="Basic &amp; Additional Funding" sourceRef="gw_nlp_hp_st_existing_funding_subtype" targetRef="task_nlp_verify_basic_funding_req_hp_st"/>
+    <semantic:sequenceFlow id="flow_nlp_hp_st_existing_to_innov_add" name="Innovation &amp; Additional Funding" sourceRef="gw_nlp_hp_st_existing_funding_subtype" targetRef="task_nlp_verify_innovation_funding_req_hp_st"/>
+    <semantic:sequenceFlow id="flow_nlp_verify_basic_hp_st_to_receive_basic" sourceRef="task_nlp_verify_basic_funding_req_hp_st" targetRef="task_nlp_receive_basic_funding_hp_st"/>
+    <semantic:sequenceFlow id="flow_nlp_hp_st_basic_risk_to_merge_funding" sourceRef="event_boundary_hp_st_basic_req_risk" targetRef="gw_nlp_merge_hp_st_existing_funding"/>
+    <semantic:sequenceFlow id="flow_nlp_receive_basic_hp_st_to_merge_basic_innov" sourceRef="task_nlp_receive_basic_funding_hp_st" targetRef="gw_nlp_merge_hp_st_basic_innovation"/>
+    <semantic:sequenceFlow id="flow_nlp_verify_innov_hp_st_to_receive_innov" sourceRef="task_nlp_verify_innovation_funding_req_hp_st" targetRef="task_nlp_receive_innovation_funding_hp_st"/>
+    <semantic:sequenceFlow id="flow_nlp_receive_innov_hp_st_to_merge_basic_innov" sourceRef="task_nlp_receive_innovation_funding_hp_st" targetRef="gw_nlp_merge_hp_st_basic_innovation"/>
+    <semantic:sequenceFlow id="flow_nlp_merge_basic_innov_to_additional_main" sourceRef="gw_nlp_merge_hp_st_basic_innovation" targetRef="task_nlp_receive_additional_funding_hp_st_main"/>
+    <semantic:sequenceFlow id="flow_nlp_hp_st_additional_main_to_split" sourceRef="task_nlp_receive_additional_funding_hp_st_main" targetRef="gw_nlp_hp_st_additional_split"/>
+    <semantic:sequenceFlow id="flow_nlp_hp_st_add_to_combo" sourceRef="gw_nlp_hp_st_additional_split" targetRef="task_nlp_hp_st_combo_bonus"/>
+    <semantic:sequenceFlow id="flow_nlp_hp_st_combo_to_establish_sb" sourceRef="task_nlp_hp_st_combo_bonus" targetRef="task_nlp_hp_st_establish_solar_biomass"/>
+    <semantic:sequenceFlow id="flow_nlp_hp_st_establish_sb_to_construct_solar" sourceRef="task_nlp_hp_st_establish_solar_biomass" targetRef="task_nlp_hp_st_construct_solar_collector"/>
+    <semantic:sequenceFlow id="flow_nlp_hp_st_construct_solar_to_meet_req" sourceRef="task_nlp_hp_st_construct_solar_collector" targetRef="task_nlp_hp_st_meet_solar_collector_req"/>
+    <semantic:sequenceFlow id="flow_nlp_hp_st_solar_collector_risk_to_join" sourceRef="event_boundary_hp_st_solar_collector_missing_risk" targetRef="gw_nlp_hp_st_additional_join"/>
+    <semantic:sequenceFlow id="flow_nlp_hp_st_meet_solar_req_to_connect_network" sourceRef="task_nlp_hp_st_meet_solar_collector_req" targetRef="task_nlp_hp_st_connect_to_network"/>
+    <semantic:sequenceFlow id="flow_nlp_hp_st_gross_collector_risk_to_join" sourceRef="event_boundary_hp_st_gross_collector_area_risk" targetRef="gw_nlp_hp_st_additional_join"/>
+    <semantic:sequenceFlow id="flow_nlp_hp_st_connect_network_risk_to_join" sourceRef="event_boundary_hp_st_not_connected_network_risk" targetRef="gw_nlp_hp_st_additional_join"/>
+    <semantic:sequenceFlow id="flow_nlp_hp_st_combo_to_join" sourceRef="task_nlp_hp_st_connect_to_network" targetRef="gw_nlp_hp_st_additional_join"/>
+    <semantic:sequenceFlow id="flow_nlp_hp_st_add_to_load_mgmt" sourceRef="gw_nlp_hp_st_additional_split" targetRef="task_nlp_hp_st_load_management_fund"/>
+    <semantic:sequenceFlow id="flow_nlp_hp_st_load_mgmt_to_ensure_interfaces" sourceRef="task_nlp_hp_st_load_management_fund" targetRef="task_nlp_hp_st_ensure_interfaces_enable_hp"/>
+    <semantic:sequenceFlow id="flow_nlp_hp_st_ensure_interfaces_to_construct_storage" sourceRef="task_nlp_hp_st_ensure_interfaces_enable_hp" targetRef="task_nlp_hp_st_construct_storage_facility"/>
+    <semantic:sequenceFlow id="flow_nlp_hp_st_construct_storage_to_provide_cert" sourceRef="task_nlp_hp_st_construct_storage_facility" targetRef="task_nlp_hp_st_provide_smart_grid_cert"/>
+    <semantic:sequenceFlow id="flow_nlp_hp_st_load_mgmt_to_join" sourceRef="task_nlp_hp_st_provide_smart_grid_cert" targetRef="gw_nlp_hp_st_additional_join"/>
+    <semantic:sequenceFlow id="flow_nlp_hp_st_add_to_efficiency" sourceRef="gw_nlp_hp_st_additional_split" targetRef="task_nlp_hp_st_efficiency_bonus"/>
+    <semantic:sequenceFlow id="flow_nlp_hp_st_efficiency_to_ensure_building" sourceRef="task_nlp_hp_st_efficiency_bonus" targetRef="task_nlp_hp_st_ensure_efficient_building"/>
+    <semantic:sequenceFlow id="flow_nlp_hp_st_ensure_building_to_meet_kfw" sourceRef="task_nlp_hp_st_ensure_efficient_building" targetRef="task_nlp_hp_st_meet_kfw55"/>
+    <semantic:sequenceFlow id="flow_nlp_hp_st_kfw55_risk_to_join" sourceRef="event_boundary_hp_st_kfw55_risk" targetRef="gw_nlp_hp_st_additional_join"/>
+    <semantic:sequenceFlow id="flow_nlp_hp_st_meet_kfw_to_submit_app" sourceRef="task_nlp_hp_st_meet_kfw55" targetRef="task_nlp_hp_st_submit_expert_app"/>
+    <semantic:sequenceFlow id="flow_nlp_hp_st_efficiency_to_join" sourceRef="task_nlp_hp_st_submit_expert_app" targetRef="gw_nlp_hp_st_additional_join"/>
+    <semantic:sequenceFlow id="flow_nlp_hp_st_add_to_invest" sourceRef="gw_nlp_hp_st_additional_split" targetRef="task_nlp_hp_st_investment_grants"/>
+    <semantic:sequenceFlow id="flow_nlp_hp_st_invest_to_receive_bonus" sourceRef="task_nlp_hp_st_investment_grants" targetRef="task_nlp_hp_st_receive_optimization_bonus"/>
+    <semantic:sequenceFlow id="flow_nlp_hp_st_invest_to_join" sourceRef="task_nlp_hp_st_receive_optimization_bonus" targetRef="gw_nlp_hp_st_additional_join"/>
+    <semantic:sequenceFlow id="flow_nlp_hp_st_add_to_apee" sourceRef="gw_nlp_hp_st_additional_split" targetRef="task_nlp_hp_st_apee_incentive"/>
+    <semantic:sequenceFlow id="flow_nlp_hp_st_apee_to_replace_systems" sourceRef="task_nlp_hp_st_apee_incentive" targetRef="task_nlp_hp_st_replace_inefficient_systems"/>
+    <semantic:sequenceFlow id="flow_nlp_hp_st_replace_to_optimize" sourceRef="task_nlp_hp_st_replace_inefficient_systems" targetRef="task_nlp_hp_st_optimize_heating_system"/>
+    <semantic:sequenceFlow id="flow_nlp_hp_st_apee_to_join" sourceRef="task_nlp_hp_st_optimize_heating_system" targetRef="gw_nlp_hp_st_additional_join"/>
+    <semantic:sequenceFlow id="flow_nlp_hp_st_additional_join_to_finalize" sourceRef="gw_nlp_hp_st_additional_join" targetRef="task_nlp_finalize_additional_funding_hp_st"/>
+    <semantic:sequenceFlow id="flow_nlp_finalize_add_hp_st_to_merge_existing" sourceRef="task_nlp_finalize_additional_funding_hp_st" targetRef="gw_nlp_merge_hp_st_existing_funding"/>
+    <semantic:sequenceFlow id="flow_nlp_merge_hp_st_existing_to_merge_all_hp_st" sourceRef="gw_nlp_merge_hp_st_existing_funding" targetRef="gw_nlp_merge_hp_st_funding_paths"/>
+    <semantic:sequenceFlow id="flow_nlp_hp_st_new_to_merge_all_hp_st" sourceRef="task_nlp_fund_hp_st_new_building" targetRef="gw_nlp_merge_hp_st_funding_paths"/>
+    <semantic:sequenceFlow id="flow_nlp_merge_hp_st_to_overall_funding_determined" sourceRef="gw_nlp_merge_hp_st_funding_paths" targetRef="gw_nlp_funding_path_determined"/>
+    <semantic:sequenceFlow id="flow_nlp_funding_determined_to_request_app" sourceRef="gw_nlp_funding_path_determined" targetRef="task_nlp_request_application_filling"/>
+    <semantic:sequenceFlow id="flow_nlp_app_submitted_to_end" sourceRef="event_intermediate_nlp_application_submitted" targetRef="end_nlp_application_successful"/>
+  </semantic:process>
+
+  <!-- Contractor Process -->
+  <semantic:process id="process_contractor" isExecutable="false">
+    <semantic:laneSet id="laneSet_contractor">
+      <semantic:lane id="lane_contractor_processor" name="Application Processor">
+        <semantic:flowNodeRef>start_contractor_receive_request</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_contractor_fill_application</semantic:flowNodeRef>
+        <semantic:flowNodeRef>gw_contractor_enter_data_split</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_contractor_enter_data_protection</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_contractor_enter_project_start</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_contractor_define_applicant_details</semantic:flowNodeRef>
+        <semantic:flowNodeRef>gw_contractor_applicant_type</semantic:flowNodeRef>
+        <!-- Applicant type tasks -->
+        <semantic:flowNodeRef>task_contractor_applicant_individual</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_contractor_applicant_freelance</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_contractor_applicant_company</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_contractor_applicant_contractor_type</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_contractor_applicant_local_auth</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_contractor_applicant_municipal_comp</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_contractor_applicant_reg_assoc</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_contractor_applicant_schools_churches</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_contractor_applicant_agri_forest_horti</semantic:flowNodeRef>
+        <semantic:flowNodeRef>gw_contractor_merge_applicant_type</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_contractor_specify_location_building</semantic:flowNodeRef>
+        <semantic:flowNodeRef>event_boundary_contractor_location_risk</semantic:flowNodeRef>
+        <semantic:flowNodeRef>gw_contractor_location_data_split</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_contractor_define_old_heating_type</semantic:flowNodeRef>
+        <semantic:flowNodeRef>gw_contractor_old_heating_type</semantic:flowNodeRef>
+        <!-- Old heating type tasks -->
+        <semantic:flowNodeRef>task_contractor_old_heating_oil_gas</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_contractor_old_heating_night_storage</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_contractor_old_heating_single_oven</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_contractor_old_heating_biomass</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_contractor_old_heating_heat_pump</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_contractor_old_heating_district</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_contractor_old_heating_coal</semantic:flowNodeRef>
+        <semantic:flowNodeRef>gw_contractor_merge_old_heating_type</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_contractor_define_install_date</semantic:flowNodeRef>
+        <semantic:flowNodeRef>gw_contractor_location_data_join</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_contractor_specify_heating_measure</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_contractor_specify_funding_type_info</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_contractor_enter_personal_explanations</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_contractor_submit_consent_ecom</semantic:flowNodeRef>
+        <semantic:flowNodeRef>gw_contractor_enter_data_join</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_contractor_check_entered_data</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_contractor_upload_files</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_contractor_confirm_data</semantic:flowNodeRef>
+        <semantic:flowNodeRef>task_contractor_submit_application</semantic:flowNodeRef>
+        <semantic:flowNodeRef>end_contractor_application_submitted</semantic:flowNodeRef>
+      </semantic:lane>
+    </semantic:laneSet>
+
+    <semantic:startEvent id="start_contractor_receive_request" name="Receive Request to Fill Application">
+      <semantic:outgoing>flow_contractor_start_to_fill_app</semantic:outgoing>
+      <semantic:messageEventDefinition id="message_fill_request_def"/>
+    </semantic:startEvent>
+    <semantic:task id="task_contractor_fill_application" name="Fill in Heat Funding Application">
+      <semantic:incoming>flow_contractor_start_to_fill_app</semantic:incoming>
+      <semantic:outgoing>flow_contractor_fill_app_to_data_split</semantic:outgoing>
+    </semantic:task>
+    <semantic:parallelGateway id="gw_contractor_enter_data_split" name="Enter Application Data">
+      <semantic:incoming>flow_contractor_fill_app_to_data_split</semantic:incoming>
+      <semantic:outgoing>flow_contractor_split_to_data_protection</semantic:outgoing>
+      <semantic:outgoing>flow_contractor_split_to_project_start</semantic:outgoing>
+      <semantic:outgoing>flow_contractor_split_to_applicant_details</semantic:outgoing>
+      <semantic:outgoing>flow_contractor_split_to_location_building</semantic:outgoing>
+      <semantic:outgoing>flow_contractor_split_to_heating_measure</semantic:outgoing>
+      <semantic:outgoing>flow_contractor_split_to_funding_type_info</semantic:outgoing>
+      <semantic:outgoing>flow_contractor_split_to_personal_explanations</semantic:outgoing>
+      <semantic:outgoing>flow_contractor_split_to_consent_ecom</semantic:outgoing>
+    </semantic:parallelGateway>
+    <semantic:task id="task_contractor_enter_data_protection" name="Specify Data Protection Law Info">
+      <semantic:incoming>flow_contractor_split_to_data_protection</semantic:incoming>
+      <semantic:outgoing>flow_contractor_data_protection_to_join</semantic:outgoing>
+    </semantic:task>
+    <semantic:task id="task_contractor_enter_project_start" name="Specify Project Start Info">
+      <semantic:incoming>flow_contractor_split_to_project_start</semantic:incoming>
+      <semantic:outgoing>flow_contractor_project_start_to_join</semantic:outgoing>
+    </semantic:task>
+    <semantic:task id="task_contractor_define_applicant_details" name="Define Applicant Person Details">
+      <semantic:incoming>flow_contractor_split_to_applicant_details</semantic:incoming>
+      <semantic:outgoing>flow_contractor_applicant_details_to_gw_type</semantic:outgoing>
+    </semantic:task>
+    <semantic:exclusiveGateway id="gw_contractor_applicant_type" name="Select Applicant Type">
+      <semantic:incoming>flow_contractor_applicant_details_to_gw_type</semantic:incoming>
+      <semantic:outgoing>flow_contractor_gw_applicant_to_individual</semantic:outgoing>
+      <semantic:outgoing>flow_contractor_gw_applicant_to_freelance</semantic:outgoing>
+      <semantic:outgoing>flow_contractor_gw_applicant_to_company</semantic:outgoing>
+      <semantic:outgoing>flow_contractor_gw_applicant_to_contractor</semantic:outgoing>
+      <semantic:outgoing>flow_contractor_gw_applicant_to_local_auth</semantic:outgoing>
+      <semantic:outgoing>flow_contractor_gw_applicant_to_municipal_comp</semantic:outgoing>
+      <semantic:outgoing>flow_contractor_gw_applicant_to_reg_assoc</semantic:outgoing>
+      <semantic:outgoing>flow_contractor_gw_applicant_to_schools</semantic:outgoing>
+      <semantic:outgoing>flow_contractor_gw_applicant_to_agri</semantic:outgoing>
+    </semantic:exclusiveGateway>
+    <semantic:task id="task_contractor_applicant_individual" name="Individual Defined"><semantic:incoming>flow_contractor_gw_applicant_to_individual</semantic:incoming><semantic:outgoing>flow_contractor_applicant_individual_to_merge</semantic:outgoing></semantic:task>
+    <semantic:task id="task_contractor_applicant_freelance" name="Freelance Person Defined"><semantic:incoming>flow_contractor_gw_applicant_to_freelance</semantic:incoming><semantic:outgoing>flow_contractor_applicant_freelance_to_merge</semantic:outgoing></semantic:task>
+    <semantic:task id="task_contractor_applicant_company" name="Company Defined"><semantic:incoming>flow_contractor_gw_applicant_to_company</semantic:incoming><semantic:outgoing>flow_contractor_applicant_company_to_merge</semantic:outgoing></semantic:task>
+    <semantic:task id="task_contractor_applicant_contractor_type" name="Contractor Defined"><semantic:incoming>flow_contractor_gw_applicant_to_contractor</semantic:incoming><semantic:outgoing>flow_contractor_applicant_contractor_to_merge</semantic:outgoing></semantic:task>
+    <semantic:task id="task_contractor_applicant_local_auth" name="Local Authorities Defined"><semantic:incoming>flow_contractor_gw_applicant_to_local_auth</semantic:incoming><semantic:outgoing>flow_contractor_applicant_local_auth_to_merge</semantic:outgoing></semantic:task>
+    <semantic:task id="task_contractor_applicant_municipal_comp" name="Companies (Majority Municipal) Defined"><semantic:incoming>flow_contractor_gw_applicant_to_municipal_comp</semantic:incoming><semantic:outgoing>flow_contractor_applicant_municipal_comp_to_merge</semantic:outgoing></semantic:task>
+    <semantic:task id="task_contractor_applicant_reg_assoc" name="Registered Association Defined"><semantic:incoming>flow_contractor_gw_applicant_to_reg_assoc</semantic:incoming><semantic:outgoing>flow_contractor_applicant_reg_assoc_to_merge</semantic:outgoing></semantic:task>
+    <semantic:task id="task_contractor_applicant_schools_churches" name="Schools and Churches Defined"><semantic:incoming>flow_contractor_gw_applicant_to_schools</semantic:incoming><semantic:outgoing>flow_contractor_applicant_schools_churches_to_merge</semantic:outgoing></semantic:task>
+    <semantic:task id="task_contractor_applicant_agri_forest_horti" name="Agriculture, Forestry, Horticulture Defined"><semantic:incoming>flow_contractor_gw_applicant_to_agri</semantic:incoming><semantic:outgoing>flow_contractor_applicant_agri_to_merge</semantic:outgoing></semantic:task>
+    <semantic:exclusiveGateway id="gw_contractor_merge_applicant_type" name="Applicant Type Defined">
+      <semantic:incoming>flow_contractor_applicant_individual_to_merge</semantic:incoming>
+      <semantic:incoming>flow_contractor_applicant_freelance_to_merge</semantic:incoming>
+      <semantic:incoming>flow_contractor_applicant_company_to_merge</semantic:incoming>
+      <semantic:incoming>flow_contractor_applicant_contractor_to_merge</semantic:incoming>
+      <semantic:incoming>flow_contractor_applicant_local_auth_to_merge</semantic:incoming>
+      <semantic:incoming>flow_contractor_applicant_municipal_comp_to_merge</semantic:incoming>
+      <semantic:incoming>flow_contractor_applicant_reg_assoc_to_merge</semantic:incoming>
+      <semantic:incoming>flow_contractor_applicant_schools_churches_to_merge</semantic:incoming>
+      <semantic:incoming>flow_contractor_applicant_agri_to_merge</semantic:incoming>
+      <semantic:outgoing>flow_contractor_merge_applicant_to_join</semantic:outgoing>
+    </semantic:exclusiveGateway>
+    <semantic:task id="task_contractor_specify_location_building" name="Specify Plant Location &amp; Building Info">
+      <semantic:incoming>flow_contractor_split_to_location_building</semantic:incoming>
+      <semantic:outgoing>flow_contractor_location_building_to_gw_split</semantic:outgoing>
+    </semantic:task>
+    <semantic:boundaryEvent id="event_boundary_contractor_location_risk" name="Risk: Heating System &lt; 2 Years Installed" attachedToRef="task_contractor_specify_location_building">
+        <semantic:errorEventDefinition id="error_contractor_location_risk"/>
+        <semantic:outgoing>flow_contractor_location_risk_to_join</semantic:outgoing>
+    </semantic:boundaryEvent>
+    <semantic:parallelGateway id="gw_contractor_location_data_split" name="Define Location and Old Heating Details">
+        <semantic:incoming>flow_contractor_location_building_to_gw_split</semantic:incoming>
+        <semantic:outgoing>flow_contractor_location_split_to_old_heating</semantic:outgoing>
+        <semantic:outgoing>flow_contractor_location_split_to_install_date</semantic:outgoing>
+    </semantic:parallelGateway>
+    <semantic:task id="task_contractor_define_old_heating_type" name="Define Type of Old Heating">
+        <semantic:incoming>flow_contractor_location_split_to_old_heating</semantic:incoming>
+        <semantic:outgoing>flow_contractor_old_heating_to_gw_type</semantic:outgoing>
+    </semantic:task>
+    <semantic:exclusiveGateway id="gw_contractor_old_heating_type" name="Select Old Heating Type">
+        <semantic:incoming>flow_contractor_old_heating_to_gw_type</semantic:incoming>
+        <semantic:outgoing>flow_contractor_gw_old_heating_to_oil_gas</semantic:outgoing>
+        <semantic:outgoing>flow_contractor_gw_old_heating_to_night_storage</semantic:outgoing>
+        <semantic:outgoing>flow_contractor_gw_old_heating_to_single_oven</semantic:outgoing>
+        <semantic:outgoing>flow_contractor_gw_old_heating_to_biomass</semantic:outgoing>
+        <semantic:outgoing>flow_contractor_gw_old_heating_to_heat_pump</semantic:outgoing>
+        <semantic:outgoing>flow_contractor_gw_old_heating_to_district</semantic:outgoing>
+        <semantic:outgoing>flow_contractor_gw_old_heating_to_coal</semantic:outgoing>
+    </semantic:exclusiveGateway>
+    <semantic:task id="task_contractor_old_heating_oil_gas" name="Oil/Gas Heating Defined"><semantic:incoming>flow_contractor_gw_old_heating_to_oil_gas</semantic:incoming><semantic:outgoing>flow_contractor_old_heating_oil_gas_to_merge</semantic:outgoing></semantic:task>
+    <semantic:task id="task_contractor_old_heating_night_storage" name="Night Storage Heater Defined"><semantic:incoming>flow_contractor_gw_old_heating_to_night_storage</semantic:incoming><semantic:outgoing>flow_contractor_old_heating_night_storage_to_merge</semantic:outgoing></semantic:task>
+    <semantic:task id="task_contractor_old_heating_single_oven" name="Single Oven Defined"><semantic:incoming>flow_contractor_gw_old_heating_to_single_oven</semantic:incoming><semantic:outgoing>flow_contractor_old_heating_single_oven_to_merge</semantic:outgoing></semantic:task>
+    <semantic:task id="task_contractor_old_heating_biomass" name="Biomass Plant Defined"><semantic:incoming>flow_contractor_gw_old_heating_to_biomass</semantic:incoming><semantic:outgoing>flow_contractor_old_heating_biomass_to_merge</semantic:outgoing></semantic:task>
+    <semantic:task id="task_contractor_old_heating_heat_pump" name="Heat Pump Defined"><semantic:incoming>flow_contractor_gw_old_heating_to_heat_pump</semantic:incoming><semantic:outgoing>flow_contractor_old_heating_heat_pump_to_merge</semantic:outgoing></semantic:task>
+    <semantic:task id="task_contractor_old_heating_district" name="District Heating Connection Defined"><semantic:incoming>flow_contractor_gw_old_heating_to_district</semantic:incoming><semantic:outgoing>flow_contractor_old_heating_district_to_merge</semantic:outgoing></semantic:task>
+    <semantic:task id="task_contractor_old_heating_coal" name="Coal Heating Defined"><semantic:incoming>flow_contractor_gw_old_heating_to_coal</semantic:incoming><semantic:outgoing>flow_contractor_old_heating_coal_to_merge</semantic:outgoing></semantic:task>
+    <semantic:exclusiveGateway id="gw_contractor_merge_old_heating_type" name="Old Heating Type Defined">
+        <semantic:incoming>flow_contractor_old_heating_oil_gas_to_merge</semantic:incoming>
+        <semantic:incoming>flow_contractor_old_heating_night_storage_to_merge</semantic:incoming>
+        <semantic:incoming>flow_contractor_old_heating_single_oven_to_merge</semantic:incoming>
+        <semantic:incoming>flow_contractor_old_heating_biomass_to_merge</semantic:incoming>
+        <semantic:incoming>flow_contractor_old_heating_heat_pump_to_merge</semantic:incoming>
+        <semantic:incoming>flow_contractor_old_heating_district_to_merge</semantic:incoming>
+        <semantic:incoming>flow_contractor_old_heating_coal_to_merge</semantic:incoming>
+        <semantic:outgoing>flow_contractor_merge_old_heating_to_location_join</semantic:outgoing>
+    </semantic:exclusiveGateway>
+    <semantic:task id="task_contractor_define_install_date" name="Define Installation Date of Heating System">
+        <semantic:incoming>flow_contractor_location_split_to_install_date</semantic:incoming>
+        <semantic:outgoing>flow_contractor_install_date_to_location_join</semantic:outgoing>
+    </semantic:task>
+    <semantic:parallelGateway id="gw_contractor_location_data_join" name="Location and Old Heating Details Defined">
+        <semantic:incoming>flow_contractor_merge_old_heating_to_location_join</semantic:incoming>
+        <semantic:incoming>flow_contractor_install_date_to_location_join</semantic:incoming>
+        <semantic:outgoing>flow_contractor_location_join_to_data_join</semantic:outgoing>
+    </semantic:parallelGateway>
+    <semantic:task id="task_contractor_specify_heating_measure" name="Specify Planned Heating Measure Info">
+      <semantic:incoming>flow_contractor_split_to_heating_measure</semantic:incoming>
+      <semantic:outgoing>flow_contractor_heating_measure_to_join</semantic:outgoing>
+    </semantic:task>
+    <semantic:task id="task_contractor_specify_funding_type_info" name="Specify Funding Type Info (Basic/Additional/Innovation)">
+      <semantic:incoming>flow_contractor_split_to_funding_type_info</semantic:incoming>
+      <semantic:outgoing>flow_contractor_funding_type_info_to_join</semantic:outgoing>
+    </semantic:task>
+    <semantic:task id="task_contractor_enter_personal_explanations" name="Enter Personal Explanations for Measure">
+      <semantic:incoming>flow_contractor_split_to_personal_explanations</semantic:incoming>
+      <semantic:outgoing>flow_contractor_personal_explanations_to_join</semantic:outgoing>
+    </semantic:task>
+    <semantic:task id="task_contractor_submit_consent_ecom" name="Submit Declaration of Consent for Electronic Communication">
+      <semantic:incoming>flow_contractor_split_to_consent_ecom</semantic:incoming>
+      <semantic:outgoing>flow_contractor_consent_ecom_to_join</semantic:outgoing>
+    </semantic:task>
+    <semantic:parallelGateway id="gw_contractor_enter_data_join" name="Application Data Entered">
+      <semantic:incoming>flow_contractor_data_protection_to_join</semantic:incoming>
+      <semantic:incoming>flow_contractor_project_start_to_join</semantic:incoming>
+      <semantic:incoming>flow_contractor_merge_applicant_to_join</semantic:incoming>
+      <semantic:incoming>flow_contractor_location_join_to_data_join</semantic:incoming>
+      <semantic:incoming>flow_contractor_location_risk_to_join</semantic:incoming> <!-- From boundary event -->
+      <semantic:incoming>flow_contractor_heating_measure_to_join</semantic:incoming>
+      <semantic:incoming>flow_contractor_funding_type_info_to_join</semantic:incoming>
+      <semantic:incoming>flow_contractor_personal_explanations_to_join</semantic:incoming>
+      <semantic:incoming>flow_contractor_consent_ecom_to_join</semantic:incoming>
+      <semantic:outgoing>flow_contractor_data_join_to_check_data</semantic:outgoing>
+    </semantic:parallelGateway>
+    <semantic:task id="task_contractor_check_entered_data" name="Check Entered Data">
+      <semantic:incoming>flow_contractor_data_join_to_check_data</semantic:incoming>
+      <semantic:outgoing>flow_contractor_check_data_to_upload_files</semantic:outgoing>
+    </semantic:task>
+    <semantic:task id="task_contractor_upload_files" name="Upload Required Files">
+      <semantic:incoming>flow_contractor_check_data_to_upload_files</semantic:incoming>
+      <semantic:outgoing>flow_contractor_upload_files_to_confirm_data</semantic:outgoing>
+    </semantic:task>
+    <semantic:task id="task_contractor_confirm_data" name="Confirm Data">
+      <semantic:incoming>flow_contractor_upload_files_to_confirm_data</semantic:incoming>
+      <semantic:outgoing>flow_contractor_confirm_data_to_submit_app</semantic:outgoing>
+    </semantic:task>
+    <semantic:task id="task_contractor_submit_application" name="Submit Application">
+      <semantic:incoming>flow_contractor_confirm_data_to_submit_app</semantic:incoming>
+      <semantic:outgoing>flow_contractor_submit_app_to_end</semantic:outgoing>
+    </semantic:task>
+    <semantic:endEvent id="end_contractor_application_submitted" name="Online Application Filled and Submitted">
+      <semantic:incoming>flow_contractor_submit_app_to_end</semantic:incoming>
+    </semantic:endEvent>
+
+    <!-- Sequence Flows for Contractor Process -->
+    <semantic:sequenceFlow id="flow_contractor_start_to_fill_app" sourceRef="start_contractor_receive_request" targetRef="task_contractor_fill_application"/>
+    <semantic:sequenceFlow id="flow_contractor_fill_app_to_data_split" sourceRef="task_contractor_fill_application" targetRef="gw_contractor_enter_data_split"/>
+    <semantic:sequenceFlow id="flow_contractor_split_to_data_protection" sourceRef="gw_contractor_enter_data_split" targetRef="task_contractor_enter_data_protection"/>
+    <semantic:sequenceFlow id="flow_contractor_data_protection_to_join" sourceRef="task_contractor_enter_data_protection" targetRef="gw_contractor_enter_data_join"/>
+    <semantic:sequenceFlow id="flow_contractor_split_to_project_start" sourceRef="gw_contractor_enter_data_split" targetRef="task_contractor_enter_project_start"/>
+    <semantic:sequenceFlow id="flow_contractor_project_start_to_join" sourceRef="task_contractor_enter_project_start" targetRef="gw_contractor_enter_data_join"/>
+    <semantic:sequenceFlow id="flow_contractor_split_to_applicant_details" sourceRef="gw_contractor_enter_data_split" targetRef="task_contractor_define_applicant_details"/>
+    <semantic:sequenceFlow id="flow_contractor_applicant_details_to_gw_type" sourceRef="task_contractor_define_applicant_details" targetRef="gw_contractor_applicant_type"/>
+    <semantic:sequenceFlow id="flow_contractor_gw_applicant_to_individual" name="Individual" sourceRef="gw_contractor_applicant_type" targetRef="task_contractor_applicant_individual"/>
+    <semantic:sequenceFlow id="flow_contractor_applicant_individual_to_merge" sourceRef="task_contractor_applicant_individual" targetRef="gw_contractor_merge_applicant_type"/>
+    <semantic:sequenceFlow id="flow_contractor_gw_applicant_to_freelance" name="Freelance" sourceRef="gw_contractor_applicant_type" targetRef="task_contractor_applicant_freelance"/>
+    <semantic:sequenceFlow id="flow_contractor_applicant_freelance_to_merge" sourceRef="task_contractor_applicant_freelance" targetRef="gw_contractor_merge_applicant_type"/>
+    <semantic:sequenceFlow id="flow_contractor_gw_applicant_to_company" name="Company" sourceRef="gw_contractor_applicant_type" targetRef="task_contractor_applicant_company"/>
+    <semantic:sequenceFlow id="flow_contractor_applicant_company_to_merge" sourceRef="task_contractor_applicant_company" targetRef="gw_contractor_merge_applicant_type"/>
+    <semantic:sequenceFlow id="flow_contractor_gw_applicant_to_contractor" name="Contractor" sourceRef="gw_contractor_applicant_type" targetRef="task_contractor_applicant_contractor_type"/>
+    <semantic:sequenceFlow id="flow_contractor_applicant_contractor_to_merge" sourceRef="task_contractor_applicant_contractor_type" targetRef="gw_contractor_merge_applicant_type"/>
+    <semantic:sequenceFlow id="flow_contractor_gw_applicant_to_local_auth" name="Local Authorities" sourceRef="gw_contractor_applicant_type" targetRef="task_contractor_applicant_local_auth"/>
+    <semantic:sequenceFlow id="flow_contractor_applicant_local_auth_to_merge" sourceRef="task_contractor_applicant_local_auth" targetRef="gw_contractor_merge_applicant_type"/>
+    <semantic:sequenceFlow id="flow_contractor_gw_applicant_to_municipal_comp" name="Municipal Co." sourceRef="gw_contractor_applicant_type" targetRef="task_contractor_applicant_municipal_comp"/>
+    <semantic:sequenceFlow id="flow_contractor_applicant_municipal_comp_to_merge" sourceRef="task_contractor_applicant_municipal_comp" targetRef="gw_contractor_merge_applicant_type"/>
+    <semantic:sequenceFlow id="flow_contractor_gw_applicant_to_reg_assoc" name="Reg. Association" sourceRef="gw_contractor_applicant_type" targetRef="task_contractor_applicant_reg_assoc"/>
+    <semantic:sequenceFlow id="flow_contractor_applicant_reg_assoc_to_merge" sourceRef="task_contractor_applicant_reg_assoc" targetRef="gw_contractor_merge_applicant_type"/>
+    <semantic:sequenceFlow id="flow_contractor_gw_applicant_to_schools" name="Schools/Churches" sourceRef="gw_contractor_applicant_type" targetRef="task_contractor_applicant_schools_churches"/>
+    <semantic:sequenceFlow id="flow_contractor_applicant_schools_churches_to_merge" sourceRef="task_contractor_applicant_schools_churches" targetRef="gw_contractor_merge_applicant_type"/>
+    <semantic:sequenceFlow id="flow_contractor_gw_applicant_to_agri" name="Agri/Forest/Horti" sourceRef="gw_contractor_applicant_type" targetRef="task_contractor_applicant_agri_forest_horti"/>
+    <semantic:sequenceFlow id="flow_contractor_applicant_agri_to_merge" sourceRef="task_contractor_applicant_agri_forest_horti" targetRef="gw_contractor_merge_applicant_type"/>
+    <semantic:sequenceFlow id="flow_contractor_merge_applicant_to_join" sourceRef="gw_contractor_merge_applicant_type" targetRef="gw_contractor_enter_data_join"/>
+    <semantic:sequenceFlow id="flow_contractor_split_to_location_building" sourceRef="gw_contractor_enter_data_split" targetRef="task_contractor_specify_location_building"/>
+    <semantic:sequenceFlow id="flow_contractor_location_building_to_gw_split" sourceRef="task_contractor_specify_location_building" targetRef="gw_contractor_location_data_split"/>
+    <semantic:sequenceFlow id="flow_contractor_location_risk_to_join" sourceRef="event_boundary_contractor_location_risk" targetRef="gw_contractor_enter_data_join"/>
+    <semantic:sequenceFlow id="flow_contractor_location_split_to_old_heating" sourceRef="gw_contractor_location_data_split" targetRef="task_contractor_define_old_heating_type"/>
+    <semantic:sequenceFlow id="flow_contractor_old_heating_to_gw_type" sourceRef="task_contractor_define_old_heating_type" targetRef="gw_contractor_old_heating_type"/>
+    <semantic:sequenceFlow id="flow_contractor_gw_old_heating_to_oil_gas" name="Oil/Gas" sourceRef="gw_contractor_old_heating_type" targetRef="task_contractor_old_heating_oil_gas"/>
+    <semantic:sequenceFlow id="flow_contractor_old_heating_oil_gas_to_merge" sourceRef="task_contractor_old_heating_oil_gas" targetRef="gw_contractor_merge_old_heating_type"/>
+    <semantic:sequenceFlow id="flow_contractor_gw_old_heating_to_night_storage" name="Night Storage" sourceRef="gw_contractor_old_heating_type" targetRef="task_contractor_old_heating_night_storage"/>
+    <semantic:sequenceFlow id="flow_contractor_old_heating_night_storage_to_merge" sourceRef="task_contractor_old_heating_night_storage" targetRef="gw_contractor_merge_old_heating_type"/>
+    <semantic:sequenceFlow id="flow_contractor_gw_old_heating_to_single_oven" name="Single Oven" sourceRef="gw_contractor_old_heating_type" targetRef="task_contractor_old_heating_single_oven"/>
+    <semantic:sequenceFlow id="flow_contractor_old_heating_single_oven_to_merge" sourceRef="task_contractor_old_heating_single_oven" targetRef="gw_contractor_merge_old_heating_type"/>
+    <semantic:sequenceFlow id="flow_contractor_gw_old_heating_to_biomass" name="Biomass" sourceRef="gw_contractor_old_heating_type" targetRef="task_contractor_old_heating_biomass"/>
+    <semantic:sequenceFlow id="flow_contractor_old_heating_biomass_to_merge" sourceRef="task_contractor_old_heating_biomass" targetRef="gw_contractor_merge_old_heating_type"/>
+    <semantic:sequenceFlow id="flow_contractor_gw_old_heating_to_heat_pump" name="Heat Pump" sourceRef="gw_contractor_old_heating_type" targetRef="task_contractor_old_heating_heat_pump"/>
+    <semantic:sequenceFlow id="flow_contractor_old_heating_heat_pump_to_merge" sourceRef="task_contractor_old_heating_heat_pump" targetRef="gw_contractor_merge_old_heating_type"/>
+    <semantic:sequenceFlow id="flow_contractor_gw_old_heating_to_district" name="District Heating" sourceRef="gw_contractor_old_heating_type" targetRef="task_contractor_old_heating_district"/>
+    <semantic:sequenceFlow id="flow_contractor_old_heating_district_to_merge" sourceRef="task_contractor_old_heating_district" targetRef="gw_contractor_merge_old_heating_type"/>
+    <semantic:sequenceFlow id="flow_contractor_gw_old_heating_to_coal" name="Coal" sourceRef="gw_contractor_old_heating_type" targetRef="task_contractor_old_heating_coal"/>
+    <semantic:sequenceFlow id="flow_contractor_old_heating_coal_to_merge" sourceRef="task_contractor_old_heating_coal" targetRef="gw_contractor_merge_old_heating_type"/>
+    <semantic:sequenceFlow id="flow_contractor_merge_old_heating_to_location_join" sourceRef="gw_contractor_merge_old_heating_type" targetRef="gw_contractor_location_data_join"/>
+    <semantic:sequenceFlow id="flow_contractor_location_split_to_install_date" sourceRef="gw_contractor_location_data_split" targetRef="task_contractor_define_install_date"/>
+    <semantic:sequenceFlow id="flow_contractor_install_date_to_location_join" sourceRef="task_contractor_define_install_date" targetRef="gw_contractor_location_data_join"/>
+    <semantic:sequenceFlow id="flow_contractor_location_join_to_data_join" sourceRef="gw_contractor_location_data_join" targetRef="gw_contractor_enter_data_join"/>
+    <semantic:sequenceFlow id="flow_contractor_split_to_heating_measure" sourceRef="gw_contractor_enter_data_split" targetRef="task_contractor_specify_heating_measure"/>
+    <semantic:sequenceFlow id="flow_contractor_heating_measure_to_join" sourceRef="task_contractor_specify_heating_measure" targetRef="gw_contractor_enter_data_join"/>
+    <semantic:sequenceFlow id="flow_contractor_split_to_funding_type_info" sourceRef="gw_contractor_enter_data_split" targetRef="task_contractor_specify_funding_type_info"/>
+    <semantic:sequenceFlow id="flow_contractor_funding_type_info_to_join" sourceRef="task_contractor_specify_funding_type_info" targetRef="gw_contractor_enter_data_join"/>
+    <semantic:sequenceFlow id="flow_contractor_split_to_personal_explanations" sourceRef="gw_contractor_enter_data_split" targetRef="task_contractor_enter_personal_explanations"/>
+    <semantic:sequenceFlow id="flow_contractor_personal_explanations_to_join" sourceRef="task_contractor_enter_personal_explanations" targetRef="gw_contractor_enter_data_join"/>
+    <semantic:sequenceFlow id="flow_contractor_split_to_consent_ecom" sourceRef="gw_contractor_enter_data_split" targetRef="task_contractor_submit_consent_ecom"/>
+    <semantic:sequenceFlow id="flow_contractor_consent_ecom_to_join" sourceRef="task_contractor_submit_consent_ecom" targetRef="gw_contractor_enter_data_join"/>
+    <semantic:sequenceFlow id="flow_contractor_data_join_to_check_data" sourceRef="gw_contractor_enter_data_join" targetRef="task_contractor_check_entered_data"/>
+    <semantic:sequenceFlow id="flow_contractor_check_data_to_upload_files" sourceRef="task_contractor_check_entered_data" targetRef="task_contractor_upload_files"/>
+    <semantic:sequenceFlow id="flow_contractor_upload_files_to_confirm_data" sourceRef="task_contractor_upload_files" targetRef="task_contractor_confirm_data"/>
+    <semantic:sequenceFlow id="flow_contractor_confirm_data_to_submit_app" sourceRef="task_contractor_confirm_data" targetRef="task_contractor_submit_application"/>
+    <semantic:sequenceFlow id="flow_contractor_submit_app_to_end" sourceRef="task_contractor_submit_application" targetRef="end_contractor_application_submitted"/>
+  </semantic:process>
+
+  <!-- Message Flows -->
+  <semantic:messageFlow id="msgflow_bafa_to_nlp" name="Requirement Notification" sourceRef="task_bafa_notify_person" targetRef="start_nlp_receive_requirement"/>
+  <semantic:messageFlow id="msgflow_nlp_to_contractor" name="Request to Fill Application" sourceRef="task_nlp_request_application_filling" targetRef="start_contractor_receive_request"/>
+  <semantic:messageFlow id="msgflow_contractor_to_nlp" name="Application Submitted Notification" sourceRef="end_contractor_application_submitted" targetRef="event_intermediate_nlp_application_submitted"/>
+
+  <bpmndi:BPMNDiagram id="BPMNDiagram_HeatingProcess">
+    <bpmndi:BPMNPlane bpmnElement="collab_heating_process">
+      <!-- BAFA Pool and Lane -->
+      <bpmndi:BPMNShape id="pool_bafa_shape" bpmnElement="pool_bafa" isHorizontal="true">
+        <dc:Bounds x="20" y="20" width="8000" height="200"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="lane_bafa_officer_shape" bpmnElement="lane_bafa_officer" isHorizontal="true">
+        <dc:Bounds x="50" y="20" width="7970" height="200"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="start_bafa_realize_requirement_shape" bpmnElement="start_bafa_realize_requirement">
+        <dc:Bounds x="100" y="102" width="36" height="36"/>
+        <bpmndi:BPMNLabel><dc:Bounds x="80" y="148" width="76" height="40"/></bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="task_bafa_notify_person_shape" bpmnElement="task_bafa_notify_person">
+        <dc:Bounds x="200" y="90" width="100" height="70"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="flow_bafa_start_to_notify_edge" bpmnElement="flow_bafa_start_to_notify">
+        <di:waypoint x="136" y="120"/>
+        <di:waypoint x="200" y="120"/>
+      </bpmndi:BPMNEdge>
+
+      <!-- Natural/Legal Person Pool and Lane -->
+      <bpmndi:BPMNShape id="pool_nlp_shape" bpmnElement="pool_nlp" isHorizontal="true">
+        <dc:Bounds x="20" y="250" width="8000" height="3000"/> <!-- Adjusted height -->
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="lane_nlp_applicant_shape" bpmnElement="lane_nlp_applicant" isHorizontal="true">
+        <dc:Bounds x="50" y="250" width="7970" height="3000"/> <!-- Adjusted height -->
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="start_nlp_receive_requirement_shape" bpmnElement="start_nlp_receive_requirement">
+        <dc:Bounds x="100" y="302" width="36" height="36"/>
+        <bpmndi:BPMNLabel><dc:Bounds x="70" y="348" width="96" height="40"/></bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="task_nlp_decide_heating_method_shape" bpmnElement="task_nlp_decide_heating_method">
+        <dc:Bounds x="200" y="290" width="100" height="70"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="gw_nlp_heating_requirement_type_shape" bpmnElement="gw_nlp_heating_requirement_type" isMarkerVisible="true">
+        <dc:Bounds x="350" y="305" width="50" height="50"/>
+        <bpmndi:BPMNLabel><dc:Bounds x="330" y="365" width="90" height="28"/></bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <!-- Option A Path -->
+      <bpmndi:BPMNShape id="gw_nlp_optionA_system_choice_shape" bpmnElement="gw_nlp_optionA_system_choice" isMarkerVisible="true">
+        <dc:Bounds x="450" y="405" width="50" height="50"/>
+        <bpmndi:BPMNLabel><dc:Bounds x="420" y="465" width="110" height="28"/></bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <!-- Biomass Path (Starts from gw_nlp_optionA_system_choice) -->
+      <bpmndi:BPMNShape id="task_nlp_heat_with_biomass_shape" bpmnElement="task_nlp_heat_with_biomass">
+        <dc:Bounds x="550" y="300" width="100" height="70"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="task_nlp_decide_biomass_plant_shape" bpmnElement="task_nlp_decide_biomass_plant">
+        <dc:Bounds x="700" y="300" width="100" height="70"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="gw_nlp_biomass_plant_type_shape" bpmnElement="gw_nlp_biomass_plant_type" isMarkerVisible="true">
+        <dc:Bounds x="850" y="315" width="50" height="50"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="task_nlp_choose_boiler_pellets_chips_shape" bpmnElement="task_nlp_choose_boiler_pellets_chips"><dc:Bounds x="950" y="200" width="100" height="70"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="task_nlp_choose_combination_boiler_shape" bpmnElement="task_nlp_choose_combination_boiler"><dc:Bounds x="950" y="280" width="100" height="70"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="task_nlp_choose_pellet_stoves_water_pocket_shape" bpmnElement="task_nlp_choose_pellet_stoves_water_pocket"><dc:Bounds x="950" y="360" width="100" height="70"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="task_nlp_choose_retrofit_calorific_shape" bpmnElement="task_nlp_choose_retrofit_calorific"><dc:Bounds x="950" y="440" width="100" height="70"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="task_nlp_choose_retrofit_dust_reduction_shape" bpmnElement="task_nlp_choose_retrofit_dust_reduction"><dc:Bounds x="950" y="520" width="100" height="70"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="gw_nlp_merge_biomass_plant_choice_shape" bpmnElement="gw_nlp_merge_biomass_plant_choice" isMarkerVisible="true"><dc:Bounds x="1100" y="315" width="50" height="50"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="task_nlp_select_funding_option_biomass_shape" bpmnElement="task_nlp_select_funding_option_biomass"><dc:Bounds x="1200" y="300" width="100" height="70"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="gw_nlp_biomass_funding_type_shape" bpmnElement="gw_nlp_biomass_funding_type" isMarkerVisible="true"><dc:Bounds x="1350" y="315" width="50" height="50"/></bpmndi:BPMNShape>
+      <!-- Biomass Existing Building -->
+      <bpmndi:BPMNShape id="gw_nlp_biomass_existing_funding_subtype_shape" bpmnElement="gw_nlp_biomass_existing_funding_subtype" isMarkerVisible="true"><dc:Bounds x="1450" y="240" width="50" height="50"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="task_nlp_verify_basic_funding_req_biomass_shape" bpmnElement="task_nlp_verify_basic_funding_req_biomass"><dc:Bounds x="1550" y="150" width="100" height="70"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="event_boundary_biomass_basic_req_risk_shape" bpmnElement="event_boundary_biomass_basic_req_risk"><dc:Bounds x="1630" y="202" width="36" height="36"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="task_nlp_select_biomass_plant_basic_shape" bpmnElement="task_nlp_select_biomass_plant_basic"><dc:Bounds x="1700" y="150" width="100" height="70"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="gw_nlp_biomass_plant_basic_type_shape" bpmnElement="gw_nlp_biomass_plant_basic_type" isMarkerVisible="true"><dc:Bounds x="1850" y="165" width="50" height="50"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="task_nlp_select_wood_chip_boiler_shape" bpmnElement="task_nlp_select_wood_chip_boiler"><dc:Bounds x="1950" y="50" width="100" height="70"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="task_nlp_select_pellet_boiler_buffer_shape" bpmnElement="task_nlp_select_pellet_boiler_buffer"><dc:Bounds x="1950" y="130" width="100" height="70"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="task_nlp_select_pellet_stove_water_shape" bpmnElement="task_nlp_select_pellet_stove_water"><dc:Bounds x="1950" y="210" width="100" height="70"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="task_nlp_select_log_wood_boiler_shape" bpmnElement="task_nlp_select_log_wood_boiler"><dc:Bounds x="1950" y="290" width="100" height="70"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="gw_nlp_merge_biomass_plant_basic_choice_shape" bpmnElement="gw_nlp_merge_biomass_plant_basic_choice" isMarkerVisible="true"><dc:Bounds x="2100" y="165" width="50" height="50"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="task_nlp_choose_basic_funding_biomass_shape" bpmnElement="task_nlp_choose_basic_funding_biomass"><dc:Bounds x="2200" y="150" width="100" height="70"/></bpmndi:BPMNShape>
+      <!-- Biomass Additional Funding -->
+      <bpmndi:BPMNShape id="task_nlp_choose_additional_funding_biomass_main_shape" bpmnElement="task_nlp_choose_additional_funding_biomass_main"><dc:Bounds x="1550" y="300" width="100" height="70"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="gw_nlp_biomass_additional_split_shape" bpmnElement="gw_nlp_biomass_additional_split"><dc:Bounds x="1700" y="315" width="50" height="50"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="task_nlp_biomass_combo_bonus_shape" bpmnElement="task_nlp_biomass_combo_bonus"><dc:Bounds x="1800" y="200" width="100" height="70"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="task_nlp_biomass_establish_solar_heatpump_shape" bpmnElement="task_nlp_biomass_establish_solar_heatpump"><dc:Bounds x="1920" y="190" width="100" height="40"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="task_nlp_biomass_connect_to_network_shape" bpmnElement="task_nlp_biomass_connect_to_network"><dc:Bounds x="1920" y="240" width="100" height="40"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="task_nlp_biomass_efficiency_bonus_shape" bpmnElement="task_nlp_biomass_efficiency_bonus"><dc:Bounds x="1800" y="280" width="100" height="70"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="task_nlp_biomass_ensure_efficient_building_shape" bpmnElement="task_nlp_biomass_ensure_efficient_building"><dc:Bounds x="1920" y="270" width="100" height="30"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="task_nlp_biomass_meet_kfw55_shape" bpmnElement="task_nlp_biomass_meet_kfw55"><dc:Bounds x="1920" y="310" width="100" height="30"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="task_nlp_biomass_submit_expert_confirmation_shape" bpmnElement="task_nlp_biomass_submit_expert_confirmation"><dc:Bounds x="1920" y="350" width="100" height="30"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="task_nlp_biomass_investment_grants_shape" bpmnElement="task_nlp_biomass_investment_grants"><dc:Bounds x="1800" y="360" width="100" height="70"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="task_nlp_biomass_receive_optimization_bonus_shape" bpmnElement="task_nlp_biomass_receive_optimization_bonus"><dc:Bounds x="1920" y="370" width="100" height="40"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="task_nlp_biomass_apee_incentive_shape" bpmnElement="task_nlp_biomass_apee_incentive"><dc:Bounds x="1800" y="440" width="100" height="70"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="task_nlp_biomass_replace_inefficient_systems_shape" bpmnElement="task_nlp_biomass_replace_inefficient_systems"><dc:Bounds x="1920" y="430" width="100" height="40"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="task_nlp_biomass_optimize_heating_system_shape" bpmnElement="task_nlp_biomass_optimize_heating_system"><dc:Bounds x="1920" y="480" width="100" height="40"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="gw_nlp_biomass_additional_join_shape" bpmnElement="gw_nlp_biomass_additional_join"><dc:Bounds x="2050" y="315" width="50" height="50"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="task_nlp_finalize_additional_funding_biomass_shape" bpmnElement="task_nlp_finalize_additional_funding_biomass"><dc:Bounds x="2150" y="300" width="100" height="70"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="gw_nlp_merge_biomass_existing_funding_shape" bpmnElement="gw_nlp_merge_biomass_existing_funding" isMarkerVisible="true"><dc:Bounds x="2300" y="240" width="50" height="50"/></bpmndi:BPMNShape>
+      <!-- Biomass New Building -->
+      <bpmndi:BPMNShape id="task_nlp_fund_biomass_new_building_shape" bpmnElement="task_nlp_fund_biomass_new_building"><dc:Bounds x="1450" y="400" width="100" height="70"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="task_nlp_identify_support_devices_biomass_new_shape" bpmnElement="task_nlp_identify_support_devices_biomass_new"><dc:Bounds x="1600" y="400" width="100" height="70"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="gw_nlp_merge_biomass_funding_paths_shape" bpmnElement="gw_nlp_merge_biomass_funding_paths" isMarkerVisible="true"><dc:Bounds x="2400" y="315" width="50" height="50"/></bpmndi:BPMNShape>
+
+      <!-- Heat Pump Path (Starts from gw_nlp_optionA_system_choice) -->
+      <bpmndi:BPMNShape id="task_nlp_heat_with_heat_pump_shape" bpmnElement="task_nlp_heat_with_heat_pump">
+        <dc:Bounds x="550" y="500" width="100" height="70"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="task_nlp_decide_heat_pump_shape" bpmnElement="task_nlp_decide_heat_pump"><dc:Bounds x="700" y="500" width="100" height="70"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="gw_nlp_heat_pump_type_shape" bpmnElement="gw_nlp_heat_pump_type" isMarkerVisible="true"><dc:Bounds x="850" y="515" width="50" height="50"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="task_nlp_hp_combined_water_space_shape" bpmnElement="task_nlp_hp_combined_water_space"><dc:Bounds x="950" y="400" width="100" height="70"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="task_nlp_hp_exclusive_room_shape" bpmnElement="task_nlp_hp_exclusive_room"><dc:Bounds x="950" y="480" width="100" height="70"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="task_nlp_hp_exclusive_space_non_res_shape" bpmnElement="task_nlp_hp_exclusive_space_non_res"><dc:Bounds x="950" y="560" width="100" height="70"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="task_nlp_hp_provision_heat_networks_shape" bpmnElement="task_nlp_hp_provision_heat_networks"><dc:Bounds x="950" y="640" width="100" height="70"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="gw_nlp_merge_hp_type_choice_shape" bpmnElement="gw_nlp_merge_hp_type_choice" isMarkerVisible="true"><dc:Bounds x="1100" y="515" width="50" height="50"/></bpmndi:BPMNShape>
+
+      <!-- Solar Thermal Path (Option B, from gw_nlp_heating_requirement_type) -->
+      <bpmndi:BPMNShape id="task_nlp_heat_with_solar_thermal_shape" bpmnElement="task_nlp_heat_with_solar_thermal">
+        <dc:Bounds x="450" y="700" width="100" height="70"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="task_nlp_decide_solar_thermal_system_shape" bpmnElement="task_nlp_decide_solar_thermal_system"><dc:Bounds x="600" y="700" width="100" height="70"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="gw_nlp_solar_thermal_system_type_shape" bpmnElement="gw_nlp_solar_thermal_system_type" isMarkerVisible="true"><dc:Bounds x="750" y="715" width="50" height="50"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="task_nlp_st_exclusive_water_shape" bpmnElement="task_nlp_st_exclusive_water"><dc:Bounds x="850" y="600" width="100" height="70"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="task_nlp_st_exclusive_space_shape" bpmnElement="task_nlp_st_exclusive_space"><dc:Bounds x="850" y="680" width="100" height="70"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="task_nlp_st_combined_water_space_shape" bpmnElement="task_nlp_st_combined_water_space"><dc:Bounds x="850" y="760" width="100" height="70"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="task_nlp_st_supply_heat_networks_shape" bpmnElement="task_nlp_st_supply_heat_networks"><dc:Bounds x="850" y="840" width="100" height="70"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="task_nlp_st_supply_cold_networks_shape" bpmnElement="task_nlp_st_supply_cold_networks"><dc:Bounds x="850" y="920" width="100" height="70"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="task_nlp_st_solar_refrigeration_shape" bpmnElement="task_nlp_st_solar_refrigeration"><dc:Bounds x="850" y="1000" width="100" height="70"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="gw_nlp_merge_st_type_choice_shape" bpmnElement="gw_nlp_merge_st_type_choice" isMarkerVisible="true"><dc:Bounds x="1000" y="715" width="50" height="50"/></bpmndi:BPMNShape>
+
+      <!-- Merge HP and ST paths -->
+      <bpmndi:BPMNShape id="gw_nlp_merge_hp_st_paths_shape" bpmnElement="gw_nlp_merge_hp_st_paths" isMarkerVisible="true"><dc:Bounds x="1200" y="615" width="50" height="50"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="task_nlp_select_funding_option_hp_st_shape" bpmnElement="task_nlp_select_funding_option_hp_st"><dc:Bounds x="1300" y="600" width="100" height="70"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="gw_nlp_hp_st_funding_type_shape" bpmnElement="gw_nlp_hp_st_funding_type" isMarkerVisible="true"><dc:Bounds x="1450" y="615" width="50" height="50"/></bpmndi:BPMNShape>
+      <!-- HP/ST Existing Building -->
+      <bpmndi:BPMNShape id="gw_nlp_hp_st_existing_funding_subtype_shape" bpmnElement="gw_nlp_hp_st_existing_funding_subtype" isMarkerVisible="true"><dc:Bounds x="1550" y="540" width="50" height="50"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="task_nlp_verify_basic_funding_req_hp_st_shape" bpmnElement="task_nlp_verify_basic_funding_req_hp_st"><dc:Bounds x="1650" y="450" width="100" height="70"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="event_boundary_hp_st_basic_req_risk_shape" bpmnElement="event_boundary_hp_st_basic_req_risk"><dc:Bounds x="1730" y="502" width="36" height="36"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="task_nlp_receive_basic_funding_hp_st_shape" bpmnElement="task_nlp_receive_basic_funding_hp_st"><dc:Bounds x="1800" y="450" width="100" height="70"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="task_nlp_verify_innovation_funding_req_hp_st_shape" bpmnElement="task_nlp_verify_innovation_funding_req_hp_st"><dc:Bounds x="1650" y="600" width="100" height="70"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="task_nlp_receive_innovation_funding_hp_st_shape" bpmnElement="task_nlp_receive_innovation_funding_hp_st"><dc:Bounds x="1800" y="600" width="100" height="70"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="gw_nlp_merge_hp_st_basic_innovation_shape" bpmnElement="gw_nlp_merge_hp_st_basic_innovation" isMarkerVisible="true"><dc:Bounds x="1950" y="540" width="50" height="50"/></bpmndi:BPMNShape>
+      <!-- HP/ST Additional Funding -->
+      <bpmndi:BPMNShape id="task_nlp_receive_additional_funding_hp_st_main_shape" bpmnElement="task_nlp_receive_additional_funding_hp_st_main"><dc:Bounds x="2050" y="525" width="100" height="70"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="gw_nlp_hp_st_additional_split_shape" bpmnElement="gw_nlp_hp_st_additional_split"><dc:Bounds x="2200" y="540" width="50" height="50"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="task_nlp_hp_st_combo_bonus_shape" bpmnElement="task_nlp_hp_st_combo_bonus"><dc:Bounds x="2300" y="300" width="100" height="70"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="task_nlp_hp_st_establish_solar_biomass_shape" bpmnElement="task_nlp_hp_st_establish_solar_biomass"><dc:Bounds x="2420" y="290" width="100" height="30"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="task_nlp_hp_st_construct_solar_collector_shape" bpmnElement="task_nlp_hp_st_construct_solar_collector"><dc:Bounds x="2420" y="330" width="100" height="30"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="event_boundary_hp_st_solar_collector_missing_risk_shape" bpmnElement="event_boundary_hp_st_solar_collector_missing_risk"><dc:Bounds x="2500" y="342" width="36" height="36"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="task_nlp_hp_st_meet_solar_collector_req_shape" bpmnElement="task_nlp_hp_st_meet_solar_collector_req"><dc:Bounds x="2420" y="370" width="100" height="30"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="event_boundary_hp_st_gross_collector_area_risk_shape" bpmnElement="event_boundary_hp_st_gross_collector_area_risk"><dc:Bounds x="2500" y="382" width="36" height="36"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="task_nlp_hp_st_connect_to_network_shape" bpmnElement="task_nlp_hp_st_connect_to_network"><dc:Bounds x="2420" y="410" width="100" height="30"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="event_boundary_hp_st_not_connected_network_risk_shape" bpmnElement="event_boundary_hp_st_not_connected_network_risk"><dc:Bounds x="2500" y="422" width="36" height="36"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="task_nlp_hp_st_load_management_fund_shape" bpmnElement="task_nlp_hp_st_load_management_fund"><dc:Bounds x="2300" y="450" width="100" height="70"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="task_nlp_hp_st_ensure_interfaces_enable_hp_shape" bpmnElement="task_nlp_hp_st_ensure_interfaces_enable_hp"><dc:Bounds x="2420" y="440" width="100" height="30"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="task_nlp_hp_st_construct_storage_facility_shape" bpmnElement="task_nlp_hp_st_construct_storage_facility"><dc:Bounds x="2420" y="480" width="100" height="30"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="task_nlp_hp_st_provide_smart_grid_cert_shape" bpmnElement="task_nlp_hp_st_provide_smart_grid_cert"><dc:Bounds x="2420" y="520" width="100" height="30"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="task_nlp_hp_st_efficiency_bonus_shape" bpmnElement="task_nlp_hp_st_efficiency_bonus"><dc:Bounds x="2300" y="580" width="100" height="70"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="task_nlp_hp_st_ensure_efficient_building_shape" bpmnElement="task_nlp_hp_st_ensure_efficient_building"><dc:Bounds x="2420" y="570" width="100" height="30"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="task_nlp_hp_st_meet_kfw55_shape" bpmnElement="task_nlp_hp_st_meet_kfw55"><dc:Bounds x="2420" y="610" width="100" height="30"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="event_boundary_hp_st_kfw55_risk_shape" bpmnElement="event_boundary_hp_st_kfw55_risk"><dc:Bounds x="2500" y="622" width="36" height="36"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="task_nlp_hp_st_submit_expert_app_shape" bpmnElement="task_nlp_hp_st_submit_expert_app"><dc:Bounds x="2420" y="650" width="100" height="30"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="task_nlp_hp_st_investment_grants_shape" bpmnElement="task_nlp_hp_st_investment_grants"><dc:Bounds x="2300" y="710" width="100" height="70"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="task_nlp_hp_st_receive_optimization_bonus_shape" bpmnElement="task_nlp_hp_st_receive_optimization_bonus"><dc:Bounds x="2420" y="720" width="100" height="40"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="task_nlp_hp_st_apee_incentive_shape" bpmnElement="task_nlp_hp_st_apee_incentive"><dc:Bounds x="2300" y="800" width="100" height="70"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="task_nlp_hp_st_replace_inefficient_systems_shape" bpmnElement="task_nlp_hp_st_replace_inefficient_systems"><dc:Bounds x="2420" y="790" width="100" height="40"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="task_nlp_hp_st_optimize_heating_system_shape" bpmnElement="task_nlp_hp_st_optimize_heating_system"><dc:Bounds x="2420" y="840" width="100" height="40"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="gw_nlp_hp_st_additional_join_shape" bpmnElement="gw_nlp_hp_st_additional_join"><dc:Bounds x="2550" y="540" width="50" height="50"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="task_nlp_finalize_additional_funding_hp_st_shape" bpmnElement="task_nlp_finalize_additional_funding_hp_st"><dc:Bounds x="2650" y="525" width="100" height="70"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="gw_nlp_merge_hp_st_existing_funding_shape" bpmnElement="gw_nlp_merge_hp_st_existing_funding" isMarkerVisible="true"><dc:Bounds x="2800" y="540" width="50" height="50"/></bpmndi:BPMNShape>
+      <!-- HP/ST New Building -->
+      <bpmndi:BPMNShape id="task_nlp_fund_hp_st_new_building_shape" bpmnElement="task_nlp_fund_hp_st_new_building"><dc:Bounds x="1550" y="700" width="100" height="70"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="gw_nlp_merge_hp_st_funding_paths_shape" bpmnElement="gw_nlp_merge_hp_st_funding_paths" isMarkerVisible="true"><dc:Bounds x="2900" y="615" width="50" height="50"/></bpmndi:BPMNShape>
+
+      <!-- Merge all main funding paths -->
+      <bpmndi:BPMNShape id="gw_nlp_funding_path_determined_shape" bpmnElement="gw_nlp_funding_path_determined" isMarkerVisible="true"><dc:Bounds x="3000" y="465" width="50" height="50"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="task_nlp_request_application_filling_shape" bpmnElement="task_nlp_request_application_filling"><dc:Bounds x="3100" y="450" width="100" height="70"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="event_intermediate_nlp_application_submitted_shape" bpmnElement="event_intermediate_nlp_application_submitted">
+        <dc:Bounds x="3250" y="462" width="36" height="36"/>
+        <bpmndi:BPMNLabel><dc:Bounds x="3220" y="508" width="96" height="40"/></bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="end_nlp_application_successful_shape" bpmnElement="end_nlp_application_successful">
+        <dc:Bounds x="3350" y="462" width="36" height="36"/>
+        <bpmndi:BPMNLabel><dc:Bounds x="3320" y="508" width="96" height="53"/></bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <!-- Contractor Pool and Lane -->
+      <bpmndi:BPMNShape id="pool_contractor_shape" bpmnElement="pool_contractor" isHorizontal="true">
+        <dc:Bounds x="20" y="3300" width="8000" height="1500"/> <!-- Adjusted Y and height -->
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="lane_contractor_processor_shape" bpmnElement="lane_contractor_processor" isHorizontal="true">
+        <dc:Bounds x="50" y="3300" width="7970" height="1500"/> <!-- Adjusted Y and height -->
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="start_contractor_receive_request_shape" bpmnElement="start_contractor_receive_request">
+        <dc:Bounds x="100" y="3352" width="36" height="36"/>
+        <bpmndi:BPMNLabel><dc:Bounds x="70" y="3398" width="96" height="40"/></bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="task_contractor_fill_application_shape" bpmnElement="task_contractor_fill_application"><dc:Bounds x="200" y="3340" width="100" height="70"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="gw_contractor_enter_data_split_shape" bpmnElement="gw_contractor_enter_data_split"><dc:Bounds x="350" y="3355" width="50" height="50"/></bpmndi:BPMNShape>
+      <!-- Parallel Data Entry Tasks -->
+      <bpmndi:BPMNShape id="task_contractor_enter_data_protection_shape" bpmnElement="task_contractor_enter_data_protection"><dc:Bounds x="450" y="3300" width="100" height="70"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="task_contractor_enter_project_start_shape" bpmnElement="task_contractor_enter_project_start"><dc:Bounds x="450" y="3380" width="100" height="70"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="task_contractor_define_applicant_details_shape" bpmnElement="task_contractor_define_applicant_details"><dc:Bounds x="450" y="3460" width="100" height="70"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="gw_contractor_applicant_type_shape" bpmnElement="gw_contractor_applicant_type" isMarkerVisible="true"><dc:Bounds x="600" y="3475" width="50" height="50"/></bpmndi:BPMNShape>
+      <!-- Applicant Type Sub-Tasks (Example for one branch) -->
+      <bpmndi:BPMNShape id="task_contractor_applicant_individual_shape" bpmnElement="task_contractor_applicant_individual"><dc:Bounds x="700" y="3460" width="100" height="70"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="gw_contractor_merge_applicant_type_shape" bpmnElement="gw_contractor_merge_applicant_type" isMarkerVisible="true"><dc:Bounds x="850" y="3475" width="50" height="50"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="task_contractor_specify_location_building_shape" bpmnElement="task_contractor_specify_location_building"><dc:Bounds x="450" y="3600" width="100" height="70"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="event_boundary_contractor_location_risk_shape" bpmnElement="event_boundary_contractor_location_risk"><dc:Bounds x="530" y="3652" width="36" height="36"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="gw_contractor_location_data_split_shape" bpmnElement="gw_contractor_location_data_split"><dc:Bounds x="600" y="3615" width="50" height="50"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="task_contractor_define_old_heating_type_shape" bpmnElement="task_contractor_define_old_heating_type"><dc:Bounds x="700" y="3580" width="100" height="70"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="gw_contractor_old_heating_type_shape" bpmnElement="gw_contractor_old_heating_type" isMarkerVisible="true"><dc:Bounds x="850" y="3595" width="50" height="50"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="task_contractor_old_heating_oil_gas_shape" bpmnElement="task_contractor_old_heating_oil_gas"><dc:Bounds x="950" y="3580" width="100" height="70"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="gw_contractor_merge_old_heating_type_shape" bpmnElement="gw_contractor_merge_old_heating_type" isMarkerVisible="true"><dc:Bounds x="1100" y="3595" width="50" height="50"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="task_contractor_define_install_date_shape" bpmnElement="task_contractor_define_install_date"><dc:Bounds x="700" y="3660" width="100" height="70"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="gw_contractor_location_data_join_shape" bpmnElement="gw_contractor_location_data_join"><dc:Bounds x="1200" y="3615" width="50" height="50"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="task_contractor_specify_heating_measure_shape" bpmnElement="task_contractor_specify_heating_measure"><dc:Bounds x="450" y="3750" width="100" height="70"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="task_contractor_specify_funding_type_info_shape" bpmnElement="task_contractor_specify_funding_type_info"><dc:Bounds x="450" y="3830" width="100" height="70"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="task_contractor_enter_personal_explanations_shape" bpmnElement="task_contractor_enter_personal_explanations"><dc:Bounds x="450" y="3910" width="100" height="70"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="task_contractor_submit_consent_ecom_shape" bpmnElement="task_contractor_submit_consent_ecom"><dc:Bounds x="450" y="3990" width="100" height="70"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="gw_contractor_enter_data_join_shape" bpmnElement="gw_contractor_enter_data_join"><dc:Bounds x="1300" y="3655" width="50" height="50"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="task_contractor_check_entered_data_shape" bpmnElement="task_contractor_check_entered_data"><dc:Bounds x="1400" y="3640" width="100" height="70"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="task_contractor_upload_files_shape" bpmnElement="task_contractor_upload_files"><dc:Bounds x="1550" y="3640" width="100" height="70"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="task_contractor_confirm_data_shape" bpmnElement="task_contractor_confirm_data"><dc:Bounds x="1700" y="3640" width="100" height="70"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="task_contractor_submit_application_shape" bpmnElement="task_contractor_submit_application"><dc:Bounds x="1850" y="3640" width="100" height="70"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="end_contractor_application_submitted_shape" bpmnElement="end_contractor_application_submitted">
+        <dc:Bounds x="2000" y="3652" width="36" height="36"/>
+        <bpmndi:BPMNLabel><dc:Bounds x="1970" y="3698" width="96" height="53"/></bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <!-- Message Flow Edges -->
+      <bpmndi:BPMNEdge id="msgflow_bafa_to_nlp_edge" bpmnElement="msgflow_bafa_to_nlp">
+        <di:waypoint x="250" y="160"/>
+        <di:waypoint x="250" y="230"/>
+        <di:waypoint x="118" y="230"/>
+        <di:waypoint x="118" y="302"/>
+        <bpmndi:BPMNLabel><dc:Bounds x="160" y="235" width="80" height="28"/></bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="msgflow_nlp_to_contractor_edge" bpmnElement="msgflow_nlp_to_contractor">
+        <di:waypoint x="3150" y="520"/>
+        <di:waypoint x="3150" y="3280"/>
+        <di:waypoint x="118" y="3280"/>
+        <di:waypoint x="118" y="3352"/>
+        <bpmndi:BPMNLabel><dc:Bounds x="1630" y="3285" width="80" height="28"/></bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="msgflow_contractor_to_nlp_edge" bpmnElement="msgflow_contractor_to_nlp">
+        <di:waypoint x="2018" y="3652"/>
+        <di:waypoint x="2018" y="3280"/>
+        <di:waypoint x="3268" y="3280"/>
+        <di:waypoint x="3268" y="462"/>
+        <bpmndi:BPMNLabel><dc:Bounds x="2600" y="3285" width="80" height="40"/></bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+
+      <!-- NLP Sequence Flow Edges (Sample, many more needed) -->
+      <bpmndi:BPMNEdge id="flow_nlp_start_to_decide_method_edge" bpmnElement="flow_nlp_start_to_decide_method"><di:waypoint x="136" y="320"/><di:waypoint x="200" y="320"/></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_nlp_decide_method_to_gw_req_type_edge" bpmnElement="flow_nlp_decide_method_to_gw_req_type"><di:waypoint x="300" y="325"/><di:waypoint x="350" y="330"/></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_nlp_gw_req_type_to_optionA_edge" bpmnElement="flow_nlp_gw_req_type_to_optionA"><di:waypoint x="375" y="355"/><di:waypoint x="375" y="430"/><di:waypoint x="450" y="430"/><bpmndi:BPMNLabel><dc:Bounds x="380" y="380" width="80" height="40"/></bpmndi:BPMNLabel></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_nlp_gw_req_type_to_optionB_edge" bpmnElement="flow_nlp_gw_req_type_to_optionB"><di:waypoint x="375" y="355"/><di:waypoint x="375" y="735"/><di:waypoint x="450" y="735"/><bpmndi:BPMNLabel><dc:Bounds x="380" y="680" width="80" height="40"/></bpmndi:BPMNLabel></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_nlp_optionA_to_biomass_edge" bpmnElement="flow_nlp_optionA_to_biomass"><di:waypoint x="475" y="405"/><di:waypoint x="475" y="335"/><di:waypoint x="550" y="335"/><bpmndi:BPMNLabel><dc:Bounds x="480" y="360" width="60" height="28"/></bpmndi:BPMNLabel></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_nlp_optionA_to_hp_edge" bpmnElement="flow_nlp_optionA_to_hp"><di:waypoint x="475" y="455"/><di:waypoint x="475" y="535"/><di:waypoint x="550" y="535"/><bpmndi:BPMNLabel><dc:Bounds x="480" y="480" width="60" height="28"/></bpmndi:BPMNLabel></bpmndi:BPMNEdge>
+      <!-- ... Many more edges for NLP ... -->
+      <bpmndi:BPMNEdge id="flow_nlp_funding_determined_to_request_app_edge" bpmnElement="flow_nlp_funding_determined_to_request_app"><di:waypoint x="3050" y="490"/><di:waypoint x="3100" y="485"/></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_nlp_app_submitted_to_end_edge" bpmnElement="flow_nlp_app_submitted_to_end"><di:waypoint x="3286" y="480"/><di:waypoint x="3350" y="480"/></bpmndi:BPMNEdge>
+
+      <!-- Contractor Sequence Flow Edges (Sample) -->
+      <bpmndi:BPMNEdge id="flow_contractor_start_to_fill_app_edge" bpmnElement="flow_contractor_start_to_fill_app"><di:waypoint x="136" y="3370"/><di:waypoint x="200" y="3370"/></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_contractor_fill_app_to_data_split_edge" bpmnElement="flow_contractor_fill_app_to_data_split"><di:waypoint x="300" y="3375"/><di:waypoint x="350" y="3380"/></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_contractor_split_to_data_protection_edge" bpmnElement="flow_contractor_split_to_data_protection"><di:waypoint x="375" y="3355"/><di:waypoint x="375" y="3335"/><di:waypoint x="450" y="3335"/></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_contractor_data_protection_to_join_edge" bpmnElement="flow_contractor_data_protection_to_join"><di:waypoint x="550" y="3335"/><di:waypoint x="1325" y="3335"/><di:waypoint x="1325" y="3655"/></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_contractor_split_to_location_building_edge" bpmnElement="flow_contractor_split_to_location_building"><di:waypoint x="375" y="3405"/><di:waypoint x="375" y="3635"/><di:waypoint x="450" y="3635"/></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_contractor_location_building_to_gw_split_edge" bpmnElement="flow_contractor_location_building_to_gw_split"><di:waypoint x="550" y="3635"/><di:waypoint x="600" y="3640"/></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_contractor_location_split_to_old_heating_edge" bpmnElement="flow_contractor_location_split_to_old_heating"><di:waypoint x="625" y="3615"/><di:waypoint x="625" y="3615"/><di:waypoint x="700" y="3615"/></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_contractor_old_heating_to_gw_type_edge" bpmnElement="flow_contractor_old_heating_to_gw_type"><di:waypoint x="800" y="3615"/><di:waypoint x="850" y="3620"/></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_contractor_gw_old_heating_to_oil_gas_edge" bpmnElement="flow_contractor_gw_old_heating_to_oil_gas"><di:waypoint x="875" y="3595"/><di:waypoint x="875" y="3615"/><di:waypoint x="950" y="3615"/></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_contractor_old_heating_oil_gas_to_merge_edge" bpmnElement="flow_contractor_old_heating_oil_gas_to_merge"><di:waypoint x="1050" y="3615"/><di:waypoint x="1100" y="3620"/></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_contractor_merge_old_heating_to_location_join_edge" bpmnElement="flow_contractor_merge_old_heating_to_location_join"><di:waypoint x="1150" y="3620"/><di:waypoint x="1200" y="3620"/></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_contractor_location_split_to_install_date_edge" bpmnElement="flow_contractor_location_split_to_install_date"><di:waypoint x="625" y="3665"/><di:waypoint x="625" y="3695"/><di:waypoint x="700" y="3695"/></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_contractor_install_date_to_location_join_edge" bpmnElement="flow_contractor_install_date_to_location_join"><di:waypoint x="800" y="3695"/><di:waypoint x="1225" y="3695"/><di:waypoint x="1225" y="3665"/></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_contractor_location_join_to_data_join_edge" bpmnElement="flow_contractor_location_join_to_data_join"><di:waypoint x="1250" y="3640"/><di:waypoint x="1325" y="3640"/><di:waypoint x="1325" y="3655"/></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_contractor_location_risk_to_join_edge" bpmnElement="flow_contractor_location_risk_to_join"><di:waypoint x="548" y="3688"/><di:waypoint x="548" y="3720"/><di:waypoint x="1325" y="3720"/><di:waypoint x="1325" y="3705"/></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_contractor_data_join_to_check_data_edge" bpmnElement="flow_contractor_data_join_to_check_data"><di:waypoint x="1350" y="3680"/><di:waypoint x="1400" y="3675"/></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_contractor_check_data_to_upload_files_edge" bpmnElement="flow_contractor_check_data_to_upload_files"><di:waypoint x="1500" y="3675"/><di:waypoint x="1550" y="3675"/></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_contractor_upload_files_to_confirm_data_edge" bpmnElement="flow_contractor_upload_files_to_confirm_data"><di:waypoint x="1650" y="3675"/><di:waypoint x="1700" y="3675"/></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_contractor_confirm_data_to_submit_app_edge" bpmnElement="flow_contractor_confirm_data_to_submit_app"><di:waypoint x="1800" y="3675"/><di:waypoint x="1850" y="3675"/></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_contractor_submit_app_to_end_edge" bpmnElement="flow_contractor_submit_app_to_end"><di:waypoint x="1950" y="3670"/><di:waypoint x="2000" y="3670"/></bpmndi:BPMNEdge>
+
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</semantic:definitions>

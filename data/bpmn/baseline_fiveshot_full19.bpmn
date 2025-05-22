@@ -1,0 +1,255 @@
+<?xml version="1.0" standalone="yes"?>
+<semantic:definitions id="BOMProcessDefinitions"
+    targetNamespace="http://example.com/bpmn/bom-process"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:semantic="http://www.omg.org/spec/BPMN/20100524/MODEL"
+    xmlns:di="http://www.omg.org/spec/DD/20100524/DI"
+    xmlns:dc="http://www.omg.org/spec/DD/20100524/DC"
+    xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI">
+
+  <semantic:collaboration id="BOMCollaboration">
+    <semantic:participant id="Participant_PM_Dept" name="Plant Maintenance Department" processRef="BOMProcess"/>
+  </semantic:collaboration>
+
+  <semantic:process id="BOMProcess" isExecutable="true">
+    <semantic:laneSet id="LaneSet_PM">
+      <semantic:lane id="Lane_PM" name="Plant Maintenance Department">
+        <semantic:flowNodeRef>SE_BOM_Prep_Start</semantic:flowNodeRef>
+        <semantic:flowNodeRef>T_Identify_Parts</semantic:flowNodeRef>
+        <semantic:flowNodeRef>T_Determine_Asset_Status</semantic:flowNodeRef>
+        <semantic:flowNodeRef>XG_Is_Asset</semantic:flowNodeRef>
+        <semantic:flowNodeRef>T_Obtain_Header_Type</semantic:flowNodeRef>
+        <semantic:flowNodeRef>XG_Merge_BOM_Path</semantic:flowNodeRef>
+        <semantic:flowNodeRef>T_Check_Spare_Part_Numbers</semantic:flowNodeRef>
+        <semantic:flowNodeRef>XG_Spare_Part_Number_Exists</semantic:flowNodeRef>
+        <semantic:flowNodeRef>T_Add_Existing_Number</semantic:flowNodeRef>
+        <semantic:flowNodeRef>T_Obtain_New_Spare_Part_Number</semantic:flowNodeRef>
+        <semantic:flowNodeRef>T_Add_New_Number</semantic:flowNodeRef>
+        <semantic:flowNodeRef>XG_Merge_Numbers_Added</semantic:flowNodeRef>
+        <semantic:flowNodeRef>T_Send_Template</semantic:flowNodeRef>
+        <semantic:flowNodeRef>EE_BOM_Template_Sent</semantic:flowNodeRef>
+      </semantic:lane>
+    </semantic:laneSet>
+
+    <semantic:startEvent id="SE_BOM_Prep_Start" name="Start BOM Data Preparation">
+      <semantic:outgoing>SF1</semantic:outgoing>
+    </semantic:startEvent>
+
+    <semantic:task id="T_Identify_Parts" name="Identify Spare Parts from Spreadsheet">
+      <semantic:incoming>SF1</semantic:incoming>
+      <semantic:outgoing>SF2</semantic:outgoing>
+    </semantic:task>
+
+    <semantic:task id="T_Determine_Asset_Status" name="Determine Equipment Asset Status">
+      <semantic:incoming>SF2</semantic:incoming>
+      <semantic:outgoing>SF3</semantic:outgoing>
+    </semantic:task>
+
+    <semantic:exclusiveGateway id="XG_Is_Asset" name="Is Equipment an Asset?">
+      <semantic:incoming>SF3</semantic:incoming>
+      <semantic:outgoing>SF4_No_Asset</semantic:outgoing>
+      <semantic:outgoing>SF5_Is_Asset</semantic:outgoing>
+    </semantic:exclusiveGateway>
+
+    <semantic:task id="T_Obtain_Header_Type" name="Obtain Header Material Type for Material BOM">
+      <semantic:incoming>SF4_No_Asset</semantic:incoming>
+      <semantic:outgoing>SF6</semantic:outgoing>
+    </semantic:task>
+
+    <semantic:exclusiveGateway id="XG_Merge_BOM_Path" name="BOM Type Path Merged">
+      <semantic:incoming>SF6</semantic:incoming>
+      <semantic:incoming>SF5_Is_Asset</semantic:incoming>
+      <semantic:outgoing>SF7</semantic:outgoing>
+    </semantic:exclusiveGateway>
+
+    <semantic:task id="T_Check_Spare_Part_Numbers" name="Check Material Number Existence for Spare Parts">
+      <semantic:incoming>SF7</semantic:incoming>
+      <semantic:outgoing>SF8</semantic:outgoing>
+    </semantic:task>
+
+    <semantic:exclusiveGateway id="XG_Spare_Part_Number_Exists" name="Spare Part Material Number Exists?">
+      <semantic:incoming>SF8</semantic:incoming>
+      <semantic:outgoing>SF9_Exists</semantic:outgoing>
+      <semantic:outgoing>SF10_Not_Exists</semantic:outgoing>
+    </semantic:exclusiveGateway>
+
+    <semantic:task id="T_Add_Existing_Number" name="Add Existing Material Number to Template">
+      <semantic:incoming>SF9_Exists</semantic:incoming>
+      <semantic:outgoing>SF11</semantic:outgoing>
+    </semantic:task>
+
+    <semantic:task id="T_Obtain_New_Spare_Part_Number" name="Obtain New Material Number for Spare Part">
+      <semantic:incoming>SF10_Not_Exists</semantic:incoming>
+      <semantic:outgoing>SF12</semantic:outgoing>
+    </semantic:task>
+
+    <semantic:task id="T_Add_New_Number" name="Add Obtained New Material Number to Template">
+      <semantic:incoming>SF12</semantic:incoming>
+      <semantic:outgoing>SF13</semantic:outgoing>
+    </semantic:task>
+
+    <semantic:exclusiveGateway id="XG_Merge_Numbers_Added" name="Material Numbers Added to Template">
+      <semantic:incoming>SF11</semantic:incoming>
+      <semantic:incoming>SF13</semantic:incoming>
+      <semantic:outgoing>SF14</semantic:outgoing>
+    </semantic:exclusiveGateway>
+
+    <semantic:task id="T_Send_Template" name="Send Filled Excel Template for Technical Check">
+      <semantic:incoming>SF14</semantic:incoming>
+      <semantic:outgoing>SF15</semantic:outgoing>
+    </semantic:task>
+
+    <semantic:endEvent id="EE_BOM_Template_Sent" name="BOM Data Prepared and Sent">
+      <semantic:incoming>SF15</semantic:incoming>
+    </semantic:endEvent>
+
+    <semantic:sequenceFlow id="SF1" sourceRef="SE_BOM_Prep_Start" targetRef="T_Identify_Parts"/>
+    <semantic:sequenceFlow id="SF2" sourceRef="T_Identify_Parts" targetRef="T_Determine_Asset_Status"/>
+    <semantic:sequenceFlow id="SF3" sourceRef="T_Determine_Asset_Status" targetRef="XG_Is_Asset"/>
+    <semantic:sequenceFlow id="SF4_No_Asset" name="No" sourceRef="XG_Is_Asset" targetRef="T_Obtain_Header_Type"/>
+    <semantic:sequenceFlow id="SF5_Is_Asset" name="Yes" sourceRef="XG_Is_Asset" targetRef="XG_Merge_BOM_Path"/>
+    <semantic:sequenceFlow id="SF6" sourceRef="T_Obtain_Header_Type" targetRef="XG_Merge_BOM_Path"/>
+    <semantic:sequenceFlow id="SF7" sourceRef="XG_Merge_BOM_Path" targetRef="T_Check_Spare_Part_Numbers"/>
+    <semantic:sequenceFlow id="SF8" sourceRef="T_Check_Spare_Part_Numbers" targetRef="XG_Spare_Part_Number_Exists"/>
+    <semantic:sequenceFlow id="SF9_Exists" name="Yes" sourceRef="XG_Spare_Part_Number_Exists" targetRef="T_Add_Existing_Number"/>
+    <semantic:sequenceFlow id="SF10_Not_Exists" name="No" sourceRef="XG_Spare_Part_Number_Exists" targetRef="T_Obtain_New_Spare_Part_Number"/>
+    <semantic:sequenceFlow id="SF11" sourceRef="T_Add_Existing_Number" targetRef="XG_Merge_Numbers_Added"/>
+    <semantic:sequenceFlow id="SF12" sourceRef="T_Obtain_New_Spare_Part_Number" targetRef="T_Add_New_Number"/>
+    <semantic:sequenceFlow id="SF13" sourceRef="T_Add_New_Number" targetRef="XG_Merge_Numbers_Added"/>
+    <semantic:sequenceFlow id="SF14" sourceRef="XG_Merge_Numbers_Added" targetRef="T_Send_Template"/>
+    <semantic:sequenceFlow id="SF15" sourceRef="T_Send_Template" targetRef="EE_BOM_Template_Sent"/>
+  </semantic:process>
+
+  <bpmndi:BPMNDiagram id="BOMDiagram" name="Bill of Material Preparation Diagram" resolution="96.0">
+    <bpmndi:BPMNPlane bpmnElement="BOMCollaboration">
+      <bpmndi:BPMNShape id="Participant_PM_Dept_shape" bpmnElement="Participant_PM_Dept" isHorizontal="true">
+        <dc:Bounds x="20" y="20" width="2600" height="320"/>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="SE_BOM_Prep_Start_shape" bpmnElement="SE_BOM_Prep_Start">
+        <dc:Bounds x="100" y="152" width="36" height="36"/>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="T_Identify_Parts_shape" bpmnElement="T_Identify_Parts">
+        <dc:Bounds x="200" y="142" width="100" height="56"/>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="T_Determine_Asset_Status_shape" bpmnElement="T_Determine_Asset_Status">
+        <dc:Bounds x="370" y="142" width="100" height="56"/>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="XG_Is_Asset_shape" bpmnElement="XG_Is_Asset" isMarkerVisible="true">
+        <dc:Bounds x="540" y="145" width="50" height="50"/>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="T_Obtain_Header_Type_shape" bpmnElement="T_Obtain_Header_Type">
+        <dc:Bounds x="660" y="62" width="100" height="56"/>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="XG_Merge_BOM_Path_shape" bpmnElement="XG_Merge_BOM_Path" isMarkerVisible="true">
+        <dc:Bounds x="830" y="145" width="50" height="50"/>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="T_Check_Spare_Part_Numbers_shape" bpmnElement="T_Check_Spare_Part_Numbers">
+        <dc:Bounds x="950" y="142" width="100" height="56"/>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="XG_Spare_Part_Number_Exists_shape" bpmnElement="XG_Spare_Part_Number_Exists" isMarkerVisible="true">
+        <dc:Bounds x="1120" y="145" width="50" height="50"/>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="T_Add_Existing_Number_shape" bpmnElement="T_Add_Existing_Number">
+        <dc:Bounds x="1240" y="62" width="100" height="56"/>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="T_Obtain_New_Spare_Part_Number_shape" bpmnElement="T_Obtain_New_Spare_Part_Number">
+        <dc:Bounds x="1240" y="222" width="100" height="56"/>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="T_Add_New_Number_shape" bpmnElement="T_Add_New_Number">
+        <dc:Bounds x="1410" y="222" width="100" height="56"/>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="XG_Merge_Numbers_Added_shape" bpmnElement="XG_Merge_Numbers_Added" isMarkerVisible="true">
+        <dc:Bounds x="1580" y="145" width="50" height="50"/>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="T_Send_Template_shape" bpmnElement="T_Send_Template">
+        <dc:Bounds x="1700" y="142" width="100" height="56"/>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="EE_BOM_Template_Sent_shape" bpmnElement="EE_BOM_Template_Sent">
+        <dc:Bounds x="1870" y="152" width="36" height="36"/>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNEdge id="SF1_edge" bpmnElement="SF1">
+        <di:waypoint x="136" y="170"/>
+        <di:waypoint x="200" y="170"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="SF2_edge" bpmnElement="SF2">
+        <di:waypoint x="300" y="170"/>
+        <di:waypoint x="370" y="170"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="SF3_edge" bpmnElement="SF3">
+        <di:waypoint x="470" y="170"/>
+        <di:waypoint x="540" y="170"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="SF4_No_Asset_edge" bpmnElement="SF4_No_Asset">
+        <di:waypoint x="565" y="145"/>
+        <di:waypoint x="565" y="90"/>
+        <di:waypoint x="660" y="90"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="SF5_Is_Asset_edge" bpmnElement="SF5_Is_Asset">
+        <di:waypoint x="565" y="195"/>
+        <di:waypoint x="565" y="250"/>
+        <di:waypoint x="855" y="250"/>
+        <di:waypoint x="855" y="195"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="SF6_edge" bpmnElement="SF6">
+        <di:waypoint x="760" y="90"/>
+        <di:waypoint x="855" y="90"/>
+        <di:waypoint x="855" y="145"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="SF7_edge" bpmnElement="SF7">
+        <di:waypoint x="880" y="170"/>
+        <di:waypoint x="950" y="170"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="SF8_edge" bpmnElement="SF8">
+        <di:waypoint x="1050" y="170"/>
+        <di:waypoint x="1120" y="170"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="SF9_Exists_edge" bpmnElement="SF9_Exists">
+        <di:waypoint x="1145" y="145"/>
+        <di:waypoint x="1145" y="90"/>
+        <di:waypoint x="1240" y="90"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="SF10_Not_Exists_edge" bpmnElement="SF10_Not_Exists">
+        <di:waypoint x="1145" y="195"/>
+        <di:waypoint x="1145" y="250"/>
+        <di:waypoint x="1240" y="250"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="SF11_edge" bpmnElement="SF11">
+        <di:waypoint x="1340" y="90"/>
+        <di:waypoint x="1605" y="90"/>
+        <di:waypoint x="1605" y="145"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="SF12_edge" bpmnElement="SF12">
+        <di:waypoint x="1340" y="250"/>
+        <di:waypoint x="1410" y="250"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="SF13_edge" bpmnElement="SF13">
+        <di:waypoint x="1510" y="250"/>
+        <di:waypoint x="1605" y="250"/>
+        <di:waypoint x="1605" y="195"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="SF14_edge" bpmnElement="SF14">
+        <di:waypoint x="1630" y="170"/>
+        <di:waypoint x="1700" y="170"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="SF15_edge" bpmnElement="SF15">
+        <di:waypoint x="1800" y="170"/>
+        <di:waypoint x="1870" y="170"/>
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</semantic:definitions>

@@ -1,0 +1,190 @@
+
+<?xml version="1.0" standalone="yes"?>
+<semantic:definitions id="Definitions_AssignMaterialMaster"
+    targetNamespace="http://example.com/bpmn/assign-material-master"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:semantic="http://www.omg.org/spec/BPMN/20100524/MODEL"
+    xmlns:di="http://www.omg.org/spec/DD/20100524/DI"
+    xmlns:dc="http://www.omg.org/spec/DD/20100524/DC"
+    xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI">
+
+  <semantic:collaboration id="Collab_AssignMaterialToVendor">
+    <semantic:participant id="Participant_PurchasingDept" name="Purchasing Department" processRef="Process_AssignMaterialToVendor"/>
+  </semantic:collaboration>
+
+  <semantic:process id="Process_AssignMaterialToVendor" isExecutable="true">
+    <semantic:laneSet id="LaneSet_Purchasing">
+      <semantic:lane id="Lane_PurchasingEmployee" name="Purchasing Employee">
+        <semantic:flowNodeRef>StartEvent_ProcessBegins</semantic:flowNodeRef>
+        <semantic:flowNodeRef>Task_CreateIR</semantic:flowNodeRef>
+        <semantic:flowNodeRef>Task_ConfirmInitial</semantic:flowNodeRef>
+        <semantic:flowNodeRef>Task_DefineGeneralData</semantic:flowNodeRef>
+        <semantic:flowNodeRef>Task_DefineOrgData</semantic:flowNodeRef>
+        <semantic:flowNodeRef>Task_ConfirmOrgData</semantic:flowNodeRef>
+        <semantic:flowNodeRef>Task_DefineConditions</semantic:flowNodeRef>
+        <semantic:flowNodeRef>Task_AddDiscount</semantic:flowNodeRef>
+        <semantic:flowNodeRef>Task_ConfirmDiscount</semantic:flowNodeRef>
+        <semantic:flowNodeRef>Task_AssignItems</semantic:flowNodeRef>
+        <semantic:flowNodeRef>EndEvent_ProcessCompletes</semantic:flowNodeRef>
+      </semantic:lane>
+    </semantic:laneSet>
+
+    <semantic:startEvent id="StartEvent_ProcessBegins" name="Process Start">
+      <semantic:outgoing>Flow_1</semantic:outgoing>
+    </semantic:startEvent>
+
+    <semantic:task id="Task_CreateIR" name="Create Info Record and Define Parameters">
+      <semantic:incoming>Flow_1</semantic:incoming>
+      <semantic:outgoing>Flow_2</semantic:outgoing>
+    </semantic:task>
+
+    <semantic:task id="Task_ConfirmInitial" name="Confirm Initial Entries">
+      <semantic:incoming>Flow_2</semantic:incoming>
+      <semantic:outgoing>Flow_3</semantic:outgoing>
+    </semantic:task>
+
+    <semantic:task id="Task_DefineGeneralData" name="Define Info Records General Data">
+      <semantic:incoming>Flow_3</semantic:incoming>
+      <semantic:outgoing>Flow_4</semantic:outgoing>
+    </semantic:task>
+
+    <semantic:task id="Task_DefineOrgData" name="Define Purchasing Organization Data">
+      <semantic:incoming>Flow_4</semantic:incoming>
+      <semantic:outgoing>Flow_5</semantic:outgoing>
+    </semantic:task>
+
+    <semantic:task id="Task_ConfirmOrgData" name="Confirm Purchasing Org Data Entries">
+      <semantic:incoming>Flow_5</semantic:incoming>
+      <semantic:outgoing>Flow_6</semantic:outgoing>
+    </semantic:task>
+
+    <semantic:task id="Task_DefineConditions" name="Define Conditions for Discounts">
+      <semantic:incoming>Flow_6</semantic:incoming>
+      <semantic:outgoing>Flow_7</semantic:outgoing>
+    </semantic:task>
+
+    <semantic:task id="Task_AddDiscount" name="Add Discount (RA01, Percentage Rate)">
+      <semantic:incoming>Flow_7</semantic:incoming>
+      <semantic:outgoing>Flow_8</semantic:outgoing>
+    </semantic:task>
+
+    <semantic:task id="Task_ConfirmDiscount" name="Confirm Discount Entries">
+      <semantic:incoming>Flow_8</semantic:incoming>
+      <semantic:outgoing>Flow_9</semantic:outgoing>
+    </semantic:task>
+
+    <semantic:task id="Task_AssignItems" name="Assign Purchased Items to Sources (Vendors)">
+      <semantic:incoming>Flow_9</semantic:incoming>
+      <semantic:outgoing>Flow_10</semantic:outgoing>
+    </semantic:task>
+
+    <semantic:endEvent id="EndEvent_ProcessCompletes" name="Material Master Records Assigned Successfully">
+      <semantic:incoming>Flow_10</semantic:incoming>
+    </semantic:endEvent>
+
+    <semantic:sequenceFlow id="Flow_1" sourceRef="StartEvent_ProcessBegins" targetRef="Task_CreateIR"/>
+    <semantic:sequenceFlow id="Flow_2" sourceRef="Task_CreateIR" targetRef="Task_ConfirmInitial"/>
+    <semantic:sequenceFlow id="Flow_3" sourceRef="Task_ConfirmInitial" targetRef="Task_DefineGeneralData"/>
+    <semantic:sequenceFlow id="Flow_4" sourceRef="Task_DefineGeneralData" targetRef="Task_DefineOrgData"/>
+    <semantic:sequenceFlow id="Flow_5" sourceRef="Task_DefineOrgData" targetRef="Task_ConfirmOrgData"/>
+    <semantic:sequenceFlow id="Flow_6" sourceRef="Task_ConfirmOrgData" targetRef="Task_DefineConditions"/>
+    <semantic:sequenceFlow id="Flow_7" sourceRef="Task_DefineConditions" targetRef="Task_AddDiscount"/>
+    <semantic:sequenceFlow id="Flow_8" sourceRef="Task_AddDiscount" targetRef="Task_ConfirmDiscount"/>
+    <semantic:sequenceFlow id="Flow_9" sourceRef="Task_ConfirmDiscount" targetRef="Task_AssignItems"/>
+    <semantic:sequenceFlow id="Flow_10" sourceRef="Task_AssignItems" targetRef="EndEvent_ProcessCompletes"/>
+  </semantic:process>
+
+  <bpmndi:BPMNDiagram id="Diagram_AssignMaterialMaster" name="Assign Material Master Diagram" resolution="96.0">
+    <bpmndi:BPMNPlane bpmnElement="Collab_AssignMaterialToVendor">
+      <bpmndi:BPMNShape id="Participant_PurchasingDept_shape" bpmnElement="Participant_PurchasingDept" isHorizontal="true">
+        <dc:Bounds x="20" y="20" width="2350" height="300"/>
+      </bpmndi:BPMNShape>
+      <!-- Note: As per example, explicit BPMNShape for single Lane is not always added if Pool shape defines its area -->
+      <!-- If an explicit lane shape were required:
+      <bpmndi:BPMNShape id="Lane_PurchasingEmployee_shape" bpmnElement="Lane_PurchasingEmployee" isHorizontal="true">
+        <dc:Bounds x="50" y="20" width="2320" height="300"/>
+      </bpmndi:BPMNShape>
+      -->
+      <bpmndi:BPMNShape id="StartEvent_ProcessBegins_shape" bpmnElement="StartEvent_ProcessBegins">
+        <dc:Bounds x="100" y="152" width="36" height="36"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="88" y="193" width="80" height="14"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_CreateIR_shape" bpmnElement="Task_CreateIR">
+        <dc:Bounds x="186" y="130" width="180" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_ConfirmInitial_shape" bpmnElement="Task_ConfirmInitial">
+        <dc:Bounds x="416" y="130" width="140" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_DefineGeneralData_shape" bpmnElement="Task_DefineGeneralData">
+        <dc:Bounds x="606" y="130" width="180" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_DefineOrgData_shape" bpmnElement="Task_DefineOrgData">
+        <dc:Bounds x="836" y="130" width="190" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_ConfirmOrgData_shape" bpmnElement="Task_ConfirmOrgData">
+        <dc:Bounds x="1076" y="130" width="180" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_DefineConditions_shape" bpmnElement="Task_DefineConditions">
+        <dc:Bounds x="1306" y="130" width="180" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_AddDiscount_shape" bpmnElement="Task_AddDiscount">
+        <dc:Bounds x="1536" y="130" width="200" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_ConfirmDiscount_shape" bpmnElement="Task_ConfirmDiscount">
+        <dc:Bounds x="1786" y="130" width="150" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_AssignItems_shape" bpmnElement="Task_AssignItems">
+        <dc:Bounds x="1986" y="130" width="220" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="EndEvent_ProcessCompletes_shape" bpmnElement="EndEvent_ProcessCompletes">
+        <dc:Bounds x="2256" y="152" width="36" height="36"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="2230" y="193" width="90" height="40"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNEdge id="Flow_1_edge" bpmnElement="Flow_1">
+        <di:waypoint x="136" y="170"/>
+        <di:waypoint x="186" y="170"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_2_edge" bpmnElement="Flow_2">
+        <di:waypoint x="366" y="170"/>
+        <di:waypoint x="416" y="170"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_3_edge" bpmnElement="Flow_3">
+        <di:waypoint x="556" y="170"/>
+        <di:waypoint x="606" y="170"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_4_edge" bpmnElement="Flow_4">
+        <di:waypoint x="786" y="170"/>
+        <di:waypoint x="836" y="170"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_5_edge" bpmnElement="Flow_5">
+        <di:waypoint x="1026" y="170"/>
+        <di:waypoint x="1076" y="170"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_6_edge" bpmnElement="Flow_6">
+        <di:waypoint x="1256" y="170"/>
+        <di:waypoint x="1306" y="170"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_7_edge" bpmnElement="Flow_7">
+        <di:waypoint x="1486" y="170"/>
+        <di:waypoint x="1536" y="170"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_8_edge" bpmnElement="Flow_8">
+        <di:waypoint x="1736" y="170"/>
+        <di:waypoint x="1786" y="170"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_9_edge" bpmnElement="Flow_9">
+        <di:waypoint x="1936" y="170"/>
+        <di:waypoint x="1986" y="170"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_10_edge" bpmnElement="Flow_10">
+        <di:waypoint x="2206" y="170"/>
+        <di:waypoint x="2256" y="170"/>
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</semantic:definitions>

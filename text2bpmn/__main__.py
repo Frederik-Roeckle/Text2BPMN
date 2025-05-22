@@ -62,6 +62,7 @@ GRAPH_MAP = {
 }
 
 @traceable
+@traceable
 def main():
     #config.set_model(OpenAILLM(model="gpt-4.1-mini",temperature=0))
     config.set_model(GeminiLLM(model="gemini-2.5-pro-preview-05-06", temperature=0))

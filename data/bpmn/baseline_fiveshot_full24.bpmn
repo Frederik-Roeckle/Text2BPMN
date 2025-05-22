@@ -1,0 +1,447 @@
+<?xml version="1.0" standalone="yes"?>
+<semantic:definitions id="MaintainServiceMasterDataProcess"
+    targetNamespace="http://example.com/bpmn/maintains_master_data"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:semantic="http://www.omg.org/spec/BPMN/20100524/MODEL"
+    xmlns:di="http://www.omg.org/spec/DD/20100524/DI"
+    xmlns:dc="http://www.omg.org/spec/DD/20100524/DC"
+    xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI">
+
+  <semantic:collaboration id="Collab_MaintainMasterData">
+    <semantic:participant id="P_ProductionDepartment" name="Production Department" processRef="Process_MaintainMasterData"/>
+  </semantic:collaboration>
+
+  <semantic:process id="Process_MaintainMasterData" isExecutable="true">
+    <semantic:laneSet id="LaneSet_MaintainMasterData">
+      <semantic:lane id="L_ProductionAssistant" name="Production Assistant">
+        <semantic:flowNodeRef>SE_ServiceOrderReceived</semantic:flowNodeRef>
+        <semantic:flowNodeRef>SP_ManageWorkCentreDetails</semantic:flowNodeRef>
+        <semantic:flowNodeRef>SP_DefineWorkCentreCapacity</semantic:flowNodeRef>
+        <semantic:flowNodeRef>SP_DefineWorkCentreScheduling</semantic:flowNodeRef>
+        <semantic:flowNodeRef>SP_DefineWorkCostCentreLink</semantic:flowNodeRef>
+        <semantic:flowNodeRef>T_SaveNewWorkCentre</semantic:flowNodeRef>
+        <semantic:flowNodeRef>EE_MasterDataMaintained</semantic:flowNodeRef>
+      </semantic:lane>
+    </semantic:laneSet>
+
+    <semantic:startEvent id="SE_ServiceOrderReceived" name="Service Order Received">
+      <semantic:outgoing>SF_To_SP_ManageWorkCentreDetails</semantic:outgoing>
+    </semantic:startEvent>
+
+    <semantic:subProcess id="SP_ManageWorkCentreDetails" name="Manage Work Centre Details">
+      <semantic:incoming>SF_To_SP_ManageWorkCentreDetails</semantic:incoming>
+      <semantic:outgoing>SF_From_SP_ManageWorkCentreDetails</semantic:outgoing>
+      <semantic:startEvent id="SE_SP_ManageWorkCentreDetails_Start" name="Start Managing Work Centre Details">
+        <semantic:outgoing>SF_To_T_EnterWorkCentreBasicInfo</semantic:outgoing>
+      </semantic:startEvent>
+      <semantic:userTask id="T_EnterWorkCentreBasicInfo" name="Enter Plant, Name, and Category">
+        <semantic:incoming>SF_To_T_EnterWorkCentreBasicInfo</semantic:incoming>
+        <semantic:outgoing>SF_To_T_ConfirmWorkCentreBasicInfo</semantic:outgoing>
+      </semantic:userTask>
+      <semantic:userTask id="T_ConfirmWorkCentreBasicInfo" name="Confirm Basic Information">
+        <semantic:incoming>SF_To_T_ConfirmWorkCentreBasicInfo</semantic:incoming>
+        <semantic:outgoing>SF_To_T_ReviewNewWorkCentreDetails</semantic:outgoing>
+      </semantic:userTask>
+      <semantic:userTask id="T_ReviewNewWorkCentreDetails" name="Review New Work Centre Details">
+        <semantic:incoming>SF_To_T_ReviewNewWorkCentreDetails</semantic:incoming>
+        <semantic:outgoing>SF_To_T_SpecifyWorkCentreAttributes</semantic:outgoing>
+      </semantic:userTask>
+      <semantic:userTask id="T_SpecifyWorkCentreAttributes" name="Specify Full Name, Responsible Person, and Usage">
+        <semantic:incoming>SF_To_T_SpecifyWorkCentreAttributes</semantic:incoming>
+        <semantic:outgoing>SF_To_SP_DefineRouting</semantic:outgoing>
+      </semantic:userTask>
+      <semantic:subProcess id="SP_DefineRouting" name="Define Routing (Service)">
+        <semantic:incoming>SF_To_SP_DefineRouting</semantic:incoming>
+        <semantic:outgoing>SF_From_SP_DefineRouting</semantic:outgoing>
+        <semantic:startEvent id="SE_SP_DefineRouting_Start" name="Start Defining Routing">
+          <semantic:outgoing>SF_To_T_SelectStandardKeyValue</semantic:outgoing>
+        </semantic:startEvent>
+        <semantic:userTask id="T_SelectStandardKeyValue" name="Select Standard Key Value">
+          <semantic:incoming>SF_To_T_SelectStandardKeyValue</semantic:incoming>
+          <semantic:outgoing>SF_To_T_EnterSetupTime</semantic:outgoing>
+        </semantic:userTask>
+        <semantic:userTask id="T_EnterSetupTime" name="Enter Set-up Time">
+          <semantic:incoming>SF_To_T_EnterSetupTime</semantic:incoming>
+          <semantic:outgoing>SF_To_T_EnterMachineTime</semantic:outgoing>
+        </semantic:userTask>
+        <semantic:userTask id="T_EnterMachineTime" name="Enter Machine Time (Optional)">
+          <semantic:incoming>SF_To_T_EnterMachineTime</semantic:incoming>
+          <semantic:outgoing>SF_To_T_EnterVariableLabourTime</semantic:outgoing>
+        </semantic:userTask>
+        <semantic:userTask id="T_EnterVariableLabourTime" name="Enter Variable Labour Time">
+          <semantic:incoming>SF_To_T_EnterVariableLabourTime</semantic:incoming>
+          <semantic:outgoing>SF_To_T_EnterTeardownTime</semantic:outgoing>
+        </semantic:userTask>
+        <semantic:userTask id="T_EnterTeardownTime" name="Enter Teardown Time">
+          <semantic:incoming>SF_To_T_EnterTeardownTime</semantic:incoming>
+          <semantic:outgoing>SF_To_EE_RoutingDefined</semantic:outgoing>
+        </semantic:userTask>
+        <semantic:endEvent id="EE_RoutingDefined" name="Routing Defined">
+          <semantic:incoming>SF_To_EE_RoutingDefined</semantic:incoming>
+        </semantic:endEvent>
+        <semantic:sequenceFlow id="SF_To_T_SelectStandardKeyValue" sourceRef="SE_SP_DefineRouting_Start" targetRef="T_SelectStandardKeyValue"/>
+        <semantic:sequenceFlow id="SF_To_T_EnterSetupTime" sourceRef="T_SelectStandardKeyValue" targetRef="T_EnterSetupTime"/>
+        <semantic:sequenceFlow id="SF_To_T_EnterMachineTime" sourceRef="T_EnterSetupTime" targetRef="T_EnterMachineTime"/>
+        <semantic:sequenceFlow id="SF_To_T_EnterVariableLabourTime" sourceRef="T_EnterMachineTime" targetRef="T_EnterVariableLabourTime"/>
+        <semantic:sequenceFlow id="SF_To_T_EnterTeardownTime" sourceRef="T_EnterVariableLabourTime" targetRef="T_EnterTeardownTime"/>
+        <semantic:sequenceFlow id="SF_To_EE_RoutingDefined" sourceRef="T_EnterTeardownTime" targetRef="EE_RoutingDefined"/>
+      </semantic:subProcess>
+      <semantic:userTask id="T_ReviewRoutingSteps" name="Review Displayed Routing Steps">
+        <semantic:incoming>SF_From_SP_DefineRouting</semantic:incoming>
+        <semantic:outgoing>SF_To_EE_WorkCentreDetailsAndRoutingDefined</semantic:outgoing>
+      </semantic:userTask>
+      <semantic:endEvent id="EE_WorkCentreDetailsAndRoutingDefined" name="Work Centre Details and Routing Defined">
+        <semantic:incoming>SF_To_EE_WorkCentreDetailsAndRoutingDefined</semantic:incoming>
+      </semantic:endEvent>
+      <semantic:sequenceFlow id="SF_To_T_EnterWorkCentreBasicInfo" sourceRef="SE_SP_ManageWorkCentreDetails_Start" targetRef="T_EnterWorkCentreBasicInfo"/>
+      <semantic:sequenceFlow id="SF_To_T_ConfirmWorkCentreBasicInfo" sourceRef="T_EnterWorkCentreBasicInfo" targetRef="T_ConfirmWorkCentreBasicInfo"/>
+      <semantic:sequenceFlow id="SF_To_T_ReviewNewWorkCentreDetails" sourceRef="T_ConfirmWorkCentreBasicInfo" targetRef="T_ReviewNewWorkCentreDetails"/>
+      <semantic:sequenceFlow id="SF_To_T_SpecifyWorkCentreAttributes" sourceRef="T_ReviewNewWorkCentreDetails" targetRef="T_SpecifyWorkCentreAttributes"/>
+      <semantic:sequenceFlow id="SF_To_SP_DefineRouting" sourceRef="T_SpecifyWorkCentreAttributes" targetRef="SP_DefineRouting"/>
+      <semantic:sequenceFlow id="SF_From_SP_DefineRouting" sourceRef="SP_DefineRouting" targetRef="T_ReviewRoutingSteps"/>
+      <semantic:sequenceFlow id="SF_To_EE_WorkCentreDetailsAndRoutingDefined" sourceRef="T_ReviewRoutingSteps" targetRef="EE_WorkCentreDetailsAndRoutingDefined"/>
+    </semantic:subProcess>
+
+    <semantic:subProcess id="SP_DefineWorkCentreCapacity" name="Define Work Centre Capacity">
+      <semantic:incoming>SF_From_SP_ManageWorkCentreDetails</semantic:incoming>
+      <semantic:outgoing>SF_From_SP_DefineWorkCentreCapacity</semantic:outgoing>
+      <semantic:startEvent id="SE_SP_DefineWorkCentreCapacity_Start" name="Start Defining Work Centre Capacity">
+        <semantic:outgoing>SF_To_T_DefineCapacityCategoryAndFormulas</semantic:outgoing>
+      </semantic:startEvent>
+      <semantic:userTask id="T_DefineCapacityCategoryAndFormulas" name="Define Capacity Category and Select Formulas">
+        <semantic:incoming>SF_To_T_DefineCapacityCategoryAndFormulas</semantic:incoming>
+        <semantic:outgoing>SF_To_T_CheckOfferedCapacity</semantic:outgoing>
+      </semantic:userTask>
+      <semantic:userTask id="T_CheckOfferedCapacity" name="Check Offered Capacity">
+        <semantic:incoming>SF_To_T_CheckOfferedCapacity</semantic:incoming>
+        <semantic:outgoing>SF_To_XG_CapacityHeaderMethod</semantic:outgoing>
+      </semantic:userTask>
+      <semantic:exclusiveGateway id="XG_CapacityHeaderMethod" name="Capacity Header Entry Method?">
+        <semantic:incoming>SF_To_XG_CapacityHeaderMethod</semantic:incoming>
+        <semantic:outgoing>SF_Path_ManualCapacityHeader</semantic:outgoing>
+        <semantic:outgoing>SF_Path_ReferenceCapacityHeader</semantic:outgoing>
+      </semantic:exclusiveGateway>
+      <semantic:userTask id="T_EnterCapacityHeaderManually" name="Enter Capacity Header Manually">
+        <semantic:incoming>SF_Path_ManualCapacityHeader</semantic:incoming>
+        <semantic:outgoing>SF_To_XG_JoinCapacityDefinition_Manual</semantic:outgoing>
+      </semantic:userTask>
+      <semantic:exclusiveGateway id="XG_ReferenceCapacityExists" name="Reference Capacity Exists?">
+        <semantic:incoming>SF_Path_ReferenceCapacityHeader</semantic:incoming>
+        <semantic:outgoing>SF_Path_RefCapExists_Yes</semantic:outgoing>
+        <semantic:outgoing>SF_Path_RefCapExists_No</semantic:outgoing>
+      </semantic:exclusiveGateway>
+      <semantic:userTask id="T_SelectExistingReferenceCapacity" name="Select Existing Reference Capacity">
+        <semantic:incoming>SF_Path_RefCapExists_Yes</semantic:incoming>
+        <semantic:outgoing>SF_To_XG_JoinCapacityDefinition_ExistingRef</semantic:outgoing>
+      </semantic:userTask>
+      <semantic:subProcess id="SP_CreateReferenceCapacity" name="Create Reference Capacity">
+        <semantic:incoming>SF_Path_RefCapExists_No</semantic:incoming>
+        <semantic:outgoing>SF_From_SP_CreateReferenceCapacity</semantic:outgoing>
+        <semantic:startEvent id="SE_SP_CreateReferenceCapacity_Start" name="Start Creating Reference Capacity">
+          <semantic:outgoing>SF_To_T_EnterRefCapParams</semantic:outgoing>
+        </semantic:startEvent>
+        <semantic:userTask id="T_EnterRefCapParams" name="Enter Plant, Personnel Capacity Name, Category '002'">
+          <semantic:incoming>SF_To_T_EnterRefCapParams</semantic:incoming>
+          <semantic:outgoing>SF_To_T_ConfirmRefCapParams</semantic:outgoing>
+        </semantic:userTask>
+        <semantic:userTask id="T_ConfirmRefCapParams" name="Confirm Reference Capacity Parameters">
+          <semantic:incoming>SF_To_T_ConfirmRefCapParams</semantic:incoming>
+          <semantic:outgoing>SF_To_T_ReviewStandardCapacityDetails</semantic:outgoing>
+        </semantic:userTask>
+        <semantic:userTask id="T_ReviewStandardCapacityDetails" name="Review Standard Capacity Details">
+          <semantic:incoming>SF_To_T_ReviewStandardCapacityDetails</semantic:incoming>
+          <semantic:outgoing>SF_To_T_SpecifyRefCapChars</semantic:outgoing>
+        </semantic:userTask>
+        <semantic:userTask id="T_SpecifyRefCapChars" name="Specify Reference Capacity Characteristics">
+          <semantic:incoming>SF_To_T_SpecifyRefCapChars</semantic:incoming>
+          <semantic:outgoing>SF_To_T_ConfirmRefCapChars</semantic:outgoing>
+        </semantic:userTask>
+        <semantic:userTask id="T_ConfirmRefCapChars" name="Confirm Reference Capacity Characteristics">
+          <semantic:incoming>SF_To_T_ConfirmRefCapChars</semantic:incoming>
+          <semantic:outgoing>SF_To_T_ReviewCalculatedOperatingTime</semantic:outgoing>
+        </semantic:userTask>
+        <semantic:userTask id="T_ReviewCalculatedOperatingTime" name="Review Calculated Daily Operating Time">
+          <semantic:incoming>SF_To_T_ReviewCalculatedOperatingTime</semantic:incoming>
+          <semantic:outgoing>SF_To_T_SaveReferenceCapacity</semantic:outgoing>
+        </semantic:userTask>
+        <semantic:userTask id="T_SaveReferenceCapacity" name="Save Reference Capacity">
+          <semantic:incoming>SF_To_T_SaveReferenceCapacity</semantic:incoming>
+          <semantic:outgoing>SF_To_EE_ReferenceCapacityCreated</semantic:outgoing>
+        </semantic:userTask>
+        <semantic:endEvent id="EE_ReferenceCapacityCreated" name="Reference Capacity Created">
+          <semantic:incoming>SF_To_EE_ReferenceCapacityCreated</semantic:incoming>
+        </semantic:endEvent>
+        <semantic:sequenceFlow id="SF_To_T_EnterRefCapParams" sourceRef="SE_SP_CreateReferenceCapacity_Start" targetRef="T_EnterRefCapParams"/>
+        <semantic:sequenceFlow id="SF_To_T_ConfirmRefCapParams" sourceRef="T_EnterRefCapParams" targetRef="T_ConfirmRefCapParams"/>
+        <semantic:sequenceFlow id="SF_To_T_ReviewStandardCapacityDetails" sourceRef="T_ConfirmRefCapParams" targetRef="T_ReviewStandardCapacityDetails"/>
+        <semantic:sequenceFlow id="SF_To_T_SpecifyRefCapChars" sourceRef="T_ReviewStandardCapacityDetails" targetRef="T_SpecifyRefCapChars"/>
+        <semantic:sequenceFlow id="SF_To_T_ConfirmRefCapChars" sourceRef="T_SpecifyRefCapChars" targetRef="T_ConfirmRefCapChars"/>
+        <semantic:sequenceFlow id="SF_To_T_ReviewCalculatedOperatingTime" sourceRef="T_ConfirmRefCapChars" targetRef="T_ReviewCalculatedOperatingTime"/>
+        <semantic:sequenceFlow id="SF_To_T_SaveReferenceCapacity" sourceRef="T_ReviewCalculatedOperatingTime" targetRef="T_SaveReferenceCapacity"/>
+        <semantic:sequenceFlow id="SF_To_EE_ReferenceCapacityCreated" sourceRef="T_SaveReferenceCapacity" targetRef="EE_ReferenceCapacityCreated"/>
+      </semantic:subProcess>
+      <semantic:userTask id="T_SelectCreatedReferenceCapacity" name="Select Created Reference Capacity">
+        <semantic:incoming>SF_From_SP_CreateReferenceCapacity</semantic:incoming>
+        <semantic:outgoing>SF_To_XG_JoinCapacityDefinition_NewRef</semantic:outgoing>
+      </semantic:userTask>
+      <semantic:exclusiveGateway id="XG_JoinCapacityDefinition" name="Join Capacity Definition">
+        <semantic:incoming>SF_To_XG_JoinCapacityDefinition_Manual</semantic:incoming>
+        <semantic:incoming>SF_To_XG_JoinCapacityDefinition_ExistingRef</semantic:incoming>
+        <semantic:incoming>SF_To_XG_JoinCapacityDefinition_NewRef</semantic:incoming>
+        <semantic:outgoing>SF_To_EE_WorkCentreCapacityDefined</semantic:outgoing>
+      </semantic:exclusiveGateway>
+      <semantic:endEvent id="EE_WorkCentreCapacityDefined" name="Work Centre Capacity Defined">
+        <semantic:incoming>SF_To_EE_WorkCentreCapacityDefined</semantic:incoming>
+      </semantic:endEvent>
+      <semantic:sequenceFlow id="SF_To_T_DefineCapacityCategoryAndFormulas" sourceRef="SE_SP_DefineWorkCentreCapacity_Start" targetRef="T_DefineCapacityCategoryAndFormulas"/>
+      <semantic:sequenceFlow id="SF_To_T_CheckOfferedCapacity" sourceRef="T_DefineCapacityCategoryAndFormulas" targetRef="T_CheckOfferedCapacity"/>
+      <semantic:sequenceFlow id="SF_To_XG_CapacityHeaderMethod" sourceRef="T_CheckOfferedCapacity" targetRef="XG_CapacityHeaderMethod"/>
+      <semantic:sequenceFlow id="SF_Path_ManualCapacityHeader" name="Manual" sourceRef="XG_CapacityHeaderMethod" targetRef="T_EnterCapacityHeaderManually"/>
+      <semantic:sequenceFlow id="SF_Path_ReferenceCapacityHeader" name="Reference" sourceRef="XG_CapacityHeaderMethod" targetRef="XG_ReferenceCapacityExists"/>
+      <semantic:sequenceFlow id="SF_To_XG_JoinCapacityDefinition_Manual" sourceRef="T_EnterCapacityHeaderManually" targetRef="XG_JoinCapacityDefinition"/>
+      <semantic:sequenceFlow id="SF_Path_RefCapExists_Yes" name="Yes" sourceRef="XG_ReferenceCapacityExists" targetRef="T_SelectExistingReferenceCapacity"/>
+      <semantic:sequenceFlow id="SF_Path_RefCapExists_No" name="No" sourceRef="XG_ReferenceCapacityExists" targetRef="SP_CreateReferenceCapacity"/>
+      <semantic:sequenceFlow id="SF_To_XG_JoinCapacityDefinition_ExistingRef" sourceRef="T_SelectExistingReferenceCapacity" targetRef="XG_JoinCapacityDefinition"/>
+      <semantic:sequenceFlow id="SF_From_SP_CreateReferenceCapacity" sourceRef="SP_CreateReferenceCapacity" targetRef="T_SelectCreatedReferenceCapacity"/>
+      <semantic:sequenceFlow id="SF_To_XG_JoinCapacityDefinition_NewRef" sourceRef="T_SelectCreatedReferenceCapacity" targetRef="XG_JoinCapacityDefinition"/>
+      <semantic:sequenceFlow id="SF_To_EE_WorkCentreCapacityDefined" sourceRef="XG_JoinCapacityDefinition" targetRef="EE_WorkCentreCapacityDefined"/>
+    </semantic:subProcess>
+
+    <semantic:subProcess id="SP_DefineWorkCentreScheduling" name="Define Work Centre Scheduling">
+      <semantic:incoming>SF_From_SP_DefineWorkCentreCapacity</semantic:incoming>
+      <semantic:outgoing>SF_From_SP_DefineWorkCentreScheduling</semantic:outgoing>
+      <semantic:startEvent id="SE_SP_DefineWorkCentreScheduling_Start" name="Start Defining Work Centre Scheduling">
+        <semantic:outgoing>SF_To_T_SelectCapacityAndFormulasForScheduling</semantic:outgoing>
+      </semantic:startEvent>
+      <semantic:userTask id="T_SelectCapacityAndFormulasForScheduling" name="Select Capacity and Enter Formulas for Scheduling">
+        <semantic:incoming>SF_To_T_SelectCapacityAndFormulasForScheduling</semantic:incoming>
+        <semantic:outgoing>SF_To_T_ConfirmSchedulingEntries</semantic:outgoing>
+      </semantic:userTask>
+      <semantic:userTask id="T_ConfirmSchedulingEntries" name="Confirm Scheduling Entries">
+        <semantic:incoming>SF_To_T_ConfirmSchedulingEntries</semantic:incoming>
+        <semantic:outgoing>SF_To_T_ReviewSchedulingParams</semantic:outgoing>
+      </semantic:userTask>
+      <semantic:userTask id="T_ReviewSchedulingParams" name="Review Scheduling Parameters and Formulas">
+        <semantic:incoming>SF_To_T_ReviewSchedulingParams</semantic:incoming>
+        <semantic:outgoing>SF_To_EE_WorkCentreSchedulingDefined</semantic:outgoing>
+      </semantic:userTask>
+      <semantic:endEvent id="EE_WorkCentreSchedulingDefined" name="Work Centre Scheduling Defined">
+        <semantic:incoming>SF_To_EE_WorkCentreSchedulingDefined</semantic:incoming>
+      </semantic:endEvent>
+      <semantic:sequenceFlow id="SF_To_T_SelectCapacityAndFormulasForScheduling" sourceRef="SE_SP_DefineWorkCentreScheduling_Start" targetRef="T_SelectCapacityAndFormulasForScheduling"/>
+      <semantic:sequenceFlow id="SF_To_T_ConfirmSchedulingEntries" sourceRef="T_SelectCapacityAndFormulasForScheduling" targetRef="T_ConfirmSchedulingEntries"/>
+      <semantic:sequenceFlow id="SF_To_T_ReviewSchedulingParams" sourceRef="T_ConfirmSchedulingEntries" targetRef="T_ReviewSchedulingParams"/>
+      <semantic:sequenceFlow id="SF_To_EE_WorkCentreSchedulingDefined" sourceRef="T_ReviewSchedulingParams" targetRef="EE_WorkCentreSchedulingDefined"/>
+    </semantic:subProcess>
+
+    <semantic:subProcess id="SP_DefineWorkCostCentreLink" name="Define Work and Cost Centres Link">
+      <semantic:incoming>SF_From_SP_DefineWorkCentreScheduling</semantic:incoming>
+      <semantic:outgoing>SF_From_SP_DefineWorkCostCentreLink</semantic:outgoing>
+      <semantic:startEvent id="SE_SP_DefineWorkCostCentreLink_Start" name="Start Defining Work/Cost Centre Link">
+        <semantic:outgoing>SF_To_T_IndicateActivityTypeAndFormulasForLink</semantic:outgoing>
+      </semantic:startEvent>
+      <semantic:userTask id="T_IndicateActivityTypeAndFormulasForLink" name="Indicate Activity Type and Formulas for Link">
+        <semantic:incoming>SF_To_T_IndicateActivityTypeAndFormulasForLink</semantic:incoming>
+        <semantic:outgoing>SF_To_EE_WorkCostCentreLinkCreated</semantic:outgoing>
+      </semantic:userTask>
+      <semantic:endEvent id="EE_WorkCostCentreLinkCreated" name="Work and Cost Centres Link Created">
+        <semantic:incoming>SF_To_EE_WorkCostCentreLinkCreated</semantic:incoming>
+      </semantic:endEvent>
+      <semantic:sequenceFlow id="SF_To_T_IndicateActivityTypeAndFormulasForLink" sourceRef="SE_SP_DefineWorkCostCentreLink_Start" targetRef="T_IndicateActivityTypeAndFormulasForLink"/>
+      <semantic:sequenceFlow id="SF_To_EE_WorkCostCentreLinkCreated" sourceRef="T_IndicateActivityTypeAndFormulasForLink" targetRef="EE_WorkCostCentreLinkCreated"/>
+    </semantic:subProcess>
+
+    <semantic:userTask id="T_SaveNewWorkCentre" name="Save New Work Centre">
+      <semantic:incoming>SF_From_SP_DefineWorkCostCentreLink</semantic:incoming>
+      <semantic:outgoing>SF_To_EE_MasterDataMaintained</semantic:outgoing>
+    </semantic:userTask>
+
+    <semantic:endEvent id="EE_MasterDataMaintained" name="Service Master Data Maintained Successfully">
+      <semantic:incoming>SF_To_EE_MasterDataMaintained</semantic:incoming>
+    </semantic:endEvent>
+
+    <semantic:sequenceFlow id="SF_To_SP_ManageWorkCentreDetails" sourceRef="SE_ServiceOrderReceived" targetRef="SP_ManageWorkCentreDetails"/>
+    <semantic:sequenceFlow id="SF_From_SP_ManageWorkCentreDetails" sourceRef="SP_ManageWorkCentreDetails" targetRef="SP_DefineWorkCentreCapacity"/>
+    <semantic:sequenceFlow id="SF_From_SP_DefineWorkCentreCapacity" sourceRef="SP_DefineWorkCentreCapacity" targetRef="SP_DefineWorkCentreScheduling"/>
+    <semantic:sequenceFlow id="SF_From_SP_DefineWorkCentreScheduling" sourceRef="SP_DefineWorkCentreScheduling" targetRef="SP_DefineWorkCostCentreLink"/>
+    <semantic:sequenceFlow id="SF_From_SP_DefineWorkCostCentreLink" sourceRef="SP_DefineWorkCostCentreLink" targetRef="T_SaveNewWorkCentre"/>
+    <semantic:sequenceFlow id="SF_To_EE_MasterDataMaintained" sourceRef="T_SaveNewWorkCentre" targetRef="EE_MasterDataMaintained"/>
+
+  </semantic:process>
+
+  <bpmndi:BPMNDiagram id="BPMNDiagram_MaintainMasterData">
+    <bpmndi:BPMNPlane bpmnElement="Collab_MaintainMasterData">
+      <bpmndi:BPMNShape id="Shape_P_ProductionDepartment" bpmnElement="P_ProductionDepartment" isHorizontal="true">
+        <dc:Bounds x="10" y="10" width="2000" height="1500"/> 
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_L_ProductionAssistant" bpmnElement="L_ProductionAssistant" isHorizontal="true">
+        <dc:Bounds x="40" y="10" width="1970" height="1500"/>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="Shape_SE_ServiceOrderReceived" bpmnElement="SE_ServiceOrderReceived">
+        <dc:Bounds x="70" y="720" width="36" height="36"/>
+        <bpmndi:BPMNLabel><dc:Bounds x="50" y="760" width="80" height="30"/></bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="Shape_SP_ManageWorkCentreDetails" bpmnElement="SP_ManageWorkCentreDetails" isExpanded="true">
+        <dc:Bounds x="150" y="50" width="1700" height="350"/>
+        <bpmndi:BPMNLabel><dc:Bounds x="850" y="55" width="200" height="20"/></bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+        <bpmndi:BPMNShape id="Shape_SE_SP_ManageWorkCentreDetails_Start" bpmnElement="SE_SP_ManageWorkCentreDetails_Start">
+          <dc:Bounds x="180" y="200" width="36" height="36"/>
+        </bpmndi:BPMNShape>
+        <bpmndi:BPMNShape id="Shape_T_EnterWorkCentreBasicInfo" bpmnElement="T_EnterWorkCentreBasicInfo">
+          <dc:Bounds x="260" y="183" width="160" height="70"/>
+        </bpmndi:BPMNShape>
+        <bpmndi:BPMNShape id="Shape_T_ConfirmWorkCentreBasicInfo" bpmnElement="T_ConfirmWorkCentreBasicInfo">
+          <dc:Bounds x="450" y="183" width="160" height="70"/>
+        </bpmndi:BPMNShape>
+        <bpmndi:BPMNShape id="Shape_T_ReviewNewWorkCentreDetails" bpmnElement="T_ReviewNewWorkCentreDetails">
+          <dc:Bounds x="640" y="183" width="160" height="70"/>
+        </bpmndi:BPMNShape>
+        <bpmndi:BPMNShape id="Shape_T_SpecifyWorkCentreAttributes" bpmnElement="T_SpecifyWorkCentreAttributes">
+          <dc:Bounds x="830" y="183" width="200" height="70"/>
+        </bpmndi:BPMNShape>
+        <bpmndi:BPMNShape id="Shape_SP_DefineRouting" bpmnElement="SP_DefineRouting" isExpanded="true">
+          <dc:Bounds x="1060" y="80" width="750" height="250"/>
+        </bpmndi:BPMNShape>
+          <bpmndi:BPMNShape id="Shape_SE_SP_DefineRouting_Start" bpmnElement="SE_SP_DefineRouting_Start">
+            <dc:Bounds x="1090" y="200" width="36" height="36"/>
+          </bpmndi:BPMNShape>
+          <bpmndi:BPMNShape id="Shape_T_SelectStandardKeyValue" bpmnElement="T_SelectStandardKeyValue">
+            <dc:Bounds x="1150" y="183" width="100" height="70"/>
+          </bpmndi:BPMNShape>
+          <bpmndi:BPMNShape id="Shape_T_EnterSetupTime" bpmnElement="T_EnterSetupTime">
+            <dc:Bounds x="1280" y="183" width="100" height="70"/>
+          </bpmndi:BPMNShape>
+          <bpmndi:BPMNShape id="Shape_T_EnterMachineTime" bpmnElement="T_EnterMachineTime">
+            <dc:Bounds x="1410" y="183" width="100" height="70"/>
+          </bpmndi:BPMNShape>
+          <bpmndi:BPMNShape id="Shape_T_EnterVariableLabourTime" bpmnElement="T_EnterVariableLabourTime">
+            <dc:Bounds x="1540" y="183" width="100" height="70"/>
+          </bpmndi:BPMNShape>
+          <bpmndi:BPMNShape id="Shape_T_EnterTeardownTime" bpmnElement="T_EnterTeardownTime">
+            <dc:Bounds x="1670" y="183" width="100" height="70"/>
+          </bpmndi:BPMNShape>
+          <bpmndi:BPMNShape id="Shape_EE_RoutingDefined" bpmnElement="EE_RoutingDefined">
+            <dc:Bounds x="1790" y="200" width="36" height="36"/>
+          </bpmndi:BPMNShape>
+          <bpmndi:BPMNEdge id="Edge_SF_To_T_SelectStandardKeyValue" bpmnElement="SF_To_T_SelectStandardKeyValue"><di:waypoint x="1126" y="218"/><di:waypoint x="1150" y="218"/></bpmndi:BPMNEdge>
+          <bpmndi:BPMNEdge id="Edge_SF_To_T_EnterSetupTime" bpmnElement="SF_To_T_EnterSetupTime"><di:waypoint x="1250" y="218"/><di:waypoint x="1280" y="218"/></bpmndi:BPMNEdge>
+          <bpmndi:BPMNEdge id="Edge_SF_To_T_EnterMachineTime" bpmnElement="SF_To_T_EnterMachineTime"><di:waypoint x="1380" y="218"/><di:waypoint x="1410" y="218"/></bpmndi:BPMNEdge>
+          <bpmndi:BPMNEdge id="Edge_SF_To_T_EnterVariableLabourTime" bpmnElement="SF_To_T_EnterVariableLabourTime"><di:waypoint x="1510" y="218"/><di:waypoint x="1540" y="218"/></bpmndi:BPMNEdge>
+          <bpmndi:BPMNEdge id="Edge_SF_To_T_EnterTeardownTime" bpmnElement="SF_To_T_EnterTeardownTime"><di:waypoint x="1640" y="218"/><di:waypoint x="1670" y="218"/></bpmndi:BPMNEdge>
+          <bpmndi:BPMNEdge id="Edge_SF_To_EE_RoutingDefined" bpmnElement="SF_To_EE_RoutingDefined"><di:waypoint x="1770" y="218"/><di:waypoint x="1790" y="218"/></bpmndi:BPMNEdge>
+        <bpmndi:BPMNShape id="Shape_T_ReviewRoutingSteps" bpmnElement="T_ReviewRoutingSteps">
+          <dc:Bounds x="1060" y="280" width="160" height="70"/> 
+        </bpmndi:BPMNShape>
+        <bpmndi:BPMNShape id="Shape_EE_WorkCentreDetailsAndRoutingDefined" bpmnElement="EE_WorkCentreDetailsAndRoutingDefined">
+          <dc:Bounds x="1250" y="297" width="36" height="36"/>
+        </bpmndi:BPMNShape>
+        <bpmndi:BPMNEdge id="Edge_SF_To_T_EnterWorkCentreBasicInfo" bpmnElement="SF_To_T_EnterWorkCentreBasicInfo"><di:waypoint x="216" y="218"/><di:waypoint x="260" y="218"/></bpmndi:BPMNEdge>
+        <bpmndi:BPMNEdge id="Edge_SF_To_T_ConfirmWorkCentreBasicInfo" bpmnElement="SF_To_T_ConfirmWorkCentreBasicInfo"><di:waypoint x="420" y="218"/><di:waypoint x="450" y="218"/></bpmndi:BPMNEdge>
+        <bpmndi:BPMNEdge id="Edge_SF_To_T_ReviewNewWorkCentreDetails" bpmnElement="SF_To_T_ReviewNewWorkCentreDetails"><di:waypoint x="610" y="218"/><di:waypoint x="640" y="218"/></bpmndi:BPMNEdge>
+        <bpmndi:BPMNEdge id="Edge_SF_To_T_SpecifyWorkCentreAttributes" bpmnElement="SF_To_T_SpecifyWorkCentreAttributes"><di:waypoint x="800" y="218"/><di:waypoint x="830" y="218"/></bpmndi:BPMNEdge>
+        <bpmndi:BPMNEdge id="Edge_SF_To_SP_DefineRouting" bpmnElement="SF_To_SP_DefineRouting"><di:waypoint x="1030" y="218"/><di:waypoint x="1060" y="218"/></bpmndi:BPMNEdge>
+        <bpmndi:BPMNEdge id="Edge_SF_From_SP_DefineRouting" bpmnElement="SF_From_SP_DefineRouting"><di:waypoint x="1135" y="255"/><di:waypoint x="1135" y="280"/></bpmndi:BPMNEdge>
+        <bpmndi:BPMNEdge id="Edge_SF_To_EE_WorkCentreDetailsAndRoutingDefined" bpmnElement="SF_To_EE_WorkCentreDetailsAndRoutingDefined"><di:waypoint x="1220" y="315"/><di:waypoint x="1250" y="315"/></bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNShape id="Shape_SP_DefineWorkCentreCapacity" bpmnElement="SP_DefineWorkCentreCapacity" isExpanded="true">
+        <dc:Bounds x="150" y="420" width="1700" height="450"/>
+        <bpmndi:BPMNLabel><dc:Bounds x="850" y="425" width="200" height="20"/></bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+        <bpmndi:BPMNShape id="Shape_SE_SP_DefineWorkCentreCapacity_Start" bpmnElement="SE_SP_DefineWorkCentreCapacity_Start"><dc:Bounds x="180" y="630" width="36" height="36"/></bpmndi:BPMNShape>
+        <bpmndi:BPMNShape id="Shape_T_DefineCapacityCategoryAndFormulas" bpmnElement="T_DefineCapacityCategoryAndFormulas"><dc:Bounds x="260" y="613" width="180" height="70"/></bpmndi:BPMNShape>
+        <bpmndi:BPMNShape id="Shape_T_CheckOfferedCapacity" bpmnElement="T_CheckOfferedCapacity"><dc:Bounds x="470" y="613" width="100" height="70"/></bpmndi:BPMNShape>
+        <bpmndi:BPMNShape id="Shape_XG_CapacityHeaderMethod" bpmnElement="XG_CapacityHeaderMethod" isMarkerVisible="true"><dc:Bounds x="600" y="625" width="50" height="50"/></bpmndi:BPMNShape>
+        <bpmndi:BPMNShape id="Shape_T_EnterCapacityHeaderManually" bpmnElement="T_EnterCapacityHeaderManually"><dc:Bounds x="680" y="540" width="150" height="70"/></bpmndi:BPMNShape>
+        <bpmndi:BPMNShape id="Shape_XG_ReferenceCapacityExists" bpmnElement="XG_ReferenceCapacityExists" isMarkerVisible="true"><dc:Bounds x="680" y="700" width="50" height="50"/></bpmndi:BPMNShape>
+        <bpmndi:BPMNShape id="Shape_T_SelectExistingReferenceCapacity" bpmnElement="T_SelectExistingReferenceCapacity"><dc:Bounds x="760" y="620" width="150" height="70"/></bpmndi:BPMNShape>
+        <bpmndi:BPMNShape id="Shape_SP_CreateReferenceCapacity" bpmnElement="SP_CreateReferenceCapacity" isExpanded="true"><dc:Bounds x="760" y="780" width="1050" height="150"/></bpmndi:BPMNShape>
+          <bpmndi:BPMNShape id="Shape_SE_SP_CreateReferenceCapacity_Start" bpmnElement="SE_SP_CreateReferenceCapacity_Start"><dc:Bounds x="790" y="838" width="36" height="36"/></bpmndi:BPMNShape>
+          <bpmndi:BPMNShape id="Shape_T_EnterRefCapParams" bpmnElement="T_EnterRefCapParams"><dc:Bounds x="850" y="820" width="180" height="70"/></bpmndi:BPMNShape>
+          <bpmndi:BPMNShape id="Shape_T_ConfirmRefCapParams" bpmnElement="T_ConfirmRefCapParams"><dc:Bounds x="1060" y="820" width="150" height="70"/></bpmndi:BPMNShape>
+          <bpmndi:BPMNShape id="Shape_T_ReviewStandardCapacityDetails" bpmnElement="T_ReviewStandardCapacityDetails"><dc:Bounds x="1240" y="820" width="150" height="70"/></bpmndi:BPMNShape>
+          <bpmndi:BPMNShape id="Shape_T_SpecifyRefCapChars" bpmnElement="T_SpecifyRefCapChars"><dc:Bounds x="1420" y="820" width="150" height="70"/></bpmndi:BPMNShape>
+          <bpmndi:BPMNShape id="Shape_T_ConfirmRefCapChars" bpmnElement="T_ConfirmRefCapChars"><dc:Bounds x="1600" y="820" width="150" height="70"/></bpmndi:BPMNShape>
+          <bpmndi:BPMNShape id="Shape_T_ReviewCalculatedOperatingTime" bpmnElement="T_ReviewCalculatedOperatingTime"><dc:Bounds x="1420" y="720" width="150" height="70"/></bpmndi:BPMNShape> <!-- Adjusted Y for visibility -->
+          <bpmndi:BPMNShape id="Shape_T_SaveReferenceCapacity" bpmnElement="T_SaveReferenceCapacity"><dc:Bounds x="1600" y="720" width="150" height="70"/></bpmndi:BPMNShape> <!-- Adjusted Y for visibility -->
+          <bpmndi:BPMNShape id="Shape_EE_ReferenceCapacityCreated" bpmnElement="EE_ReferenceCapacityCreated"><dc:Bounds x="1780" y="838" width="36" height="36"/></bpmndi:BPMNShape>
+          <bpmndi:BPMNEdge id="Edge_SF_To_T_EnterRefCapParams" bpmnElement="SF_To_T_EnterRefCapParams"><di:waypoint x="826" y="856"/><di:waypoint x="850" y="856"/></bpmndi:BPMNEdge>
+          <bpmndi:BPMNEdge id="Edge_SF_To_T_ConfirmRefCapParams" bpmnElement="SF_To_T_ConfirmRefCapParams"><di:waypoint x="1030" y="856"/><di:waypoint x="1060" y="856"/></bpmndi:BPMNEdge>
+          <bpmndi:BPMNEdge id="Edge_SF_To_T_ReviewStandardCapacityDetails" bpmnElement="SF_To_T_ReviewStandardCapacityDetails"><di:waypoint x="1210" y="856"/><di:waypoint x="1240" y="856"/></bpmndi:BPMNEdge>
+          <bpmndi:BPMNEdge id="Edge_SF_To_T_SpecifyRefCapChars" bpmnElement="SF_To_T_SpecifyRefCapChars"><di:waypoint x="1390" y="856"/><di:waypoint x="1420" y="856"/></bpmndi:BPMNEdge>
+          <bpmndi:BPMNEdge id="Edge_SF_To_T_ConfirmRefCapChars" bpmnElement="SF_To_T_ConfirmRefCapChars"><di:waypoint x="1570" y="856"/><di:waypoint x="1600" y="856"/></bpmndi:BPMNEdge>
+          <bpmndi:BPMNEdge id="Edge_SF_To_T_ReviewCalculatedOperatingTime" bpmnElement="SF_To_T_ReviewCalculatedOperatingTime"><di:waypoint x="1570" y="820"/><di:waypoint x="1570" y="790"/><di:waypoint x="1495" y="790"/><di:waypoint x="1495" y="720"/></bpmndi:BPMNEdge>
+          <bpmndi:BPMNEdge id="Edge_SF_To_T_SaveReferenceCapacity" bpmnElement="SF_To_T_SaveReferenceCapacity"><di:waypoint x="1570" y="755"/><di:waypoint x="1600" y="755"/></bpmndi:BPMNEdge>
+          <bpmndi:BPMNEdge id="Edge_SF_To_EE_ReferenceCapacityCreated" bpmnElement="SF_To_EE_ReferenceCapacityCreated"><di:waypoint x="1750" y="856"/><di:waypoint x="1780" y="856"/></bpmndi:BPMNEdge>
+        <bpmndi:BPMNShape id="Shape_T_SelectCreatedReferenceCapacity" bpmnElement="T_SelectCreatedReferenceCapacity"><dc:Bounds x="950" y="700" width="150" height="70"/></bpmndi:BPMNShape>
+        <bpmndi:BPMNShape id="Shape_XG_JoinCapacityDefinition" bpmnElement="XG_JoinCapacityDefinition" isMarkerVisible="true"><dc:Bounds x="1150" y="625" width="50" height="50"/></bpmndi:BPMNShape>
+        <bpmndi:BPMNShape id="Shape_EE_WorkCentreCapacityDefined" bpmnElement="EE_WorkCentreCapacityDefined"><dc:Bounds x="1250" y="633" width="36" height="36"/></bpmndi:BPMNShape>
+        <bpmndi:BPMNEdge id="Edge_SF_To_T_DefineCapacityCategoryAndFormulas" bpmnElement="SF_To_T_DefineCapacityCategoryAndFormulas"><di:waypoint x="216" y="648"/><di:waypoint x="260" y="648"/></bpmndi:BPMNEdge>
+        <bpmndi:BPMNEdge id="Edge_SF_To_T_CheckOfferedCapacity" bpmnElement="SF_To_T_CheckOfferedCapacity"><di:waypoint x="440" y="648"/><di:waypoint x="470" y="648"/></bpmndi:BPMNEdge>
+        <bpmndi:BPMNEdge id="Edge_SF_To_XG_CapacityHeaderMethod" bpmnElement="SF_To_XG_CapacityHeaderMethod"><di:waypoint x="570" y="648"/><di:waypoint x="600" y="648"/></bpmndi:BPMNEdge>
+        <bpmndi:BPMNEdge id="Edge_SF_Path_ManualCapacityHeader" bpmnElement="SF_Path_ManualCapacityHeader"><di:waypoint x="625" y="625"/><di:waypoint x="625" y="575"/><di:waypoint x="680" y="575"/></bpmndi:BPMNEdge>
+        <bpmndi:BPMNEdge id="Edge_SF_Path_ReferenceCapacityHeader" bpmnElement="SF_Path_ReferenceCapacityHeader"><di:waypoint x="625" y="675"/><di:waypoint x="625" y="725"/><di:waypoint x="680" y="725"/></bpmndi:BPMNEdge>
+        <bpmndi:BPMNEdge id="Edge_SF_To_XG_JoinCapacityDefinition_Manual" bpmnElement="SF_To_XG_JoinCapacityDefinition_Manual"><di:waypoint x="830" y="575"/><di:waypoint x="1175" y="575"/><di:waypoint x="1175" y="625"/></bpmndi:BPMNEdge>
+        <bpmndi:BPMNEdge id="Edge_SF_Path_RefCapExists_Yes" bpmnElement="SF_Path_RefCapExists_Yes"><di:waypoint x="705" y="700"/><di:waypoint x="705" y="655"/><di:waypoint x="760" y="655"/></bpmndi:BPMNEdge>
+        <bpmndi:BPMNEdge id="Edge_SF_Path_RefCapExists_No" bpmnElement="SF_Path_RefCapExists_No"><di:waypoint x="705" y="750"/><di:waypoint x="705" y="855"/><di:waypoint x="760" y="855"/></bpmndi:BPMNEdge>
+        <bpmndi:BPMNEdge id="Edge_SF_To_XG_JoinCapacityDefinition_ExistingRef" bpmnElement="SF_To_XG_JoinCapacityDefinition_ExistingRef"><di:waypoint x="910" y="655"/><di:waypoint x="1150" y="655"/></bpmndi:BPMNEdge>
+        <bpmndi:BPMNEdge id="Edge_SF_From_SP_CreateReferenceCapacity" bpmnElement="SF_From_SP_CreateReferenceCapacity"><di:waypoint x="955" y="780"/><di:waypoint x="955" y="770"/><di:waypoint x="1025" y="770"/><di:waypoint x="1025" y="700"/></bpmndi:BPMNEdge>
+        <bpmndi:BPMNEdge id="Edge_SF_To_XG_JoinCapacityDefinition_NewRef" bpmnElement="SF_To_XG_JoinCapacityDefinition_NewRef"><di:waypoint x="1100" y="735"/><di:waypoint x="1175" y="735"/><di:waypoint x="1175" y="675"/></bpmndi:BPMNEdge>
+        <bpmndi:BPMNEdge id="Edge_SF_To_EE_WorkCentreCapacityDefined" bpmnElement="SF_To_EE_WorkCentreCapacityDefined"><di:waypoint x="1200" y="648"/><di:waypoint x="1250" y="648"/></bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNShape id="Shape_SP_DefineWorkCentreScheduling" bpmnElement="SP_DefineWorkCentreScheduling" isExpanded="true">
+        <dc:Bounds x="150" y="890" width="1700" height="200"/>
+        <bpmndi:BPMNLabel><dc:Bounds x="850" y="895" width="200" height="20"/></bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+        <bpmndi:BPMNShape id="Shape_SE_SP_DefineWorkCentreScheduling_Start" bpmnElement="SE_SP_DefineWorkCentreScheduling_Start"><dc:Bounds x="180" y="973" width="36" height="36"/></bpmndi:BPMNShape>
+        <bpmndi:BPMNShape id="Shape_T_SelectCapacityAndFormulasForScheduling" bpmnElement="T_SelectCapacityAndFormulasForScheduling"><dc:Bounds x="260" y="955" width="200" height="70"/></bpmndi:BPMNShape>
+        <bpmndi:BPMNShape id="Shape_T_ConfirmSchedulingEntries" bpmnElement="T_ConfirmSchedulingEntries"><dc:Bounds x="490" y="955" width="150" height="70"/></bpmndi:BPMNShape>
+        <bpmndi:BPMNShape id="Shape_T_ReviewSchedulingParams" bpmnElement="T_ReviewSchedulingParams"><dc:Bounds x="670" y="955" width="180" height="70"/></bpmndi:BPMNShape>
+        <bpmndi:BPMNShape id="Shape_EE_WorkCentreSchedulingDefined" bpmnElement="EE_WorkCentreSchedulingDefined"><dc:Bounds x="880" y="973" width="36" height="36"/></bpmndi:BPMNShape>
+        <bpmndi:BPMNEdge id="Edge_SF_To_T_SelectCapacityAndFormulasForScheduling" bpmnElement="SF_To_T_SelectCapacityAndFormulasForScheduling"><di:waypoint x="216" y="991"/><di:waypoint x="260" y="991"/></bpmndi:BPMNEdge>
+        <bpmndi:BPMNEdge id="Edge_SF_To_T_ConfirmSchedulingEntries" bpmnElement="SF_To_T_ConfirmSchedulingEntries"><di:waypoint x="460" y="991"/><di:waypoint x="490" y="991"/></bpmndi:BPMNEdge>
+        <bpmndi:BPMNEdge id="Edge_SF_To_T_ReviewSchedulingParams" bpmnElement="SF_To_T_ReviewSchedulingParams"><di:waypoint x="640" y="991"/><di:waypoint x="670" y="991"/></bpmndi:BPMNEdge>
+        <bpmndi:BPMNEdge id="Edge_SF_To_EE_WorkCentreSchedulingDefined" bpmnElement="SF_To_EE_WorkCentreSchedulingDefined"><di:waypoint x="850" y="991"/><di:waypoint x="880" y="991"/></bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNShape id="Shape_SP_DefineWorkCostCentreLink" bpmnElement="SP_DefineWorkCostCentreLink" isExpanded="true">
+        <dc:Bounds x="150" y="1110" width="1700" height="180"/>
+        <bpmndi:BPMNLabel><dc:Bounds x="850" y="1115" width="200" height="20"/></bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+        <bpmndi:BPMNShape id="Shape_SE_SP_DefineWorkCostCentreLink_Start" bpmnElement="SE_SP_DefineWorkCostCentreLink_Start"><dc:Bounds x="180" y="1183" width="36" height="36"/></bpmndi:BPMNShape>
+        <bpmndi:BPMNShape id="Shape_T_IndicateActivityTypeAndFormulasForLink" bpmnElement="T_IndicateActivityTypeAndFormulasForLink"><dc:Bounds x="260" y="1165" width="200" height="70"/></bpmndi:BPMNShape>
+        <bpmndi:BPMNShape id="Shape_EE_WorkCostCentreLinkCreated" bpmnElement="EE_WorkCostCentreLinkCreated"><dc:Bounds x="490" y="1183" width="36" height="36"/></bpmndi:BPMNShape>
+        <bpmndi:BPMNEdge id="Edge_SF_To_T_IndicateActivityTypeAndFormulasForLink" bpmnElement="SF_To_T_IndicateActivityTypeAndFormulasForLink"><di:waypoint x="216" y="1201"/><di:waypoint x="260" y="1201"/></bpmndi:BPMNEdge>
+        <bpmndi:BPMNEdge id="Edge_SF_To_EE_WorkCostCentreLinkCreated" bpmnElement="SF_To_EE_WorkCostCentreLinkCreated"><di:waypoint x="460" y="1201"/><di:waypoint x="490" y="1201"/></bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNShape id="Shape_T_SaveNewWorkCentre" bpmnElement="T_SaveNewWorkCentre">
+        <dc:Bounds x="150" y="1320" width="150" height="70"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_EE_MasterDataMaintained" bpmnElement="EE_MasterDataMaintained">
+        <dc:Bounds x="350" y="1338" width="36" height="36"/>
+        <bpmndi:BPMNLabel><dc:Bounds x="320" y="1378" width="100" height="30"/></bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNEdge id="Edge_SF_To_SP_ManageWorkCentreDetails" bpmnElement="SF_To_SP_ManageWorkCentreDetails">
+        <di:waypoint x="106" y="738"/><di:waypoint x="150" y="738"/><di:waypoint x="150" y="400"/> 
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_SF_From_SP_ManageWorkCentreDetails" bpmnElement="SF_From_SP_ManageWorkCentreDetails">
+        <di:waypoint x="150" y="400"/><di:waypoint x="150" y="420"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_SF_From_SP_DefineWorkCentreCapacity" bpmnElement="SF_From_SP_DefineWorkCentreCapacity">
+        <di:waypoint x="150" y="870"/><di:waypoint x="150" y="890"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_SF_From_SP_DefineWorkCentreScheduling" bpmnElement="SF_From_SP_DefineWorkCentreScheduling">
+        <di:waypoint x="150" y="1090"/><di:waypoint x="150" y="1110"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_SF_From_SP_DefineWorkCostCentreLink" bpmnElement="SF_From_SP_DefineWorkCostCentreLink">
+        <di:waypoint x="150" y="1290"/><di:waypoint x="150" y="1320"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_SF_To_EE_MasterDataMaintained" bpmnElement="SF_To_EE_MasterDataMaintained">
+        <di:waypoint x="300" y="1355"/><di:waypoint x="350" y="1355"/>
+      </bpmndi:BPMNEdge>
+
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</semantic:definitions>
