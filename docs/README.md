@@ -69,11 +69,6 @@ For each process description in the input:
 
 Create a .env file in the root directory of the project and add the following variables:
 
-**If you use the mistral API, you need to add the following variable:**
-```
-MISTRAL_API_KEY=<y<our_mistral_api_key>
-```
-
 **if you use the openAI API, you need to add the following variable:**
 ```
 OPENAI_API_KEY=<your_openai_api_key>
