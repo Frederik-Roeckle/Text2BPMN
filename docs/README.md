@@ -74,7 +74,7 @@ Create a .env file in the root directory of the project and add the following va
 OPENAI_API_KEY=<your_openai_api_key>
 ```
 
-**if you use the Gemini models from the Google API, you need to add the following variabke:**
+**if you use the Gemini models from the Google API, you need to add the following variable:**
 ```
 GOOGLE_API_KEY=<your_google_api_key>
 ```
