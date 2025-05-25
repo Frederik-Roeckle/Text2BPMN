@@ -1,0 +1,6 @@
+langgraph==0.3.28
+langchain_mistralai==0.2.10
+dotenv==0.9.9
+langchain-community==0.3.24
+langchain-openai==0.3.18
+langchain-google-genai==2.1.4 
