@@ -65,7 +65,7 @@ For each process description in the input:
 
 -  A .png diagram is rendered to: `data/img/<graph_name>_<id>.png`
 
-## Enviroment Variables
+# Enviroment Variables
 
 Create a .env file in the root directory of the project and add the following variables:
 
